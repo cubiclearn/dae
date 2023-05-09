@@ -9,12 +9,20 @@
         "lint": "next lint"
     },
     "dependencies": {
+        "@dae/database": "workspace:*",
+        "@dae/ui": "workspace:*",
+        "@next-auth/prisma-adapter": "0.4.4-canary.81",
+        "@prisma/client": "^3.10.0",
+        "install": "^0.13.0",
         "next": "^13.4.1",
+        "next-auth": "^4.22.1",
+        "npm": "^9.6.6",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
-        "@dae/ui": "workspace:*"
+        "siwe": "^2.1.4"
     },
     "devDependencies": {
+        "@dae/database": "workspace:*",
         "@types/node": "^17.0.12",
         "@types/react": "^18.0.22",
         "@types/react-dom": "^18.0.7",
