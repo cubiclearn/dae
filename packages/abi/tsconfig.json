@@ -1,5 +1,5 @@
 {
-    "extends": "tsconfig/node18.json",
+    "extends": "@dae/typescript-config/node18.json",
     "include": ["src"],
     "compilerOptions": {
         "outDir": "./dist",

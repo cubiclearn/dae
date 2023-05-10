@@ -1,5 +1,5 @@
 {
-    "extends": "tsconfig/node18.json",
+    "extends": "@dae/typescript-config/node18.json",
     "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "tsup.config.ts"],
     "exclude": ["node_modules"]
 }

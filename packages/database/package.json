@@ -30,8 +30,8 @@
         "eslint": "^8.12.0",
         "prisma": "^3.10.0",
         "rimraf": "^3.0.2",
-        "eslint-config-custom": "workspace:*",
-        "tsconfig": "workspace:*",
+        "@dae/typescript-config": "workspace:*",
+        "@dae/eslint-config": "workspace:*",
         "tsup": "^5.11.13",
         "tsx": "^3.7.1",
         "typescript": "^4.5.5"
