@@ -3,15 +3,17 @@
     "private": true,
     "scripts": {
         "build": "turbo run build",
-        "dev": "turbo run dev",
+        "dev": "dotenv -- turbo run dev --no-cache --parallel --continue",
         "lint": "turbo run lint",
-        "format": "prettier --write \"**/*.{ts,tsx,md}\""
+        "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+        "clean": "turbo run clean"
     },
     "devDependencies": {
         "eslint": "^7.32.0",
         "@dae/eslint-config": "workspace:*",
         "prettier": "^2.8.8",
-        "turbo": "^1.9.3"
+        "turbo": "^1.9.3",
+        "dotenv-cli": "latest"
     },
     "packageManager": "pnpm@7.15.0"
 }

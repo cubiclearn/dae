@@ -1,8 +1,8 @@
 {
     "name": "@dae/ui",
     "version": "0.0.0",
-    "main": "./index.tsx",
-    "types": "./index.tsx",
+    "main": "./index.ts",
+    "types": "./index.ts",
     "license": "MIT",
     "scripts": {
         "lint": "eslint \"**/*.ts*\""
@@ -12,6 +12,7 @@
         "@dae/abi": "workspace:*",
         "@dae/typescript-config": "workspace:*",
         "@dae/eslint-config": "workspace:*",
+        "@dae/hooks": "workspace:*",
         "@emotion/react": "^11.11.0",
         "@emotion/styled": "^11.11.0",
         "@types/react": "^18.0.22",
