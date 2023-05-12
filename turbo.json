@@ -11,16 +11,23 @@
                 "!.next/cache/**"
             ]
         },
+        "start": {
+            "dependsOn": [
+                "^build"
+            ],
+            "outputs": [
+                ".next/**",
+                "!.next/cache/**"
+            ],
+            "persistent": true
+        },
         "lint": {},
         "dev": {
             "dependsOn": [
                 "^build"
             ],
-            "cache": false,
             "persistent": true
         },
-        "clean": {
-            "cache": false
-        }
+        "clean": {}
     }
 }

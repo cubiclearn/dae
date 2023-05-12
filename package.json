@@ -6,7 +6,8 @@
         "dev": "dotenv -- turbo run dev --no-cache --parallel --continue",
         "lint": "turbo run lint",
         "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-        "clean": "turbo run clean"
+        "clean": "turbo run clean",
+        "start": "turbo run start"
     },
     "devDependencies": {
         "eslint": "^7.32.0",

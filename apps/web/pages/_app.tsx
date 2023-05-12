@@ -1,6 +1,9 @@
-"use client";
+import "react-toastify/dist/ReactToastify.css";
+import "@rainbow-me/rainbowkit/styles.css";
 
-import React from "react";
+import React, { FC } from "react";
+import { App } from "@dae/ui";
+import { AppProps } from "next/app";
 import { SessionProvider } from "next-auth/react";
 import { CacheProvider } from "@chakra-ui/next-js";
 import { ChakraProvider } from "@chakra-ui/react";
@@ -26,15 +29,19 @@ const config = createConfig({
     connectors,
 });
 
-const Providers = ({ children }: { children: React.ReactNode }) => {
+const MyApp: FC<AppProps> = ({ Component, pageProps }) => {
+    const AnyComponent = Component as any;
+
     return (
         <WagmiConfig config={config}>
             <SessionProvider>
                 <RainbowKitSiweNextAuthProvider>
                     <RainbowKitProvider chains={chains} modalSize="compact">
-                        <CacheProvider>
-                            <ChakraProvider>{children}</ChakraProvider>
-                        </CacheProvider>
+                        <ChakraProvider>
+                            <App.Container>
+                                <AnyComponent {...pageProps} />
+                            </App.Container>
+                        </ChakraProvider>
                     </RainbowKitProvider>
                 </RainbowKitSiweNextAuthProvider>
             </SessionProvider>
@@ -42,4 +49,4 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
     );
 };
 
-export default Providers;
+export default MyApp;

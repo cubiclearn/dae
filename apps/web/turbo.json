@@ -26,6 +26,12 @@
             ],
             "cache": true
         },
+        "start": {
+            "dependsOn": [
+                "^build"
+            ],
+            "cache": true
+        },
         "check": {
             "dependsOn": [
                 "^build",
