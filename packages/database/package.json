@@ -1,5 +1,6 @@
 {
     "name": "@dae/database",
+    "description": "Decentralized Autonomous Education (DAE) Database",
     "version": "0.0.0",
     "license": "MIT",
     "main": "./dist/index.js",

@@ -1,5 +1,6 @@
 {
     "name": "@dae/ui",
+    "description": "Decentralized Autonomous Education (DAE) UI components",
     "version": "0.0.0",
     "main": "./src/index.ts",
     "types": "./src/index.ts",
