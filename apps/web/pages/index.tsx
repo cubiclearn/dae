@@ -2,7 +2,6 @@ import { FC } from "react";
 import Head from "next/head";
 import { Center, Flex, Heading } from "@chakra-ui/react";
 import { Layout } from "@dae/ui";
-import { ConnectButton } from "@dae/ui/src/app/header/ConnectButton";
 
 const Home: FC = () => {
     return (
@@ -13,16 +12,15 @@ const Home: FC = () => {
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <Layout.Page>
+            <Layout.Base>
                 <Flex width={"100vw"} height={"calc(100vh - 130px)"} alignContent={"center"} justifyContent={"center"}>
-                    <ConnectButton />
                     <Center width={"80%"}>
                         <Heading as="h1" fontSize={{ sm: "58", lg: "120" }} textAlign={"center"}>
                             DECENTRALIZED AUTONOMOUS EDUCATION
                         </Heading>
                     </Center>
                 </Flex>
-            </Layout.Page>
+            </Layout.Base>
         </>
     );
 };

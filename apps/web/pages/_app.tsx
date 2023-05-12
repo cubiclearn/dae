@@ -2,7 +2,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
 import React, { FC } from "react";
-import { App } from "@dae/ui";
+import { App, Layout } from "@dae/ui";
 import { AppProps } from "next/app";
 import { SessionProvider } from "next-auth/react";
 import { ChakraProvider } from "@chakra-ui/react";
@@ -37,9 +37,7 @@ const MyApp: FC<AppProps> = ({ Component, pageProps }) => {
                 <RainbowKitSiweNextAuthProvider>
                     <RainbowKitProvider chains={chains} modalSize="compact">
                         <ChakraProvider>
-                            <App.Container>
-                                <AnyComponent {...pageProps} />
-                            </App.Container>
+                            <AnyComponent {...pageProps} />
                         </ChakraProvider>
                     </RainbowKitProvider>
                 </RainbowKitSiweNextAuthProvider>
