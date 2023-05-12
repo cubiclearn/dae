@@ -19,13 +19,13 @@
     "scripts": {
         "build": "tsc",
         "check": "tsc --pretty --noEmit",
-        "clean": "rm -rf .turbo && rm -rf dist",
+        "clean": "rm -rf .turbo dist node_modules",
         "dev": "tsc -w",
         "lint": "TIMING=1 eslint src --fix"
     },
     "devDependencies": {
-        "@dae/typescript-config": "workspace:*",
         "@dae/eslint-config": "workspace:*",
+        "@dae/typescript-config": "workspace:*",
         "eslint": "8.29.0",
         "typescript": "^5.0.4"
     }

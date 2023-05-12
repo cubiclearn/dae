@@ -11,8 +11,6 @@ import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiConfig, createConfig, configureChains } from "wagmi";
 import { mainnet, goerli, foundry } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "@dae/react-query";
 
 export const { chains, publicClient, webSocketPublicClient } = configureChains(
     [mainnet, goerli, foundry],
