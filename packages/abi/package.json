@@ -27,6 +27,6 @@
         "@dae/typescript-config": "workspace:*",
         "@dae/eslint-config": "workspace:*",
         "eslint": "8.29.0",
-        "typescript": "4.9.4"
+        "typescript": "^5.0.4"
     }
 }

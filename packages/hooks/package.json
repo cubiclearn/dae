@@ -17,8 +17,8 @@
     "devDependencies": {
         "@dae/eslint-config": "workspace:*",
         "@dae/typescript-config": "workspace:*",
-        "@types/react": "^18.0.0",
-        "@types/react-dom": "^18.0.0",
+        "@types/react": "^18.0.22",
+        "@types/react-dom": "^18.0.7",
         "eslint": "8.29.0",
         "react": "18.2.0",
         "react-dom": "18.2.0",
@@ -26,7 +26,7 @@
     },
     "dependencies": {
         "swr": "^2.1.5",
-        "viem": "^0.3.19",
-        "wagmi": "^1.0.2"
+        "viem": "0.3.19",
+        "wagmi": "1.0.2"
     }
 }
