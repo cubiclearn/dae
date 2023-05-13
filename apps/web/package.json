@@ -12,6 +12,7 @@
     "dependencies": {
         "@chakra-ui/next-js": "2.1.3",
         "@chakra-ui/react": "^2.6.1",
+        "@dae/abi": "workspace:*",
         "@dae/database": "workspace:*",
         "@dae/ui": "workspace:*",
         "@emotion/react": "^11.11.0",

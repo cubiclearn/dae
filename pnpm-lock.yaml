@@ -31,6 +31,9 @@ importers:
       '@chakra-ui/react':
         specifier: ^2.6.1
         version: 2.6.1(@emotion/react@11.11.0)(@emotion/styled@11.11.0)(@types/react@18.0.22)(framer-motion@10.12.8)(react-dom@18.2.0)(react@18.2.0)
+      '@dae/abi':
+        specifier: workspace:*
+        version: link:../../packages/abi
       '@dae/database':
         specifier: workspace:*
         version: link:../../packages/database

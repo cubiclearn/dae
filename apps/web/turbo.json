@@ -30,6 +30,11 @@
             "dependsOn": [
                 "^build"
             ],
+            "env": [
+                "NEXTAUTH_URL",
+                "NEXTAUTH_SECRET",
+                "NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS"
+            ],
             "cache": true
         },
         "check": {
