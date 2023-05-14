@@ -1,8 +1,7 @@
 import "react-toastify/dist/ReactToastify.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
-import React, { FC } from "react";
-import { App, Layout } from "@dae/ui";
+import React from "react";
 import { AppProps } from "next/app";
 import { SessionProvider } from "next-auth/react";
 import { ChakraProvider } from "@chakra-ui/react";
@@ -11,6 +10,7 @@ import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiConfig, createConfig, configureChains } from "wagmi";
 import { mainnet, goerli, foundry } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
+import { Session } from "next-auth";
 
 export const { chains, publicClient, webSocketPublicClient } = configureChains(
     [mainnet, goerli, foundry],
@@ -28,12 +28,12 @@ const config = createConfig({
     connectors,
 });
 
-const MyApp: FC<AppProps> = ({ Component, pageProps }) => {
+const MyApp = ({ Component, pageProps }: AppProps<{ session: Session }>) => {
     const AnyComponent = Component as any;
 
     return (
         <WagmiConfig config={config}>
-            <SessionProvider>
+            <SessionProvider session={pageProps.session} refetchInterval={0}>
                 <RainbowKitSiweNextAuthProvider>
                     <RainbowKitProvider chains={chains} modalSize="compact">
                         <ChakraProvider>

@@ -26,6 +26,7 @@ export default async function auth(req: any, res: any) {
             async authorize(credentials) {
                 try {
                     const siwe = new SiweMessage(JSON.parse(credentials?.message || "{}"));
+
                     const nextAuthUrl = new URL(process.env.NEXTAUTH_URL!);
 
                     const result = await siwe.verify({
@@ -81,9 +82,9 @@ export default async function auth(req: any, res: any) {
         secret: process.env.NEXTAUTH_SECRET,
         callbacks: {
             async session({ session, token }: { session: any; token: any }) {
-                session.user.address = token.id;
-                session.user.name = token.name;
-                session.user.surname = token.surname;
+                // session.user.address = token.id;
+                // session.user.name = token.name;
+                // session.user.surname = token.surname;
                 return session;
             },
             jwt: async ({ token, user }) => {
