@@ -24,7 +24,6 @@
         "lint": "TIMING=1 eslint src --fix"
     },
     "devDependencies": {
-        "@dae/eslint-config": "workspace:*",
         "@dae/typescript-config": "workspace:*",
         "eslint": "8.29.0",
         "typescript": "^5.0.4"

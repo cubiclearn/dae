@@ -12,7 +12,6 @@
     "devDependencies": {
         "@chakra-ui/react": "^2.6.1",
         "@dae/abi": "workspace:*",
-        "@dae/eslint-config": "workspace:*",
         "@dae/hooks": "workspace:*",
         "@dae/typescript-config": "workspace:*",
         "@emotion/react": "^11.11.0",
@@ -32,6 +31,7 @@
     },
     "dependencies": {
         "@chakra-ui/icons": "^2.0.19",
+        "@chakra-ui/system": "^2.5.7",
         "@rainbow-me/rainbowkit": "^1.0.0",
         "react-icons": "^4.8.0"
     },

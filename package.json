@@ -8,10 +8,9 @@
         "format": "prettier --write \"**/*.{ts,tsx,md}\"",
         "clean": "turbo run clean && rm -rf node_modules",
         "start": "dotenv -- turbo run start",
-        "postinstall": "manypkg check || manypkg fix"
+        "postinstall": "manypkg check"
     },
     "dependencies": {
-        "@dae/eslint-config": "0.0.0",
         "@manypkg/cli": "latest",
         "dotenv-cli": "latest",
         "eslint": "8.29.0",
