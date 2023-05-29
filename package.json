@@ -1,26 +1,22 @@
 {
-    "name": "dae",
-    "private": true,
-    "scripts": {
-        "build": "dotenv -- turbo run build",
-        "dev": "dotenv -- turbo run dev --no-cache --parallel --continue",
-        "lint": "turbo run lint",
-        "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-        "clean": "turbo run clean && rm -rf node_modules",
-        "start": "dotenv -- turbo run start",
-        "postinstall": "manypkg check"
-    },
-    "dependencies": {
-        "@manypkg/cli": "latest",
-        "dotenv-cli": "latest",
-        "eslint": "8.29.0",
-        "prettier": "^2.8.8",
-        "turbo": "^1.9.3"
-    },
-    "manypkg": {
-        "ignoredRules": [
-            "INTERNAL_MISMATCH"
-        ]
-    },
-    "packageManager": "pnpm@7.15.0"
+  "name": "dae",
+  "dependencies": {
+    "dotenv-cli": "latest",
+    "eslint": "8.29.0",
+    "prettier": "2.8.8",
+    "turbo": "1.9.3"
+  },
+  "devDependencies": {
+    "syncpack": "10.1.0"
+  },
+  "packageManager": "pnpm@7.15.0",
+  "private": true,
+  "scripts": {
+    "build": "dotenv -- turbo run build",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "dev": "dotenv -- turbo run dev --no-cache --parallel --continue",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "lint": "turbo run lint",
+    "start": "dotenv -- turbo run start"
+  }
 }

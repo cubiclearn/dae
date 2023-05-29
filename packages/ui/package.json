@@ -1,45 +1,45 @@
 {
-    "name": "@dae/ui",
-    "description": "Decentralized Autonomous Education (DAE) UI components",
-    "version": "0.0.0",
-    "main": "./src/index.ts",
-    "types": "./src/index.ts",
-    "license": "MIT",
-    "scripts": {
-        "lint": "eslint \"**/*.ts*\"",
-        "clean": "rm -rf .turbo node_modules"
-    },
-    "devDependencies": {
-        "@chakra-ui/react": "^2.6.1",
-        "@dae/abi": "workspace:*",
-        "@dae/hooks": "workspace:*",
-        "@dae/typescript-config": "workspace:*",
-        "@emotion/react": "^11.11.0",
-        "@emotion/styled": "^11.11.0",
-        "@types/react": "^18.0.22",
-        "@types/react-dom": "^18.0.7",
-        "eslint": "8.29.0",
-        "ethers": "^5.7.2",
-        "framer-motion": "^10.12.8",
-        "next": "13.4.1",
-        "react": "18.2.0",
-        "react-dom": "18.2.0",
-        "react-toastify": "^9.1.2",
-        "typescript": "^5.0.4",
-        "viem": "0.3.19",
-        "wagmi": "1.0.2"
-    },
-    "dependencies": {
-        "@chakra-ui/icons": "^2.0.19",
-        "@chakra-ui/system": "^2.5.7",
-        "@rainbow-me/rainbowkit": "^1.0.0",
-        "react-icons": "^4.8.0"
-    },
-    "peerDependencies": {
-        "next": "13.4.1",
-        "react": "18.2.0",
-        "react-dom": "18.2.0",
-        "viem": "0.3.19",
-        "wagmi": "1.0.2"
-    }
+  "name": "@dae/ui",
+  "description": "Decentralized Autonomous Education (DAE) UI components",
+  "version": "0.0.0",
+  "dependencies": {
+    "@chakra-ui/icons": "2.0.19",
+    "@chakra-ui/system": "2.5.7",
+    "@rainbow-me/rainbowkit": "1.0.0",
+    "react-icons": "4.8.0"
+  },
+  "devDependencies": {
+    "@chakra-ui/react": "2.6.1",
+    "@dae/abi": "workspace:*",
+    "@dae/hooks": "workspace:*",
+    "@dae/typescript-config": "workspace:*",
+    "@emotion/react": "11.11.0",
+    "@emotion/styled": "11.11.0",
+    "@types/react": "18.0.22",
+    "@types/react-dom": "18.0.7",
+    "eslint": "8.29.0",
+    "ethers": "5.7.2",
+    "framer-motion": "10.12.8",
+    "next": "13.4.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-toastify": "9.1.2",
+    "typescript": "5.0.4",
+    "viem": "0.3.19",
+    "wagmi": "1.0.2"
+  },
+  "license": "MIT",
+  "main": "./src/index.ts",
+  "peerDependencies": {
+    "next": "13.4.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "viem": "0.3.19",
+    "wagmi": "1.0.2"
+  },
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "lint": "eslint \"**/*.ts*\""
+  },
+  "types": "./src/index.ts"
 }
