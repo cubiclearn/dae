@@ -24,10 +24,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(200).json({students: students})
     return
   } else if (req.method == 'POST') {
-    const {address} = req.query as {address: string}
-    const {addressesToEnroll, chainId} = req.body as {chainId: string; addressesToEnroll: string[]}
+    const {addressesToEnroll, chainId, courseAddress} = req.body as {
+      chainId: string
+      addressesToEnroll: string[]
+      courseAddress: string
+    }
 
-    if (!addressesToEnroll || addressesToEnroll.length == 0 || !address || !chainId) {
+    if (!addressesToEnroll || addressesToEnroll.length == 0 || !courseAddress || !chainId) {
       res.status(400)
       return
     }
@@ -39,7 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const contractCallDataArray: any[] = addressesToEnroll.map((addressToEnroll: `0x${string}`) => {
       return {
-        address: address,
+        address: courseAddress,
         abi: CredentialsAbi,
         functionName: 'balanceOf',
         args: [addressToEnroll],
@@ -65,17 +68,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         try {
           await prisma.courseStudents.create({
             data: {
-              courseAddress: address.toLowerCase(),
+              courseAddress: courseAddress.toLowerCase(),
               studentAddress: addressesToEnroll[i].toLowerCase(),
               chainId: parseInt(chainId),
             },
           })
-        } catch (e) {
+        } catch (e: any) {
           console.error(e)
+          res.status(500).json({message: e})
+          return
         }
       }
     }
-    res.status(200)
+    res.status(200).json({message: 'OK'})
   } else {
     res.status(400).json({message: 'HTTP method not supported'})
   }

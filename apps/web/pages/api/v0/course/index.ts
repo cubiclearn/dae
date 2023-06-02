@@ -2,7 +2,6 @@ import type {NextApiRequest, NextApiResponse} from 'next'
 import {getSession} from 'next-auth/react'
 import {CredentialsAbi} from '@dae/abi'
 import {prisma} from '@dae/database'
-import {getContractAddress} from 'viem'
 import {createPublicClient, http} from 'viem'
 import {getChainFromId} from '../../../../lib/functions'
 
