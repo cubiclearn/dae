@@ -1,17 +1,20 @@
-import { useNetwork, useAccount } from "wagmi";
-import useSWR from "swr";
+import {useNetwork, useAccount} from 'wagmi'
+import useSWR from 'swr'
 
-const fetcher = (url: string) => fetch(url).then((r) => r.json());
+const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
 export function useTeacherCourses() {
-    const { chain } = useNetwork();
-    const { address } = useAccount();
+  const {chain} = useNetwork()
+  const {address} = useAccount()
 
-    const { data, error, isLoading } = useSWR(() => `/api/v1/teacher/${address}/courses?chainId=${chain?.id}`, fetcher);
+  const {data, error, isLoading} = useSWR(
+    () => `/api/v0/teacher/courses?chainId=${chain?.id}&address=${address}`,
+    fetcher
+  )
 
-    return {
-        data,
-        isLoading,
-        error,
-    };
+  return {
+    data,
+    isLoading,
+    error,
+  }
 }

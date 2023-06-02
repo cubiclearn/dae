@@ -31,8 +31,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         hash: txHash,
       })
 
+      const txLogs = await client.getTransactionReceipt({hash: txHash})
+
       // Address of the newly created Credentials contract
-      const contractAddress = getContractAddress({from: transaction.from, nonce: BigInt(transaction.nonce)})
+      const contractAddress = txLogs.logs[0].address
+
+      //const contractAddress = '0x5067457698fd6fa1c6964e416b3f42713513b3dd'
 
       const owner = (await client.readContract({
         address: contractAddress,
@@ -57,32 +61,45 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const timestamp = (await client.getBlock({blockNumber: transaction.blockNumber!})).timestamp
 
-      const metadata = await fetch(baseURI)
+      try {
+        const metadata = await fetch(baseURI)
 
-      if (!metadata.ok) {
-        res.status(metadata.status).json({message: metadata.statusText})
+        if (!metadata.ok) {
+          res.status(metadata.status).json({message: metadata.statusText})
+          return
+        }
+        const jsonMetadata = (await metadata.json()) as any
+        if (
+          jsonMetadata == undefined ||
+          jsonMetadata.name == undefined ||
+          jsonMetadata.description == undefined ||
+          jsonMetadata.access_url == undefined ||
+          jsonMetadata.image == undefined ||
+          jsonMetadata.website == undefined
+        ) {
+          throw new Error('Wrong metadata URL')
+        }
+        await prisma.course.create({
+          data: {
+            address: contractAddress.toLowerCase(),
+            owner: owner.toLowerCase(),
+            name: jsonMetadata.name,
+            description: jsonMetadata.description,
+            access_url: jsonMetadata.access_url,
+            image_url: jsonMetadata.image,
+            website_url: jsonMetadata.website,
+            symbol: symbol,
+            ipfs_metadata: baseURI,
+            maxSupply: Number(maxSupply),
+            burnable: false,
+            timestamp: Number(timestamp),
+            chainId: chainId,
+          },
+        })
+      } catch (e) {
+        res.status(400).json({message: e})
         return
       }
-
-      const jsonMetadata = (await metadata.json()) as any
-
-      await prisma.course.create({
-        data: {
-          address: contractAddress.toLowerCase(),
-          owner: owner.toLowerCase(),
-          name: jsonMetadata.name,
-          description: jsonMetadata.description,
-          access_url: jsonMetadata.access_url,
-          image_url: jsonMetadata.image,
-          website_url: jsonMetadata.website,
-          symbol: symbol,
-          ipfs_metadata: baseURI,
-          maxSupply: Number(maxSupply),
-          burnable: false,
-          timestamp: Number(timestamp),
-          chainId: chainId,
-        },
-      })
 
       res.status(200).json({message: 'OK!'})
     } else {
