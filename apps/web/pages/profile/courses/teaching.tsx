@@ -9,7 +9,6 @@ import {getToken} from 'next-auth/jwt'
 import {getSession} from 'next-auth/react'
 
 export default function AddCoursePage({courses}: {courses: any[]}) {
-  console.log(courses)
   return (
     <>
       <Head>
