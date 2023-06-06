@@ -30,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ],
     })
 
-    res.status(200).json({courses: courses})
+    res.status(200).json(courses)
   } else {
     res.status(400).json({message: 'This method is not supported'})
   }

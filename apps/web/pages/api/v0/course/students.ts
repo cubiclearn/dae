@@ -15,13 +15,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method == 'GET') {
     const {chainId, address} = req.query as {chainId: string; address: string}
+
     const students = await prisma.courseStudents.findMany({
       where: {
         courseAddress: address.toLowerCase(),
         chainId: parseInt(chainId),
       },
     })
-    res.status(200).json({students: students})
+
+    res.status(200).json(students)
     return
   } else if (req.method == 'POST') {
     const {addressesToEnroll, chainId, courseAddress} = req.body as {

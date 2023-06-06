@@ -11,6 +11,8 @@ import {WagmiConfig, createConfig, configureChains} from 'wagmi'
 import {mainnet, goerli, foundry} from 'wagmi/chains'
 import {publicProvider} from 'wagmi/providers/public'
 import {Session} from 'next-auth'
+import {useIsMounted} from '@dae/hooks'
+import {Layout} from '@dae/ui'
 
 export const {chains, publicClient, webSocketPublicClient} = configureChains(
   [mainnet, goerli, foundry],
@@ -31,14 +33,16 @@ const config = createConfig({
 
 const MyApp = ({Component, pageProps}: AppProps<{session: Session}>) => {
   const AnyComponent = Component as any
-
+  const isMounted = useIsMounted()
   return (
     <WagmiConfig config={config}>
       <SessionProvider session={pageProps.session} refetchInterval={0}>
         <RainbowKitSiweNextAuthProvider>
           <RainbowKitProvider chains={chains} modalSize="compact">
             <ChakraProvider>
-              <AnyComponent {...pageProps} />
+              <Layout.Base>
+                <AnyComponent {...pageProps} />
+              </Layout.Base>
             </ChakraProvider>
           </RainbowKitProvider>
         </RainbowKitSiweNextAuthProvider>

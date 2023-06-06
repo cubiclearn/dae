@@ -1,14 +1,13 @@
 import Head from 'next/head'
 import {Layout} from '@dae/ui'
-import {Stack, Tabs, TabList, Tab, Link, Center, Spinner, OrderedList, ListItem} from '@chakra-ui/react'
+import {Stack, Tabs, TabList, Tab, Link, OrderedList, ListItem} from '@chakra-ui/react'
 import NextLink from 'next/link'
 import {useRouter} from 'next/router'
-import {useCourseStudents} from '@dae/hooks'
+import {GetServerSideProps} from 'next'
 
-export default function StudentsList() {
-  const {query} = useRouter()
-  const address = query.address as string | undefined
-  const {data, isLoading} = useCourseStudents(address)
+export default function StudentsList({students}: any) {
+  const router = useRouter()
+  const address = router.query.address as string | undefined
 
   return (
     <>
@@ -28,23 +27,49 @@ export default function StudentsList() {
               </Link>
             </TabList>
           </Tabs>
-          {!isLoading ? (
-            data.students.length > 0 ? (
-              <OrderedList>
-                {data.students.map((student: any) => {
-                  return <ListItem key={student.studentAddress}>{student.studentAddress}</ListItem>
-                })}
-              </OrderedList>
-            ) : (
-              <></>
-            )
-          ) : (
-            <Center>
-              <Spinner thickness="4px" speed="0.65s" emptyColor="gray.200" color="gray.500" size="xl" />
-            </Center>
-          )}
+          <OrderedList>
+            {students.map((student: any) => {
+              return <ListItem key={student.studentAddress}>{student.studentAddress}</ListItem>
+            })}
+          </OrderedList>
         </Stack>
       </Layout.Course>
     </>
   )
+}
+
+export const getServerSideProps: GetServerSideProps<{students: any}> = async (context) => {
+  const {address, chainId} = context.query as {address: string; chainId: string}
+
+  if (!address || !chainId) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/',
+      },
+      props: {},
+    }
+  }
+
+  const res = await fetch(`${process.env.API_URL}/course/students?chainId=${chainId}&address=${address}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      cookie: context.req.headers.cookie || '',
+    },
+  })
+
+  const json = await res.json()
+
+  if (json.error) {
+    return {
+      notFound: true,
+    }
+  }
+
+  return {
+    props: {
+      students: json,
+    },
+  }
 }

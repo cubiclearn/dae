@@ -1,13 +1,11 @@
 import Head from 'next/head'
-import {useTeacherCourses} from '@dae/hooks'
 import {Layout} from '@dae/ui'
 import NextLink from 'next/link'
 import {CourseCard} from '@dae/ui'
 import {SimpleGrid, Stack, Spinner, Tabs, TabList, Tab, Link, Center} from '@chakra-ui/react'
+import {GetServerSideProps} from 'next'
 
-export default function AddCoursePage() {
-  const {isLoading, data} = useTeacherCourses()
-
+export default function AddCoursePage({courses}: {courses: any[]}) {
   return (
     <>
       <Head>
@@ -29,19 +27,55 @@ export default function AddCoursePage() {
               </Link>
             </TabList>
           </Tabs>
-          {!isLoading ? (
+          {courses.length == 0 ? (
+            <p>No courses</p>
+          ) : (
             <SimpleGrid columns={{sm: 1, md: 2, lg: 3, xl: 4}} spacing={8}>
-              {data.courses.map((course: any) => {
+              {courses.map((course: any) => {
                 return <CourseCard address={course.address} key={course.address} />
               })}
             </SimpleGrid>
-          ) : (
-            <Center>
-              <Spinner thickness="4px" speed="0.65s" emptyColor="gray.200" color="gray.500" size="xl" />
-            </Center>
           )}
         </Stack>
       </Layout.Profile>
     </>
   )
+}
+
+export const getServerSideProps: GetServerSideProps<{courses: any[]}> = async (context) => {
+  const {chainId} = context.query as {address: string; chainId: string}
+
+  if (!chainId) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: `/profile`,
+      },
+      props: {},
+    }
+  }
+
+  const res = await fetch(`${process.env.API_URL}teacher/courses?chainId=${chainId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      cookie: context.req.headers.cookie! || '',
+    },
+  })
+
+  if (!res.ok) {
+    return {
+      props: {
+        courses: [],
+      },
+    }
+  }
+
+  const json = await res.json()
+
+  return {
+    props: {
+      courses: json,
+    },
+  }
 }

@@ -22,7 +22,8 @@
             "env": [
                 "NEXTAUTH_URL",
                 "NEXTAUTH_SECRET",
-                "NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS"
+                "NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS",
+                "API_URL"
             ],
             "cache": true
         },
@@ -37,7 +38,8 @@
             "env": [
                 "NEXTAUTH_URL",
                 "NEXTAUTH_SECRET",
-                "NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS"
+                "NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS",
+                "API_URL"
             ],
             "persistent": true,
             "cache": false

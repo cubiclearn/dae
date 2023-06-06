@@ -1,14 +1,13 @@
 import Head from 'next/head'
 import {Layout} from '@dae/ui'
-import {Box, Heading, Stack, Text, Spinner, Link, Image, Center} from '@chakra-ui/react'
-import {useCourse} from '@dae/hooks'
+import {Box, Heading, Stack, Text, Link, Image} from '@chakra-ui/react'
 import {useRouter} from 'next/router'
 import NextLink from 'next/link'
+import {GetServerSideProps} from 'next'
 
-export default function CoursePage() {
+export default function CoursePage({course}: any) {
   const {query} = useRouter()
   const address = query.address as string | undefined
-  const {data, isLoading} = useCourse(address)
 
   return (
     <>
@@ -19,53 +18,83 @@ export default function CoursePage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout.Course heading="About the course">
-        {!isLoading ? (
-          <Stack spacing={4}>
+        <Stack spacing={4}>
+          <Box>
+            <Heading as="h2" fontWeight="semibold" fontSize={'xl'}>
+              Address:
+            </Heading>
+            <Text>{address}</Text>
+          </Box>
+          <Box boxSize="sm">
+            <Image src={course.image_url} alt="Green double couch with wooden legs" borderRadius="lg" />
+          </Box>
+          <Box>
+            <Heading as="h2" fontWeight="semibold" fontSize={'2xl'}>
+              Title:
+            </Heading>
+            <Text>{course.name}</Text>
+          </Box>
+          <Box>
+            <Heading as="h2" fontWeight="semibold" fontSize={'2xl'}>
+              Description:
+            </Heading>
+            <Text>{course.description}</Text>
+          </Box>
+          <Box>
+            <Heading as="h3" fontWeight="semibold" fontSize={'2xl'}>
+              Social:
+            </Heading>
             <Box>
-              <Heading as="h2" fontWeight="semibold" fontSize={'xl'}>
-                Address:
-              </Heading>
-              <Text>{address}</Text>
-            </Box>
-            <Box boxSize="sm">
-              <Image src={data.course.image_url} alt="Green double couch with wooden legs" borderRadius="lg" />
+              Website:{' '}
+              <Link href={course.website_url} as={NextLink} target="_blank">
+                {course.website_url}
+              </Link>
             </Box>
             <Box>
-              <Heading as="h2" fontWeight="semibold" fontSize={'2xl'}>
-                Title:
-              </Heading>
-              <Text>{data.course.name}</Text>
+              Access Link:{' '}
+              <Link href={course.access_url} as={NextLink} target="_blank">
+                {course.access_url}
+              </Link>
             </Box>
-            <Box>
-              <Heading as="h2" fontWeight="semibold" fontSize={'2xl'}>
-                Description:
-              </Heading>
-              <Text>{data.course.description}</Text>
-            </Box>
-            <Box>
-              <Heading as="h3" fontWeight="semibold" fontSize={'2xl'}>
-                Social:
-              </Heading>
-              <Box>
-                Website:{' '}
-                <Link href={data.course.website_url} as={NextLink} target="_blank">
-                  {data.course.website_url}
-                </Link>
-              </Box>
-              <Box>
-                Access Link:{' '}
-                <Link href={data.course.access_url} as={NextLink} target="_blank">
-                  {data.course.access_url}
-                </Link>
-              </Box>
-            </Box>
-          </Stack>
-        ) : (
-          <Center>
-            <Spinner thickness="4px" speed="0.65s" emptyColor="gray.200" color="gray.500" size="xl" />
-          </Center>
-        )}
+          </Box>
+        </Stack>
       </Layout.Course>
     </>
   )
+}
+
+export const getServerSideProps: GetServerSideProps<{course: any}> = async (context) => {
+  const {address, chainId} = context.query as {address: string; chainId: string}
+
+  if (!address || !chainId) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/',
+      },
+      props: {},
+    }
+  }
+
+  const res = await fetch(`${process.env.API_URL}/course?chainId=${chainId}&address=${address}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      cookie: context.req.headers.cookie! || '',
+    },
+  })
+
+  if (!res.ok) {
+    return {
+      notFound: true,
+    }
+  }
+
+  const json = await res.json()
+
+  return {
+    props: {
+      course: json,
+    },
+  }
 }

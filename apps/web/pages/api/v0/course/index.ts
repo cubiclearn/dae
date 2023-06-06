@@ -10,14 +10,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (session) {
     if (req.method == 'GET') {
       const {chainId, address} = req.query as {chainId: string; address: string}
-      const course = await prisma.course.findFirst({
+      const response = await prisma.course.findFirst({
         where: {
           address: address.toLowerCase(),
           chainId: parseInt(chainId),
         },
       })
 
-      res.status(200).json({course: course})
+      if (response === null) {
+        res.status(404)
+      } else {
+        res.status(200).json(response)
+      }
     } else if (req.method == 'POST') {
       const {txHash, chainId} = req.body
 
