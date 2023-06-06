@@ -4,6 +4,7 @@ import {Stack, Tabs, TabList, Tab, Link, OrderedList, ListItem} from '@chakra-ui
 import NextLink from 'next/link'
 import {useRouter} from 'next/router'
 import {GetServerSideProps} from 'next'
+import {getCourseStudents} from '../../../../lib/api'
 
 export default function StudentsList({students}: any) {
   const router = useRouter()
@@ -51,25 +52,16 @@ export const getServerSideProps: GetServerSideProps<{students: any}> = async (co
     }
   }
 
-  const res = await fetch(`${process.env.API_URL}/course/students?chainId=${chainId}&address=${address}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      cookie: context.req.headers.cookie || '',
-    },
-  })
-
-  const json = await res.json()
-
-  if (json.error) {
+  try {
+    const data = await getCourseStudents(address, parseInt(chainId))
+    return {
+      props: {
+        students: data,
+      },
+    }
+  } catch (e) {
     return {
       notFound: true,
     }
-  }
-
-  return {
-    props: {
-      students: json,
-    },
   }
 }

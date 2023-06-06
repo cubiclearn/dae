@@ -4,6 +4,7 @@ import {Box, Heading, Stack, Text, Link, Image} from '@chakra-ui/react'
 import {useRouter} from 'next/router'
 import NextLink from 'next/link'
 import {GetServerSideProps} from 'next'
+import {getCourse} from '../../../lib/api'
 
 export default function CoursePage({course}: any) {
   const {query} = useRouter()
@@ -76,25 +77,16 @@ export const getServerSideProps: GetServerSideProps<{course: any}> = async (cont
     }
   }
 
-  const res = await fetch(`${process.env.API_URL}/course?chainId=${chainId}&address=${address}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      cookie: context.req.headers.cookie! || '',
-    },
-  })
-
-  if (!res.ok) {
+  try {
+    const data = await getCourse(address, parseInt(chainId))
+    return {
+      props: {
+        course: data,
+      },
+    }
+  } catch (e) {
     return {
       notFound: true,
     }
-  }
-
-  const json = await res.json()
-
-  return {
-    props: {
-      course: json,
-    },
   }
 }

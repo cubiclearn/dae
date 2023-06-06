@@ -4,8 +4,12 @@ import NextLink from 'next/link'
 import {CourseCard} from '@dae/ui'
 import {SimpleGrid, Stack, Spinner, Tabs, TabList, Tab, Link, Center} from '@chakra-ui/react'
 import {GetServerSideProps} from 'next'
+import {getTeacherCourses} from '../../../lib/api'
+import {getToken} from 'next-auth/jwt'
+import {getSession} from 'next-auth/react'
 
 export default function AddCoursePage({courses}: {courses: any[]}) {
+  console.log(courses)
   return (
     <>
       <Head>
@@ -32,7 +36,7 @@ export default function AddCoursePage({courses}: {courses: any[]}) {
           ) : (
             <SimpleGrid columns={{sm: 1, md: 2, lg: 3, xl: 4}} spacing={8}>
               {courses.map((course: any) => {
-                return <CourseCard address={course.address} key={course.address} />
+                return <CourseCard data={course} key={course.address} />
               })}
             </SimpleGrid>
           )}
@@ -44,6 +48,16 @@ export default function AddCoursePage({courses}: {courses: any[]}) {
 
 export const getServerSideProps: GetServerSideProps<{courses: any[]}> = async (context) => {
   const {chainId} = context.query as {address: string; chainId: string}
+  const session = await getSession(context)
+
+  if (!session) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/',
+      },
+    }
+  }
 
   if (!chainId) {
     return {
@@ -55,27 +69,16 @@ export const getServerSideProps: GetServerSideProps<{courses: any[]}> = async (c
     }
   }
 
-  const res = await fetch(`${process.env.API_URL}teacher/courses?chainId=${chainId}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      cookie: context.req.headers.cookie! || '',
-    },
-  })
-
-  if (!res.ok) {
+  try {
+    const data = await getTeacherCourses(session!.user.address, parseInt(chainId))
     return {
       props: {
-        courses: [],
+        courses: data,
       },
     }
-  }
-
-  const json = await res.json()
-
-  return {
-    props: {
-      courses: json,
-    },
+  } catch (e) {
+    return {
+      notFound: true,
+    }
   }
 }

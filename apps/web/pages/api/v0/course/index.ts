@@ -4,23 +4,19 @@ import {CredentialsAbi} from '@dae/abi'
 import {prisma} from '@dae/database'
 import {createPublicClient, http} from 'viem'
 import {getChainFromId} from '../../../../lib/functions'
+import {getCourse} from '../../../../lib/api'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const session = await getSession({req})
   if (session) {
     if (req.method == 'GET') {
       const {chainId, address} = req.query as {chainId: string; address: string}
-      const response = await prisma.course.findFirst({
-        where: {
-          address: address.toLowerCase(),
-          chainId: parseInt(chainId),
-        },
-      })
 
-      if (response === null) {
-        res.status(404)
-      } else {
-        res.status(200).json(response)
+      try {
+        const data = await getCourse(address, parseInt(chainId))
+        res.status(200).json(data)
+      } catch (e) {
+        res.status(500)
       }
     } else if (req.method == 'POST') {
       const {txHash, chainId} = req.body

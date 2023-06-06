@@ -4,6 +4,7 @@ import {CredentialsAbi} from '@dae/abi'
 import {prisma} from '@dae/database'
 import {createPublicClient, http} from 'viem'
 import {getChainFromId} from '../../../../lib/functions'
+import {getCourseStudents} from '../../../../lib/api'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const session = await getSession({req})
@@ -16,15 +17,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method == 'GET') {
     const {chainId, address} = req.query as {chainId: string; address: string}
 
-    const students = await prisma.courseStudents.findMany({
-      where: {
-        courseAddress: address.toLowerCase(),
-        chainId: parseInt(chainId),
-      },
-    })
-
-    res.status(200).json(students)
-    return
+    try {
+      const data = await getCourseStudents(address, parseInt(chainId))
+      res.status(200).json(data)
+    } catch (e) {
+      res.status(500)
+    }
   } else if (req.method == 'POST') {
     const {addressesToEnroll, chainId, courseAddress} = req.body as {
       chainId: string

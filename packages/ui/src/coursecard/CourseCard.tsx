@@ -1,17 +1,14 @@
 import {FC} from 'react'
 import {BoxProps, Stack, Text, Card, CardBody, Image, Heading, Link} from '@chakra-ui/react'
 import NextLink from 'next/link'
-import {useCourse} from '@dae/hooks'
 import {Alert, AlertIcon, AlertDescription} from '@chakra-ui/react'
 
 interface CourseCardProps extends BoxProps {
-  address: string | undefined
+  data: any
 }
 
-export const CourseCard: FC<CourseCardProps> = ({address, ...rest}) => {
-  const {data, error} = useCourse(address)
-
-  if (error) {
+export const CourseCard: FC<CourseCardProps> = ({data: course, ...rest}) => {
+  if (!course) {
     return (
       <Alert status="error">
         <AlertIcon />
@@ -20,18 +17,14 @@ export const CourseCard: FC<CourseCardProps> = ({address, ...rest}) => {
     )
   }
 
-  if (!data) {
-    return <></>
-  }
-
   return (
-    <Link as={NextLink} href={`/course/${address}`} style={{textDecoration: 'none'}}>
+    <Link as={NextLink} href={`/course/${course.address}?chainId=${course.chainId}`} style={{textDecoration: 'none'}}>
       <Card maxW="sm" {...rest}>
         <CardBody>
-          <Image src={data.course.image_url} alt="" borderRadius="lg" aspectRatio={1} />
+          <Image src={course.image_url} alt="" borderRadius="lg" aspectRatio={1} />
           <Stack mt="6" spacing="3">
-            <Heading size="md">{data.course.name}</Heading>
-            <Text>{data.course.description}</Text>
+            <Heading size="md">{course.name}</Heading>
+            <Text>{course.description}</Text>
           </Stack>
         </CardBody>
       </Card>
