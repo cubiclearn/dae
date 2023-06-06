@@ -5,10 +5,11 @@ import {CourseCard} from '@dae/ui'
 import {SimpleGrid, Stack, Spinner, Tabs, TabList, Tab, Link, Center} from '@chakra-ui/react'
 import {GetServerSideProps} from 'next'
 import {getTeacherCourses} from '../../../lib/api'
-import {getToken} from 'next-auth/jwt'
 import {getSession} from 'next-auth/react'
+import {useNetwork} from 'wagmi'
 
 export default function AddCoursePage({courses}: {courses: any[]}) {
+  const {chain, chains} = useNetwork()
   return (
     <>
       <Head>
@@ -22,7 +23,11 @@ export default function AddCoursePage({courses}: {courses: any[]}) {
           <Tabs defaultIndex={0}>
             <TabList>
               <Tab>Teaching</Tab>
-              <Link as={NextLink} href="/profile/courses/partecipating" style={{textDecoration: 'none'}}>
+              <Link
+                as={NextLink}
+                href={`/profile/courses/partecipating?chainId=${chain ? chain.id : chains[0].id}`}
+                style={{textDecoration: 'none'}}
+              >
                 <Tab>Partecipating</Tab>
               </Link>
               <Link as={NextLink} href="/profile/courses/create" style={{textDecoration: 'none'}}>

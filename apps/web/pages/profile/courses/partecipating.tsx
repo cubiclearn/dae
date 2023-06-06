@@ -2,8 +2,10 @@ import Head from 'next/head'
 import {Layout} from '@dae/ui'
 import NextLink from 'next/link'
 import {Stack, Tabs, TabList, Tab, Link, Box} from '@chakra-ui/react'
+import {useNetwork} from 'wagmi'
 
 export default function AddCoursePage() {
+  const {chain, chains} = useNetwork()
   return (
     <>
       <Head>
@@ -16,7 +18,11 @@ export default function AddCoursePage() {
         <Stack spacing={8}>
           <Tabs defaultIndex={1}>
             <TabList>
-              <Link as={NextLink} href="/profile/courses/teaching" style={{textDecoration: 'none'}}>
+              <Link
+                as={NextLink}
+                href={`/profile/courses/teaching?chainId=${chain ? chain.id : chains[0].id}`}
+                style={{textDecoration: 'none'}}
+              >
                 <Tab>Teaching</Tab>
               </Link>
               <Tab>Partecipating</Tab>

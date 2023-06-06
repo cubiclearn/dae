@@ -23,7 +23,7 @@ import {
 import NextLink from 'next/link'
 
 export default function AddCoursePage() {
-  const {chain} = useNetwork()
+  const {chain, chains} = useNetwork()
   const [symbol, setSymbol] = useState<string>('')
   const [name, setName] = useState<string>('')
   const [bUri, setBUri] = useState<string>('')
@@ -129,10 +129,18 @@ export default function AddCoursePage() {
         <Stack spacing={8}>
           <Tabs defaultIndex={2}>
             <TabList>
-              <Tab as={NextLink} href="/profile/courses/teaching" style={{textDecoration: 'none'}}>
+              <Tab
+                as={NextLink}
+                href={`/profile/courses/teaching?chainId=${chain ? chain.id : chains[0].id}`}
+                style={{textDecoration: 'none'}}
+              >
                 Teaching
               </Tab>
-              <Link as={NextLink} href="/profile/courses/partecipating" style={{textDecoration: 'none'}}>
+              <Link
+                as={NextLink}
+                href={`/profile/courses/partecipating?chainId=${chain ? chain.id : chains[0].id}`}
+                style={{textDecoration: 'none'}}
+              >
                 <Tab>Partecipating</Tab>
               </Link>
               <Tab>Create</Tab>

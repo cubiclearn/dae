@@ -21,14 +21,14 @@ import {
 import {FiTrendingUp, FiCompass, FiSettings, FiMenu, FiHome} from 'react-icons/fi'
 import {IconType} from 'react-icons'
 import {useRouter} from 'next/router'
+import {useNetwork} from 'wagmi'
 
 interface SidebarProps extends BoxProps {
   onClose: () => void
 }
 
 const SidebarContent: FC<SidebarProps> = ({onClose, ...rest}) => {
-  const {query} = useRouter()
-  const address = query.address as string | undefined
+  const {chain, chains} = useNetwork()
 
   return (
     <Box
@@ -64,7 +64,11 @@ const SidebarContent: FC<SidebarProps> = ({onClose, ...rest}) => {
       <NavItem key={'profile'} icon={FiHome} href={`/profile`}>
         Profile
       </NavItem>
-      <NavItem key={'mycourses'} icon={FiHome} href={`/profile/courses/partecipating`}>
+      <NavItem
+        key={'mycourses'}
+        icon={FiHome}
+        href={`/profile/courses/partecipating?chainId=${chain ? chain.id : chains[0].id}`}
+      >
         My Courses
       </NavItem>
     </Box>
