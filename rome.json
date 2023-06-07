@@ -1,53 +1,53 @@
 {
-  "files": {
-    "ignore": [
-      "**/node_modules",
-      "CHANGELOG.md",
-      "cache",
-      "coverage",
-      "dist",
-      "tsconfig.json",
-      "tsconfig.*.json",
-      "generated.ts",
-      "pnpm-lock.yaml",
-      "**/.next"
-    ]
-  },
-  "formatter": {
-    "enabled": true,
-    "formatWithErrors": false,
-    "indentStyle": "space",
-    "indentSize": 2,
-    "lineWidth": 80
-  },
-  "linter": {
-    "enabled": true,
-    "rules": {
-      "recommended": true,
-      "correctness": {
-        "noUnusedVariables": "error"
-      },
-      "performance": {
-        "noDelete": "off"
-      },
-      "style": {
-        "noNonNullAssertion": "off",
-        "useShorthandArrayType": "error"
-      },
-      "suspicious": {
-        "noArrayIndexKey": "off",
-        "noExplicitAny": "off"
-      }
-    }
-  },
-  "javascript": {
+    "files": {
+        "ignore": [
+            "**/node_modules",
+            "CHANGELOG.md",
+            "cache",
+            "coverage",
+            "dist",
+            "tsconfig.json",
+            "tsconfig.*.json",
+            "generated.ts",
+            "pnpm-lock.yaml",
+            "**/.next"
+        ]
+    },
     "formatter": {
-      "quoteStyle": "single",
-      "trailingComma": "all",
-      "semicolons": "asNeeded"
+        "enabled": false,
+        "formatWithErrors": false,
+        "indentStyle": "space",
+        "indentSize": 2,
+        "lineWidth": 80
+    },
+    "linter": {
+        "enabled": false,
+        "rules": {
+            "recommended": true,
+            "correctness": {
+                "noUnusedVariables": "error"
+            },
+            "performance": {
+                "noDelete": "off"
+            },
+            "style": {
+                "noNonNullAssertion": "off",
+                "useShorthandArrayType": "error"
+            },
+            "suspicious": {
+                "noArrayIndexKey": "off",
+                "noExplicitAny": "off"
+            }
+        }
+    },
+    "javascript": {
+        "formatter": {
+            "quoteStyle": "single",
+            "trailingComma": "all",
+            "semicolons": "asNeeded"
+        }
+    },
+    "organizeImports": {
+        "enabled": false
     }
-  },
-  "organizeImports": {
-    "enabled": false
-  }
 }
