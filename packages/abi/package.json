@@ -1,34 +1,31 @@
 {
-    "name": "@dae/abi",
-    "version": "0.0.0",
-    "private": true,
-    "description": "Decentralized Autonomous Education ABI",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/cubiclearn/dae.git",
-        "directory": "packages/abi"
-    },
-    "license": "MIT",
-    "author": "Andrea Antonutti <dev.andrea.antonutti@gmail.com>",
-    "files": [
-        "dist"
-    ],
-    "main": "dist/index.js",
-    "source": "src/index.ts",
-    "types": "dist/index.d.ts",
-    "sideEffects": false,
-    "scripts": {
-        "build": "tsc",
-        "check": "tsc --pretty --noEmit",
-        "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
-        "dev": "tsc -w",
-        "lint": "TIMING=1 eslint src --fix",
-        "prepublishOnly": "pnpm build"
-    },
-    "devDependencies": {
-        "tsconfig": "workspace:*",
-        "eslint-config-custom": "workspace:*",
-        "eslint": "8.29.0",
-        "typescript": "4.9.4"
-    }
+  "name": "@dae/abi",
+  "description": "Decentralized Autonomous Education (DAE) Contract ABIs",
+  "version": "0.0.0",
+  "devDependencies": {
+    "@dae/typescript-config": "workspace:*",
+    "eslint": "8.29.0",
+    "typescript": "5.0.4"
+  },
+  "files": [
+    "dist"
+  ],
+  "license": "MIT",
+  "main": "dist/index.js",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cubiclearn/dae.git",
+    "directory": "packages/abi"
+  },
+  "scripts": {
+    "build": "tsc",
+    "check": "tsc --pretty --noEmit",
+    "clean": "rm -rf .turbo dist node_modules",
+    "dev": "tsc -w",
+    "lint": "TIMING=1 eslint src --fix"
+  },
+  "sideEffects": false,
+  "source": "src/index.ts",
+  "types": "dist/index.d.ts"
 }

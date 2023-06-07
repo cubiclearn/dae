@@ -1,0 +1,41 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Account {
+  address String @id
+  name    String
+  surname String
+}
+
+model Course {
+  address        String           @id
+  owner          String
+  name           String           @default("")
+  description    String           @default("")
+  symbol         String           @default("")
+  image_url      String           @default("")
+  website_url    String           @default("")
+  access_url     String           @default("")
+  ipfs_metadata  String           @default("")
+  maxSupply      Int
+  burnable       Boolean
+  timestamp      Int
+  chainId        Int
+  CourseStudents CourseStudents[]
+}
+
+model CourseStudents {
+  course         Course @relation(fields: [courseAddress], references: [address])
+  courseAddress  String
+  studentAddress String
+  chainId        Int
+
+  @@id([courseAddress, studentAddress])
+  @@unique([courseAddress, studentAddress])
+}

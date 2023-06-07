@@ -1,0 +1,61 @@
+{
+    "extends": [
+        "//"
+    ],
+    "pipeline": {
+        "build": {
+            "outputs": [
+                "dist/**/*"
+            ],
+            "dependsOn": [
+                "generate"
+            ],
+            "env": [
+                "DATABASE_URL"
+            ]
+        },
+        "dev": {
+            "outputs": [
+                "dist/**/*"
+            ],
+            "dependsOn": [
+                "generate"
+            ],
+            "env": [
+                "DATABASE_URL"
+            ],
+            "cache": false
+        },
+        "init": {
+            "outputs": [
+                "prisma/**/*"
+            ],
+            "cache": false
+        },
+        "pull": {
+            "outputs": [
+                "prisma/**/*"
+            ],
+            "dependsOn": [
+                "init"
+            ],
+            "cache": false,
+            "env": [
+                "DATABASE_URL"
+            ]
+        },
+        "push": {
+            "cache": false
+        },
+        "generate": {
+            "dependsOn": [],
+            "cache": false
+        },
+        "check": {
+            "dependsOn": [
+                "generate"
+            ],
+            "cache": false
+        }
+    }
+}
