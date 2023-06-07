@@ -1,10 +1,17 @@
-import {ChangeEvent, FC, FormEvent, useCallback, useEffect, useState} from 'react'
-import {CredentialsAbi} from '@dae/abi'
-import {useContractWrite, usePrepareContractWrite} from 'wagmi'
-import {ethers} from 'ethers'
-import {toast} from 'react-toastify'
-import {useRouter} from 'next/router'
-import {useNetwork} from 'wagmi'
+import {
+  ChangeEvent,
+  FC,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
+import { CredentialsAbi } from '@dae/abi'
+import { useContractWrite, usePrepareContractWrite } from 'wagmi'
+import { ethers } from 'ethers'
+import { toast } from 'react-toastify'
+import { useRouter } from 'next/router'
+import { useNetwork } from 'wagmi'
 import {
   Box,
   Stack,
@@ -19,9 +26,9 @@ import {
 } from '@chakra-ui/react'
 
 export const CredentialsAirDropForm: FC = () => {
-  const {query} = useRouter()
+  const { query } = useRouter()
   const courseAddress = query.address as `0x${string}`
-  const {chain} = useNetwork()
+  const { chain } = useNetwork()
 
   const [addresses, setAddresses] = useState<`0x${string}`[]>([])
   const [addressesListInput, setAddressesListInput] = useState<string>('')
@@ -32,24 +39,35 @@ export const CredentialsAirDropForm: FC = () => {
   const [isAddressListCorrect, setIsAddressListCorrect] = useState(true)
   const [isTokenURIsListCorrect, setIsTokenURIsListCorrect] = useState(true)
 
-  const {config} = usePrepareContractWrite({
+  const { config } = usePrepareContractWrite({
     abi: CredentialsAbi,
     address: courseAddress,
     functionName: 'multiMint',
     args: [addresses, tokenURIs],
-    enabled: addresses.length > 0 && tokenURIs.length > 0 && isAddressListCorrect && isTokenURIsListCorrect,
+    enabled:
+      addresses.length > 0 &&
+      tokenURIs.length > 0 &&
+      isAddressListCorrect &&
+      isTokenURIsListCorrect,
   })
 
-  const {writeAsync} = useContractWrite(config)
+  const { writeAsync } = useContractWrite(config)
 
-  const formatAddresses = useCallback((_addressListInput: string): `0x${string}`[] => {
-    const cleanAddressesStringList = _addressListInput.replace(' ', '').replace(/(\r\n|\n|\r)/gm, '')
-    const addressesList = cleanAddressesStringList.split(',')
-    return addressesList as `0x${string}`[]
-  }, [])
+  const formatAddresses = useCallback(
+    (_addressListInput: string): `0x${string}`[] => {
+      const cleanAddressesStringList = _addressListInput
+        .replace(' ', '')
+        .replace(/(\r\n|\n|\r)/gm, '')
+      const addressesList = cleanAddressesStringList.split(',')
+      return addressesList as `0x${string}`[]
+    },
+    [],
+  )
 
   const formatTokenURIs = useCallback((_tokenURIsInput: string): string[] => {
-    const cleanTokenURIsStringList = _tokenURIsInput.replace(' ', '').replace(/(\r\n|\n|\r)/gm, '')
+    const cleanTokenURIsStringList = _tokenURIsInput
+      .replace(' ', '')
+      .replace(/(\r\n|\n|\r)/gm, '')
     const tokenURIsList = cleanTokenURIsStringList.split(',')
     return tokenURIsList
   }, [])
@@ -65,7 +83,7 @@ export const CredentialsAirDropForm: FC = () => {
       }
       setIsAddressListCorrect(true)
     },
-    [formatAddresses]
+    [formatAddresses],
   )
 
   const checkTokenURIsListIsCorrect = useCallback(
@@ -79,18 +97,24 @@ export const CredentialsAirDropForm: FC = () => {
       }
       setIsTokenURIsListCorrect(true)
     },
-    [formatTokenURIs]
+    [formatTokenURIs],
   )
 
-  const handleTokenURIChange = useCallback((event: ChangeEvent<HTMLTextAreaElement>) => {
-    const input = event.target.value
-    setTokenURIsInput(input)
-  }, [])
+  const handleTokenURIChange = useCallback(
+    (event: ChangeEvent<HTMLTextAreaElement>) => {
+      const input = event.target.value
+      setTokenURIsInput(input)
+    },
+    [],
+  )
 
-  const handleAddressesListChange = useCallback((event: ChangeEvent<HTMLTextAreaElement>) => {
-    const input = event.target.value
-    setAddressesListInput(input)
-  }, [])
+  const handleAddressesListChange = useCallback(
+    (event: ChangeEvent<HTMLTextAreaElement>) => {
+      const input = event.target.value
+      setAddressesListInput(input)
+    },
+    [],
+  )
 
   useEffect(() => {
     if (addressesListInput != '') {
@@ -143,21 +167,29 @@ export const CredentialsAirDropForm: FC = () => {
   }
 
   return (
-    <Box padding={8} borderRadius="xl" borderColor={'gray.300'} borderWidth={'1px'}>
+    <Box
+      padding={8}
+      borderRadius='xl'
+      borderColor={'gray.300'}
+      borderWidth={'1px'}
+    >
       <form onSubmit={handleAirdrop}>
         <Stack spacing={4}>
           <Box>
-            <Heading fontWeight="semibold" fontSize={'3xl'}>
+            <Heading fontWeight='semibold' fontSize={'3xl'}>
               Create new course
             </Heading>
-            <Text fontSize={'lg'}>Fill in all the form fields to create a new course and start teaching!</Text>
+            <Text fontSize={'lg'}>
+              Fill in all the form fields to create a new course and start
+              teaching!
+            </Text>
           </Box>
           <FormControl>
             <FormLabel>Token URIs list:</FormLabel>
             <Textarea
               onChange={handleTokenURIChange}
               value={tokenURIsInput}
-              placeholder="uri1,uri2,..."
+              placeholder='uri1,uri2,...'
               required
             ></Textarea>
             {isTokenURIsListCorrect ? (
@@ -171,7 +203,7 @@ export const CredentialsAirDropForm: FC = () => {
             <Textarea
               onChange={handleAddressesListChange}
               value={addressesListInput}
-              placeholder="address1,address2,..."
+              placeholder='address1,address2,...'
               required
             ></Textarea>
             {isAddressListCorrect ? (
@@ -180,7 +212,7 @@ export const CredentialsAirDropForm: FC = () => {
               <FormErrorMessage>Addresses list is incorrect!</FormErrorMessage>
             )}
           </FormControl>
-          <Button type="submit">Start Credentials Airdrop</Button>
+          <Button type='submit'>Start Credentials Airdrop</Button>
         </Stack>
       </form>
     </Box>

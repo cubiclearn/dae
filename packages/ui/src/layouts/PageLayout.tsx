@@ -1,4 +1,4 @@
-import {FC} from 'react'
+import { FC } from 'react'
 import {
   Box,
   Drawer,
@@ -9,9 +9,9 @@ import {
   DrawerOverlay,
   useDisclosure,
 } from '@chakra-ui/react'
-import {Header} from '../app/header'
-import {NavItem} from './DrawerNavItem'
-import {IconType} from 'react-icons'
+import { Header } from '../app/header'
+import { NavItem } from './DrawerNavItem'
+import { IconType } from 'react-icons'
 
 type NavItemChildProps = {
   name: string
@@ -24,8 +24,11 @@ type Props = {
   navItems?: NavItemChildProps[]
 }
 
-export const PageLayout: FC<Props> = ({children, navItems = []}): JSX.Element => {
-  const {isOpen, onOpen, onClose} = useDisclosure()
+export const PageLayout: FC<Props> = ({
+  children,
+  navItems = [],
+}): JSX.Element => {
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   if (navItems.length == 0) {
     return (
@@ -44,11 +47,11 @@ export const PageLayout: FC<Props> = ({children, navItems = []}): JSX.Element =>
       <Drawer
         autoFocus={false}
         isOpen={isOpen}
-        placement="left"
+        placement='left'
         onClose={onClose}
         returnFocusOnClose={false}
         onOverlayClick={onClose}
-        size="xs"
+        size='xs'
       >
         <DrawerOverlay />
         <DrawerContent>
@@ -57,7 +60,11 @@ export const PageLayout: FC<Props> = ({children, navItems = []}): JSX.Element =>
           <DrawerHeader>MENU</DrawerHeader>
           <DrawerBody>
             {navItems.map((navItem) => (
-              <NavItem key={navItem.name} icon={navItem.icon} href={navItem.href}>
+              <NavItem
+                key={navItem.name}
+                icon={navItem.icon}
+                href={navItem.href}
+              >
                 {navItem.name}
               </NavItem>
             ))}

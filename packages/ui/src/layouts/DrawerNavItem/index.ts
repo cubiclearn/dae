@@ -1,1 +1,1 @@
-export * from "./DrawerNavItem";
+export * from './DrawerNavItem'

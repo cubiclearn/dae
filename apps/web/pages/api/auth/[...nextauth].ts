@@ -1,9 +1,9 @@
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import {getCsrfToken} from 'next-auth/react'
-import {SiweMessage} from 'siwe'
-import {PrismaAdapter} from '@next-auth/prisma-adapter'
-import {prisma} from '@dae/database'
+import { getCsrfToken } from 'next-auth/react'
+import { SiweMessage } from 'siwe'
+import { PrismaAdapter } from '@next-auth/prisma-adapter'
+import { prisma } from '@dae/database'
 
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
@@ -32,7 +32,7 @@ export default async function auth(req: any, res: any) {
           const result = await siwe.verify({
             signature: credentials?.signature || '',
             domain: nextAuthUrl.host,
-            nonce: await getCsrfToken({req}),
+            nonce: await getCsrfToken({ req }),
           })
 
           const addressCount = await prisma.account.count({
@@ -67,7 +67,8 @@ export default async function auth(req: any, res: any) {
     }),
   ]
 
-  const isDefaultSigninPage = req.method === 'GET' && req.query.nextauth.includes('signin')
+  const isDefaultSigninPage =
+    req.method === 'GET' && req.query.nextauth.includes('signin')
 
   // Hide Sign-In with Ethereum from default sign page
   if (isDefaultSigninPage) {
@@ -83,13 +84,13 @@ export default async function auth(req: any, res: any) {
     },
     secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
-      async session({session, token}: {session: any; token: any}) {
+      async session({ session, token }: { session: any; token: any }) {
         session.user.address = token.id
         session.user.name = token.name
         session.user.surname = token.surname
         return session
       },
-      jwt: async ({token, user}) => {
+      jwt: async ({ token, user }) => {
         if (user) {
           token.id = user.id
         }

@@ -1,16 +1,22 @@
-import type {NextApiRequest, NextApiResponse} from 'next'
-import {getSession} from 'next-auth/react'
-import {CredentialsAbi} from '@dae/abi'
-import {prisma} from '@dae/database'
-import {createPublicClient, http} from 'viem'
-import {getChainFromId} from '../../../../lib/functions'
-import {getCourse} from '../../../../lib/api'
+import type { NextApiRequest, NextApiResponse } from 'next'
+import { getSession } from 'next-auth/react'
+import { CredentialsAbi } from '@dae/abi'
+import { prisma } from '@dae/database'
+import { createPublicClient, http } from 'viem'
+import { getChainFromId } from '../../../../lib/functions'
+import { getCourse } from '../../../../lib/api'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const session = await getSession({req})
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  const session = await getSession({ req })
   if (session) {
     if (req.method == 'GET') {
-      const {chainId, address} = req.query as {chainId: string; address: string}
+      const { chainId, address } = req.query as {
+        chainId: string
+        address: string
+      }
 
       try {
         const data = await getCourse(address, parseInt(chainId))
@@ -19,7 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(500)
       }
     } else if (req.method == 'POST') {
-      const {txHash, chainId} = req.body
+      const { txHash, chainId } = req.body
 
       const client = createPublicClient({
         chain: getChainFromId[chainId],
@@ -30,7 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         hash: txHash,
       })
 
-      const txLogs = await client.getTransactionReceipt({hash: txHash})
+      const txLogs = await client.getTransactionReceipt({ hash: txHash })
 
       // Address of the newly created Credentials contract
       const contractAddress = txLogs.logs[0].address
@@ -58,13 +64,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         functionName: 'baseURI',
       })) as string
 
-      const timestamp = (await client.getBlock({blockNumber: transaction.blockNumber!})).timestamp
+      const timestamp = (
+        await client.getBlock({ blockNumber: transaction.blockNumber! })
+      ).timestamp
 
       try {
         const metadata = await fetch(baseURI)
 
         if (!metadata.ok) {
-          res.status(metadata.status).json({message: metadata.statusText})
+          res.status(metadata.status).json({ message: metadata.statusText })
           return
         }
         const jsonMetadata = (await metadata.json()) as any
@@ -96,15 +104,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           },
         })
       } catch (e) {
-        res.status(400).json({message: e})
+        res.status(400).json({ message: e })
         return
       }
 
-      res.status(200).json({message: 'OK!'})
+      res.status(200).json({ message: 'OK!' })
     } else {
-      res.status(400).json({message: 'You have used wrong http method'})
+      res.status(400).json({ message: 'You have used wrong http method' })
     }
   } else {
-    res.status(401).json({message: 'You are unautorized'})
+    res.status(401).json({ message: 'You are unautorized' })
   }
 }

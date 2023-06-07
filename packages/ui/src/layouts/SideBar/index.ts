@@ -1,7 +1,7 @@
-import { Sidebar } from "./Sidebar";
-import { NavItem } from "../DrawerNavItem/DrawerNavItem";
+import { Sidebar } from './Sidebar'
+import { NavItem } from '../DrawerNavItem/DrawerNavItem'
 
 export const Drawer = {
-    Sidebar,
-    NavItem,
-};
+  Sidebar,
+  NavItem,
+}

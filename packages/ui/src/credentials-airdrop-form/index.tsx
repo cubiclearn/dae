@@ -1,1 +1,1 @@
-export * from "./CredentialsAirdropForm";
+export * from './CredentialsAirdropForm'
