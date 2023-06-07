@@ -90,7 +90,7 @@ export const CredentialsAirDropForm: FC = () => {
     (_tokenURIsInput: string) => {
       const tokenURIsList = formatTokenURIs(_tokenURIsInput)
       for (let i = 0; i < tokenURIsList.length; i++) {
-        if (tokenURIsList[i] == '') {
+        if (tokenURIsList[i] === '') {
           setIsTokenURIsListCorrect(false)
           return
         }
@@ -117,7 +117,7 @@ export const CredentialsAirDropForm: FC = () => {
   )
 
   useEffect(() => {
-    if (addressesListInput != '') {
+    if (addressesListInput !== '') {
       setAddresses(formatAddresses(addressesListInput))
       checkAddressesListIsCorrect(addressesListInput)
     }
@@ -134,7 +134,7 @@ export const CredentialsAirDropForm: FC = () => {
     event.preventDefault()
     if (
       addresses.length > 0 &&
-      tokenURIs.length == addresses.length &&
+      tokenURIs.length === addresses.length &&
       isAddressListCorrect &&
       isTokenURIsListCorrect
     ) {
@@ -147,7 +147,7 @@ export const CredentialsAirDropForm: FC = () => {
           error: 'Error',
         })
 
-        await fetch(`/api/v0/course/students`, {
+        await fetch('/api/v0/course/students', {
           method: 'POST',
           body: JSON.stringify({
             addressesToEnroll: addresses,
@@ -191,7 +191,7 @@ export const CredentialsAirDropForm: FC = () => {
               value={tokenURIsInput}
               placeholder='uri1,uri2,...'
               required
-            ></Textarea>
+            />
             {isTokenURIsListCorrect ? (
               <FormHelperText>TokenURIs list is correct!</FormHelperText>
             ) : (
@@ -205,7 +205,7 @@ export const CredentialsAirDropForm: FC = () => {
               value={addressesListInput}
               placeholder='address1,address2,...'
               required
-            ></Textarea>
+            />
             {isAddressListCorrect ? (
               <FormHelperText>Addresses list is correct!</FormHelperText>
             ) : (

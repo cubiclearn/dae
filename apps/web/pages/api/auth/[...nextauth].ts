@@ -41,7 +41,7 @@ export default async function auth(req: any, res: any) {
             },
           })
 
-          if (addressCount == 0) {
+          if (addressCount === 0) {
             await prisma.account.create({
               data: {
                 address: siwe.address,

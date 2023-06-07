@@ -1,24 +1,21 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { getSession } from 'next-auth/react'
-import { CredentialsAbi } from '@dae/abi'
-import { prisma } from '@dae/database'
-import { createPublicClient, http } from 'viem'
-import { getChainFromId } from '../../../../lib/functions'
-import { getCourseStudents } from '../../../../lib/api'
+import type {NextApiRequest, NextApiResponse} from 'next'
+import {getSession} from 'next-auth/react'
+import {CredentialsAbi} from '@dae/abi'
+import {prisma} from '@dae/database'
+import {createPublicClient, http} from 'viem'
+import {getChainFromId} from '../../../../lib/functions'
+import {getCourseStudents} from '../../../../lib/api'
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
-  const session = await getSession({ req })
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const session = await getSession({req})
 
   if (!session) {
-    res.status(401).json({ message: 'Unauthenticated' })
+    res.status(401).json({message: 'Unauthenticated'})
     return
   }
 
-  if (req.method == 'GET') {
-    const { chainId, address } = req.query as {
+  if (req.method === 'GET') {
+    const {chainId, address} = req.query as {
       chainId: string
       address: string
     }
@@ -26,22 +23,17 @@ export default async function handler(
     try {
       const data = await getCourseStudents(address, parseInt(chainId))
       res.status(200).json(data)
-    } catch (e) {
+    } catch (_e) {
       res.status(500)
     }
-  } else if (req.method == 'POST') {
-    const { addressesToEnroll, chainId, courseAddress } = req.body as {
+  } else if (req.method === 'POST') {
+    const {addressesToEnroll, chainId, courseAddress} = req.body as {
       chainId: string
       addressesToEnroll: string[]
       courseAddress: string
     }
 
-    if (
-      !addressesToEnroll ||
-      addressesToEnroll.length == 0 ||
-      !courseAddress ||
-      !chainId
-    ) {
+    if (!addressesToEnroll || addressesToEnroll.length === 0 || !courseAddress || !chainId) {
       res.status(400)
       return
     }
@@ -51,16 +43,14 @@ export default async function handler(
       transport: http(),
     })
 
-    const contractCallDataArray: any[] = addressesToEnroll.map(
-      (addressToEnroll: `0x${string}`) => {
-        return {
-          address: courseAddress,
-          abi: CredentialsAbi,
-          functionName: 'balanceOf',
-          args: [addressToEnroll],
-        }
-      },
-    )
+    const contractCallDataArray: any[] = addressesToEnroll.map((addressToEnroll: `0x${string}`) => {
+      return {
+        address: courseAddress,
+        abi: CredentialsAbi,
+        functionName: 'balanceOf',
+        args: [addressToEnroll],
+      }
+    })
 
     // WHEN MULTICALL IS SUPPORTED
     //
@@ -70,11 +60,9 @@ export default async function handler(
 
     // BATCH REQUEST (REMOVE IF MULTICALL)
     const results: bigint[] = await Promise.all(
-      contractCallDataArray.map<Promise<bigint>>(
-        (calldata): Promise<bigint> => {
-          return client.readContract(calldata) as Promise<bigint>
-        },
-      ),
+      contractCallDataArray.map<Promise<bigint>>((calldata): Promise<bigint> => {
+        return client.readContract(calldata) as Promise<bigint>
+      })
     )
 
     for (let i = 0; i < addressesToEnroll.length; i++) {
@@ -90,13 +78,13 @@ export default async function handler(
           })
         } catch (e: any) {
           console.error(e)
-          res.status(500).json({ message: e })
+          res.status(500).json({message: e})
           return
         }
       }
     }
-    res.status(200).json({ message: 'OK' })
+    res.status(200).json({message: 'OK'})
   } else {
-    res.status(400).json({ message: 'HTTP method not supported' })
+    res.status(400).json({message: 'HTTP method not supported'})
   }
 }

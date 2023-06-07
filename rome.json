@@ -10,18 +10,19 @@
             "tsconfig.*.json",
             "generated.ts",
             "pnpm-lock.yaml",
-            "**/.next"
+            "**/.next",
+            "*.d.ts"
         ]
     },
     "formatter": {
-        "enabled": false,
+        "enabled": true,
         "formatWithErrors": false,
         "indentStyle": "space",
         "indentSize": 2,
         "lineWidth": 80
     },
     "linter": {
-        "enabled": false,
+        "enabled": true,
         "rules": {
             "recommended": true,
             "correctness": {
@@ -32,7 +33,8 @@
             },
             "style": {
                 "noNonNullAssertion": "off",
-                "useShorthandArrayType": "error"
+                "useShorthandArrayType": "error",
+                "noVar": "off"
             },
             "suspicious": {
                 "noArrayIndexKey": "off",

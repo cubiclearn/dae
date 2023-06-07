@@ -23,6 +23,7 @@
         "check": "rome check .",
         "check:fix": "rome check . --apply",
         "start": "dotenv -- turbo run start",
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "db:studio": "prisma studio --schema=./packages/database/prisma/schema.prisma"
     }
 }

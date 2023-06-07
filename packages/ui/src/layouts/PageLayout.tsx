@@ -30,10 +30,10 @@ export const PageLayout: FC<Props> = ({
 }): JSX.Element => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  if (navItems.length == 0) {
+  if (navItems.length === 0) {
     return (
       <main>
-        <Header onOpen={onOpen} showDrawerButton={false}></Header>
+        <Header onOpen={onOpen} showDrawerButton={false} />
         <Box position={'absolute'} top={'80px'}>
           <Box>{children}</Box>
         </Box>
@@ -43,7 +43,7 @@ export const PageLayout: FC<Props> = ({
 
   return (
     <main>
-      <Header onOpen={onOpen} showDrawerButton={true}></Header>
+      <Header onOpen={onOpen} showDrawerButton={true} />
       <Drawer
         autoFocus={false}
         isOpen={isOpen}

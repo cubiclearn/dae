@@ -12,7 +12,7 @@ export default async function handler(
 ) {
   const session = await getSession({ req })
   if (session) {
-    if (req.method == 'GET') {
+    if (req.method === 'GET') {
       const { chainId, address } = req.query as {
         chainId: string
         address: string
@@ -21,10 +21,10 @@ export default async function handler(
       try {
         const data = await getCourse(address, parseInt(chainId))
         res.status(200).json(data)
-      } catch (e) {
+      } catch (_e) {
         res.status(500)
       }
-    } else if (req.method == 'POST') {
+    } else if (req.method === 'POST') {
       const { txHash, chainId } = req.body
 
       const client = createPublicClient({
@@ -77,12 +77,12 @@ export default async function handler(
         }
         const jsonMetadata = (await metadata.json()) as any
         if (
-          jsonMetadata == undefined ||
-          jsonMetadata.name == undefined ||
-          jsonMetadata.description == undefined ||
-          jsonMetadata.access_url == undefined ||
-          jsonMetadata.image == undefined ||
-          jsonMetadata.website == undefined
+          jsonMetadata === undefined ||
+          jsonMetadata.name === undefined ||
+          jsonMetadata.description === undefined ||
+          jsonMetadata.access_url === undefined ||
+          jsonMetadata.image === undefined ||
+          jsonMetadata.website === undefined
         ) {
           throw new Error('Wrong metadata URL')
         }

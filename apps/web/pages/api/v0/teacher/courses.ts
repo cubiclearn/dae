@@ -13,7 +13,7 @@ export default async function handler(
     return
   }
 
-  if (req.method == 'GET') {
+  if (req.method === 'GET') {
     const { chainId, address } = req.query as {
       chainId: string
       address: string

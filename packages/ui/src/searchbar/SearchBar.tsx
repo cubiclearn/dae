@@ -1,15 +1,8 @@
-import { FC, useState, ChangeEvent, useEffect } from 'react'
-import {
-  FormControl,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  InputRightAddon,
-  Button,
-} from '@chakra-ui/react'
-import { Search2Icon } from '@chakra-ui/icons'
-import { useRouter } from 'next/router'
-import { isAddress } from 'ethers/lib/utils.js'
+import {FC, useState, ChangeEvent} from 'react'
+import {Input, InputGroup, InputLeftElement} from '@chakra-ui/react'
+import {Search2Icon} from '@chakra-ui/icons'
+import {useRouter} from 'next/router'
+import {isAddress} from 'ethers/lib/utils.js'
 
 export const SearchBar: FC = () => {
   const router = useRouter()
@@ -30,15 +23,15 @@ export const SearchBar: FC = () => {
   }
 
   return (
-    <InputGroup size='md' mx={8}>
-      <InputLeftElement pointerEvents='none'>
-        <Search2Icon color='gray.300' />
+    <InputGroup size="md" mx={8}>
+      <InputLeftElement pointerEvents="none">
+        <Search2Icon color="gray.300" />
       </InputLeftElement>
       <Input
         isInvalid={isInvalid}
         onChange={handleSearchTextChange}
-        type='text'
-        placeholder='Write course address here...'
+        type="text"
+        placeholder="Write course address here..."
         value={searchAddress}
         onKeyDown={submitSearch}
       />

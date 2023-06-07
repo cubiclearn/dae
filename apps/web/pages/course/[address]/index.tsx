@@ -93,7 +93,7 @@ export const getServerSideProps: GetServerSideProps<{ course: any }> = async (
         course: data,
       },
     }
-  } catch (e) {
+  } catch (_e) {
     return {
       notFound: true,
     }

@@ -80,7 +80,7 @@ export const getServerSideProps: GetServerSideProps<{ students: any }> = async (
         students: data,
       },
     }
-  } catch (e) {
+  } catch (_e) {
     return {
       notFound: true,
     }

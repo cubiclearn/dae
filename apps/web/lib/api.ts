@@ -1,4 +1,4 @@
-import {prisma} from '@dae/database'
+import { prisma } from '@dae/database'
 
 export const getCourse = async (address: string, chainId: number) => {
   const data = await prisma.course.findFirst({
@@ -30,7 +30,10 @@ export const getCourseStudents = async (address: string, chainId: number) => {
   return data
 }
 
-export const getTeacherCourses = async (teacherAddress: string, chainId: number) => {
+export const getTeacherCourses = async (
+  teacherAddress: string,
+  chainId: number,
+) => {
   const data = await prisma.course.findMany({
     where: {
       chainId: chainId,
