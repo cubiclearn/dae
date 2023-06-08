@@ -8,15 +8,14 @@ import {ChakraProvider} from '@chakra-ui/react'
 import {RainbowKitSiweNextAuthProvider} from '@rainbow-me/rainbowkit-siwe-next-auth'
 import {getDefaultWallets, RainbowKitProvider} from '@rainbow-me/rainbowkit'
 import {WagmiConfig, createConfig, configureChains} from 'wagmi'
-import {mainnet, goerli, foundry} from 'wagmi/chains'
+import {sepolia, foundry} from 'wagmi/chains'
 import {publicProvider} from 'wagmi/providers/public'
 import {Session} from 'next-auth'
 import {Layout} from '@dae/ui'
 
-export const {chains, publicClient, webSocketPublicClient} = configureChains(
-  [mainnet, goerli, foundry],
-  [publicProvider()]
-)
+const supportedChains = process.env.NODE_ENV !== 'production' ? [sepolia, foundry] : [sepolia]
+
+export const {chains, publicClient, webSocketPublicClient} = configureChains(supportedChains, [publicProvider()])
 
 const {connectors} = getDefaultWallets({
   appName: 'Decentralized Autonomous Education (DAE)',
