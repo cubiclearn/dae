@@ -75,7 +75,8 @@
         },
         "publish": {
             "dependsOn": [
-                "build"
+                "build",
+                "^publish"
             ]
         }
     }
