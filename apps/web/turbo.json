@@ -77,7 +77,8 @@
             "dependsOn": [
                 "build",
                 "^publish"
-            ]
+            ],
+            "cache": false
         }
     }
 }
