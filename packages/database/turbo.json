@@ -56,6 +56,12 @@
                 "generate"
             ],
             "cache": false
+        },
+        "publish": {
+            "dependsOn": [
+                "build",
+                "push"
+            ]
         }
     }
 }

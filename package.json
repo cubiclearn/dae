@@ -16,6 +16,7 @@
     "private": true,
     "scripts": {
         "build": "dotenv -- turbo run build",
+        "publish": "dotenv -- turbo run publish",
         "clean": "turbo run clean && rm -rf node_modules",
         "dev": "dotenv -- turbo run dev --no-cache --parallel --continue",
         "format": "rome format .",
