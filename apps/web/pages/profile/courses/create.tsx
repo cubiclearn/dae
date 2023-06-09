@@ -30,14 +30,10 @@ export default function AddCoursePage() {
 
   const [isWriting, setIsWriting] = useState(false)
 
-  const [factoryFunction, _setFactoryFunction] = useState<
-    'createCredentials' | 'createCredentialsBurnable' | undefined
-  >('createCredentials')
-
   const {config} = usePrepareContractWrite({
     address: process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as '0x${string}',
-    functionName: factoryFunction,
-    args: [name, symbol, bUri, maxSupply],
+    functionName: 'createCourse',
+    args: [false, name, symbol, bUri, maxSupply],
     abi: CredentialsFactoryAbi,
   })
 
@@ -69,7 +65,6 @@ export default function AddCoursePage() {
 
   const handleMaxSupplyChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     const input = event.target.value
-
     if (input === '') {
       setMaxSupply(BigInt(0))
       return
@@ -174,11 +169,10 @@ export default function AddCoursePage() {
                   <FormLabel>Max partecipants:</FormLabel>
                   <Input
                     onChange={handleMaxSupplyChange}
-                    value={maxSupply !== null ? maxSupply.toString() : ''}
+                    value={Number(maxSupply) !== 0 ? maxSupply.toString() : ''}
                     autoComplete="off"
                     autoCorrect="off"
                     type="text"
-                    pattern="^d+$"
                   />
                 </FormControl>
                 <FormControl>

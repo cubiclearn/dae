@@ -23,7 +23,8 @@
                 "NEXTAUTH_URL",
                 "NEXTAUTH_SECRET",
                 "NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS",
-                "API_URL"
+                "API_URL",
+                "NEXT_PUBLIC_INFURA_API_KEY"
             ],
             "cache": true
         },
@@ -39,7 +40,8 @@
                 "NEXTAUTH_URL",
                 "NEXTAUTH_SECRET",
                 "NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS",
-                "API_URL"
+                "API_URL",
+                "NEXT_PUBLIC_INFURA_API_KEY"
             ],
             "persistent": true,
             "cache": false

@@ -1,0 +1,32 @@
+{
+    "name": "@dae/viem-config",
+    "version": "0.0.0",
+    "description": "Viem config for the DAE (Decentralized Autonomous Education) project",
+    "sideEffects": false,
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "/dist"
+    ],
+    "scripts": {
+        "build": "tsup src/index.ts --format cjs --dts --external viem",
+        "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/cubiclearn/dae.git"
+    },
+    "author": "",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/cubiclearn/dae/issues"
+    },
+    "homepage": "https://github.com/cubiclearn/dae#readme",
+    "devDependencies": {
+        "tsup": "6.5.0",
+        "typescript": "5.0.4",
+        "viem": "0.3.19",
+        "@dae/typescript-config": "workspace:*",
+        "@dae/chains": "workspace:*"
+    }
+}

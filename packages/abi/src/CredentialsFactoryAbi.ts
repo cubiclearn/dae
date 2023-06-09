@@ -11,21 +11,20 @@ export const CredentialsFactoryAbi = [
       {
         indexed: true,
         internalType: 'address',
-        name: 'credentials',
+        name: 'karmaAccessControl',
         type: 'address',
       },
-      {
-        indexed: false,
-        internalType: 'bool',
-        name: 'burnable',
-        type: 'bool',
-      },
     ],
-    name: 'CredentialsCreated',
+    name: 'KarmaAccessControlCreated',
     type: 'event',
   },
   {
     inputs: [
+      {
+        internalType: 'bool',
+        name: 'isBurnable',
+        type: 'bool',
+      },
       {
         internalType: 'string',
         name: '_name',
@@ -47,42 +46,13 @@ export const CredentialsFactoryAbi = [
         type: 'uint256',
       },
     ],
-    name: 'createCredentials',
+    name: 'createCourse',
     outputs: [
       {
         internalType: 'address',
         name: '',
         type: 'address',
       },
-    ],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'string',
-        name: '_name',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: '_symbol',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: '_bUri',
-        type: 'string',
-      },
-      {
-        internalType: 'uint256',
-        name: 'maxSupply',
-        type: 'uint256',
-      },
-    ],
-    name: 'createCredentialsBurnable',
-    outputs: [
       {
         internalType: 'address',
         name: '',

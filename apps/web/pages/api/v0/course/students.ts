@@ -2,9 +2,10 @@ import type {NextApiRequest, NextApiResponse} from 'next'
 import {getSession} from 'next-auth/react'
 import {CredentialsAbi} from '@dae/abi'
 import {prisma} from '@dae/database'
-import {createPublicClient, http} from 'viem'
+import {createPublicClient} from 'viem'
 import {getChainFromId} from '../../../../lib/functions'
 import {getCourseStudents} from '../../../../lib/api'
+import {config as TransportConfig} from '@dae/viem-config'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const session = await getSession({req})
@@ -40,7 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const client = createPublicClient({
       chain: getChainFromId[chainId],
-      transport: http(),
+      transport: TransportConfig[chainId].transport,
     })
 
     const contractCallDataArray: any[] = addressesToEnroll.map((addressToEnroll: `0x${string}`) => {

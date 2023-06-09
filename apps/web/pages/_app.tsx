@@ -15,7 +15,9 @@ import {Layout} from '@dae/ui'
 
 const supportedChains = process.env.NODE_ENV !== 'production' ? [sepolia, foundry] : [sepolia]
 
-export const {chains, publicClient, webSocketPublicClient} = configureChains(supportedChains, [publicProvider()])
+export const {chains, publicClient, webSocketPublicClient} = configureChains(supportedChains, [
+  publicProvider(),
+])
 
 const {connectors} = getDefaultWallets({
   appName: 'Decentralized Autonomous Education (DAE)',

@@ -3,39 +3,33 @@
     "globalDependencies": [],
     "pipeline": {
         "build": {
+            "outputs": [
+                ".next/**/*",
+                "!.next/cache/**",
+                ".vercel/**/*",
+                "dist/**/*"
+            ],
             "dependsOn": [
                 "^build"
-            ],
-            "outputs": [
-                ".next/**",
-                "!.next/cache/**"
             ]
         },
         "start": {
             "dependsOn": [
-                "^build"
-            ],
-            "outputs": [
-                ".next/**",
-                "!.next/cache/**"
+                "build"
             ],
             "persistent": true
         },
         "lint": {},
         "dev": {
             "dependsOn": [
-                "^build"
+                "build"
             ],
             "persistent": true
         },
         "clean": {},
         "publish": {
             "dependsOn": [
-                "^build"
-            ],
-            "outputs": [
-                ".next/**",
-                "!.next/cache/**"
+                "build"
             ]
         }
     }

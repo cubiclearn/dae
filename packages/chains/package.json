@@ -1,0 +1,32 @@
+{
+    "name": "@dae/chains",
+    "version": "0.0.1",
+    "description": "Supported chains for DAE (Decentralized Autonomous Education) project.",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "source": "src/index.ts",
+    "files": [
+        "/dist"
+    ],
+    "sideEffects": false,
+    "scripts": {
+        "build": "tsc",
+        "check": "tsc --pretty --noEmit",
+        "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
+        "dev": "tsc -w"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/cubiclearn/dae.git"
+    },
+    "devDependencies": {
+        "typescript": "5.0.4",
+        "@dae/typescript-config": "workspace:*"
+    },
+    "author": "",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/cubiclearn/dae/issues"
+    },
+    "homepage": "https://github.com/cubiclearn/dae#readme"
+}

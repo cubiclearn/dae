@@ -15,8 +15,10 @@ import {
   Text,
   Image,
 } from '@chakra-ui/react'
+import {useNetwork} from 'wagmi'
 
 export const ConnectButton: FC = (_props) => {
+  const {chains} = useNetwork()
   const {disconnect} = useDisconnect()
   const router = useRouter()
   const handleDisconnect = () => {
@@ -92,7 +94,7 @@ export const ConnectButton: FC = (_props) => {
                         </Flex>
                         <MenuDivider />
                         <MenuItem onClick={() => router.push('/profile')}>Profile</MenuItem>
-                        <MenuItem onClick={() => router.push('/profile/courses/teaching')}>My Courses</MenuItem>
+                        <MenuItem onClick={() => router.push(`/profile/courses/teaching?chainId=${chain ? chain.id : chains[0].id}`)}>My Courses</MenuItem>
                         <MenuItem onClick={() => router.push('/profile/courses/create')}>Create Course</MenuItem>
                         <MenuDivider />
                         <MenuItem onClick={handleDisconnect}>Sign Out</MenuItem>

@@ -32,6 +32,7 @@ importers:
       '@dae/hooks': workspace:*
       '@dae/typescript-config': workspace:*
       '@dae/ui': workspace:*
+      '@dae/viem-config': workspace:*
       '@emotion/react': 11.11.0
       '@emotion/styled': 11.11.0
       '@next-auth/prisma-adapter': 1.0.6
@@ -61,6 +62,7 @@ importers:
       '@dae/abi': link:../../packages/abi
       '@dae/database': link:../../packages/database
       '@dae/ui': link:../../packages/ui
+      '@dae/viem-config': link:../../config/viem
       '@emotion/react': 11.11.0_gd4tregka43x4eiz452mfdbv4y
       '@emotion/styled': 11.11.0_eex57i4kgkgprkpsrpmm3rdgxu
       '@next-auth/prisma-adapter': 1.0.6_avdnd67itvtwqtprzcctrg7hxi
@@ -91,6 +93,20 @@ importers:
   config/typescript:
     specifiers: {}
 
+  config/viem:
+    specifiers:
+      '@dae/chains': workspace:*
+      '@dae/typescript-config': workspace:*
+      tsup: 6.5.0
+      typescript: 5.0.4
+      viem: 0.3.19
+    devDependencies:
+      '@dae/chains': link:../../packages/chains
+      '@dae/typescript-config': link:../typescript
+      tsup: 6.5.0_typescript@5.0.4
+      typescript: 5.0.4
+      viem: 0.3.19_typescript@5.0.4
+
   packages/abi:
     specifiers:
       '@dae/typescript-config': workspace:*
@@ -99,6 +115,14 @@ importers:
     devDependencies:
       '@dae/typescript-config': link:../../config/typescript
       eslint: 8.29.0
+      typescript: 5.0.4
+
+  packages/chains:
+    specifiers:
+      '@dae/typescript-config': workspace:*
+      typescript: 5.0.4
+    devDependencies:
+      '@dae/typescript-config': link:../../config/typescript
       typescript: 5.0.4
 
   packages/database:
