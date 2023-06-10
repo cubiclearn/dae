@@ -7,7 +7,11 @@ import {
   useState,
 } from 'react'
 import { CredentialsAbi } from '@dae/abi'
-import { useContractWrite, usePrepareContractWrite } from 'wagmi'
+import {
+  useContractWrite,
+  usePrepareContractWrite,
+  useWaitForTransaction,
+} from 'wagmi'
 import { ethers } from 'ethers'
 import { toast } from 'react-toastify'
 import { useRouter } from 'next/router'
@@ -56,6 +60,42 @@ export const CredentialsAirDropForm: FC = () => {
   })
 
   const contractWrite = useContractWrite(config)
+  const waitForTransaction = useWaitForTransaction({
+    hash: contractWrite.data?.hash,
+  })
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        await enrollStudents()
+        clearInputFields()
+      } catch (e) {
+        console.log(e)
+      }
+    }
+    if (waitForTransaction.data !== undefined) {
+      fetchData()
+    }
+  }, [waitForTransaction.data])
+
+  const clearInputFields = () => {
+    setAddressesListInput('')
+    setTokenURIsInput('')
+  }
+
+  const enrollStudents = useCallback(async () => {
+    await fetch('/api/v0/course/students', {
+      method: 'POST',
+      body: JSON.stringify({
+        addressesToEnroll: addresses,
+        courseAddress: courseAddress,
+        chainId: chain?.id,
+      }),
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+      },
+    })
+  }, [addresses, chain, courseAddress])
 
   const formatAddresses = useCallback(
     (_addressListInput: string): `0x${string}`[] => {
@@ -150,20 +190,6 @@ export const CredentialsAirDropForm: FC = () => {
           success: 'Transaction complete!',
           error: 'Error',
         })
-
-        await fetch('/api/v0/course/students', {
-          method: 'POST',
-          body: JSON.stringify({
-            addressesToEnroll: addresses,
-            courseAddress: courseAddress,
-            chainId: chain?.id,
-          }),
-          headers: {
-            'Content-type': 'application/json; charset=UTF-8',
-          },
-        })
-        setAddressesListInput('')
-        setTokenURIsInput('')
       } catch (error) {
         console.error(error)
       }
@@ -230,8 +256,8 @@ export const CredentialsAirDropForm: FC = () => {
           <Button
             colorScheme='blue'
             type='submit'
-            disabled={contractWrite.isLoading}
-            isLoading={contractWrite.isLoading}
+            disabled={contractWrite.isLoading || waitForTransaction.isLoading}
+            isLoading={contractWrite.isLoading || waitForTransaction.isLoading}
             loadingText='Submitting'
           >
             Airdrop Credentials
