@@ -23,6 +23,10 @@ import {
   FormErrorMessage,
   Button,
   Textarea,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from '@chakra-ui/react'
 
 export const CredentialsAirDropForm: FC = () => {
@@ -51,7 +55,7 @@ export const CredentialsAirDropForm: FC = () => {
       isTokenURIsListCorrect,
   })
 
-  const { writeAsync } = useContractWrite(config)
+  const contractWrite = useContractWrite(config)
 
   const formatAddresses = useCallback(
     (_addressListInput: string): `0x${string}`[] => {
@@ -139,7 +143,7 @@ export const CredentialsAirDropForm: FC = () => {
       isTokenURIsListCorrect
     ) {
       try {
-        const promise = writeAsync!()
+        const promise = contractWrite.writeAsync!()
 
         await toast.promise(promise, {
           pending: 'Transaction in progress...',
@@ -212,7 +216,26 @@ export const CredentialsAirDropForm: FC = () => {
               <FormErrorMessage>Addresses list is incorrect!</FormErrorMessage>
             )}
           </FormControl>
-          <Button type='submit'>Start Credentials Airdrop</Button>
+          {contractWrite.isError ? (
+            <Alert status='error'>
+              <AlertIcon />
+              <AlertTitle>Error!</AlertTitle>
+              <AlertDescription>
+                {contractWrite.error?.message}
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <></>
+          )}
+          <Button
+            colorScheme='blue'
+            type='submit'
+            disabled={contractWrite.isLoading}
+            isLoading={contractWrite.isLoading}
+            loadingText='Submitting'
+          >
+            Airdrop Credentials
+          </Button>
         </Stack>
       </form>
     </Box>
