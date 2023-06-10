@@ -1,7 +1,7 @@
-import {useState, ChangeEvent, useCallback, FormEvent} from 'react'
+import {useState, ChangeEvent, useCallback, FormEvent, useEffect} from 'react'
 import Head from 'next/head'
 import {CredentialsFactoryAbi} from '@dae/abi'
-import {usePrepareContractWrite, useContractWrite} from 'wagmi'
+import {usePrepareContractWrite, useContractWrite, useWaitForTransaction} from 'wagmi'
 import {useNetwork} from 'wagmi'
 import {toast} from 'react-toastify'
 import {Layout} from '@dae/ui'
@@ -18,6 +18,11 @@ import {
   Link,
   Heading,
   Box,
+  Select,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription
 } from '@chakra-ui/react'
 import NextLink from 'next/link'
 
@@ -27,26 +32,70 @@ export default function AddCoursePage() {
   const [name, setName] = useState<string>('')
   const [bUri, setBUri] = useState<string>('')
   const [maxSupply, setMaxSupply] = useState<bigint>(BigInt(0))
-
-  const [isWriting, setIsWriting] = useState(false)
+  const [isBurnable, setIsBurnable] = useState(false)
 
   const {config} = usePrepareContractWrite({
     address: process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as '0x${string}',
     functionName: 'createCourse',
-    args: [false, name, symbol, bUri, maxSupply],
+    args: [isBurnable, name, symbol, bUri, maxSupply],
     abi: CredentialsFactoryAbi,
   })
 
-  const {writeAsync} = useContractWrite(config)
+  const contractWrite = useContractWrite(config)
+  const waitForTransaction = useWaitForTransaction({
+    hash: contractWrite.data?.hash,
+  })
 
-  // const handleCredentialsTypeChange = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
-  //     const targetValue = event.target.value;
-  //     if (targetValue == "not-burnable") {
-  //         setFactoryFunction("createCredentials");
-  //     } else {
-  //         setFactoryFunction("createCredentialsBurnable");
-  //     }
-  // }, []);
+  useEffect(() => {
+    async function fetchData(){
+      try {
+        await createCourse()
+        cleanInputFields()
+      }catch(e){
+        console.log(e)
+      }
+    }
+    if(waitForTransaction.data !== undefined){
+      fetchData()
+    }
+  },[waitForTransaction.data])
+
+  const cleanInputFields = () => {
+    setName('')
+    setSymbol('')
+    setBUri('')
+    setMaxSupply(BigInt(0))
+  }
+
+  const areInputsValid = () => {
+    if(name !== '' && symbol !== '' && bUri !== '' && maxSupply !== null && maxSupply > 0){
+      return true;
+    }else{
+      return false
+    }
+  }
+
+  const createCourse = useCallback(async () =>  {
+    await fetch('/api/v0/course', {
+      method: 'POST',
+      body: JSON.stringify({
+        txHash: waitForTransaction.data?.transactionHash,
+        chainId: chain?.id,
+      }),
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+      },
+    })
+  },[waitForTransaction.data, chain])
+
+  const handleCredentialsTypeChange = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
+      const targetValue = event.target.value;
+      if (targetValue === "not-burnable") {
+          setIsBurnable(false);
+      } else {
+          setIsBurnable(true);
+      }
+  }, []);
 
   const handleSymbolChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     const input = event.target.value
@@ -78,36 +127,19 @@ export default function AddCoursePage() {
 
   const handleCreateCourse = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if (name !== '' && symbol !== '' && bUri !== '' && maxSupply !== null && maxSupply > 0) {
-      setIsWriting(true)
+    const validInputs = areInputsValid();
+    if (validInputs) {
       try {
-        const promise = writeAsync!()
+        const promise = contractWrite.writeAsync!()
 
-        const result = await toast.promise(promise, {
+        await toast.promise(promise, {
           pending: 'Transaction in progress...',
           success: 'Transaction complete!',
           error: 'Error',
         })
-
-        await fetch('/api/v0/course', {
-          method: 'POST',
-          body: JSON.stringify({
-            txHash: result.hash,
-            chainId: chain?.id,
-          }),
-          headers: {
-            'Content-type': 'application/json; charset=UTF-8',
-          },
-        })
-
-        setName('')
-        setSymbol('')
-        setBUri('')
-        setMaxSupply(BigInt(0))
       } catch (error) {
         console.error(error)
       }
-      setIsWriting(false)
     }
   }
 
@@ -150,13 +182,13 @@ export default function AddCoursePage() {
                   </Heading>
                   <Text fontSize={'lg'}>Fill in all the form fields to create a new course and start teaching!</Text>
                 </Box>
-                {/* <FormControl>
-                                    <FormLabel>Select the type of credential this course implements</FormLabel>
-                                    <Select onChange={handleCredentialsTypeChange}>
-                                        <option value="not-burnable">Not Burnable</option>
-                                        <option value="burnable">Burnable</option>
-                                    </Select>
-                                </FormControl> */}
+                <FormControl>
+                  <FormLabel>Select the type of credential this course implements</FormLabel>
+                  <Select onChange={handleCredentialsTypeChange}>
+                      <option value="not-burnable">Not Burnable</option>
+                      <option value="burnable">Burnable</option>
+                  </Select>
+                </FormControl>
                 <FormControl>
                   <FormLabel>Course Name:</FormLabel>
                   <Input onChange={handleNameChange} value={name} type="text" />
@@ -179,11 +211,16 @@ export default function AddCoursePage() {
                   <FormLabel>Metadata URL:</FormLabel>
                   <Input onChange={handleBUriChange} value={bUri} type="bUri" autoComplete="off" placeholder="" />
                 </FormControl>
+                {contractWrite.isError ? <Alert status='error'>
+                  <AlertIcon />
+                  <AlertTitle>Error!</AlertTitle>
+                  <AlertDescription>{contractWrite.error?.message}</AlertDescription>
+                </Alert> : <></>}
                 <Button
                   colorScheme="blue"
                   type="submit"
-                  disabled={isWriting}
-                  isLoading={isWriting}
+                  disabled={contractWrite.isLoading}
+                  isLoading={contractWrite.isLoading}
                   loadingText="Submitting"
                 >
                   Create course
