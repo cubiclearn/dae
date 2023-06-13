@@ -20,8 +20,9 @@
         "url": "git+https://github.com/cubiclearn/dae.git"
     },
     "devDependencies": {
+        "@dae/typescript-config": "workspace:*",
         "typescript": "5.0.4",
-        "@dae/typescript-config": "workspace:*"
+        "viem": "1.0.6"
     },
     "author": "",
     "license": "MIT",

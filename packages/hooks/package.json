@@ -3,9 +3,10 @@
   "description": "Decentralized Autonomous Education (DAE) Hooks",
   "version": "0.0.0",
   "dependencies": {
+    "@wagmi/core": "^1.2.0",
     "swr": "2.1.5",
-    "viem": "0.3.19",
-    "wagmi": "1.0.2"
+    "viem": "1.0.6",
+    "wagmi": "1.2.0"
   },
   "devDependencies": {
     "@dae/typescript-config": "workspace:*",

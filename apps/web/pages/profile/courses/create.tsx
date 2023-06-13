@@ -1,13 +1,8 @@
 import { useState, ChangeEvent, useCallback, FormEvent, useEffect } from 'react'
 import Head from 'next/head'
 import { CredentialsFactoryAbi } from '@dae/abi'
-import {
-  usePrepareContractWrite,
-  useContractWrite,
-  useWaitForTransaction,
-} from 'wagmi'
+import { usePrepareContractWrite } from 'wagmi'
 import { useNetwork } from 'wagmi'
-import { toast } from 'react-toastify'
 import { Layout } from '@dae/ui'
 import {
   FormControl,
@@ -23,12 +18,10 @@ import {
   Heading,
   Box,
   Select,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
 } from '@chakra-ui/react'
 import NextLink from 'next/link'
+import { useCreateCourse } from '@dae/hooks'
+import { useToast } from '@chakra-ui/react'
 
 export default function AddCoursePage() {
   const { chain, chains } = useNetwork()
@@ -37,6 +30,7 @@ export default function AddCoursePage() {
   const [bUri, setBUri] = useState<string>('')
   const [maxSupply, setMaxSupply] = useState<bigint>(BigInt(0))
   const [isBurnable, setIsBurnable] = useState(false)
+  const toast = useToast()
 
   const { config } = usePrepareContractWrite({
     address: process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as '0x${string}',
@@ -45,24 +39,28 @@ export default function AddCoursePage() {
     abi: CredentialsFactoryAbi,
   })
 
-  const contractWrite = useContractWrite(config)
-  const waitForTransaction = useWaitForTransaction({
-    hash: contractWrite.data?.hash,
-  })
+  const { create, isLoading, isError, isSuccess } = useCreateCourse(config)
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        await createCourse()
-        clearInputFields()
-      } catch (e) {
-        console.log(e)
-      }
+    if (isError) {
+      toast({
+        title: 'Error creating course.',
+        status: 'error',
+      })
     }
-    if (waitForTransaction.data !== undefined) {
-      fetchData()
+    if (isSuccess) {
+      toast({
+        title: 'Course created with success!',
+        status: 'success',
+      })
     }
-  }, [waitForTransaction.data])
+    if (isLoading) {
+      toast({
+        title: 'Creating course...',
+        status: 'info',
+      })
+    }
+  }, [isLoading, isError, isSuccess])
 
   const clearInputFields = () => {
     setName('')
@@ -84,19 +82,6 @@ export default function AddCoursePage() {
       return false
     }
   }
-
-  const createCourse = useCallback(async () => {
-    await fetch('/api/v0/course', {
-      method: 'POST',
-      body: JSON.stringify({
-        txHash: waitForTransaction.data?.transactionHash,
-        chainId: chain?.id,
-      }),
-      headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-      },
-    })
-  }, [waitForTransaction.data, chain])
 
   const handleCredentialsTypeChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
@@ -153,17 +138,13 @@ export default function AddCoursePage() {
   const handleCreateCourse = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const validInputs = areInputsValid()
+
     if (validInputs) {
       try {
-        const promise = contractWrite.writeAsync!()
-
-        await toast.promise(promise, {
-          pending: 'Transaction in progress...',
-          success: 'Transaction complete!',
-          error: 'Error',
-        })
-      } catch (error) {
-        console.error(error)
+        await create()
+        clearInputFields()
+      } catch (e: any) {
+        console.error(e)
       }
     }
   }
@@ -260,26 +241,11 @@ export default function AddCoursePage() {
                     placeholder=''
                   />
                 </FormControl>
-                {waitForTransaction.isError ? (
-                  <Alert status='error'>
-                    <AlertIcon />
-                    <AlertTitle>Error!</AlertTitle>
-                    <AlertDescription>
-                      {waitForTransaction.error?.message}
-                    </AlertDescription>
-                  </Alert>
-                ) : (
-                  <></>
-                )}
                 <Button
                   colorScheme='blue'
                   type='submit'
-                  disabled={
-                    waitForTransaction.isLoading || contractWrite.isLoading
-                  }
-                  isLoading={
-                    waitForTransaction.isLoading || contractWrite.isLoading
-                  }
+                  disabled={isLoading}
+                  isLoading={isLoading}
                   loadingText='Submitting'
                 >
                   Create course
