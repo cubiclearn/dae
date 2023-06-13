@@ -16,15 +16,16 @@
     "private": true,
     "scripts": {
         "build": "dotenv -- turbo run build",
-        "publish": "dotenv -- turbo run publish",
+        "build-packages": "dotenv -- turbo run build --filter={./packages/*}...",
+        "check": "rome check .",
+        "check:fix": "rome check . --apply",
         "clean": "turbo run clean && rm -rf node_modules",
+        "db:studio": "prisma studio --schema=./packages/database/prisma/schema.prisma",
         "dev": "dotenv -- turbo run dev --no-cache --parallel --continue",
         "format": "rome format .",
         "format:fix": "rome format . --write",
-        "check": "rome check .",
-        "check:fix": "rome check . --apply",
-        "start": "dotenv -- turbo run start",
         "prepare": "husky install",
-        "db:studio": "prisma studio --schema=./packages/database/prisma/schema.prisma"
+        "publish": "dotenv -- turbo run publish",
+        "start": "dotenv -- turbo run start"
     }
 }

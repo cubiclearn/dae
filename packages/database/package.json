@@ -24,16 +24,16 @@
         "clean": "rm -rf .turbo dist node_modules",
         "db:migrate:deploy": "prisma migrate deploy",
         "db:migrate:dev": "prisma migrate dev",
-        "push": "prisma db push",
-        "pull": "prisma db pull",
         "dev": "tsup --watch",
         "format": "prisma format",
         "generate": "prisma generate",
         "lint": "eslint \"src/**/*.ts\"",
         "prebuild": "npm run generate",
         "predev": "npm run generate",
-        "studio": "prisma studio",
-        "publish": "prisma db push"
+        "publish": "prisma db push",
+        "pull": "prisma db pull",
+        "push": "prisma db push",
+        "studio": "prisma studio"
     },
     "source": "./src/index.ts",
     "types": "./dist/index.d.ts"

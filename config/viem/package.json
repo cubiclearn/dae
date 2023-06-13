@@ -1,32 +1,27 @@
 {
     "name": "@dae/viem-config",
-    "version": "0.0.0",
     "description": "Viem config for the DAE (Decentralized Autonomous Education) project",
-    "sideEffects": false,
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
-    "files": [
-        "/dist"
-    ],
-    "scripts": {
-        "build": "tsup src/index.ts --format cjs --dts --external viem",
-        "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/cubiclearn/dae.git"
-    },
+    "version": "0.0.0",
     "author": "",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/cubiclearn/dae/issues"
-    },
-    "homepage": "https://github.com/cubiclearn/dae#readme",
+    "bugs": "https://github.com/cubiclearn/dae/issues",
     "devDependencies": {
         "@dae/chains": "workspace:*",
         "@dae/typescript-config": "workspace:*",
         "tsup": "6.7.0",
         "typescript": "5.0.4",
         "viem": "1.0.6"
-    }
+    },
+    "files": [
+        "/dist"
+    ],
+    "homepage": "https://github.com/cubiclearn/dae#readme",
+    "license": "MIT",
+    "main": "dist/index.js",
+    "repository": "cubiclearn/dae.git",
+    "scripts": {
+        "build": "tsup src/index.ts --format cjs --dts --external viem",
+        "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+    },
+    "sideEffects": false,
+    "types": "dist/index.d.ts"
 }
