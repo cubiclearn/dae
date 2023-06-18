@@ -1,11 +1,16 @@
 import Head from 'next/head'
 import { Layout } from '@dae/ui'
 import NextLink from 'next/link'
-import { Stack, Tabs, TabList, Tab, Link, Box } from '@chakra-ui/react'
+import { SimpleGrid, Stack, Tabs, TabList, Tab, Link } from '@chakra-ui/react'
+import { CourseCard } from '@dae/ui'
 import { useNetwork } from 'wagmi'
+import { getStudentCourses } from '../../../lib/api'
+import { GetServerSideProps } from 'next'
+import { getSession } from 'next-auth/react'
 
-export default function AddCoursePage() {
+export default function Partecipating({ courses }: { courses: any[] }) {
   const { chain, chains } = useNetwork()
+
   return (
     <>
       <Head>
@@ -37,9 +42,59 @@ export default function AddCoursePage() {
               </Link>
             </TabList>
           </Tabs>
-          <Box>My courses</Box>
+          {courses.length === 0 ? (
+            <p>No courses</p>
+          ) : (
+            <SimpleGrid columns={{ sm: 1, md: 2, lg: 3, xl: 5 }} spacing={8}>
+              {courses.map((course: any) => {
+                return <CourseCard data={course} key={course.address} />
+              })}
+            </SimpleGrid>
+          )}
         </Stack>
       </Layout.Profile>
     </>
   )
 }
+
+export const getServerSideProps: GetServerSideProps<{ courses: any[] }> =
+  async (context) => {
+    const { chainId } = context.query as { address: string; chainId: string }
+    const session = await getSession(context)
+
+    if (!session) {
+      return {
+        redirect: {
+          permanent: false,
+          destination: '/',
+        },
+      }
+    }
+
+    if (!chainId) {
+      return {
+        redirect: {
+          permanent: false,
+          destination: '/profile',
+        },
+        props: {},
+      }
+    }
+
+    try {
+      const data = await getStudentCourses(
+        session!.user.address,
+        parseInt(chainId),
+      )
+
+      return {
+        props: {
+          courses: data,
+        },
+      }
+    } catch (_e) {
+      return {
+        notFound: true,
+      }
+    }
+  }

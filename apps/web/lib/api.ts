@@ -52,3 +52,29 @@ export const getTeacherCourses = async (
 
   return data
 }
+
+
+export const getStudentCourses = async (
+  studentAddress: string,
+  chainId: number,
+) => {
+  const data = await prisma.courseStudents.findMany({
+    where: {
+      chainId: chainId,
+      studentAddress: studentAddress.toLowerCase(),
+    },
+    include : {
+      course : true
+    }
+  })
+
+  if (data === null) {
+    throw Error('Course does not exist or you have passed the wrong chain')
+  }
+
+  const cleanData = data.map(courseStudentsData => {
+    return courseStudentsData.course
+  })
+
+  return cleanData
+}
