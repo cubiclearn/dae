@@ -39,7 +39,8 @@ export default function AddCoursePage() {
     abi: CredentialsFactoryAbi,
   })
 
-  const { create, isLoading, isError, isSuccess } = useCreateCourse(config)
+  const { create, isLoading, isError, isSuccess, isSigning } =
+    useCreateCourse(config)
 
   useEffect(() => {
     if (isError) {
@@ -244,8 +245,8 @@ export default function AddCoursePage() {
                 <Button
                   colorScheme='blue'
                   type='submit'
-                  disabled={isLoading}
-                  isLoading={isLoading}
+                  disabled={isLoading || isSigning}
+                  isLoading={isLoading || isSigning}
                   loadingText='Submitting'
                 >
                   Create course

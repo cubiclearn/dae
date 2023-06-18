@@ -8,11 +8,13 @@ export function useCreateCourse(config :any) {
   const [isError, setIsError] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isSigning, setIsSigning] = useState(false)
   const contractWrite = useContractWrite(config)
 
   const create = async () => {
     setIsSuccess(false)
     setIsError(false)
+    setIsSigning(true)
     const client = getPublicClient()
     try {
         const promise: Promise<WriteContractResult> = new Promise(
@@ -21,8 +23,10 @@ export function useCreateCourse(config :any) {
                 .then((data: WriteContractResult) => {
                   resolve(data)
                   setIsLoading(true)
+                  setIsSigning(false)
                 })
                 .catch((error: any) => {
+                  console.log('Contract write error:', error);
                   reject(error)
                 })
             },
@@ -51,6 +55,7 @@ export function useCreateCourse(config :any) {
         setIsSuccess(true)
     }catch(e: any){
         setIsLoading(false)
+        setIsSigning(false)
         setIsError(true)
         setError(e.message)
     }
@@ -62,5 +67,6 @@ export function useCreateCourse(config :any) {
     isError,
     isSuccess,
     error,
+    isSigning
   }
 }
