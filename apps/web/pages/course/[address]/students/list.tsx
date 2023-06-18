@@ -6,8 +6,10 @@ import {
   TabList,
   Tab,
   Link,
-  OrderedList,
-  ListItem,
+  Flex,
+  Avatar,
+  Text,
+  VStack,
 } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
@@ -40,15 +42,28 @@ export default function StudentsList({ students }: any) {
               </Link>
             </TabList>
           </Tabs>
-          <OrderedList>
+          <VStack spacing={2} align={'stretch'}>
             {students.map((student: any) => {
               return (
-                <ListItem key={student.studentAddress}>
-                  {student.studentAddress}
-                </ListItem>
+                <Flex
+                  key={student.studentAddress}
+                  border={'1px'}
+                  borderColor={'gray.300'}
+                  rounded={'lg'}
+                  paddingY={2}
+                  paddingX={3}
+                  shadow={'0 0 1px rgba(0, 0, 0, 0.3)'}
+                >
+                  <Avatar src='' size={'sm'} />
+                  <Flex ml='4' alignItems={'center'}>
+                    <Text verticalAlign={'center'} fontSize='md'>
+                      {student.studentAddress}
+                    </Text>
+                  </Flex>
+                </Flex>
               )
             })}
-          </OrderedList>
+          </VStack>
         </Stack>
       </Layout.Course>
     </>
