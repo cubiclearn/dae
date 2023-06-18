@@ -5,3 +5,5 @@ export interface CourseMetadata {
     website: string;
     access_url: string;
   }
+
+export type CredentialTransferLog = {eventName : string, args : {from : `0x${string}`, to : `0x${string}`, tokenId : bigint}}

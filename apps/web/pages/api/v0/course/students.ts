@@ -6,6 +6,8 @@ import {createPublicClient} from 'viem'
 import {getChainFromId} from '../../../../lib/functions'
 import {getCourseStudents} from '../../../../lib/api'
 import {config as TransportConfig} from '@dae/viem-config'
+import { decodeEventLog } from 'viem'
+import {CredentialTransferLog} from '@dae/types'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const session = await getSession({req})
@@ -28,13 +30,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(500)
     }
   } else if (req.method === 'POST') {
-    const {addressesToEnroll, chainId, courseAddress} = req.body as {
+    const {chainId, txHash} = req.body as {
       chainId: string
-      addressesToEnroll: string[]
-      courseAddress: string
+      txHash: `0x${string}`
     }
 
-    if (!addressesToEnroll || addressesToEnroll.length === 0 || !courseAddress || !chainId) {
+    if (!chainId || !txHash) {
       res.status(400)
       return
     }
@@ -44,46 +45,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       transport: TransportConfig[chainId].transport,
     })
 
-    const contractCallDataArray: any[] = addressesToEnroll.map((addressToEnroll: `0x${string}`) => {
-      return {
-        address: courseAddress,
-        abi: CredentialsAbi,
-        functionName: 'balanceOf',
-        args: [addressToEnroll],
-      }
+    const txRecept = await client.getTransactionReceipt({
+      hash: txHash
     })
 
-    // WHEN MULTICALL IS SUPPORTED
-    //
-    // const results: BigInt[] = await client.multicall({
-    //     contracts: contractCallDataArray,
-    // });
-
-    // BATCH REQUEST (REMOVE IF MULTICALL)
-    const results: bigint[] = await Promise.all(
-      contractCallDataArray.map<Promise<bigint>>((calldata): Promise<bigint> => {
-        return client.readContract(calldata) as Promise<bigint>
+    const txLogsDecoded = txRecept.logs.map(log => {
+      return decodeEventLog({
+        abi:CredentialsAbi,
+        data : log.data,
+        topics: log.topics
       })
-    )
+    })
 
-    for (let i = 0; i < addressesToEnroll.length; i++) {
-      const balance: bigint = results[i]
-      if (Number(balance) > 0) {
-        try {
-          await prisma.courseStudents.create({
-            data: {
-              courseAddress: courseAddress.toLowerCase(),
-              studentAddress: addressesToEnroll[i].toLowerCase(),
-              chainId: parseInt(chainId),
-            },
-          })
-        } catch (e: any) {
-          console.error(e)
-          res.status(500).json({message: e})
-          return
-        }
+    const transferLogs = txLogsDecoded.filter(log => log.eventName === 'Transfer') as [CredentialTransferLog]
+
+    transferLogs.forEach(async log => {
+      try {
+        await prisma.courseStudents.create({
+          data: {
+            courseAddress: txRecept.to as `0x${string}`,
+            studentAddress: log.args.to,
+            chainId: parseInt(chainId),
+          },
+        })
+      } catch (_e) {
+        console.error(_e)
+        res.status(500).json({message: _e})
+        return
       }
-    }
+    })
     res.status(200).json({message: 'OK'})
   } else {
     res.status(400).json({message: 'HTTP method not supported'})
