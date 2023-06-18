@@ -1,12 +1,26 @@
 import Head from 'next/head'
 import { Layout } from '@dae/ui'
 import NextLink from 'next/link'
-import { SimpleGrid, Stack, Tabs, TabList, Tab, Link } from '@chakra-ui/react'
+import {
+  SimpleGrid,
+  Stack,
+  Tabs,
+  TabList,
+  Tab,
+  Link,
+  Box,
+} from '@chakra-ui/react'
 import { CourseCard } from '@dae/ui'
 import { useNetwork } from 'wagmi'
 import { getStudentCourses } from '../../../lib/api'
 import { GetServerSideProps } from 'next'
 import { getSession } from 'next-auth/react'
+import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
+} from '@chakra-ui/react'
 
 export default function Partecipating({ courses }: { courses: any[] }) {
   const { chain, chains } = useNetwork()
@@ -43,7 +57,15 @@ export default function Partecipating({ courses }: { courses: any[] }) {
             </TabList>
           </Tabs>
           {courses.length === 0 ? (
-            <p>No courses</p>
+            <Alert status='info'>
+              <AlertIcon />
+              <Box>
+                <AlertTitle>Nothing to show.</AlertTitle>
+                <AlertDescription>
+                  You are not currently participating in any courses.
+                </AlertDescription>
+              </Box>
+            </Alert>
           ) : (
             <SimpleGrid columns={{ sm: 1, md: 2, lg: 3, xl: 5 }} spacing={8}>
               {courses.map((course: any) => {

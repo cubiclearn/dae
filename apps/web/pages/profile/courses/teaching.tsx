@@ -2,11 +2,25 @@ import Head from 'next/head'
 import { Layout } from '@dae/ui'
 import NextLink from 'next/link'
 import { CourseCard } from '@dae/ui'
-import { SimpleGrid, Stack, Tabs, TabList, Tab, Link } from '@chakra-ui/react'
+import {
+  SimpleGrid,
+  Stack,
+  Tabs,
+  TabList,
+  Tab,
+  Link,
+  Box,
+} from '@chakra-ui/react'
 import { GetServerSideProps } from 'next'
 import { getTeacherCourses } from '../../../lib/api'
 import { getSession } from 'next-auth/react'
 import { useNetwork } from 'wagmi'
+import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
+} from '@chakra-ui/react'
 
 export default function Teaching({ courses }: { courses: any[] }) {
   const { chain, chains } = useNetwork()
@@ -42,7 +56,15 @@ export default function Teaching({ courses }: { courses: any[] }) {
             </TabList>
           </Tabs>
           {courses.length === 0 ? (
-            <p>No courses</p>
+            <Alert status='info'>
+              <AlertIcon />
+              <Box>
+                <AlertTitle>Nothing to show.</AlertTitle>
+                <AlertDescription>
+                  You are not currently teaching any courses
+                </AlertDescription>
+              </Box>
+            </Alert>
           ) : (
             <SimpleGrid columns={{ sm: 1, md: 2, lg: 3, xl: 5 }} spacing={8}>
               {courses.map((course: any) => {
