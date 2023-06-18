@@ -1,7 +1,7 @@
-import {FC} from 'react'
-import {ConnectButton as RainbowConnectButton} from '@rainbow-me/rainbowkit'
-import {useDisconnect} from 'wagmi'
-import {useRouter} from 'next/router'
+import { FC } from 'react'
+import { ConnectButton as RainbowConnectButton } from '@rainbow-me/rainbowkit'
+import { useDisconnect } from 'wagmi'
+import { useRouter } from 'next/router'
 import {
   Avatar,
   Box,
@@ -15,11 +15,11 @@ import {
   Text,
   Image,
 } from '@chakra-ui/react'
-import {useNetwork} from 'wagmi'
+import { useNetwork } from 'wagmi'
 
 export const ConnectButton: FC = (_props) => {
-  const {chains} = useNetwork()
-  const {disconnect} = useDisconnect()
+  const { chains } = useNetwork()
+  const { disconnect } = useDisconnect()
   const router = useRouter()
   const handleDisconnect = () => {
     disconnect()
@@ -27,13 +27,23 @@ export const ConnectButton: FC = (_props) => {
 
   return (
     <RainbowConnectButton.Custom>
-      {({account, chain, openChainModal, openConnectModal, authenticationStatus, mounted}) => {
+      {({
+        account,
+        chain,
+        openChainModal,
+        openConnectModal,
+        authenticationStatus,
+        mounted,
+      }) => {
         // Note: If your app doesn't use authentication, you
         // can remove all 'authenticationStatus' checks
 
         const ready = mounted && authenticationStatus !== 'loading'
         const connected =
-          ready && account && chain && (!authenticationStatus || authenticationStatus === 'authenticated')
+          ready &&
+          account &&
+          chain &&
+          (!authenticationStatus || authenticationStatus === 'authenticated')
 
         return (
           <Box
@@ -49,7 +59,12 @@ export const ConnectButton: FC = (_props) => {
             {(() => {
               if (!connected) {
                 return (
-                  <Button onClick={openConnectModal} rounded={'xl'} fontWeight={'semibold'} textColor={'gray.800'}>
+                  <Button
+                    onClick={openConnectModal}
+                    rounded={'xl'}
+                    fontWeight={'semibold'}
+                    textColor={'gray.800'}
+                  >
                     Connect Wallet
                   </Button>
                 )
@@ -60,7 +75,7 @@ export const ConnectButton: FC = (_props) => {
               }
 
               return (
-                <Flex className="flex gap-5">
+                <Flex className='flex gap-5'>
                   <Button
                     onClick={openChainModal}
                     fontSize={'md'}
@@ -71,10 +86,21 @@ export const ConnectButton: FC = (_props) => {
                     }}
                   >
                     {chain.hasIcon && (
-                      <Box width={6} height={6} rounded={'full'} marginRight={2} bg={chain.iconBackground}>
+                      <Box
+                        width={6}
+                        height={6}
+                        rounded={'full'}
+                        marginRight={2}
+                        bg={chain.iconBackground}
+                      >
                         {chain.iconUrl && (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <Image alt={chain.name ?? 'Chain icon'} src={chain.iconUrl} width={6} height={6} />
+                          <Image
+                            alt={chain.name ?? 'Chain icon'}
+                            src={chain.iconUrl}
+                            width={6}
+                            height={6}
+                          />
                         )}
                       </Box>
                     )}
@@ -82,20 +108,44 @@ export const ConnectButton: FC = (_props) => {
                   </Button>
                   <Flex alignItems={'center'}>
                     <Menu>
-                      <MenuButton as={Button} rounded={'full'} variant={'link'} cursor={'pointer'} minW={0}>
+                      <MenuButton
+                        as={Button}
+                        rounded={'full'}
+                        variant={'link'}
+                        cursor={'pointer'}
+                        minW={0}
+                      >
                         <Avatar size={'sm'} src={account.ensAvatar} />
                       </MenuButton>
                       <MenuList>
-                        <Flex justify={'center'} align={'center'} direction={'column'}>
+                        <Flex
+                          justify={'center'}
+                          align={'center'}
+                          direction={'column'}
+                        >
                           <Text fontSize={'sm'}>Address:</Text>
                           <Text fontSize={'lg'} fontWeight={'semibold'}>
                             {account.displayName}
                           </Text>
                         </Flex>
                         <MenuDivider />
-                        <MenuItem onClick={() => router.push('/profile')}>Profile</MenuItem>
-                        <MenuItem onClick={() => router.push(`/profile/courses/teaching?chainId=${chain ? chain.id : chains[0].id}`)}>My Courses</MenuItem>
-                        <MenuItem onClick={() => router.push('/profile/courses/create')}>Create Course</MenuItem>
+                        {/* <MenuItem onClick={() => router.push('/profile')}>Profile</MenuItem> */}
+                        <MenuItem
+                          onClick={() =>
+                            router.push(
+                              `/profile/courses/teaching?chainId=${
+                                chain ? chain.id : chains[0].id
+                              }`,
+                            )
+                          }
+                        >
+                          My Courses
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => router.push('/profile/courses/create')}
+                        >
+                          Create Course
+                        </MenuItem>
                         <MenuDivider />
                         <MenuItem onClick={handleDisconnect}>Sign Out</MenuItem>
                       </MenuList>
