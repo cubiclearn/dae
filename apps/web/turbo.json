@@ -3,67 +3,6 @@
         "//"
     ],
     "pipeline": {
-        "generate": {
-            "outputs": [
-                ".mesh/**"
-            ],
-            "dependsOn": [],
-            "env": [],
-            "cache": true
-        },
-        "build": {
-            "outputs": [
-                ".next/**"
-            ],
-            "dependsOn": [
-                "^build",
-                "generate"
-            ],
-            "env": [
-                "NEXTAUTH_URL",
-                "NEXTAUTH_SECRET",
-                "NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS",
-                "API_URL",
-                "INFURA_API_KEY"
-            ],
-            "cache": true
-        },
-        "dev": {
-            "outputs": [
-                ".next/**"
-            ],
-            "dependsOn": [
-                "^build",
-                "generate"
-            ],
-            "env": [
-                "NEXTAUTH_URL",
-                "NEXTAUTH_SECRET",
-                "NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS",
-                "API_URL",
-                "INFURA_API_KEY"
-            ],
-            "persistent": true,
-            "cache": false
-        },
-        "start": {
-            "dependsOn": [
-                "^build"
-            ],
-            "env": [
-                "NEXTAUTH_URL",
-                "NEXTAUTH_SECRET",
-                "NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS"
-            ],
-            "cache": true
-        },
-        "check": {
-            "dependsOn": [
-                "^build",
-                "generate"
-            ],
-            "cache": false
-        },
         "sitemap": {
             "outputs": [
                 "public/sitemap.xml",
@@ -74,13 +13,6 @@
                 "build"
             ],
             "cache": true
-        },
-        "publish": {
-            "dependsOn": [
-                "build",
-                "^publish"
-            ],
-            "cache": false
         }
     }
 }

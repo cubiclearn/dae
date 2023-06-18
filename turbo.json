@@ -1,7 +1,14 @@
 {
     "$schema": "https://turbo.build/schema.json",
+    "globalDotEnv": [
+        ".env.local",
+        ".env"
+    ],
     "globalDependencies": [],
     "pipeline": {
+        "generate": {
+            "cache": false
+        },
         "build": {
             "outputs": [
                 ".next/**/*",
@@ -10,26 +17,58 @@
                 "dist/**/*"
             ],
             "dependsOn": [
-                "^build"
+                "^build",
+                "generate"
+            ],
+            "env": [
+                "NEXTAUTH_URL",
+                "NEXTAUTH_SECRET",
+                "NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS",
+                "API_URL",
+                "INFURA_API_KEY"
             ]
         },
         "start": {
-            "dependsOn": [
-                "build"
+            "outputs": [
+                ".next/**/*",
+                "!.next/cache/**",
+                ".vercel/**/*",
+                "dist/**/*"
             ],
-            "persistent": true
+            "dependsOn": [
+                "^build",
+                "generate"
+            ],
+            "env": [
+                "NEXTAUTH_URL",
+                "NEXTAUTH_SECRET",
+                "NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS",
+                "API_URL",
+                "INFURA_API_KEY"
+            ]
+        },
+        "check": {
+            "dependsOn": [
+                "^build"
+            ],
+            "cache": false
+        },
+        "clean": {
+            "cache": false
         },
         "lint": {},
         "dev": {
             "dependsOn": [
-                "build"
+                "^build",
+                "generate"
             ],
+            "cache": false,
             "persistent": true
         },
-        "clean": {},
         "publish": {
             "dependsOn": [
-                "build"
+                "build",
+                "generate"
             ]
         }
     }
