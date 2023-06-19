@@ -154,6 +154,7 @@ importers:
 
   packages/hooks:
     specifiers:
+      '@dae/abi': workspace:*
       '@dae/typescript-config': workspace:*
       '@types/react': 18.0.22
       '@types/react-dom': 18.0.7
@@ -171,6 +172,7 @@ importers:
       viem: 1.0.6_typescript@5.0.4
       wagmi: 1.2.0_fumr3zwlxrkhbborr6fvd2zsum
     devDependencies:
+      '@dae/abi': link:../abi
       '@dae/typescript-config': link:../../config/typescript
       '@types/react': 18.0.22
       '@types/react-dom': 18.0.7
