@@ -115,14 +115,10 @@ export const CredentialsAirDropForm: FC = () => {
 
   const handleAirdrop = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if (!isError) {
-      try {
-        await enroll()
-        clearInputFields()
-      } catch (_e) {
-        console.error(_e)
-      }
-    }
+    try {
+      await enroll()
+      clearInputFields()
+    } catch (_e) {}
   }
 
   return (

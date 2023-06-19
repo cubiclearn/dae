@@ -1,20 +1,20 @@
-import { useCallback, useState } from 'react'
-import { useContractWrite } from 'wagmi'
-import { WriteContractResult, getPublicClient } from '@wagmi/core'
-import { TransactionReceipt } from 'viem'
-import { usePrepareContractWrite } from 'wagmi'
-import { CredentialsAbi } from '@dae/abi'
-import { isAddress } from 'viem'
-import { useEffect } from 'react'
+import {useCallback, useState} from 'react'
+import {useContractWrite} from 'wagmi'
+import {WriteContractResult, getPublicClient} from '@wagmi/core'
+import {TransactionReceipt} from 'viem'
+import {usePrepareContractWrite} from 'wagmi'
+import {CredentialsAbi} from '@dae/abi'
+import {isAddress} from 'viem'
+import {useEffect} from 'react'
 
-export function useAirdropCredentials(courseAddress : `0x${string}` , addresses : `0x${string}`[], tokenURIs : any[]) {
-  const [error, setError] = useState<string|null>(null)
+export function useAirdropCredentials(courseAddress: `0x${string}`, addresses: `0x${string}`[], tokenURIs: any[]) {
+  const [error, setError] = useState<string | null>(null)
   const [isError, setIsError] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isSigning, setIsSigning] = useState(false)
 
-  const { config, refetch } = usePrepareContractWrite({
+  const {config, refetch} = usePrepareContractWrite({
     abi: CredentialsAbi,
     address: courseAddress,
     functionName: 'multiMint',
@@ -27,10 +27,10 @@ export function useAirdropCredentials(courseAddress : `0x${string}` , addresses 
     if (areInputsValid()) {
       refetch()
     }
-    if(isError){
+    if (isError) {
       setIsError(false)
     }
-  },[addresses, tokenURIs])
+  }, [addresses, tokenURIs])
 
   function isURL(str: string) {
     const urlPattern = /^(https?:\/\/)?([\w.-]+)\.([a-z]{2,})(\/\S*)?$/i
@@ -38,9 +38,9 @@ export function useAirdropCredentials(courseAddress : `0x${string}` , addresses 
   }
 
   const checkTokenURIsListIsCorrect = useCallback(() => {
-    if(tokenURIs.length === 0){
+    if (tokenURIs.length === 0) {
       setError('Token URIs list cannot be empty')
-      return false;
+      return false
     }
     for (let i = 0; i < tokenURIs.length; i++) {
       if (!isURL(tokenURIs[i])) {
@@ -49,12 +49,12 @@ export function useAirdropCredentials(courseAddress : `0x${string}` , addresses 
       }
     }
     return true
-  },[tokenURIs])
+  }, [tokenURIs])
 
   const checkAddressesListIsCorrect = useCallback(() => {
-    if(addresses.length === 0){
+    if (addresses.length === 0) {
       setError('Address list cannot be empty')
-      return false;
+      return false
     }
     for (let i = 0; i < addresses.length; i++) {
       if (!isAddress(addresses[i])) {
@@ -63,9 +63,9 @@ export function useAirdropCredentials(courseAddress : `0x${string}` , addresses 
       }
     }
     return true
-  },[addresses])
+  }, [addresses])
 
-  const areInputsValid = useCallback( () => {
+  const areInputsValid = useCallback(() => {
     if (
       checkTokenURIsListIsCorrect() &&
       checkAddressesListIsCorrect() &&
@@ -79,57 +79,54 @@ export function useAirdropCredentials(courseAddress : `0x${string}` , addresses 
     return false
   }, [tokenURIs, addresses])
 
-  const enroll = async () => {
+  const enroll = async (): Promise<void> => {
     setIsSuccess(false)
     setIsError(false)
     setIsSigning(true)
     const client = getPublicClient()
-    try {
-        if(!areInputsValid()){
-          throw new Error("Invalid inputs error")
-        }
 
-        const promise: Promise<WriteContractResult> = new Promise(
-            (resolve, reject) => {
-              contractWrite.writeAsync!()
-                .then((data: WriteContractResult) => {
-                  resolve(data)
-                  setIsLoading(true)
-                  setIsSigning(false)
-                })
-                .catch((error: any) => {
-                  console.log('Contract write error:', error);
-                  reject(error)
-                })
-            },
-          )
-        const promise2: Promise<TransactionReceipt> = promise.then(
-            (data: WriteContractResult) => {
-              return client.waitForTransactionReceipt({
-                hash: data.hash as `0x${string}`,
-              })
-            },
-          )
-        const promise3 = promise2.then((txReceipt: TransactionReceipt) => {
-            return fetch('/api/v0/course/students', {
-              method: 'POST',
-              body: JSON.stringify({
-                txHash: txReceipt.transactionHash,
-                chainId: client.chain.id,
-              }),
-              headers: {
-                'Content-type': 'application/json; charset=UTF-8',
-              },
-            })
-          })
-        await promise3
-        setIsLoading(false)
-        setIsSuccess(true)
-    }catch(_e){
-        setIsLoading(false)
-        setIsSigning(false)
+    return new Promise((resolve, reject) => {
+      if (!areInputsValid()) {
         setIsError(true)
-    }
+        setIsSigning(false)
+        reject(new Error('Invalid inputs error'))
+      }
+
+      const promise = contractWrite.writeAsync!()
+
+      promise
+        .then((data: WriteContractResult) => {
+          setIsLoading(true)
+          setIsSigning(false)
+          return client.waitForTransactionReceipt({
+            hash: data.hash as `0x${string}`,
+          })
+        })
+        .then((txReceipt: TransactionReceipt) => {
+          return fetch('/api/v0/course/students', {
+            method: 'POST',
+            body: JSON.stringify({
+              txHash: txReceipt.transactionHash,
+              chainId: client.chain.id,
+            }),
+            headers: {
+              'Content-type': 'application/json; charset=UTF-8',
+            },
+          })
+        })
+        .then(() => {
+          setIsLoading(false)
+          setIsSuccess(true)
+          resolve()
+        })
+        .catch((error) => {
+          setIsLoading(false)
+          setIsSigning(false)
+          setIsError(true)
+          setError(error.message)
+          reject(error)
+        })
+    })
   }
 
   return {
