@@ -26,7 +26,7 @@ export const { chains, publicClient, webSocketPublicClient } = configureChains(
 
 const { connectors } = getDefaultWallets({
   appName: 'Decentralized Autonomous Education (DAE)',
-  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '',
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'projectid',
   chains,
 })
 
@@ -35,10 +35,10 @@ const appInfo = {
 }
 
 const config = createConfig({
+  autoConnect: true,
   publicClient,
   webSocketPublicClient,
   connectors,
-  autoConnect: true,
 })
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
