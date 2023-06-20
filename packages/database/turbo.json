@@ -7,6 +7,10 @@
             "outputs": [
                 "dist/**/*"
             ],
+            "dependsOn": [
+                "^build",
+                "generate"
+            ],
             "env": [
                 "DATABASE_URL",
                 "SHADOW_DATABASE_URL",
@@ -62,6 +66,7 @@
         },
         "release": {
             "dependsOn": [
+                "build",
                 "db:migrate:deploy"
             ]
         }
