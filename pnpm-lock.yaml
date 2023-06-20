@@ -50,7 +50,7 @@ importers:
       framer-motion: 10.12.8
       install: 0.13.0
       next: 13.4.1
-      next-auth: 4.22.1
+      next-auth: 4.20.1
       npm: 9.6.6
       react: 18.2.0
       react-dom: 18.2.0
@@ -68,16 +68,16 @@ importers:
       '@dae/viem-config': link:../../config/viem
       '@emotion/react': 11.11.0_gd4tregka43x4eiz452mfdbv4y
       '@emotion/styled': 11.11.0_eex57i4kgkgprkpsrpmm3rdgxu
-      '@next-auth/prisma-adapter': 1.0.6_afrt2cjoubnivixcsmhfowwetm
+      '@next-auth/prisma-adapter': 1.0.6_avdnd67itvtwqtprzcctrg7hxi
       '@prisma/client': 4.14.1
       '@rainbow-me/rainbowkit': 1.0.2_xjnegrlj3luvu2xqny7q7yobly
-      '@rainbow-me/rainbowkit-siwe-next-auth': 0.2.0_omia5gf23qkywvd7iidlhyy6xm
+      '@rainbow-me/rainbowkit-siwe-next-auth': 0.2.0_3jlcrpvhvusckja3lbnol44ori
       '@wagmi/core': 1.2.0_py3np4lx2d223gbntmdtb5okzy
       ethers: 5.7.2
       framer-motion: 10.12.8_biqbaboplfbrettd7655fr4n2y
       install: 0.13.0
       next: 13.4.1_biqbaboplfbrettd7655fr4n2y
-      next-auth: 4.22.1_2xek2u27flvv5bywadnu4xxgx4
+      next-auth: 4.20.1_2xek2u27flvv5bywadnu4xxgx4
       npm: 9.6.6
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -2094,14 +2094,14 @@ packages:
       '@motionone/dom': 10.16.2
       tslib: 2.5.3
 
-  /@next-auth/prisma-adapter/1.0.6_afrt2cjoubnivixcsmhfowwetm:
+  /@next-auth/prisma-adapter/1.0.6_avdnd67itvtwqtprzcctrg7hxi:
     resolution: {integrity: sha512-Z7agwfSZEeEcqKqrnisBun7VndRPshd6vyDsoRU68MXbkui8storkHgvN2hnNDrqr/hSCF9aRn56a1qpihaB4A==}
     peerDependencies:
       '@prisma/client': '>=2.26.0 || >=3'
       next-auth: ^4
     dependencies:
       '@prisma/client': 4.14.1
-      next-auth: 4.22.1_2xek2u27flvv5bywadnu4xxgx4
+      next-auth: 4.20.1_2xek2u27flvv5bywadnu4xxgx4
     dev: false
 
   /@next/env/13.4.1:
@@ -2263,7 +2263,7 @@ packages:
     resolution: {integrity: sha512-WbK3DajKklEdeWh4Ds4ltTTBs0s+0yqXMtGVR1jFB2ma8vtrqKdRJtEi0xVNc8Sb6V+kS2fJ5sPSNP43LeMRRQ==}
     dev: true
 
-  /@rainbow-me/rainbowkit-siwe-next-auth/0.2.0_omia5gf23qkywvd7iidlhyy6xm:
+  /@rainbow-me/rainbowkit-siwe-next-auth/0.2.0_3jlcrpvhvusckja3lbnol44ori:
     resolution: {integrity: sha512-U0GPPc5tRhNSLgdLb4sU6eha7qxIJmfNbUmcGeQGh7IR/jw3xFdYYKYaHcEG8rB09/yfEMQodwJiV+vrjta6zQ==}
     engines: {node: '>=12.4'}
     peerDependencies:
@@ -2273,7 +2273,7 @@ packages:
       siwe: ^2.1.4
     dependencies:
       '@rainbow-me/rainbowkit': 1.0.2_xjnegrlj3luvu2xqny7q7yobly
-      next-auth: 4.22.1_2xek2u27flvv5bywadnu4xxgx4
+      next-auth: 4.20.1_2xek2u27flvv5bywadnu4xxgx4
       react: 18.2.0
       siwe: 2.1.4_ethers@5.7.2
     dev: false
@@ -4734,8 +4734,8 @@ packages:
   /natural-compare/1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
-  /next-auth/4.22.1_2xek2u27flvv5bywadnu4xxgx4:
-    resolution: {integrity: sha512-NTR3f6W7/AWXKw8GSsgSyQcDW6jkslZLH8AiZa5PQ09w1kR8uHtR9rez/E9gAq/o17+p0JYHE8QjF3RoniiObA==}
+  /next-auth/4.20.1_2xek2u27flvv5bywadnu4xxgx4:
+    resolution: {integrity: sha512-ZcTUN4qzzZ/zJYgOW0hMXccpheWtAol8QOMdMts+LYRcsPGsqf2hEityyaKyECQVw1cWInb9dF3wYwI5GZdEmQ==}
     peerDependencies:
       next: ^12.2.5 || ^13
       nodemailer: ^6.6.5

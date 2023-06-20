@@ -9,6 +9,7 @@ import {config as TransportConfig} from '@dae/viem-config'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const session = await getSession({req})
+  console.log(session)
   if (session) {
     if (req.method === 'GET') {
       const {chainId, address} = req.query as {
