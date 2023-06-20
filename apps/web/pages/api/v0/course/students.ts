@@ -6,7 +6,7 @@ import {createPublicClient} from 'viem'
 import {getChainFromId} from '../../../../lib/functions'
 import {getCourseStudents} from '../../../../lib/api'
 import {config as TransportConfig} from '@dae/viem-config'
-import { decodeEventLog } from 'viem'
+import {decodeEventLog} from 'viem'
 import {CredentialTransferLog} from '@dae/types'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -46,34 +46,37 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     })
 
     const txRecept = await client.getTransactionReceipt({
-      hash: txHash
+      hash: txHash,
     })
 
-    const txLogsDecoded = txRecept.logs.map(log => {
+    const txLogsDecoded = txRecept.logs.map((log) => {
       return decodeEventLog({
-        abi:CredentialsAbi,
-        data : log.data,
-        topics: log.topics
+        abi: CredentialsAbi,
+        data: log.data,
+        topics: log.topics,
       })
     })
 
-    const transferLogs = txLogsDecoded.filter(log => log.eventName === 'Transfer') as [CredentialTransferLog]
+    const transferLogs = txLogsDecoded.filter((log) => log.eventName === 'Transfer') as [CredentialTransferLog]
 
-    transferLogs.forEach(async log => {
-      try {
-        await prisma.courseStudents.create({
-          data: {
-            courseAddress: txRecept.to as `0x${string}`,
-            studentAddress: log.args.to,
-            chainId: parseInt(chainId),
-          },
-        })
-      } catch (_e) {
-        console.error(_e)
-        res.status(500).json({message: _e})
-        return
+    const createData = transferLogs.map((log) => {
+      return {
+        courseAddress: txRecept.to as `0x${string}`,
+        studentAddress: log.args.to,
+        chainId: parseInt(chainId),
       }
     })
+
+    try {
+      await prisma.courseStudents.createMany({
+        data: createData,
+      })
+    } catch (_e) {
+      console.error(_e)
+      res.status(500).json({message: _e})
+      return
+    }
+
     res.status(200).json({message: 'OK'})
   } else {
     res.status(400).json({message: 'HTTP method not supported'})
