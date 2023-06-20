@@ -17,15 +17,18 @@
     "scripts": {
         "build": "dotenv -- turbo run build",
         "build-packages": "dotenv -- turbo run build --filter={./packages/*}...",
-        "check": "rome check .",
-        "check:fix": "rome check . --apply",
+        "check": "dotenv -- turbo run check",
+        "lint": "rome check .",
+        "lint:fix": "rome check . --apply",
         "clean": "turbo run clean && rm -rf node_modules",
-        "db:studio": "prisma studio --schema=./packages/database/prisma/schema.prisma",
+        "db:studio": "dotenv -- turbo run db:studio",
+        "db:migrate:dev": "dotenv -- turbo run db:migrate:dev",
+        "db:migrate:deploy": "dotenv -- turbo run db:migrate:deploy",
         "dev": "dotenv -- turbo run dev --no-cache --parallel --continue",
         "format": "rome format .",
         "format:fix": "rome format . --write",
         "prepare": "husky install",
-        "publish": "dotenv -- turbo run publish",
+        "release": "dotenv -- turbo run release",
         "start": "dotenv -- turbo run start"
     }
 }

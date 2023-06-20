@@ -11,45 +11,13 @@
         },
         "build": {
             "outputs": [
-                ".next/**/*",
-                "!.next/cache/**",
-                ".vercel/**/*",
                 "dist/**/*"
             ],
-            "dependsOn": [
-                "^build",
-                "generate"
-            ],
-            "env": [
-                "NEXTAUTH_URL",
-                "NEXTAUTH_SECRET",
-                "NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS",
-                "API_URL",
-                "INFURA_API_KEY"
-            ]
-        },
-        "start": {
-            "outputs": [
-                ".next/**/*",
-                "!.next/cache/**",
-                ".vercel/**/*",
-                "dist/**/*"
-            ],
-            "dependsOn": [
-                "^build",
-                "generate"
-            ],
-            "env": [
-                "NEXTAUTH_URL",
-                "NEXTAUTH_SECRET",
-                "NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS",
-                "API_URL",
-                "INFURA_API_KEY"
-            ]
+            "cache": true
         },
         "check": {
             "dependsOn": [
-                "^build"
+                "build"
             ],
             "cache": false
         },
@@ -58,17 +26,11 @@
         },
         "lint": {},
         "dev": {
-            "dependsOn": [
-                "^build",
-                "generate"
-            ],
-            "cache": false,
             "persistent": true
         },
-        "publish": {
+        "release": {
             "dependsOn": [
-                "build",
-                "generate"
+                "build"
             ]
         }
     }

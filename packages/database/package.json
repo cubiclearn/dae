@@ -22,8 +22,6 @@
     "scripts": {
         "build": "tsup",
         "clean": "rm -rf .turbo dist node_modules",
-        "db:migrate:deploy": "prisma migrate deploy",
-        "db:migrate:dev": "prisma migrate dev",
         "dev": "tsup --watch",
         "format": "prisma format",
         "generate": "prisma generate",
@@ -33,7 +31,10 @@
         "publish": "prisma db push",
         "pull": "prisma db pull",
         "push": "prisma db push",
-        "studio": "prisma studio"
+        "studio": "prisma studio",
+        "db:studio": "prisma studio",
+        "db:migrate:dev": "prisma migrate dev",
+        "db:migrate:deploy": "prisma migrate deploy"
     },
     "source": "./src/index.ts",
     "types": "./dist/index.d.ts"

@@ -7,25 +7,14 @@
             "outputs": [
                 "dist/**/*"
             ],
-            "dependsOn": [
-                "generate"
-            ],
             "env": [
-                "DATABASE_URL"
-            ]
+                "DATABASE_URL",
+                "SHADOW_DATABASE_URL",
+                "DIRECT_DATABASE_URL"
+            ],
+            "cache": true
         },
-        "dev": {
-            "outputs": [
-                "dist/**/*"
-            ],
-            "dependsOn": [
-                "generate"
-            ],
-            "env": [
-                "DATABASE_URL"
-            ],
-            "cache": false
-        },
+        "dev": {},
         "init": {
             "outputs": [
                 "prisma/**/*"
@@ -45,6 +34,9 @@
             ]
         },
         "push": {
+            "dependsOn": [
+                "generate"
+            ],
             "cache": false
         },
         "generate": {
@@ -57,9 +49,20 @@
             ],
             "cache": false
         },
-        "publish": {
+        "db:studio": {},
+        "db:migrate:dev": {
             "dependsOn": [
                 "generate"
+            ]
+        },
+        "db:migrate:deploy": {
+            "dependsOn": [
+                "generate"
+            ]
+        },
+        "release": {
+            "dependsOn": [
+                "db:migrate:deploy"
             ]
         }
     }

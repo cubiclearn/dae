@@ -3,6 +3,49 @@
         "//"
     ],
     "pipeline": {
+        "build": {
+            "outputs": [
+                ".next/**/*",
+                "!.next/cache/**",
+                ".vercel/**/*",
+                "dist/**/*"
+            ],
+            "dependsOn": [
+                "^build"
+            ],
+            "env": [
+                "NEXTAUTH_URL",
+                "NEXTAUTH_SECRET",
+                "NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS",
+                "API_URL",
+                "INFURA_API_KEY"
+            ]
+        },
+        "start": {
+            "outputs": [
+                ".next/**/*",
+                "!.next/cache/**",
+                ".vercel/**/*",
+                "dist/**/*"
+            ],
+            "dependsOn": [
+                "^build"
+            ],
+            "env": [
+                "NEXTAUTH_URL",
+                "NEXTAUTH_SECRET",
+                "NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS",
+                "API_URL",
+                "INFURA_API_KEY"
+            ],
+            "persistent": true
+        },
+        "dev": {
+            "dependsOn": [
+                "^build"
+            ],
+            "persistent": true
+        },
         "sitemap": {
             "outputs": [
                 "public/sitemap.xml",
