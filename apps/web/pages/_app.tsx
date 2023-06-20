@@ -5,13 +5,16 @@ import React from 'react'
 import { AppProps } from 'next/app'
 import { SessionProvider } from 'next-auth/react'
 import { ChakraProvider } from '@chakra-ui/react'
-import { RainbowKitSiweNextAuthProvider } from '@rainbow-me/rainbowkit-siwe-next-auth'
 import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import { WagmiConfig, createConfig, configureChains } from 'wagmi'
 import { sepolia, foundry } from 'wagmi/chains'
 import { publicProvider } from 'wagmi/providers/public'
 import { Session } from 'next-auth'
 import { Layout } from '@dae/ui'
+import {
+  RainbowKitSiweNextAuthProvider,
+  GetSiweMessageOptions,
+} from '@rainbow-me/rainbowkit-siwe-next-auth'
 
 const supportedChains =
   process.env.NODE_ENV !== 'production' ? [sepolia, foundry] : [sepolia]
@@ -23,28 +26,42 @@ export const { chains, publicClient, webSocketPublicClient } = configureChains(
 
 const { connectors } = getDefaultWallets({
   appName: 'Decentralized Autonomous Education (DAE)',
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'projectid',
   chains,
 })
 
+const appInfo = {
+  appName: 'Decentralized Autonomous Education (DAE)',
+}
+
 const config = createConfig({
+  autoConnect: true,
   publicClient,
   webSocketPublicClient,
   connectors,
-  autoConnect: true,
+})
+
+const getSiweMessageOptions: GetSiweMessageOptions = () => ({
+  statement: 'Sign in to the Decentralized Autonomous Education (DAE) App',
 })
 
 const MyApp = ({ Component, pageProps }: AppProps<{ session: Session }>) => {
-  const AnyComponent = Component as any
   return (
     <WagmiConfig config={config}>
       <SessionProvider session={pageProps.session} refetchInterval={0}>
-        <RainbowKitSiweNextAuthProvider>
-          <RainbowKitProvider chains={chains} modalSize='compact'>
+        <RainbowKitSiweNextAuthProvider
+          getSiweMessageOptions={getSiweMessageOptions}
+        >
+          <RainbowKitProvider
+            appInfo={appInfo}
+            chains={chains}
+            modalSize='compact'
+          >
             <ChakraProvider
               toastOptions={{ defaultOptions: { position: 'top-right' } }}
             >
               <Layout.Base>
-                <AnyComponent {...pageProps} />
+                <Component {...pageProps} />
               </Layout.Base>
             </ChakraProvider>
           </RainbowKitProvider>

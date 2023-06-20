@@ -12,7 +12,7 @@
     "@emotion/styled": "11.11.0",
     "@next-auth/prisma-adapter": "1.0.6",
     "@prisma/client": "4.14.1",
-    "@rainbow-me/rainbowkit": "1.0.1",
+    "@rainbow-me/rainbowkit": "1.0.2",
     "@rainbow-me/rainbowkit-siwe-next-auth": "0.2.0",
     "@wagmi/core": "1.2.0",
     "ethers": "5.7.2",
