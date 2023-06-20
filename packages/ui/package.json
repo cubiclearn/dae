@@ -5,7 +5,7 @@
     "dependencies": {
         "@chakra-ui/icons": "2.0.19",
         "@chakra-ui/system": "2.5.7",
-        "@rainbow-me/rainbowkit": "1.0.1",
+        "@rainbow-me/rainbowkit": "1.0.2",
         "react-icons": "4.8.0"
     },
     "devDependencies": {
