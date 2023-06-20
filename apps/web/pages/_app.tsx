@@ -26,12 +26,12 @@ export const { chains, publicClient, webSocketPublicClient } = configureChains(
 
 const { connectors } = getDefaultWallets({
   appName: 'Decentralized Autonomous Education (DAE)',
-  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '',
   chains,
 })
 
 const appInfo = {
-  appName: 'Rainbowkit Demo',
+  appName: 'Decentralized Autonomous Education (DAE)',
 }
 
 const config = createConfig({
@@ -42,7 +42,7 @@ const config = createConfig({
 })
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
-  statement: 'Sign in to the Decentralized Autonomous Education (DAE)',
+  statement: 'Sign in to the Decentralized Autonomous Education (DAE) App',
 })
 
 const MyApp = ({ Component, pageProps }: AppProps<{ session: Session }>) => {
