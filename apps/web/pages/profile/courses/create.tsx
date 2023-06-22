@@ -2,7 +2,6 @@ import { useState, ChangeEvent, useCallback, FormEvent, useEffect } from 'react'
 import Head from 'next/head'
 import { CredentialsFactoryAbi } from '@dae/abi'
 import { usePrepareContractWrite } from 'wagmi'
-import { useNetwork } from 'wagmi'
 import { Layout } from '@dae/ui'
 import {
   FormControl,
@@ -14,17 +13,15 @@ import {
   Tabs,
   TabList,
   Tab,
-  Link,
   Heading,
   Box,
   Select,
 } from '@chakra-ui/react'
-import NextLink from 'next/link'
 import { useCreateCourse } from '@dae/hooks'
 import { useToast } from '@chakra-ui/react'
+import { RouteWithChainId } from '@dae/ui'
 
 export default function AddCoursePage() {
-  const { chain, chains } = useNetwork()
   const [symbol, setSymbol] = useState<string>('')
   const [name, setName] = useState<string>('')
   const [bUri, setBUri] = useState<string>('')
@@ -162,24 +159,12 @@ export default function AddCoursePage() {
         <Stack spacing={8}>
           <Tabs defaultIndex={2}>
             <TabList>
-              <Tab
-                as={NextLink}
-                href={`/profile/courses/teaching?chainId=${
-                  chain ? chain.id : chains[0].id
-                }`}
-                style={{ textDecoration: 'none' }}
-              >
-                Teaching
-              </Tab>
-              <Link
-                as={NextLink}
-                href={`/profile/courses/partecipating?chainId=${
-                  chain ? chain.id : chains[0].id
-                }`}
-                style={{ textDecoration: 'none' }}
-              >
+              <RouteWithChainId href='/profile/courses/teaching'>
+                <Tab>Teaching</Tab>
+              </RouteWithChainId>
+              <RouteWithChainId href='/profile/courses/partecipating'>
                 <Tab>Partecipating</Tab>
-              </Link>
+              </RouteWithChainId>
               <Tab>Create</Tab>
             </TabList>
           </Tabs>

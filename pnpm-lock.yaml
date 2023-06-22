@@ -56,6 +56,7 @@ importers:
       react-dom: 18.2.0
       react-toastify: 9.1.2
       siwe: 2.1.4
+      swr: 2.1.5
       typescript: 5.0.4
       viem: 1.0.6
       wagmi: 1.2.0
@@ -83,6 +84,7 @@ importers:
       react-dom: 18.2.0_react@18.2.0
       react-toastify: 9.1.2_biqbaboplfbrettd7655fr4n2y
       siwe: 2.1.4_ethers@5.7.2
+      swr: 2.1.5_react@18.2.0
       viem: 1.0.6_typescript@5.0.4
       wagmi: 1.2.0_fumr3zwlxrkhbborr6fvd2zsum
     devDependencies:
@@ -155,6 +157,7 @@ importers:
   packages/hooks:
     specifiers:
       '@dae/abi': workspace:*
+      '@dae/database': workspace:*
       '@dae/typescript-config': workspace:*
       '@types/react': 18.0.22
       '@types/react-dom': 18.0.7
@@ -173,6 +176,7 @@ importers:
       wagmi: 1.2.0_fumr3zwlxrkhbborr6fvd2zsum
     devDependencies:
       '@dae/abi': link:../abi
+      '@dae/database': link:../database
       '@dae/typescript-config': link:../../config/typescript
       '@types/react': 18.0.22
       '@types/react-dom': 18.0.7
@@ -190,6 +194,8 @@ importers:
       '@chakra-ui/react': 2.6.1
       '@chakra-ui/system': 2.5.7
       '@dae/abi': workspace:*
+      '@dae/chains': workspace:*
+      '@dae/database': workspace:*
       '@dae/hooks': workspace:*
       '@dae/typescript-config': workspace:*
       '@emotion/react': 11.11.0
@@ -205,6 +211,7 @@ importers:
       react-dom: 18.2.0
       react-icons: 4.8.0
       react-toastify: 9.1.2
+      swr: 2.1.5
       typescript: 5.0.4
       viem: 1.0.6
       wagmi: 1.2.0
@@ -213,9 +220,12 @@ importers:
       '@chakra-ui/system': 2.5.7_yiqp6zyzlsf3e67mwwqwha2b2u
       '@rainbow-me/rainbowkit': 1.0.2_xjnegrlj3luvu2xqny7q7yobly
       react-icons: 4.8.0_react@18.2.0
+      swr: 2.1.5_react@18.2.0
     devDependencies:
       '@chakra-ui/react': 2.6.1_detheuvposha35ng7dg723xdfq
       '@dae/abi': link:../abi
+      '@dae/chains': link:../chains
+      '@dae/database': link:../database
       '@dae/hooks': link:../hooks
       '@dae/typescript-config': link:../../config/typescript
       '@emotion/react': 11.11.0_gd4tregka43x4eiz452mfdbv4y

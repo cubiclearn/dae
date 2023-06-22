@@ -1,32 +1,16 @@
 import Head from 'next/head'
 import { Layout } from '@dae/ui'
-import {
-  Stack,
-  Tabs,
-  TabList,
-  Tab,
-  Link,
-  Flex,
-  Avatar,
-  Text,
-  VStack,
-  Box,
-} from '@chakra-ui/react'
+import { Stack, Tabs, TabList, Tab, Link } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { GetServerSideProps } from 'next'
-import { getCourseStudents } from '../../../../lib/api'
-import {
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
-} from '@chakra-ui/react'
+import { StudentsRowList } from '@dae/ui'
+import { useNetwork } from 'wagmi'
+import { DefaultChain } from '@dae/chains'
 
-export default function StudentsList({ students }: any) {
+export default function StudentsList() {
   const router = useRouter()
   const address = router.query.address as string | undefined
-
+  const { chain } = useNetwork()
   return (
     <>
       <Head>
@@ -49,74 +33,13 @@ export default function StudentsList({ students }: any) {
               </Link>
             </TabList>
           </Tabs>
-          <VStack spacing={2} align={'stretch'}>
-            {students.length === 0 ? (
-              <Alert status='info'>
-                <AlertIcon />
-                <Box>
-                  <AlertTitle>Nothing to show.</AlertTitle>
-                  <AlertDescription>
-                    No students subscribed to this course
-                  </AlertDescription>
-                </Box>
-              </Alert>
-            ) : (
-              students.map((student: any) => {
-                return (
-                  <Flex
-                    key={student.studentAddress}
-                    border={'1px'}
-                    borderColor={'gray.300'}
-                    rounded={'lg'}
-                    paddingY={2}
-                    paddingX={3}
-                    shadow={'0 0 1px rgba(0, 0, 0, 0.3)'}
-                  >
-                    <Avatar src='' size={'sm'} />
-                    <Flex ml='4' alignItems={'center'}>
-                      <Text verticalAlign={'center'} fontSize='md'>
-                        {student.studentAddress}
-                      </Text>
-                    </Flex>
-                  </Flex>
-                )
-              })
-            )}
-          </VStack>
+          <StudentsRowList
+            api_url={`/api/v0/course/students?studentAddress=${address}&chainId=${
+              chain?.id ? chain.id : DefaultChain.id
+            }`}
+          />
         </Stack>
       </Layout.Course>
     </>
   )
-}
-
-export const getServerSideProps: GetServerSideProps<{ students: any }> = async (
-  context,
-) => {
-  const { address, chainId } = context.query as {
-    address: string
-    chainId: string
-  }
-
-  if (!address || !chainId) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: '/',
-      },
-      props: {},
-    }
-  }
-
-  try {
-    const data = await getCourseStudents(address, parseInt(chainId))
-    return {
-      props: {
-        students: data,
-      },
-    }
-  } catch (_e) {
-    return {
-      notFound: true,
-    }
-  }
 }

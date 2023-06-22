@@ -2,6 +2,7 @@ import { FC } from 'react'
 import React from 'react'
 import { ConnectButton } from '../app/header/ConnectButton'
 import NextLink from 'next/link'
+import { DefaultChain } from '@dae/chains'
 import {
   IconButton,
   Box,
@@ -27,7 +28,7 @@ interface SidebarProps extends BoxProps {
 }
 
 const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
-  const { chain, chains } = useNetwork()
+  const { chain } = useNetwork()
 
   return (
     <Box
@@ -72,7 +73,7 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
         key={'mycourses'}
         icon={FiHome}
         href={`/profile/courses/partecipating?chainId=${
-          chain ? chain.id : chains[0].id
+          chain ? chain.id : DefaultChain.id
         }`}
       >
         My Courses

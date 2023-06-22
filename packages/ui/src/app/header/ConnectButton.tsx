@@ -1,5 +1,6 @@
 import { FC } from 'react'
 import { ConnectButton as RainbowConnectButton } from '@rainbow-me/rainbowkit'
+import { DefaultChain } from '@dae/chains'
 import { useDisconnect } from 'wagmi'
 import { useRouter } from 'next/router'
 import {
@@ -15,11 +16,13 @@ import {
   Text,
   Image,
 } from '@chakra-ui/react'
-import { useNetwork } from 'wagmi'
 
 export const ConnectButton: FC = (_props) => {
-  const { chains } = useNetwork()
-  const { disconnect } = useDisconnect()
+  const { disconnect } = useDisconnect({
+    onSuccess(_data) {
+      router.push('/', undefined, { shallow: false })
+    },
+  })
   const router = useRouter()
   const handleDisconnect = () => {
     disconnect()
@@ -134,7 +137,7 @@ export const ConnectButton: FC = (_props) => {
                           onClick={() =>
                             router.push(
                               `/profile/courses/teaching?chainId=${
-                                chain ? chain.id : chains[0].id
+                                chain ? chain.id : DefaultChain.id
                               }`,
                             )
                           }

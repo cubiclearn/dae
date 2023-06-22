@@ -1,30 +1,14 @@
 import Head from 'next/head'
 import { Layout } from '@dae/ui'
-import NextLink from 'next/link'
-import {
-  SimpleGrid,
-  Stack,
-  Tabs,
-  TabList,
-  Tab,
-  Link,
-  Box,
-} from '@chakra-ui/react'
-import { CourseCard } from '@dae/ui'
-import { useNetwork } from 'wagmi'
-import { getStudentCourses } from '../../../lib/api'
-import { GetServerSideProps } from 'next'
-import { getSession } from 'next-auth/react'
-import {
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
-} from '@chakra-ui/react'
+import { Stack, Tabs, TabList, Tab } from '@chakra-ui/react'
+import { RouteWithChainId } from '@dae/ui'
+import { CourseCardList } from '@dae/ui'
+import { DefaultChain } from '@dae/chains'
+import { useNetwork, useAccount } from 'wagmi'
 
-export default function Partecipating({ courses }: { courses: any[] }) {
-  const { chain, chains } = useNetwork()
-
+export default function Partecipating() {
+  const { chain } = useNetwork()
+  const { address } = useAccount()
   return (
     <>
       <Head>
@@ -37,86 +21,22 @@ export default function Partecipating({ courses }: { courses: any[] }) {
         <Stack spacing={8}>
           <Tabs defaultIndex={1}>
             <TabList>
-              <Link
-                as={NextLink}
-                href={`/profile/courses/teaching?chainId=${
-                  chain ? chain.id : chains[0].id
-                }`}
-                style={{ textDecoration: 'none' }}
-              >
+              <RouteWithChainId href='/profile/courses/teaching'>
                 <Tab>Teaching</Tab>
-              </Link>
+              </RouteWithChainId>
               <Tab>Partecipating</Tab>
-              <Link
-                as={NextLink}
-                href='/profile/courses/create'
-                style={{ textDecoration: 'none' }}
-              >
+              <RouteWithChainId href='/profile/courses/create'>
                 <Tab>Create</Tab>
-              </Link>
+              </RouteWithChainId>
             </TabList>
           </Tabs>
-          {courses.length === 0 ? (
-            <Alert status='info'>
-              <AlertIcon />
-              <Box>
-                <AlertTitle>Nothing to show.</AlertTitle>
-                <AlertDescription>
-                  You are not currently participating in any courses.
-                </AlertDescription>
-              </Box>
-            </Alert>
-          ) : (
-            <SimpleGrid columns={{ sm: 1, md: 2, lg: 3, xl: 5 }} spacing={8}>
-              {courses.map((course: any) => {
-                return <CourseCard data={course} key={course.address} />
-              })}
-            </SimpleGrid>
-          )}
+          <CourseCardList
+            api_url={`/api/v0/student/courses?studentAddress=${address}&chainId=${
+              chain?.id ? chain.id : DefaultChain.id
+            }`}
+          />
         </Stack>
       </Layout.Profile>
     </>
   )
 }
-
-export const getServerSideProps: GetServerSideProps<{ courses: any[] }> =
-  async (context) => {
-    const { chainId } = context.query as { address: string; chainId: string }
-    const session = await getSession(context)
-
-    if (!session) {
-      return {
-        redirect: {
-          permanent: false,
-          destination: '/',
-        },
-      }
-    }
-
-    if (!chainId) {
-      return {
-        redirect: {
-          permanent: false,
-          destination: '/profile',
-        },
-        props: {},
-      }
-    }
-
-    try {
-      const data = await getStudentCourses(
-        session!.user.address,
-        parseInt(chainId),
-      )
-
-      return {
-        props: {
-          courses: data,
-        },
-      }
-    } catch (_e) {
-      return {
-        notFound: true,
-      }
-    }
-  }

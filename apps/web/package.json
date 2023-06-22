@@ -25,6 +25,7 @@
     "react-dom": "18.2.0",
     "react-toastify": "9.1.2",
     "siwe": "2.1.4",
+    "swr": "2.1.5",
     "viem": "1.0.6",
     "wagmi": "1.2.0"
   },

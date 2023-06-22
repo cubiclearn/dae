@@ -9,109 +9,109 @@ import {config as TransportConfig} from '@dae/viem-config'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const session = await getSession({req})
-  console.log(session)
-  if (session) {
-    if (req.method === 'GET') {
-      const {chainId, address} = req.query as {
-        chainId: string
-        address: string
-      }
+  if (!session) {
+    res.status(401).json({message: 'You are unautorized'})
+    return
+  }
 
-      try {
-        const data = await getCourse(address, parseInt(chainId))
-        res.status(200).json(data)
-      } catch (_e) {
-        res.status(500)
-      }
-    } else if (req.method === 'POST') {
-      const {txHash, chainId} = req.body
+  if (req.method === 'GET') {
+    const {chainId, address} = req.query as {
+      chainId: string
+      address: string
+    }
 
-      const client = createPublicClient({
-        chain: getChainFromId[chainId],
-        transport: TransportConfig[chainId].transport,
-      })
+    try {
+      const data = await getCourse(address, parseInt(chainId))
+      res.status(200).json(data)
+      return
+    } catch (_e) {
+      res.status(500).json({message: _e.message})
+      return
+    }
+  }
 
-      const transaction = await client.waitForTransactionReceipt(
-        { hash: txHash }
-      )
+  if (req.method === 'POST') {
+    const {txHash, chainId} = req.body
 
-      const txLogs = await client.getTransactionReceipt({hash: txHash})
+    const client = createPublicClient({
+      chain: getChainFromId[chainId],
+      transport: TransportConfig[chainId].transport,
+    })
 
-      // Address of the newly created Credentials contract
-      const contractAddress = txLogs.logs[0].address
+    const transaction = await client.waitForTransactionReceipt({hash: txHash})
 
-      //const contractAddress = '0x5067457698fd6fa1c6964e416b3f42713513b3dd'
+    const txLogs = await client.getTransactionReceipt({hash: txHash})
 
-      const owner = (await client.readContract({
-        address: contractAddress,
-        abi: CredentialsAbi,
-        functionName: 'owner',
-      })) as string
-      const symbol = (await client.readContract({
-        address: contractAddress,
-        abi: CredentialsAbi,
-        functionName: 'symbol',
-      })) as string
-      const maxSupply = (await client.readContract({
-        address: contractAddress,
-        abi: CredentialsAbi,
-        functionName: 'MAX_SUPPLY',
-      })) as bigint
-      const baseURI = (await client.readContract({
-        address: contractAddress,
-        abi: CredentialsAbi,
-        functionName: 'baseURI',
-      })) as string
+    const contractAddress = txLogs.logs[0].address
 
-      const timestamp = (await client.getBlock({blockNumber: transaction.blockNumber!})).timestamp
+    const owner = (await client.readContract({
+      address: contractAddress,
+      abi: CredentialsAbi,
+      functionName: 'owner',
+    })) as string
+    const symbol = (await client.readContract({
+      address: contractAddress,
+      abi: CredentialsAbi,
+      functionName: 'symbol',
+    })) as string
+    const maxSupply = (await client.readContract({
+      address: contractAddress,
+      abi: CredentialsAbi,
+      functionName: 'MAX_SUPPLY',
+    })) as bigint
+    const baseURI = (await client.readContract({
+      address: contractAddress,
+      abi: CredentialsAbi,
+      functionName: 'baseURI',
+    })) as string
 
-      try {
-        const metadata = await fetch(baseURI)
+    const timestamp = (await client.getBlock({blockNumber: transaction.blockNumber!})).timestamp
 
-        if (!metadata.ok) {
-          res.status(metadata.status).json({message: metadata.statusText})
-          return
-        }
-        const jsonMetadata = (await metadata.json()) as any
+    try {
+      const metadata = await fetch(baseURI)
 
-        if (
-          jsonMetadata === undefined ||
-          jsonMetadata.name === undefined ||
-          jsonMetadata.description === undefined ||
-          jsonMetadata.access_url === undefined ||
-          jsonMetadata.image === undefined ||
-          jsonMetadata.website === undefined
-        ) {
-          throw new Error('Wrong metadata URL')
-        }
-        await prisma.course.create({
-          data: {
-            address: contractAddress.toLowerCase(),
-            owner: owner.toLowerCase(),
-            name: jsonMetadata.name,
-            description: jsonMetadata.description,
-            access_url: jsonMetadata.access_url,
-            image_url: jsonMetadata.image,
-            website_url: jsonMetadata.website,
-            symbol: symbol,
-            ipfs_metadata: baseURI,
-            maxSupply: Number(maxSupply),
-            burnable: false,
-            timestamp: Number(timestamp),
-            chainId: chainId,
-          },
-        })
-      } catch (e) {
-        console.error(e)
-        res.status(400).json({message: e})
+      if (!metadata.ok) {
+        res.status(metadata.status).json({message: metadata.statusText})
         return
       }
+      const jsonMetadata = (await metadata.json()) as any
 
-      res.status(200).json({message: 'OK!'})
-    } else {
-      res.status(400).json({message: 'You have used wrong http method'})
+      if (
+        jsonMetadata === undefined ||
+        jsonMetadata.name === undefined ||
+        jsonMetadata.description === undefined ||
+        jsonMetadata.access_url === undefined ||
+        jsonMetadata.image === undefined ||
+        jsonMetadata.website === undefined
+      ) {
+        throw new Error('Wrong metadata URL')
+      }
+      await prisma.course.create({
+        data: {
+          address: contractAddress.toLowerCase(),
+          owner: owner.toLowerCase(),
+          name: jsonMetadata.name,
+          description: jsonMetadata.description,
+          access_url: jsonMetadata.access_url,
+          image_url: jsonMetadata.image,
+          website_url: jsonMetadata.website,
+          symbol: symbol,
+          ipfs_metadata: baseURI,
+          maxSupply: Number(maxSupply),
+          burnable: false,
+          timestamp: Number(timestamp),
+          chainId: chainId,
+        },
+      })
+    } catch (e) {
+      console.error(e)
+      res.status(400).json({message: e})
+      return
     }
-  } else {
-    res.status(401).json({message: 'You are unautorized'})
+
+    res.status(200).json({message: 'OK!'})
+    return
   }
+
+  res.status(400).json({message: 'You have used wrong http method'})
 }

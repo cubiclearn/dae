@@ -6,11 +6,14 @@
         "@chakra-ui/icons": "2.0.19",
         "@chakra-ui/system": "2.5.7",
         "@rainbow-me/rainbowkit": "1.0.2",
-        "react-icons": "4.8.0"
+        "react-icons": "4.8.0",
+        "swr": "2.1.5"
     },
     "devDependencies": {
         "@chakra-ui/react": "2.6.1",
         "@dae/abi": "workspace:*",
+        "@dae/database": "workspace:*",
+        "@dae/chains": "workspace:*",
         "@dae/hooks": "workspace:*",
         "@dae/typescript-config": "workspace:*",
         "@emotion/react": "11.11.0",

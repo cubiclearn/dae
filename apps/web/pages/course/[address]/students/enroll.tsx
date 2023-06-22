@@ -4,12 +4,10 @@ import { Stack, Tabs, TabList, Tab, Link } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { CredentialsAirDropForm } from '@dae/ui'
-import { useNetwork } from 'wagmi'
 
 export default function ProfilePage() {
   const { query } = useRouter()
   const address = query.address as string | undefined
-  const { chain, chains } = useNetwork()
 
   return (
     <>
@@ -25,9 +23,7 @@ export default function ProfilePage() {
             <TabList>
               <Link
                 as={NextLink}
-                href={`/course/${address}/students/list?chainId=${
-                  chain ? chain.id : chains[0].id
-                }`}
+                href={`/course/${address}/students/list`}
                 style={{ textDecoration: 'none' }}
               >
                 <Tab>Students List</Tab>
