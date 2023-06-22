@@ -1,40 +1,26 @@
-import { prisma } from '@dae/database'
+import {prisma} from '@dae/database'
+import type {Course, CourseStudents} from '@dae/database'
 
-export const getCourse = async (address: string, chainId: number) => {
-  const data = await prisma.course.findFirst({
+export const getCourse = (address: string, chainId: number): Promise<Course | null> => {
+  return prisma.course.findFirst({
     where: {
       address: address.toLowerCase(),
       chainId: chainId,
     },
   })
-
-  if (data === null) {
-    throw Error('Course does not exist or you have passed the wrong chain')
-  }
-
-  return data
 }
 
-export const getCourseStudents = async (address: string, chainId: number) => {
-  const data = await prisma.courseStudents.findMany({
+export const getCourseStudents = async (address: string, chainId: number): Promise<CourseStudents[]> => {
+  return prisma.courseStudents.findMany({
     where: {
       courseAddress: address.toLowerCase(),
       chainId: chainId,
     },
   })
-
-  if (data === null) {
-    throw Error('Course does not exist or you have passed the wrong chain')
-  }
-
-  return data
 }
 
-export const getTeacherCourses = async (
-  teacherAddress: string,
-  chainId: number,
-) => {
-  const data = await prisma.course.findMany({
+export const getTeacherCourses = async (teacherAddress: string, chainId: number): Promise<Course[]> => {
+  return prisma.course.findMany({
     where: {
       chainId: chainId,
       owner: teacherAddress.toLowerCase(),
@@ -45,34 +31,24 @@ export const getTeacherCourses = async (
       },
     ],
   })
-
-  if (data === null) {
-    throw Error('Course does not exist or you have passed the wrong chain')
-  }
-
-  return data
 }
 
-
-export const getStudentCourses = async (
-  studentAddress: string,
-  chainId: number,
-) => {
+export const getStudentCourses = async (studentAddress: string, chainId: number) => {
   const data = await prisma.courseStudents.findMany({
     where: {
       chainId: chainId,
       studentAddress: studentAddress.toLowerCase(),
     },
-    include : {
-      course : true
-    }
+    include: {
+      course: true,
+    },
   })
 
   if (data === null) {
     throw Error('Course does not exist or you have passed the wrong chain')
   }
 
-  const cleanData = data.map(courseStudentsData => {
+  const cleanData = data.map((courseStudentsData) => {
     return courseStudentsData.course
   })
 

@@ -18,16 +18,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   if (req.method === 'GET') {
-    const {chainId, address} = req.query as {
+    const {chainId, studentAddress} = req.query as {
       chainId: string
-      address: string
+      studentAddress: string
     }
 
     try {
-      const data = await getCourseStudents(address, parseInt(chainId))
+      const data = await getCourseStudents(studentAddress, parseInt(chainId))
       res.status(200).json(data)
+      return
     } catch (_e) {
-      res.status(500)
+      res.status(500).json({message: _e.message})
+      return
     }
   } else if (req.method === 'POST') {
     const {chainId, txHash} = req.body as {
