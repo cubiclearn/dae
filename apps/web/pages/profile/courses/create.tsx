@@ -19,7 +19,7 @@ import {
 } from '@chakra-ui/react'
 import { useCreateCourse } from '@dae/hooks'
 import { useToast } from '@chakra-ui/react'
-import { RouteWithChainId } from '@dae/ui'
+import { CustomLink } from '@dae/ui'
 
 export default function AddCoursePage() {
   const [symbol, setSymbol] = useState<string>('')
@@ -159,12 +159,12 @@ export default function AddCoursePage() {
         <Stack spacing={8}>
           <Tabs defaultIndex={2}>
             <TabList>
-              <RouteWithChainId href='/profile/courses/teaching'>
+              <CustomLink href='/profile/courses/teaching'>
                 <Tab>Teaching</Tab>
-              </RouteWithChainId>
-              <RouteWithChainId href='/profile/courses/partecipating'>
+              </CustomLink>
+              <CustomLink href='/profile/courses/partecipating'>
                 <Tab>Partecipating</Tab>
-              </RouteWithChainId>
+              </CustomLink>
               <Tab>Create</Tab>
             </TabList>
           </Tabs>

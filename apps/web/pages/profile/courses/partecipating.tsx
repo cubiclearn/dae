@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import { Layout } from '@dae/ui'
 import { Stack, Tabs, TabList, Tab } from '@chakra-ui/react'
-import { RouteWithChainId } from '@dae/ui'
+import { CustomLink } from '@dae/ui'
 import { CourseCardList } from '@dae/ui'
 import { DefaultChain } from '@dae/chains'
 import { useNetwork, useAccount } from 'wagmi'
@@ -21,13 +21,13 @@ export default function Partecipating() {
         <Stack spacing={8}>
           <Tabs defaultIndex={1}>
             <TabList>
-              <RouteWithChainId href='/profile/courses/teaching'>
+              <CustomLink href='/profile/courses/teaching'>
                 <Tab>Teaching</Tab>
-              </RouteWithChainId>
+              </CustomLink>
               <Tab>Partecipating</Tab>
-              <RouteWithChainId href='/profile/courses/create'>
+              <CustomLink href='/profile/courses/create'>
                 <Tab>Create</Tab>
-              </RouteWithChainId>
+              </CustomLink>
             </TabList>
           </Tabs>
           <CourseCardList

@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import { Layout } from '@dae/ui'
-import { RouteWithChainId } from '@dae/ui'
+import { CustomLink } from '@dae/ui'
 import { Stack, Tabs, TabList, Tab } from '@chakra-ui/react'
 import { CourseCardList } from '@dae/ui'
 import { DefaultChain } from '@dae/chains'
@@ -22,12 +22,12 @@ export default function Teaching() {
           <Tabs defaultIndex={0}>
             <TabList>
               <Tab>Teaching</Tab>
-              <RouteWithChainId href='/profile/courses/partecipating'>
+              <CustomLink href='/profile/courses/partecipating'>
                 <Tab>Partecipating</Tab>
-              </RouteWithChainId>
-              <RouteWithChainId href='/profile/courses/create'>
+              </CustomLink>
+              <CustomLink href='/profile/courses/create'>
                 <Tab>Create</Tab>
-              </RouteWithChainId>
+              </CustomLink>
             </TabList>
           </Tabs>
           <CourseCardList

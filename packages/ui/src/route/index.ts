@@ -1,1 +1,1 @@
-export * from './RouteWithChainId'
+export * from './CustomLink'
