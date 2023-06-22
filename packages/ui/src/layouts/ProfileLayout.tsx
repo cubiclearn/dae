@@ -2,7 +2,6 @@ import { FC } from 'react'
 import React from 'react'
 import { ConnectButton } from '../app/header/ConnectButton'
 import NextLink from 'next/link'
-import { DefaultChain } from '@dae/chains'
 import {
   IconButton,
   Box,
@@ -21,15 +20,12 @@ import {
 } from '@chakra-ui/react'
 import { FiMenu, FiHome } from 'react-icons/fi'
 import { IconType } from 'react-icons'
-import { useNetwork } from 'wagmi'
 
 interface SidebarProps extends BoxProps {
   onClose: () => void
 }
 
 const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
-  const { chain } = useNetwork()
-
   return (
     <Box
       transition='3s ease'
@@ -72,9 +68,7 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
       <NavItem
         key={'mycourses'}
         icon={FiHome}
-        href={`/profile/courses/partecipating?chainId=${
-          chain ? chain.id : DefaultChain.id
-        }`}
+        href={'/profile/courses/partecipating'}
       >
         My Courses
       </NavItem>

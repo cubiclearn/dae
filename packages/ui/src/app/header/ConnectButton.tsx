@@ -1,6 +1,5 @@
 import { FC } from 'react'
 import { ConnectButton as RainbowConnectButton } from '@rainbow-me/rainbowkit'
-import { DefaultChain } from '@dae/chains'
 import { useDisconnect } from 'wagmi'
 import { useRouter } from 'next/router'
 import {
@@ -135,11 +134,7 @@ export const ConnectButton: FC = (_props) => {
                         {/* <MenuItem onClick={() => router.push('/profile')}>Profile</MenuItem> */}
                         <MenuItem
                           onClick={() =>
-                            router.push(
-                              `/profile/courses/teaching?chainId=${
-                                chain ? chain.id : DefaultChain.id
-                              }`,
-                            )
+                            router.push('/profile/courses/teaching')
                           }
                         >
                           My Courses
