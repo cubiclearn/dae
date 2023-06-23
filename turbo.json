@@ -29,6 +29,11 @@
         },
         "lint": {},
         "dev": {
+            "dependsOn": [
+                "^build",
+                "generate"
+            ],
+            "cache": false,
             "persistent": true
         },
         "release": {
