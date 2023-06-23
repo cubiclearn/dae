@@ -9,7 +9,8 @@
             ],
             "dependsOn": [
                 "^build",
-                "generate"
+                "generate",
+                "db:migrate:deploy"
             ],
             "env": [
                 "DATABASE_URL",
@@ -65,8 +66,7 @@
         },
         "release": {
             "dependsOn": [
-                "build",
-                "db:migrate:deploy"
+                "build"
             ],
             "cache": false
         }
