@@ -18,12 +18,6 @@
             ],
             "cache": true
         },
-        "dev": {
-            "dependsOn": [
-                "^build",
-                "generate"
-            ]
-        },
         "init": {
             "outputs": [
                 "prisma/**/*"
