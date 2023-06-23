@@ -1,11 +1,12 @@
 import type {NextApiRequest, NextApiResponse} from 'next'
 import {getSession} from 'next-auth/react'
-import {CredentialsAbi} from '@dae/abi'
+import {CredentialsAbi, CredentialsFactoryAbi} from '@dae/abi'
 import {prisma} from '@dae/database'
 import {createPublicClient} from 'viem'
 import {getChainFromId} from '../../../../lib/functions'
 import {getCourse} from '../../../../lib/api'
 import {config as TransportConfig} from '@dae/viem-config'
+import {decodeEventLog} from 'viem'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const session = await getSession({req})
@@ -41,6 +42,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const transaction = await client.waitForTransactionReceipt({hash: txHash})
 
     const txLogs = await client.getTransactionReceipt({hash: txHash})
+    const txKarmaControlLog = txLogs.logs.filter(
+      (log) => log.address === process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS
+    )[0]
+
+    const txLogsDecoded = decodeEventLog({
+      abi: CredentialsFactoryAbi,
+      data: txKarmaControlLog.data,
+      topics: txKarmaControlLog.topics,
+    }) as {eventName: string; args: {creator: string; karmaAccessControl: string}}
 
     const contractAddress = txLogs.logs[0].address
 
@@ -101,6 +111,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           burnable: false,
           timestamp: Number(timestamp),
           chainId: chainId,
+          karma_access_control_address: txLogsDecoded.args.karmaAccessControl.toLowerCase(),
         },
       })
     } catch (e) {

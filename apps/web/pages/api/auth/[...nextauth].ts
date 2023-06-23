@@ -59,6 +59,7 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
             id: siwe.address,
           }
         } catch (_e) {
+          console.log(_e)
           return null
         }
       },
