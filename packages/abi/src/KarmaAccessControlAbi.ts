@@ -1,6 +1,11 @@
-export const KarmaAbi = [
+export const KarmaAccessControlAbi = [
   {
     inputs: [
+      {
+        internalType: 'contract SoulboundNFT',
+        name: '_credentials',
+        type: 'address',
+      },
       {
         internalType: 'address',
         name: '_operator',
@@ -34,9 +39,9 @@ export const KarmaAbi = [
       },
       {
         indexed: false,
-        internalType: 'int8',
+        internalType: 'uint64',
         name: '_rating',
-        type: 'int8',
+        type: 'uint64',
       },
     ],
     name: 'Rating',
@@ -56,6 +61,38 @@ export const KarmaAbi = [
     type: 'event',
   },
   {
+    inputs: [],
+    name: 'credentials',
+    outputs: [
+      {
+        internalType: 'contract SoulboundNFT',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_user',
+        type: 'address',
+      },
+    ],
+    name: 'hasAccess',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [
       {
         internalType: 'address',
@@ -66,9 +103,9 @@ export const KarmaAbi = [
     name: 'karma',
     outputs: [
       {
-        internalType: 'int8',
+        internalType: 'uint64',
         name: '',
-        type: 'int8',
+        type: 'uint64',
       },
     ],
     stateMutability: 'view',
@@ -94,10 +131,29 @@ export const KarmaAbi = [
         name: '_user',
         type: 'address',
       },
+    ],
+    name: 'quadraticRatingOf',
+    outputs: [
       {
-        internalType: 'int8',
+        internalType: 'uint64',
+        name: '',
+        type: 'uint64',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_user',
+        type: 'address',
+      },
+      {
+        internalType: 'uint64',
         name: '_rating',
-        type: 'int8',
+        type: 'uint64',
       },
     ],
     name: 'rate',
@@ -116,9 +172,9 @@ export const KarmaAbi = [
     name: 'ratingOf',
     outputs: [
       {
-        internalType: 'int8',
+        internalType: 'uint64',
         name: '',
-        type: 'int8',
+        type: 'uint64',
       },
     ],
     stateMutability: 'view',

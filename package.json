@@ -28,7 +28,7 @@
         "format": "rome format .",
         "format:fix": "rome format . --write",
         "prepare": "husky install",
-        "release": "dotenv -- turbo run release",
+        "deploy": "dotenv -- turbo run deploy",
         "start": "dotenv -- turbo run start"
     }
 }
