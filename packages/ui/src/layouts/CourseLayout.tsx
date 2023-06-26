@@ -18,7 +18,7 @@ import {
   BoxProps,
   FlexProps,
 } from '@chakra-ui/react'
-import { FiMenu, FiHome } from 'react-icons/fi'
+import { FiMenu, FiHome, FiUsers, FiZap, FiBookOpen } from 'react-icons/fi'
 import { IconType } from 'react-icons'
 import { useRouter } from 'next/router'
 
@@ -65,25 +65,25 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
       >
         Home
       </NavItem>
-      <NavItem key={'info'} icon={FiHome} href={`/course/${address}`}>
+      <NavItem key={'info'} icon={FiBookOpen} href={`/course/${address}`}>
         Info
       </NavItem>
       {/* <NavItem key={'dashboard'} icon={FiHome} href={`#`}>
         Dashboard
       </NavItem> */}
       <NavItem
-        key={'karma'}
-        icon={FiHome}
-        href={`/course/${address}/karma/transfer`}
-      >
-        Karma
-      </NavItem>
-      <NavItem
         key={'students'}
-        icon={FiHome}
+        icon={FiUsers}
         href={`/course/${address}/students/list`}
       >
         Students
+      </NavItem>
+      <NavItem
+        key={'karma'}
+        icon={FiZap}
+        href={`/course/${address}/karma/transfer`}
+      >
+        Karma
       </NavItem>
       {/* <NavItem key={'vote'} icon={FiHome} href={`#`}>
         Vote

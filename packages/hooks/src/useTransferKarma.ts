@@ -42,6 +42,7 @@ export function useTransferKarma(
       setIsSuccess(false)
       setIsError(false)
       setIsSigning(true)
+      setIsLoading(false)
       const client = getPublicClient()
 
       if (karmaAccessControlAddress === undefined || studentAddress === undefined || newKarmaAmount === undefined) {

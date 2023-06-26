@@ -18,7 +18,7 @@ import {
   BoxProps,
   FlexProps,
 } from '@chakra-ui/react'
-import { FiMenu, FiHome } from 'react-icons/fi'
+import { FiMenu, FiHome, FiBook } from 'react-icons/fi'
 import { IconType } from 'react-icons'
 
 interface SidebarProps extends BoxProps {
@@ -67,7 +67,7 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
       </NavItem> */}
       <NavItem
         key={'mycourses'}
-        icon={FiHome}
+        icon={FiBook}
         href={'/profile/courses/partecipating'}
       >
         My Courses
