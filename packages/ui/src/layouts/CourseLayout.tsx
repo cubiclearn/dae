@@ -8,7 +8,6 @@ import {
   CloseButton,
   Flex,
   HStack,
-  Icon,
   useColorModeValue,
   Link,
   Drawer,
@@ -19,16 +18,17 @@ import {
   FlexProps,
 } from '@chakra-ui/react'
 import { FiMenu, FiHome, FiUsers, FiZap, FiBookOpen } from 'react-icons/fi'
-import { IconType } from 'react-icons'
 import { useRouter } from 'next/router'
+import { NavItem } from './DrawerNavItem'
+import { Address } from 'viem'
 
 interface SidebarProps extends BoxProps {
   onClose: () => void
 }
 
 const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
-  const { query } = useRouter()
-  const address = query.address as string | undefined
+  const { query, pathname } = useRouter()
+  const address = query.address as Address
   return (
     <Box
       transition='3s ease'
@@ -65,7 +65,12 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
       >
         Home
       </NavItem>
-      <NavItem key={'info'} icon={FiBookOpen} href={`/course/${address}`}>
+      <NavItem
+        key={'info'}
+        icon={FiBookOpen}
+        href={`/course/${address}/info`}
+        isActive={pathname === '/course/[address]/info'}
+      >
         Info
       </NavItem>
       {/* <NavItem key={'dashboard'} icon={FiHome} href={`#`}>
@@ -75,6 +80,7 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
         key={'students'}
         icon={FiUsers}
         href={`/course/${address}/students/list`}
+        isActive={pathname.startsWith('/course/[address]/students')}
       >
         Students
       </NavItem>
@@ -82,6 +88,7 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
         key={'karma'}
         icon={FiZap}
         href={`/course/${address}/karma/transfer`}
+        isActive={pathname.startsWith('/course/[address]/karma')}
       >
         Karma
       </NavItem>
@@ -89,48 +96,6 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
         Vote
       </NavItem> */}
     </Box>
-  )
-}
-
-interface NavItemProps extends FlexProps {
-  icon: IconType
-  href: string
-  children: string
-}
-const NavItem = ({ icon, children, href, ...rest }: NavItemProps) => {
-  return (
-    <Link
-      href={href}
-      style={{ textDecoration: 'none' }}
-      _focus={{ boxShadow: 'none' }}
-      as={NextLink}
-    >
-      <Flex
-        align='center'
-        p='4'
-        mx='4'
-        borderRadius='lg'
-        role='group'
-        cursor='pointer'
-        _hover={{
-          bg: 'gray.400',
-          color: 'white',
-        }}
-        {...rest}
-      >
-        {icon && (
-          <Icon
-            mr='4'
-            fontSize='16'
-            _groupHover={{
-              color: 'white',
-            }}
-            as={icon}
-          />
-        )}
-        {children}
-      </Flex>
-    </Link>
   )
 }
 

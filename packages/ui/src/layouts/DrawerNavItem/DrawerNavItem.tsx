@@ -1,20 +1,20 @@
-import { FC } from 'react'
 import NextLink from 'next/link'
-import { Flex, Icon, Link } from '@chakra-ui/react'
+import { Flex, Icon, Link, FlexProps } from '@chakra-ui/react'
 import { IconType } from 'react-icons'
 
-export type NavItemProps = {
+interface NavItemProps extends FlexProps {
   icon: IconType
   href: string
   children: string
+  isActive?: boolean
 }
-
-export const NavItem: FC<NavItemProps> = ({
+export const NavItem = ({
   icon,
   children,
   href,
+  isActive,
   ...rest
-}) => {
+}: NavItemProps) => {
   return (
     <Link
       href={href}
@@ -26,6 +26,7 @@ export const NavItem: FC<NavItemProps> = ({
         align='center'
         p='4'
         mx='4'
+        my='2'
         borderRadius='lg'
         role='group'
         cursor='pointer'
@@ -33,6 +34,10 @@ export const NavItem: FC<NavItemProps> = ({
           bg: 'gray.400',
           color: 'white',
         }}
+        {...(isActive && {
+          bg: 'gray.400',
+          color: 'white',
+        })}
         {...rest}
       >
         {icon && (
@@ -42,6 +47,9 @@ export const NavItem: FC<NavItemProps> = ({
             _groupHover={{
               color: 'white',
             }}
+            {...(isActive && {
+              color: 'white',
+            })}
             as={icon}
           />
         )}
