@@ -1,7 +1,6 @@
 import { FC } from 'react'
 import React from 'react'
 import { ConnectButton } from '../app/header/ConnectButton'
-import NextLink from 'next/link'
 import {
   IconButton,
   Box,
@@ -9,7 +8,6 @@ import {
   Flex,
   HStack,
   useColorModeValue,
-  Link,
   Drawer,
   DrawerContent,
   Text,
@@ -23,6 +21,7 @@ import { NavItem } from './DrawerNavItem'
 import { Address } from 'viem'
 import { CourseProvider } from '../CourseProvider'
 import { useNetwork } from 'wagmi'
+import { Logo } from './Logo'
 
 interface SidebarProps extends BoxProps {
   onClose: () => void
@@ -43,20 +42,7 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
       {...rest}
     >
       <Flex h='20' alignItems='center' mx='8' justifyContent='space-between'>
-        <Link
-          as={NextLink}
-          px={2}
-          py={1}
-          rounded={'md'}
-          fontWeight={500}
-          fontSize={20}
-          _hover={{
-            textDecoration: 'none',
-          }}
-          href={'/'}
-        >
-          Course
-        </Link>
+        <Logo />
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
       <NavItem

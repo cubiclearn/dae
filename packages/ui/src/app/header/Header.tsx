@@ -2,6 +2,7 @@ import { Flex, useColorModeValue, HStack, IconButton } from '@chakra-ui/react'
 import { ConnectButton } from './ConnectButton'
 import { FC } from 'react'
 import { FiMenu } from 'react-icons/fi'
+import { Logo } from '../../layouts'
 
 type HeaderProps = {
   onOpen: () => void
@@ -23,7 +24,7 @@ export const Header: FC<HeaderProps> = ({
       borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
       justifyContent={{
         base: showDrawerButton ? 'space-between' : 'flex-end',
-        md: 'flex-end',
+        md: 'space-between',
       }}
       as='header'
       position={'fixed'}
@@ -41,6 +42,7 @@ export const Header: FC<HeaderProps> = ({
         aria-label='open menu'
         icon={<FiMenu />}
       />
+      <Logo />
 
       {/* <SearchBar /> */}
 
