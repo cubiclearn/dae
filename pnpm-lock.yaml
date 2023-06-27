@@ -198,6 +198,7 @@ importers:
       '@dae/database': workspace:*
       '@dae/hooks': workspace:*
       '@dae/typescript-config': workspace:*
+      '@dae/wagmi': workspace:*
       '@emotion/react': 11.11.0
       '@emotion/styled': 11.11.0
       '@rainbow-me/rainbowkit': 1.0.2
@@ -228,6 +229,7 @@ importers:
       '@dae/database': link:../database
       '@dae/hooks': link:../hooks
       '@dae/typescript-config': link:../../config/typescript
+      '@dae/wagmi': link:../wagmi
       '@emotion/react': 11.11.0_gd4tregka43x4eiz452mfdbv4y
       '@emotion/styled': 11.11.0_eex57i4kgkgprkpsrpmm3rdgxu
       '@types/react': 18.0.22
@@ -241,6 +243,35 @@ importers:
       react-toastify: 9.1.2_biqbaboplfbrettd7655fr4n2y
       typescript: 5.0.4
       viem: 1.0.6_typescript@5.0.4
+      wagmi: 1.2.0_fumr3zwlxrkhbborr6fvd2zsum
+
+  packages/wagmi:
+    specifiers:
+      '@dae/abi': workspace:*
+      '@dae/typescript-config': workspace:*
+      '@types/node': 18.11.18
+      '@types/react': 18.0.22
+      '@types/react-dom': 18.0.7
+      '@wagmi/core': 1.2.0
+      next: 13.4.1
+      react: 18.2.0
+      react-dom: 18.2.0
+      typescript: 5.0.4
+      viem: 1.0.6
+      wagmi: 1.2.0
+    dependencies:
+      viem: 1.0.6_typescript@5.0.4
+    devDependencies:
+      '@dae/abi': link:../abi
+      '@dae/typescript-config': link:../../config/typescript
+      '@types/node': 18.11.18
+      '@types/react': 18.0.22
+      '@types/react-dom': 18.0.7
+      '@wagmi/core': 1.2.0_py3np4lx2d223gbntmdtb5okzy
+      next: 13.4.1_biqbaboplfbrettd7655fr4n2y
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      typescript: 5.0.4
       wagmi: 1.2.0_fumr3zwlxrkhbborr6fvd2zsum
 
 packages:
