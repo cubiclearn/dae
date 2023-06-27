@@ -92,6 +92,8 @@ export const KarmaTransferStudentRow = ({
   const handleKarmaTransfer = async () => {
     try {
       await transferKarma()
+      setStudentAddress('')
+      setStudentKarmaIncrementAmount(BigInt(0))
     } catch (_e) {}
   }
 
@@ -128,8 +130,7 @@ export const KarmaTransferStudentRow = ({
             size='md'
             maxW={24}
             defaultValue={Number(studentKarmaIncrementAmount)}
-            min={-20}
-            max={20}
+            value={Number(studentKarmaIncrementAmount)}
             onChange={handleKarmaTransferAmountChange}
           >
             <NumberInputField />

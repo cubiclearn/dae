@@ -70,7 +70,7 @@ export const StudentsRowList: React.FC<StudentsRowListProps> = ({
       <Table variant='simple'>
         <Thead>
           <Tr>
-            <Th>Icon</Th>
+            <Th>{''}</Th>
             <Th>Student Address</Th>
             <Th isNumeric>Karma</Th>
           </Tr>
