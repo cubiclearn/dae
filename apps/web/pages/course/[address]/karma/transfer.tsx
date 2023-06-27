@@ -1,14 +1,8 @@
 import Head from 'next/head'
 import { Layout } from '@dae/ui'
 import { KarmaTransferForm } from '@dae/ui'
-import { useRouter } from 'next/router'
-import { Address, useNetwork } from 'wagmi'
-import { DefaultChain } from '@dae/chains'
 
 export default function TransferKarmaPage() {
-  const { query } = useRouter()
-  const { chain } = useNetwork()
-
   return (
     <>
       <Head>
@@ -18,10 +12,7 @@ export default function TransferKarmaPage() {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <Layout.Course heading='Transfer Karma'>
-        <KarmaTransferForm
-          courseAddress={query!.address as Address}
-          chainId={chain ? chain.id : DefaultChain.id}
-        />
+        <KarmaTransferForm />
       </Layout.Course>
     </>
   )

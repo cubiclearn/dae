@@ -21,6 +21,8 @@ import { FiMenu, FiHome, FiUsers, FiZap, FiBookOpen } from 'react-icons/fi'
 import { useRouter } from 'next/router'
 import { NavItem } from './DrawerNavItem'
 import { Address } from 'viem'
+import { CourseProvider } from '../CourseProvider'
+import { useNetwork } from 'wagmi'
 
 interface SidebarProps extends BoxProps {
   onClose: () => void
@@ -142,6 +144,8 @@ type Props = {
 
 export const CourseLayout: FC<Props> = ({ children, heading }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const { query } = useRouter()
+  const { chain } = useNetwork()
 
   return (
     <Box minH='100vh'>
@@ -174,7 +178,9 @@ export const CourseLayout: FC<Props> = ({ children, heading }) => {
         <Box display={'flex'} fontSize={'3xl'} fontWeight={'semibold'} mb={8}>
           <Text as='h2'>{heading}</Text>
         </Box>
-        <Box>{children}</Box>
+        <CourseProvider chainId={chain!.id} address={query.address as Address}>
+          <Box>{children}</Box>
+        </CourseProvider>
       </Box>
     </Box>
   )

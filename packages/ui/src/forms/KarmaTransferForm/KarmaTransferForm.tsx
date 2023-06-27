@@ -13,20 +13,11 @@ import { KarmaTransferStudentRow } from './KarmaTransferStudentRow'
 import { FiPlus, FiMinus } from 'react-icons/fi'
 import { useState } from 'react'
 import { Address } from 'viem'
-import { useCourse } from '@dae/hooks'
+import { useCourseData } from '../../CourseProvider'
 
-export type KarmaTransferFormProps = {
-  courseAddress: Address
-  chainId: number
-}
-
-export const KarmaTransferForm = ({
-  courseAddress,
-  chainId,
-}: KarmaTransferFormProps) => {
+export const KarmaTransferForm = () => {
   const [rowCount, setRowCount] = useState(1) // Initial row count
-
-  const { data, isLoading, error } = useCourse(courseAddress, chainId)
+  const { data, isLoading, error } = useCourseData()
 
   const addNewRow = () => {
     setRowCount((prevCount) => prevCount + 1) // Increment the row count
@@ -64,7 +55,9 @@ export const KarmaTransferForm = ({
         {Array.from({ length: rowCount }, (_, index) => (
           <KarmaTransferStudentRow
             key={index}
-            karmaAccessControlAddress={data.karma_access_control_address}
+            karmaAccessControlAddress={
+              data.karma_access_control_address as Address
+            }
           />
         ))}
         <Center gap={4}>
