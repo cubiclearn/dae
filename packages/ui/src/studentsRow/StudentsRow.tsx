@@ -1,5 +1,5 @@
 import React from 'react'
-import { Flex, Avatar, Text } from '@chakra-ui/react'
+import { Avatar, Text, Td, Tr } from '@chakra-ui/react'
 import type { CourseStudents } from '@dae/database'
 
 export type StudentsRowProps = {
@@ -8,21 +8,16 @@ export type StudentsRowProps = {
 
 export const StudentsRow: React.FC<StudentsRowProps> = ({ student }) => {
   return (
-    <Flex
-      key={student.studentAddress}
-      border={'1px'}
-      borderColor={'gray.300'}
-      rounded={'lg'}
-      paddingY={2}
-      paddingX={3}
-      shadow={'0 0 1px rgba(0, 0, 0, 0.3)'}
-    >
-      <Avatar src='' size={'sm'} />
-      <Flex ml='4' alignItems={'center'}>
+    <Tr>
+      <Td>
+        <Avatar src='' size={'sm'} />
+      </Td>
+      <Td>
         <Text verticalAlign={'center'} fontSize='md'>
           {student.studentAddress}
         </Text>
-      </Flex>
-    </Flex>
+      </Td>
+      <Td isNumeric>0</Td>
+    </Tr>
   )
 }
