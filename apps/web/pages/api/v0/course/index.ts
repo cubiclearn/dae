@@ -39,6 +39,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const transaction = await client.waitForTransactionReceipt({hash: txHash})
 
       const txLogs = await client.getTransactionReceipt({hash: txHash})
+
       const txKarmaControlLog = txLogs.logs.find(
         (log) => log.address === process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS
       )
@@ -51,7 +52,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         abi: CredentialsFactoryAbi,
         data: txKarmaControlLog.data,
         topics: txKarmaControlLog.topics,
-      }) as {eventName: string; args: {creator: string; karmaAccessControl: string}}
+      })
 
       const contractAddress = txLogs.logs[0].address
 
