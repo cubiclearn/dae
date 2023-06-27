@@ -1,83 +1,25 @@
-import {useCallback, useState} from 'react'
+import {useState} from 'react'
 import {useContractWrite} from 'wagmi'
 import {WriteContractResult, getPublicClient} from '@wagmi/core'
-import {TransactionReceipt} from 'viem'
+import {Address, TransactionReceipt} from 'viem'
 import {usePrepareContractWrite} from 'wagmi'
 import {CredentialsAbi} from '@dae/abi'
-import {isAddress} from 'viem'
-import {useEffect} from 'react'
 
-export function useAirdropCredentials(courseAddress: `0x${string}`, addresses: `0x${string}`[], tokenURIs: any[]) {
+export function useAirdropCredentials(courseAddress: Address, addresses: Address[], tokenURIs: string[]) {
   const [error, setError] = useState<string | null>(null)
   const [isError, setIsError] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isSigning, setIsSigning] = useState(false)
 
-  const {config, refetch} = usePrepareContractWrite({
+  const {config} = usePrepareContractWrite({
     abi: CredentialsAbi,
     address: courseAddress,
     functionName: 'multiMint',
     args: [addresses, tokenURIs],
-    enabled: false,
+    enabled: addresses.length !== 0 && tokenURIs.length !== 0 && addresses.length === tokenURIs.length,
   })
   const contractWrite = useContractWrite(config)
-
-  useEffect(() => {
-    if (areInputsValid()) {
-      refetch()
-    }
-    if (isError) {
-      setIsError(false)
-    }
-  }, [addresses, tokenURIs])
-
-  function isURL(str: string) {
-    const urlPattern = /^(https?:\/\/)?([\w.-]+)\.([a-z]{2,})(\/\S*)?$/i
-    return urlPattern.test(str)
-  }
-
-  const checkTokenURIsListIsCorrect = useCallback(() => {
-    if (tokenURIs.length === 0) {
-      setError('Token URIs list cannot be empty')
-      return false
-    }
-    for (let i = 0; i < tokenURIs.length; i++) {
-      if (!isURL(tokenURIs[i])) {
-        setError('TokenURI list is not valid!')
-        return false
-      }
-    }
-    return true
-  }, [tokenURIs])
-
-  const checkAddressesListIsCorrect = useCallback(() => {
-    if (addresses.length === 0) {
-      setError('Address list cannot be empty')
-      return false
-    }
-    for (let i = 0; i < addresses.length; i++) {
-      if (!isAddress(addresses[i])) {
-        setError('Address list is not valid!')
-        return false
-      }
-    }
-    return true
-  }, [addresses])
-
-  const areInputsValid = useCallback(() => {
-    if (
-      checkTokenURIsListIsCorrect() &&
-      checkAddressesListIsCorrect() &&
-      tokenURIs.length === addresses.length &&
-      tokenURIs.length > 0 &&
-      addresses.length > 0
-    ) {
-      setIsError(false)
-      return true
-    }
-    return false
-  }, [tokenURIs, addresses])
 
   const enroll = async (): Promise<void> => {
     setIsSuccess(false)
@@ -85,48 +27,50 @@ export function useAirdropCredentials(courseAddress: `0x${string}`, addresses: `
     setIsSigning(true)
     const client = getPublicClient()
 
-    return new Promise((resolve, reject) => {
-      if (!areInputsValid()) {
-        setIsError(true)
-        setIsSigning(false)
-        reject(new Error('Invalid inputs error'))
+    try {
+      if (addresses.length === 0 || tokenURIs.length === 0) {
+        throw new Error('Form fields cannot be empty')
       }
 
-      const promise = contractWrite.writeAsync!()
+      if (addresses.length !== tokenURIs.length) {
+        throw new Error('TokenUri list and addresses list must be of the same length')
+      }
 
-      promise
-        .then((data: WriteContractResult) => {
-          setIsLoading(true)
-          setIsSigning(false)
-          return client.waitForTransactionReceipt({
-            hash: data.hash as `0x${string}`,
-          })
-        })
-        .then((txReceipt: TransactionReceipt) => {
-          return fetch('/api/v0/course/students', {
-            method: 'POST',
-            body: JSON.stringify({
-              txHash: txReceipt.transactionHash,
-              chainId: client.chain.id,
-            }),
-            headers: {
-              'Content-type': 'application/json; charset=UTF-8',
-            },
-          })
-        })
-        .then(() => {
-          setIsLoading(false)
-          setIsSuccess(true)
-          resolve()
-        })
-        .catch((error) => {
-          setIsLoading(false)
-          setIsSigning(false)
-          setIsError(true)
-          setError(error.message)
-          reject(error)
-        })
-    })
+      if (contractWrite.writeAsync === undefined) {
+        throw new Error('The data provided is incorrect. Please ensure that you have entered the correct information.')
+      }
+      const writeResult: WriteContractResult = await contractWrite.writeAsync!()
+      setIsLoading(true)
+      setIsSigning(false)
+
+      const txReceipt: TransactionReceipt = await client.waitForTransactionReceipt({
+        hash: writeResult.hash,
+      })
+
+      const response = await fetch('/api/v0/course/students', {
+        method: 'POST',
+        body: JSON.stringify({
+          txHash: txReceipt.transactionHash,
+          chainId: client.chain.id,
+        }),
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      })
+
+      if (response.ok) {
+        setIsLoading(false)
+        setIsSuccess(true)
+      } else {
+        throw new Error(`HTTP ${response.status} - ${response.statusText}`)
+      }
+    } catch (error: any) {
+      setIsLoading(false)
+      setIsSigning(false)
+      setIsError(true)
+      setError(error.message || 'An error occurred')
+      throw error
+    }
   }
 
   return {
