@@ -25,11 +25,17 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
           const nextAuthUrl =
             process.env.NEXTAUTH_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null)
           if (!nextAuthUrl) {
+            console.error(
+              'We encountered an issue while retrieving the NEXTAUTH_URL of the application. This error may occur because the environment variable is not properly set.'
+            )
             return null
           }
 
           const nextAuthHost = new URL(nextAuthUrl).host
           if (siwe.domain !== nextAuthHost) {
+            console.warn(
+              `The sign-in request from ${siwe.domain} has been rejected because it does not match the expected ${nextAuthHost} domain.`
+            )
             return null
           }
 
@@ -59,6 +65,7 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
             id: siwe.address,
           }
         } catch (_e) {
+          console.log(_e)
           return null
         }
       },

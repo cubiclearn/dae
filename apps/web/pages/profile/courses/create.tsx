@@ -1,7 +1,5 @@
 import { useState, ChangeEvent, useCallback, FormEvent, useEffect } from 'react'
 import Head from 'next/head'
-import { CredentialsFactoryAbi } from '@dae/abi'
-import { usePrepareContractWrite } from 'wagmi'
 import { Layout } from '@dae/ui'
 import {
   FormControl,
@@ -16,6 +14,10 @@ import {
   Heading,
   Box,
   Select,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from '@chakra-ui/react'
 import { useCreateCourse } from '@dae/hooks'
 import { useToast } from '@chakra-ui/react'
@@ -29,15 +31,8 @@ export default function AddCoursePage() {
   const [isBurnable, setIsBurnable] = useState(false)
   const toast = useToast()
 
-  const { config } = usePrepareContractWrite({
-    address: process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as '0x${string}',
-    functionName: 'createCourse',
-    args: [isBurnable, name, symbol, bUri, maxSupply],
-    abi: CredentialsFactoryAbi,
-  })
-
-  const { create, isLoading, isError, isSuccess, isSigning } =
-    useCreateCourse(config)
+  const { create, isLoading, isError, isSuccess, isSigning, error } =
+    useCreateCourse(isBurnable, name, symbol, bUri, maxSupply)
 
   useEffect(() => {
     if (isError) {
@@ -65,20 +60,6 @@ export default function AddCoursePage() {
     setSymbol('')
     setBUri('')
     setMaxSupply(BigInt(0))
-  }
-
-  const areInputsValid = () => {
-    if (
-      name !== '' &&
-      symbol !== '' &&
-      bUri !== '' &&
-      maxSupply !== null &&
-      maxSupply > 0
-    ) {
-      return true
-    } else {
-      return false
-    }
   }
 
   const handleCredentialsTypeChange = useCallback(
@@ -135,16 +116,11 @@ export default function AddCoursePage() {
 
   const handleCreateCourse = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const validInputs = areInputsValid()
 
-    if (validInputs) {
-      try {
-        await create()
-        clearInputFields()
-      } catch (e: any) {
-        console.error(e)
-      }
-    }
+    try {
+      await create()
+      clearInputFields()
+    } catch (_e: any) {}
   }
 
   return (
@@ -238,6 +214,17 @@ export default function AddCoursePage() {
                 </Button>
               </Stack>
             </form>
+            {isError ? (
+              <Alert status='error'>
+                <AlertIcon />
+                <Box>
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>{error}</AlertDescription>
+                </Box>
+              </Alert>
+            ) : (
+              <></>
+            )}
           </Box>
         </Stack>
       </Layout.Profile>

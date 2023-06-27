@@ -25,17 +25,18 @@ import {
   AlertTitle,
   AlertDescription,
 } from '@chakra-ui/react'
+import { Address, isAddress } from 'viem'
 
 export const CredentialsAirDropForm: FC = () => {
   const { query } = useRouter()
-  const courseAddress = query.address as `0x${string}`
+  const courseAddress = query.address as Address
   const toast = useToast()
 
-  const [addresses, setAddresses] = useState<`0x${string}`[]>([])
+  const [addresses, setAddresses] = useState<Address[]>([])
   const [addressesListInput, setAddressesListInput] = useState<string>('')
 
   const [tokenURIs, setTokenURIs] = useState<string[]>([])
-  const [tokenURIsInput, setTokenURIsInput] = useState('')
+  const [tokenURIsInput, setTokenURIsInput] = useState<string>('')
 
   const { enroll, isLoading, isSuccess, isSigning, isError, error } =
     useAirdropCredentials(courseAddress, addresses, tokenURIs)
@@ -43,19 +44,19 @@ export const CredentialsAirDropForm: FC = () => {
   useEffect(() => {
     if (isError) {
       toast({
-        title: 'Error creating course.',
+        title: 'Error transferring credentials.',
         status: 'error',
       })
     }
     if (isSuccess) {
       toast({
-        title: 'Course created with success!',
+        title: 'Credentials transferrred with success!',
         status: 'success',
       })
     }
     if (isLoading) {
       toast({
-        title: 'Creating course...',
+        title: 'Transferring credentials...',
         status: 'info',
       })
     }
@@ -66,52 +67,44 @@ export const CredentialsAirDropForm: FC = () => {
     setTokenURIsInput('')
   }
 
-  const formatAddresses = useCallback(
-    (_addressListInput: string): `0x${string}`[] => {
-      const cleanAddressesStringList = _addressListInput
-        .replace(' ', '')
-        .replace(/(\r\n|\n|\r)/gm, '')
-      const addressesList = cleanAddressesStringList.split(',')
-      return addressesList as `0x${string}`[]
-    },
-    [],
-  )
-
-  const formatTokenURIs = useCallback((_tokenURIsInput: string): string[] => {
-    const cleanTokenURIsStringList = _tokenURIsInput
-      .replace(' ', '')
-      .replace(/(\r\n|\n|\r)/gm, '')
-    const tokenURIsList = cleanTokenURIsStringList.split(',')
-    return tokenURIsList
-  }, [])
+  const isValidURL = (url: string) => {
+    const urlPattern = /^((https?|ftp):\/\/)?[^\s/$.?#].[^\s]*$/i
+    return urlPattern.test(url)
+  }
 
   const handleTokenURIChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
-      const input = event.target.value
-      setTokenURIsInput(input)
+      setTokenURIsInput(event.target.value)
     },
     [],
   )
 
   const handleAddressesListChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
-      const input = event.target.value
-      setAddressesListInput(input)
+      setAddressesListInput(event.target.value)
     },
     [],
   )
 
   useEffect(() => {
-    if (addressesListInput !== '') {
-      setAddresses(formatAddresses(addressesListInput))
-    }
-  }, [addressesListInput, formatAddresses])
+    const cleanTokenURIsStringList = tokenURIsInput
+      .replace(' ', '')
+      .replace(/(\r\n|\n|\r)/gm, '')
+    const urlList = cleanTokenURIsStringList.split(',').map((url) => url.trim())
+    const validURLs = urlList.filter((url) => isValidURL(url))
+    setTokenURIs(validURLs)
+  }, [tokenURIsInput])
 
   useEffect(() => {
-    if (tokenURIsInput !== '') {
-      setTokenURIs(formatTokenURIs(tokenURIsInput))
-    }
-  }, [tokenURIsInput, formatTokenURIs])
+    const cleanAddressListString = addressesListInput
+      .replace(' ', '')
+      .replace(/(\r\n|\n|\r)/gm, '')
+    const addressesList = cleanAddressListString
+      .split(',')
+      .map((address) => address.trim())
+    const validAddresses = addressesList.filter((address) => isAddress(address))
+    setAddresses(validAddresses as Address[])
+  }, [addressesListInput])
 
   const handleAirdrop = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -141,20 +134,22 @@ export const CredentialsAirDropForm: FC = () => {
             </Text>
           </Box>
           <FormControl>
-            <FormLabel>Token URIs list:</FormLabel>
+            <FormLabel>Token URIs list (comma separated):</FormLabel>
             <Textarea
               onChange={handleTokenURIChange}
               value={tokenURIsInput}
-              placeholder='uri1,uri2,...'
+              placeholder='www.yoursite.com, www.yoursite2.com,...'
               required
             />
           </FormControl>
           <FormControl>
-            <FormLabel>Destination addresses list:</FormLabel>
+            <FormLabel>
+              New students addresses list (comma separated):
+            </FormLabel>
             <Textarea
               onChange={handleAddressesListChange}
               value={addressesListInput}
-              placeholder='address1,address2,...'
+              placeholder='address1, address2,...'
               required
             />
           </FormControl>

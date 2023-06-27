@@ -1,16 +1,13 @@
 import { FC } from 'react'
 import React from 'react'
 import { ConnectButton } from '../app/header/ConnectButton'
-import NextLink from 'next/link'
 import {
   IconButton,
   Box,
   CloseButton,
   Flex,
   HStack,
-  Icon,
   useColorModeValue,
-  Link,
   Drawer,
   DrawerContent,
   Text,
@@ -18,14 +15,17 @@ import {
   BoxProps,
   FlexProps,
 } from '@chakra-ui/react'
-import { FiMenu, FiHome } from 'react-icons/fi'
-import { IconType } from 'react-icons'
+import { FiMenu, FiHome, FiBook } from 'react-icons/fi'
+import { NavItem } from './DrawerNavItem'
+import { useRouter } from 'next/router'
+import { Logo } from './Logo'
 
 interface SidebarProps extends BoxProps {
   onClose: () => void
 }
 
 const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
+  const { pathname } = useRouter()
   return (
     <Box
       transition='3s ease'
@@ -38,20 +38,7 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
       {...rest}
     >
       <Flex h='20' alignItems='center' mx='8' justifyContent='space-between'>
-        <Link
-          as={NextLink}
-          px={2}
-          py={1}
-          rounded={'md'}
-          fontWeight={500}
-          fontSize={20}
-          _hover={{
-            textDecoration: 'none',
-          }}
-          href={'/'}
-        >
-          Profile
-        </Link>
+        <Logo />
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
       <NavItem
@@ -67,54 +54,13 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
       </NavItem> */}
       <NavItem
         key={'mycourses'}
-        icon={FiHome}
+        icon={FiBook}
         href={'/profile/courses/partecipating'}
+        isActive={pathname.startsWith('/profile/courses/')}
       >
         My Courses
       </NavItem>
     </Box>
-  )
-}
-
-interface NavItemProps extends FlexProps {
-  icon: IconType
-  href: string
-  children: string
-}
-const NavItem = ({ icon, children, href, ...rest }: NavItemProps) => {
-  return (
-    <Link
-      href={href}
-      style={{ textDecoration: 'none' }}
-      _focus={{ boxShadow: 'none' }}
-      as={NextLink}
-    >
-      <Flex
-        align='center'
-        p='4'
-        mx='4'
-        borderRadius='lg'
-        role='group'
-        cursor='pointer'
-        _hover={{
-          bg: 'gray.400',
-          color: 'white',
-        }}
-        {...rest}
-      >
-        {icon && (
-          <Icon
-            mr='4'
-            fontSize='16'
-            _groupHover={{
-              color: 'white',
-            }}
-            as={icon}
-          />
-        )}
-        {children}
-      </Flex>
-    </Link>
   )
 }
 

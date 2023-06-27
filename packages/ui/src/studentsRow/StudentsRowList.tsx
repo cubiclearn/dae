@@ -1,6 +1,6 @@
 import React from 'react'
 import useSWR, { SWRResponse } from 'swr'
-import { VStack } from '@chakra-ui/react'
+import { Table, TableContainer, Tbody, Th, Thead, Tr } from '@chakra-ui/react'
 import { StudentsRow } from './StudentsRow'
 import type { CourseStudents } from '@dae/database'
 import {
@@ -58,7 +58,7 @@ export const StudentsRowList: React.FC<StudentsRowListProps> = ({
         <Box>
           <AlertTitle>Nothing to show.</AlertTitle>
           <AlertDescription>
-            You are not currently teaching any courses
+            There are no students enrolled in this course
           </AlertDescription>
         </Box>
       </Alert>
@@ -66,10 +66,21 @@ export const StudentsRowList: React.FC<StudentsRowListProps> = ({
   }
 
   return (
-    <VStack spacing={2} align={'stretch'}>
-      {data.map((student) => (
-        <StudentsRow key={student.studentAddress} student={student} />
-      ))}
-    </VStack>
+    <TableContainer>
+      <Table variant='simple'>
+        <Thead>
+          <Tr>
+            <Th>Icon</Th>
+            <Th>Student Address</Th>
+            <Th isNumeric>Karma</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {data.map((student) => (
+            <StudentsRow key={student.studentAddress} student={student} />
+          ))}
+        </Tbody>
+      </Table>
+    </TableContainer>
   )
 }

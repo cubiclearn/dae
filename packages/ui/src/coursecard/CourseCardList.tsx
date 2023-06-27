@@ -52,9 +52,7 @@ export const CourseCardList: React.FC<CourseCardListProps> = ({ api_url }) => {
         <AlertIcon />
         <Box>
           <AlertTitle>Nothing to show.</AlertTitle>
-          <AlertDescription>
-            You are not currently teaching any courses
-          </AlertDescription>
+          <AlertDescription>There is no course to show</AlertDescription>
         </Box>
       </Alert>
     )

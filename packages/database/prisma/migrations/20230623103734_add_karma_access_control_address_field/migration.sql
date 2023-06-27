@@ -23,6 +23,7 @@ CREATE TABLE "Course" (
     "burnable" BOOLEAN NOT NULL,
     "timestamp" INTEGER NOT NULL,
     "chainId" INTEGER NOT NULL,
+    "karmaAccessControlAddress" TEXT NOT NULL,
 
     CONSTRAINT "Course_pkey" PRIMARY KEY ("id")
 );

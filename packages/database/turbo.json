@@ -63,11 +63,12 @@
                 "generate"
             ]
         },
-        "release": {
+        "deploy": {
             "dependsOn": [
                 "build",
                 "db:migrate:deploy"
-            ]
+            ],
+            "cache": false
         }
     }
 }

@@ -29,7 +29,7 @@ export const CourseCard: FC<CourseCardProps> = ({ data: course, ...rest }) => {
   return (
     <Link
       as={NextLink}
-      href={`/course/${course.address}?chainId=${course.chainId}`}
+      href={`/course/${course.address}/info`}
       style={{ textDecoration: 'none' }}
     >
       <Card maxW='sm' {...rest}>

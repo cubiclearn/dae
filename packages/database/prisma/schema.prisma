@@ -30,6 +30,7 @@ model Course {
   burnable       Boolean
   timestamp      Int
   chainId        Int
+  karma_access_control_address String
   CourseStudents CourseStudents[]
   @@unique([address, chainId])
 }

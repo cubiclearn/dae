@@ -28,16 +28,9 @@
             "cache": false
         },
         "lint": {},
-        "dev": {
+        "deploy": {
             "dependsOn": [
-                "^build",
-                "generate"
-            ],
-            "cache": false,
-            "persistent": true
-        },
-        "release": {
-            "dependsOn": [
+                "^deploy",
                 "build"
             ]
         }

@@ -62,4 +62,4 @@ export const CredentialsFactoryAbi = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-]
+] as const

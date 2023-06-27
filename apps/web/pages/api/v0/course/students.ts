@@ -64,7 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const createData = transferLogs.map((log) => {
       return {
         courseAddress: txRecept.to as `0x${string}`,
-        studentAddress: log.args.to,
+        studentAddress: log.args.to.toLowerCase(),
         chainId: parseInt(chainId),
       }
     })

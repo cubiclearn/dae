@@ -583,4 +583,4 @@ export const CredentialsAbi = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-]
+] as const

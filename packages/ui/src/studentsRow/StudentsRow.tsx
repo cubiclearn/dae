@@ -1,28 +1,35 @@
 import React from 'react'
-import { Flex, Avatar, Text } from '@chakra-ui/react'
+import { Avatar, Text, Td, Tr } from '@chakra-ui/react'
 import type { CourseStudents } from '@dae/database'
+import { useCourseData } from '../CourseProvider'
+import { useKarmaBalance } from '@dae/hooks'
+import { Address } from 'viem'
 
 export type StudentsRowProps = {
   student: CourseStudents
 }
 
 export const StudentsRow: React.FC<StudentsRowProps> = ({ student }) => {
+  const course = useCourseData()
+
+  const { data: karmaBalance, isSuccess } = useKarmaBalance(
+    course.data
+      ? (course.data.karma_access_control_address as Address)
+      : undefined,
+    student.studentAddress as Address,
+  )
+
   return (
-    <Flex
-      key={student.studentAddress}
-      border={'1px'}
-      borderColor={'gray.300'}
-      rounded={'lg'}
-      paddingY={2}
-      paddingX={3}
-      shadow={'0 0 1px rgba(0, 0, 0, 0.3)'}
-    >
-      <Avatar src='' size={'sm'} />
-      <Flex ml='4' alignItems={'center'}>
+    <Tr>
+      <Td>
+        <Avatar src='' size={'sm'} />
+      </Td>
+      <Td>
         <Text verticalAlign={'center'} fontSize='md'>
           {student.studentAddress}
         </Text>
-      </Flex>
-    </Flex>
+      </Td>
+      <Td isNumeric>{isSuccess ? karmaBalance?.toString() : '--'}</Td>
+    </Tr>
   )
 }

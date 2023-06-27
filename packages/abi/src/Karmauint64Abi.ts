@@ -195,4 +195,4 @@ export const KarmaUint64Abi = [
     stateMutability: 'pure',
     type: 'function',
   },
-]
+] as const
