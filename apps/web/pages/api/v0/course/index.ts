@@ -11,7 +11,7 @@ import {decodeEventLog} from 'viem'
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const session = await getSession({req})
   if (!session) {
-    res.status(401).json({message: 'You are unautorized'})
+    res.status(401).json({message: 'You are unauthorized'})
     return
   }
 
@@ -24,78 +24,65 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const data = await getCourse(address, parseInt(chainId))
       res.status(200).json(data)
-      return
-    } catch (_e) {
-      res.status(500).json({message: _e.message})
-      return
+    } catch (e) {
+      res.status(500).json({message: e.message || 'Internal Server Error'})
     }
-  }
-
-  if (req.method === 'POST') {
+  } else if (req.method === 'POST') {
     const {txHash, chainId} = req.body
 
     const client = createPublicClient({
       chain: getChainFromId[chainId],
-      transport: TransportConfig[chainId].transport,
+      transport: TransportConfig[chainId]?.transport,
     })
 
-    const transaction = await client.waitForTransactionReceipt({hash: txHash})
-
-    const txLogs = await client.getTransactionReceipt({hash: txHash})
-    const txKarmaControlLog = txLogs.logs.filter(
-      (log) => log.address === process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS
-    )[0]
-
-    const txLogsDecoded = decodeEventLog({
-      abi: CredentialsFactoryAbi,
-      data: txKarmaControlLog.data,
-      topics: txKarmaControlLog.topics,
-    }) as {eventName: string; args: {creator: string; karmaAccessControl: string}}
-
-    const contractAddress = txLogs.logs[0].address
-
-    const owner = (await client.readContract({
-      address: contractAddress,
-      abi: CredentialsAbi,
-      functionName: 'owner',
-    })) as string
-    const symbol = (await client.readContract({
-      address: contractAddress,
-      abi: CredentialsAbi,
-      functionName: 'symbol',
-    })) as string
-    const maxSupply = (await client.readContract({
-      address: contractAddress,
-      abi: CredentialsAbi,
-      functionName: 'MAX_SUPPLY',
-    })) as bigint
-    const baseURI = (await client.readContract({
-      address: contractAddress,
-      abi: CredentialsAbi,
-      functionName: 'baseURI',
-    })) as string
-
-    const timestamp = (await client.getBlock({blockNumber: transaction.blockNumber!})).timestamp
-
     try {
-      const metadata = await fetch(baseURI)
+      const transaction = await client.waitForTransactionReceipt({hash: txHash})
 
-      if (!metadata.ok) {
-        res.status(metadata.status).json({message: metadata.statusText})
-        return
+      const txLogs = await client.getTransactionReceipt({hash: txHash})
+      const txKarmaControlLog = txLogs.logs.find(
+        (log) => log.address === process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS
+      )
+
+      if (!txKarmaControlLog) {
+        throw new Error('Transaction log not found')
       }
-      const jsonMetadata = (await metadata.json()) as any
+
+      const txLogsDecoded = decodeEventLog({
+        abi: CredentialsFactoryAbi,
+        data: txKarmaControlLog.data,
+        topics: txKarmaControlLog.topics,
+      }) as {eventName: string; args: {creator: string; karmaAccessControl: string}}
+
+      const contractAddress = txLogs.logs[0].address
+
+      const [owner, symbol, maxSupply, baseURI] = await Promise.all([
+        client.readContract({address: contractAddress, abi: CredentialsAbi, functionName: 'owner'}),
+        client.readContract({address: contractAddress, abi: CredentialsAbi, functionName: 'symbol'}),
+        client.readContract({address: contractAddress, abi: CredentialsAbi, functionName: 'MAX_SUPPLY'}),
+        client.readContract({address: contractAddress, abi: CredentialsAbi, functionName: 'baseURI'}),
+      ])
+
+      const timestamp = (await client.getBlock({blockNumber: transaction.blockNumber!})).timestamp
+
+      const metadataResponse = await fetch(baseURI)
+
+      if (!metadataResponse.ok) {
+        throw new Error(metadataResponse.statusText)
+      }
+
+      const jsonMetadata = await metadataResponse.json()
 
       if (
-        jsonMetadata === undefined ||
-        jsonMetadata.name === undefined ||
-        jsonMetadata.description === undefined ||
-        jsonMetadata.access_url === undefined ||
-        jsonMetadata.image === undefined ||
-        jsonMetadata.website === undefined
+        !jsonMetadata ||
+        !jsonMetadata.name ||
+        !jsonMetadata.description ||
+        !jsonMetadata.access_url ||
+        !jsonMetadata.image ||
+        !jsonMetadata.website
       ) {
-        throw new Error('Wrong metadata URL')
+        throw new Error('Wrong metadata structure')
       }
+
       await prisma.course.create({
         data: {
           address: contractAddress.toLowerCase(),
@@ -114,15 +101,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           karma_access_control_address: txLogsDecoded.args.karmaAccessControl.toLowerCase(),
         },
       })
+
+      res.status(200).json({message: 'OK!'})
     } catch (e) {
       console.error(e)
-      res.status(400).json({message: e})
-      return
+      res.status(500).json({message: e.message || 'Internal Server Error'})
     }
-
-    res.status(200).json({message: 'OK!'})
-    return
+  } else {
+    res.status(400).json({message: 'Invalid HTTP method'})
   }
-
-  res.status(400).json({message: 'You have used wrong http method'})
 }

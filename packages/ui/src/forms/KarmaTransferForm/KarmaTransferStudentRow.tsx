@@ -16,11 +16,12 @@ import {
   AlertTitle,
   AlertDescription,
   Box,
+  Text,
 } from '@chakra-ui/react'
-import { KarmaCounter } from './KarmaCounter'
 import { Address, isAddress } from 'viem'
 import { useTransferKarma } from '@dae/hooks'
 import { useToast } from '@chakra-ui/react'
+import { useKarmaBalance } from '@dae/hooks'
 
 type KarmaTransferStudentRowProps = {
   karmaAccessControlAddress: Address
@@ -29,20 +30,22 @@ type KarmaTransferStudentRowProps = {
 export const KarmaTransferStudentRow = ({
   karmaAccessControlAddress,
 }: KarmaTransferStudentRowProps) => {
-  const [studentKarma, setStudentKarma] = useState<number | undefined>(
-    undefined,
-  )
   const [studentAddress, setStudentAddress] = useState<string>('')
   const [studentKarmaIncrementAmount, setStudentKarmaIncrementAmount] =
-    useState(0)
+    useState<bigint>(BigInt(0))
   const toast = useToast()
+
+  const { data: karmaBalance } = useKarmaBalance(
+    karmaAccessControlAddress,
+    isAddress(studentAddress) ? studentAddress : undefined,
+  )
 
   const { transferKarma, isError, isLoading, isSigning, isSuccess, error } =
     useTransferKarma(
       karmaAccessControlAddress,
-      studentAddress ? (studentAddress as Address) : undefined,
-      studentKarma
-        ? BigInt(studentKarma + studentKarmaIncrementAmount)
+      isAddress(studentAddress) ? studentAddress : undefined,
+      karmaBalance !== undefined
+        ? karmaBalance + studentKarmaIncrementAmount
         : undefined,
     )
 
@@ -75,18 +78,14 @@ export const KarmaTransferStudentRow = ({
     [],
   )
 
-  const handleStudentKarmaChange = (karma: number) => {
-    setStudentKarma(karma)
-  }
-
   const handleKarmaTransferAmountChange = (
     _valueAsString: string,
     valueAsNumber: number,
   ) => {
     if (_valueAsString === '') {
-      setStudentKarmaIncrementAmount(0) // Set a default value when the input is empty
+      setStudentKarmaIncrementAmount(BigInt(0)) // Set a default value when the input is empty
     } else {
-      setStudentKarmaIncrementAmount(valueAsNumber)
+      setStudentKarmaIncrementAmount(BigInt(valueAsNumber))
     }
   }
 
@@ -95,11 +94,6 @@ export const KarmaTransferStudentRow = ({
       await transferKarma()
     } catch (_e) {}
   }
-
-  useEffect(() => {
-    if (isAddress(studentAddress) && studentKarma) {
-    }
-  }, [studentKarma, studentKarmaIncrementAmount])
 
   return (
     <VStack
@@ -133,7 +127,7 @@ export const KarmaTransferStudentRow = ({
           <NumberInput
             size='md'
             maxW={24}
-            defaultValue={studentKarmaIncrementAmount}
+            defaultValue={Number(studentKarmaIncrementAmount)}
             min={-20}
             max={20}
             onChange={handleKarmaTransferAmountChange}
@@ -145,11 +139,12 @@ export const KarmaTransferStudentRow = ({
             </NumberInputStepper>
           </NumberInput>
         </FormControl>
-        <KarmaCounter
-          onStudentKarmaChange={handleStudentKarmaChange}
-          karmaAccessControlAddress={karmaAccessControlAddress}
-          studentAddress={studentAddress}
-        />
+        <FormControl width={'10%'}>
+          <FormLabel>Cur.</FormLabel>
+          <Text fontWeight={'semibold'} fontSize={'2xl'}>
+            {karmaBalance !== undefined ? karmaBalance?.toString() : '--'}
+          </Text>
+        </FormControl>
       </Flex>
       <Button
         colorScheme='blue'

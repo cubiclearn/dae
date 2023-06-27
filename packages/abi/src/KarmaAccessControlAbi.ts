@@ -232,4 +232,4 @@ export const KarmaAccessControlAbi = [
     stateMutability: 'pure',
     type: 'function',
   },
-]
+] as const

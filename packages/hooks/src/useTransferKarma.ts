@@ -19,7 +19,7 @@ export function useTransferKarma(
   const {data: hasAccess} = useContractRead({
     address: karmaAccessControlAddress,
     abi: KarmaAccessControlAbi,
-    args: [studentAddress],
+    args: [studentAddress !== undefined ? studentAddress : '0x0000000000000000000000000000000000000000'],
     functionName: 'hasAccess',
     enabled: karmaAccessControlAddress !== undefined && studentAddress !== undefined,
   })
@@ -28,7 +28,10 @@ export function useTransferKarma(
     abi: KarmaAccessControlAbi,
     address: karmaAccessControlAddress,
     functionName: 'rate',
-    args: [studentAddress, newKarmaAmount],
+    args: [
+      studentAddress !== undefined ? studentAddress : '0x0000000000000000000000000000000000000000',
+      newKarmaAmount !== undefined ? newKarmaAmount : BigInt(0),
+    ],
     enabled:
       karmaAccessControlAddress !== undefined &&
       studentAddress !== undefined &&

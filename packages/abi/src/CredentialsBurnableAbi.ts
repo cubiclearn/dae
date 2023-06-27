@@ -675,4 +675,4 @@ export const CredentialsBurnableAbi = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-]
+] as const
