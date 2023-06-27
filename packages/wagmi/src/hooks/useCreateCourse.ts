@@ -1,7 +1,6 @@
 import {useState} from 'react'
-import {useContractWrite, usePrepareContractWrite} from 'wagmi'
-import {WriteContractResult, getPublicClient} from '@wagmi/core'
-import {Address, TransactionReceipt} from 'viem'
+import {useContractWrite, usePrepareContractWrite, usePublicClient} from 'wagmi'
+import {Address} from 'viem'
 import {CredentialsFactoryAbi} from '@dae/abi'
 
 export function useCreateCourse(isBurnable: boolean, name: string, symbol: string, bUri: string, maxSupply: bigint) {
@@ -19,12 +18,12 @@ export function useCreateCourse(isBurnable: boolean, name: string, symbol: strin
     enabled: name !== '' && symbol !== '' && bUri !== '' && maxSupply !== BigInt(0),
   })
   const contractWrite = useContractWrite(config)
+  const publicClient = usePublicClient()
 
   const create = async () => {
     setIsSuccess(false)
     setIsError(false)
     setIsSigning(true)
-    const client = getPublicClient()
 
     try {
       if (name === '' || symbol === '' || bUri === '' || maxSupply === BigInt(0)) {
@@ -35,11 +34,11 @@ export function useCreateCourse(isBurnable: boolean, name: string, symbol: strin
         throw new Error('The data provided is incorrect. Please ensure that you have entered the correct information.')
       }
 
-      const writeResult: WriteContractResult = await contractWrite.writeAsync!()
+      const writeResult = await contractWrite.writeAsync!()
       setIsLoading(true)
       setIsSigning(false)
 
-      const txReceipt: TransactionReceipt = await client.waitForTransactionReceipt({
+      const txReceipt = await publicClient.waitForTransactionReceipt({
         hash: writeResult.hash,
       })
 
@@ -47,7 +46,7 @@ export function useCreateCourse(isBurnable: boolean, name: string, symbol: strin
         method: 'POST',
         body: JSON.stringify({
           txHash: txReceipt.transactionHash,
-          chainId: client.chain.id,
+          chainId: publicClient.chain.id,
         }),
         headers: {
           'Content-type': 'application/json; charset=UTF-8',

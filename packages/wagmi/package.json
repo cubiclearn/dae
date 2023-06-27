@@ -8,7 +8,8 @@
         "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
     },
     "dependencies": {
-        "viem": "1.0.6"
+        "viem": "1.0.6",
+        "zod": "^3.21.4"
     },
     "sideEffects": false,
     "type": "module",
@@ -30,31 +31,26 @@
         }
     },
     "devDependencies": {
+        "@dae/abi": "workspace:*",
         "@dae/typescript-config": "workspace:*",
         "@types/node": "18.11.18",
         "@types/react": "18.0.22",
         "@types/react-dom": "18.0.7",
-        "@dae/abi": "workspace:*",
-        "@wagmi/core": "1.2.0",
-        "typescript": "5.0.4",
+        "next": "13.4.1",
         "react": "18.2.0",
         "react-dom": "18.2.0",
-        "next": "13.4.1",
+        "typescript": "5.0.4",
         "wagmi": "1.2.0"
     },
     "files": [
         "src"
     ],
     "peerDependencies": {
-        "@wagmi/core": "1.2.0",
         "react": "18.2.0",
         "react-dom": "18.2.0",
         "wagmi": "1.2.0"
     },
     "peerDependenciesMeta": {
-        "@wagmi/core": {
-            "optional": false
-        },
         "react": {
             "optional": true
         },
