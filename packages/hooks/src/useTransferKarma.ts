@@ -60,15 +60,14 @@ export function useTransferKarma(
         throw new Error('The data provided is incorrect. Please ensure that you have entered the correct information.')
       }
 
+      const promise = contractWrite.writeAsync()
+      const data: WriteContractResult = await promise
       setIsLoading(true)
       setIsSigning(false)
 
-      const promise = contractWrite.writeAsync()
-      const data: WriteContractResult = await promise
-
+      await client.waitForTransactionReceipt({hash: data.hash as Address})
       setIsLoading(false)
       setIsSuccess(true)
-      await client.waitForTransactionReceipt({hash: data.hash as Address})
     } catch (error: any) {
       setIsLoading(false)
       setIsSigning(false)
