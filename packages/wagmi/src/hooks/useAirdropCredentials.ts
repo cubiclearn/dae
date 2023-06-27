@@ -1,8 +1,6 @@
 import {useState} from 'react'
-import {useContractWrite} from 'wagmi'
-import {WriteContractResult, getPublicClient} from '@wagmi/core'
-import {Address, TransactionReceipt} from 'viem'
-import {usePrepareContractWrite} from 'wagmi'
+import {usePrepareContractWrite, useContractWrite, usePublicClient} from 'wagmi'
+import {Address} from 'viem'
 import {CredentialsAbi} from '@dae/abi'
 
 export function useAirdropCredentials(courseAddress: Address, addresses: Address[], tokenURIs: string[]) {
@@ -11,6 +9,8 @@ export function useAirdropCredentials(courseAddress: Address, addresses: Address
   const [isSuccess, setIsSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isSigning, setIsSigning] = useState(false)
+
+  const publicClient = usePublicClient()
 
   const {config} = usePrepareContractWrite({
     abi: CredentialsAbi,
@@ -25,7 +25,6 @@ export function useAirdropCredentials(courseAddress: Address, addresses: Address
     setIsSuccess(false)
     setIsError(false)
     setIsSigning(true)
-    const client = getPublicClient()
 
     try {
       if (addresses.length === 0 || tokenURIs.length === 0) {
@@ -39,11 +38,11 @@ export function useAirdropCredentials(courseAddress: Address, addresses: Address
       if (contractWrite.writeAsync === undefined) {
         throw new Error('The data provided is incorrect. Please ensure that you have entered the correct information.')
       }
-      const writeResult: WriteContractResult = await contractWrite.writeAsync!()
+      const writeResult = await contractWrite.writeAsync!()
       setIsLoading(true)
       setIsSigning(false)
 
-      const txReceipt: TransactionReceipt = await client.waitForTransactionReceipt({
+      const txReceipt = await publicClient.waitForTransactionReceipt({
         hash: writeResult.hash,
       })
 
@@ -51,7 +50,7 @@ export function useAirdropCredentials(courseAddress: Address, addresses: Address
         method: 'POST',
         body: JSON.stringify({
           txHash: txReceipt.transactionHash,
-          chainId: client.chain.id,
+          chainId: publicClient.chain.id,
         }),
         headers: {
           'Content-type': 'application/json; charset=UTF-8',
