@@ -58,7 +58,7 @@ export const StudentsRowList: React.FC<StudentsRowListProps> = ({
         <Box>
           <AlertTitle>Nothing to show.</AlertTitle>
           <AlertDescription>
-            You are not currently teaching any courses
+            There are no students enrolled in this course
           </AlertDescription>
         </Box>
       </Alert>
