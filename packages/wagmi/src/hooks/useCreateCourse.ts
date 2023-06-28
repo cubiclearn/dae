@@ -2,6 +2,17 @@ import {useState} from 'react'
 import {useContractWrite, usePrepareContractWrite, usePublicClient} from 'wagmi'
 import {Address} from 'viem'
 import {CredentialsFactoryAbi} from '@dae/abi'
+import {z} from 'zod'
+
+const metadataSchema = z
+  .object({
+    name: z.string(),
+    description: z.string(),
+    image: z.string().url(),
+    website: z.string().url(),
+    access_url: z.string().url(),
+  })
+  .nonstrict()
 
 export function useCreateCourse(isBurnable: boolean, name: string, symbol: string, bUri: string, maxSupply: bigint) {
   const [error, setError] = useState<string | null>(null)
@@ -28,6 +39,15 @@ export function useCreateCourse(isBurnable: boolean, name: string, symbol: strin
     try {
       if (name === '' || symbol === '' || bUri === '' || maxSupply === BigInt(0)) {
         throw new Error('Please fill in all the required form fields.')
+      }
+
+      const courseMetadata = await fetch(bUri)
+
+      const courseMetadataJson = await courseMetadata.json()
+      const metadataValidationResult = metadataSchema.safeParse(courseMetadataJson)
+
+      if (!metadataValidationResult.success) {
+        throw new Error('The metadata within the MetadataURL is not in the expected format.')
       }
 
       if (contractWrite.writeAsync === undefined) {

@@ -163,7 +163,7 @@ export const CreateCourseForm = () => {
             />
           </FormControl>
           <FormControl>
-            <FormLabel>Metadata URL:</FormLabel>
+            <FormLabel>Metadata URL (https://yourmetadata.com):</FormLabel>
             <Input
               onChange={handleBUriChange}
               value={bUri}
@@ -181,19 +181,19 @@ export const CreateCourseForm = () => {
           >
             Create course
           </Button>
+          {isError ? (
+            <Alert status='error'>
+              <AlertIcon />
+              <Box>
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Box>
+            </Alert>
+          ) : (
+            <></>
+          )}
         </Stack>
       </form>
-      {isError ? (
-        <Alert status='error'>
-          <AlertIcon />
-          <Box>
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
-          </Box>
-        </Alert>
-      ) : (
-        <></>
-      )}
     </Box>
   )
 }
