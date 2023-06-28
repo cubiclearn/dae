@@ -3,21 +3,21 @@
     "description": "Decentralized Autonomous Education (DAE) Hooks",
     "version": "0.0.0",
     "dependencies": {
-        "@wagmi/core": "1.2.0",
-        "swr": "2.1.5",
-        "viem": "1.0.6",
-        "wagmi": "1.2.0"
+        "swr": "2.1.5"
     },
     "devDependencies": {
         "@dae/typescript-config": "workspace:*",
-        "@dae/database": "workspace:*",
-        "@dae/abi": "workspace:*",
         "@types/react": "18.0.22",
         "@types/react-dom": "18.0.7",
         "eslint": "8.29.0",
         "react": "18.2.0",
         "react-dom": "18.2.0",
-        "typescript": "5.0.4"
+        "typescript": "5.0.4",
+        "viem": "1.0.6"
+    },
+    "peerDependencies": {
+        "react": "*",
+        "react-dom": "*"
     },
     "license": "MIT",
     "main": "./dist/index.js",

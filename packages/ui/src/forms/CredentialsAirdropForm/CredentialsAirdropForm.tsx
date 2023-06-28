@@ -17,7 +17,7 @@ import {
   Button,
   Textarea,
 } from '@chakra-ui/react'
-import { useAirdropCredentials } from '@dae/hooks'
+import { useAirdropCredentials } from '@dae/wagmi'
 import { useToast } from '@chakra-ui/react'
 import {
   Alert,

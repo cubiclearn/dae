@@ -1,8 +1,18 @@
 import {useState} from 'react'
-import {useContractWrite, usePrepareContractWrite} from 'wagmi'
-import {WriteContractResult, getPublicClient} from '@wagmi/core'
-import {Address, TransactionReceipt} from 'viem'
+import {useContractWrite, usePrepareContractWrite, usePublicClient} from 'wagmi'
+import {Address} from 'viem'
 import {CredentialsFactoryAbi} from '@dae/abi'
+import {z} from 'zod'
+
+const metadataSchema = z
+  .object({
+    name: z.string(),
+    description: z.string(),
+    image: z.string().url(),
+    website: z.string().url(),
+    access_url: z.string().url(),
+  })
+  .nonstrict()
 
 export function useCreateCourse(isBurnable: boolean, name: string, symbol: string, bUri: string, maxSupply: bigint) {
   const [error, setError] = useState<string | null>(null)
@@ -19,27 +29,36 @@ export function useCreateCourse(isBurnable: boolean, name: string, symbol: strin
     enabled: name !== '' && symbol !== '' && bUri !== '' && maxSupply !== BigInt(0),
   })
   const contractWrite = useContractWrite(config)
+  const publicClient = usePublicClient()
 
   const create = async () => {
     setIsSuccess(false)
     setIsError(false)
     setIsSigning(true)
-    const client = getPublicClient()
 
     try {
       if (name === '' || symbol === '' || bUri === '' || maxSupply === BigInt(0)) {
         throw new Error('Please fill in all the required form fields.')
       }
 
+      const courseMetadata = await fetch(bUri)
+
+      const courseMetadataJson = await courseMetadata.json()
+      const metadataValidationResult = metadataSchema.safeParse(courseMetadataJson)
+
+      if (!metadataValidationResult.success) {
+        throw new Error('The metadata within the MetadataURL is not in the expected format.')
+      }
+
       if (contractWrite.writeAsync === undefined) {
         throw new Error('The data provided is incorrect. Please ensure that you have entered the correct information.')
       }
 
-      const writeResult: WriteContractResult = await contractWrite.writeAsync!()
+      const writeResult = await contractWrite.writeAsync!()
       setIsLoading(true)
       setIsSigning(false)
 
-      const txReceipt: TransactionReceipt = await client.waitForTransactionReceipt({
+      const txReceipt = await publicClient.waitForTransactionReceipt({
         hash: writeResult.hash,
       })
 
@@ -47,7 +66,7 @@ export function useCreateCourse(isBurnable: boolean, name: string, symbol: strin
         method: 'POST',
         body: JSON.stringify({
           txHash: txReceipt.transactionHash,
-          chainId: client.chain.id,
+          chainId: publicClient.chain.id,
         }),
         headers: {
           'Content-type': 'application/json; charset=UTF-8',

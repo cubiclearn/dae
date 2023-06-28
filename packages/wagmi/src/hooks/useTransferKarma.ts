@@ -1,6 +1,5 @@
 import {useState} from 'react'
-import {useContractWrite, useContractRead} from 'wagmi'
-import {WriteContractResult, getPublicClient} from '@wagmi/core'
+import {useContractWrite, useContractRead, usePublicClient} from 'wagmi'
 import {Address} from 'viem'
 import {usePrepareContractWrite} from 'wagmi'
 import {KarmaAccessControlAbi} from '@dae/abi'
@@ -15,6 +14,8 @@ export function useTransferKarma(
   const [isSuccess, setIsSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isSigning, setIsSigning] = useState(false)
+
+  const publicClient = usePublicClient()
 
   const {data: hasAccess} = useContractRead({
     address: karmaAccessControlAddress,
@@ -36,7 +37,8 @@ export function useTransferKarma(
       karmaAccessControlAddress !== undefined &&
       studentAddress !== undefined &&
       newKarmaAmount !== undefined &&
-      hasAccess === true,
+      hasAccess === true &&
+      newKarmaAmount >= 0,
   })
   const contractWrite = useContractWrite(config)
 
@@ -46,10 +48,13 @@ export function useTransferKarma(
       setIsError(false)
       setIsSigning(true)
       setIsLoading(false)
-      const client = getPublicClient()
 
       if (karmaAccessControlAddress === undefined || studentAddress === undefined || newKarmaAmount === undefined) {
         throw new Error('Please fill in all the required form fields.')
+      }
+
+      if (newKarmaAmount < 0) {
+        throw new Error('Invalid karma amount. The amount cannot be negative.')
       }
 
       if (hasAccess !== true) {
@@ -60,12 +65,11 @@ export function useTransferKarma(
         throw new Error('The data provided is incorrect. Please ensure that you have entered the correct information.')
       }
 
-      const promise = contractWrite.writeAsync()
-      const data: WriteContractResult = await promise
+      const data = await contractWrite.writeAsync()
       setIsLoading(true)
       setIsSigning(false)
 
-      await client.waitForTransactionReceipt({hash: data.hash as Address})
+      await publicClient.waitForTransactionReceipt({hash: data.hash as Address})
       setIsLoading(false)
       setIsSuccess(true)
     } catch (error: any) {

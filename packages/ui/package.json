@@ -16,6 +16,7 @@
         "@dae/chains": "workspace:*",
         "@dae/hooks": "workspace:*",
         "@dae/typescript-config": "workspace:*",
+        "@dae/wagmi": "workspace:*",
         "@emotion/react": "11.11.0",
         "@emotion/styled": "11.11.0",
         "@types/react": "18.0.22",

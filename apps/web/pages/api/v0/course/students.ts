@@ -42,34 +42,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return
     }
 
-    const client = createPublicClient({
-      chain: getChainFromId[chainId],
-      transport: TransportConfig[chainId].transport,
-    })
-
-    const txRecept = await client.getTransactionReceipt({
-      hash: txHash,
-    })
-
-    const txLogsDecoded = txRecept.logs.map((log) => {
-      return decodeEventLog({
-        abi: CredentialsAbi,
-        data: log.data,
-        topics: log.topics,
-      })
-    })
-
-    const transferLogs = txLogsDecoded.filter((log) => log.eventName === 'Transfer') as [CredentialTransferLog]
-
-    const createData = transferLogs.map((log) => {
-      return {
-        courseAddress: txRecept.to as `0x${string}`,
-        studentAddress: log.args.to.toLowerCase(),
-        chainId: parseInt(chainId),
-      }
-    })
-
     try {
+      const client = createPublicClient({
+        chain: getChainFromId[chainId],
+        transport: TransportConfig[chainId].transport,
+      })
+
+      const txRecept = await client.getTransactionReceipt({
+        hash: txHash,
+      })
+
+      const txLogsDecoded = txRecept.logs.map((log) => {
+        return decodeEventLog({
+          abi: CredentialsAbi,
+          data: log.data,
+          topics: log.topics,
+        })
+      })
+
+      const transferLogs = txLogsDecoded.filter((log) => log.eventName === 'Transfer') as [CredentialTransferLog]
+
+      const createData = transferLogs.map((log) => {
+        return {
+          courseAddress: txRecept.to as `0x${string}`,
+          studentAddress: log.args.to.toLowerCase(),
+          chainId: parseInt(chainId),
+        }
+      })
+
       await prisma.courseStudents.createMany({
         data: createData,
       })

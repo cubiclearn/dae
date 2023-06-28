@@ -12,10 +12,11 @@
         "rome": "12.1.3",
         "syncpack": "10.1.0"
     },
-    "packageManager": "pnpm@7.15.0",
+    "packageManager": "pnpm@8.6.5",
     "private": true,
     "scripts": {
         "build": "dotenv -- turbo run build",
+        "build-config": "dotenv -- turbo run build --filter={./config/*}",
         "build-packages": "dotenv -- turbo run build --filter={./packages/*}...",
         "check": "dotenv -- turbo run check",
         "lint": "rome check .",
@@ -30,5 +31,9 @@
         "prepare": "husky install",
         "deploy": "dotenv -- turbo run deploy",
         "start": "dotenv -- turbo run start"
+    },
+    "engines": {
+        "node": ">=18.x",
+        "pnpm": ">=7.x"
     }
 }

@@ -2,8 +2,8 @@ import React from 'react'
 import { Avatar, Text, Td, Tr } from '@chakra-ui/react'
 import type { CourseStudents } from '@dae/database'
 import { useCourseData } from '../CourseProvider'
-import { useKarmaBalance } from '@dae/hooks'
 import { Address } from 'viem'
+import { useKarmaBalance } from '@dae/wagmi'
 
 export type StudentsRowProps = {
   student: CourseStudents
