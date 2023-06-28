@@ -19,9 +19,9 @@ import {
   Text,
 } from '@chakra-ui/react'
 import { Address, isAddress } from 'viem'
-import { useTransferKarma } from '@dae/hooks'
+import { useTransferKarma } from '@dae/wagmi'
 import { useToast } from '@chakra-ui/react'
-import { useKarmaBalance } from '@dae/hooks'
+import { useKarmaBalance } from '@dae/wagmi'
 
 type KarmaTransferStudentRowProps = {
   karmaAccessControlAddress: Address
@@ -132,6 +132,7 @@ export const KarmaTransferStudentRow = ({
             defaultValue={Number(studentKarmaIncrementAmount)}
             value={Number(studentKarmaIncrementAmount)}
             onChange={handleKarmaTransferAmountChange}
+            min={karmaBalance && karmaBalance > 0 ? -Number(karmaBalance) : 0}
           >
             <NumberInputField />
             <NumberInputStepper>
