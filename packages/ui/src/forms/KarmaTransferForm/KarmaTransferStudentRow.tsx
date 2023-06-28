@@ -132,6 +132,7 @@ export const KarmaTransferStudentRow = ({
             defaultValue={Number(studentKarmaIncrementAmount)}
             value={Number(studentKarmaIncrementAmount)}
             onChange={handleKarmaTransferAmountChange}
+            min={karmaBalance && karmaBalance > 0 ? -Number(karmaBalance) : 0}
           >
             <NumberInputField />
             <NumberInputStepper>

@@ -37,7 +37,8 @@ export function useTransferKarma(
       karmaAccessControlAddress !== undefined &&
       studentAddress !== undefined &&
       newKarmaAmount !== undefined &&
-      hasAccess === true,
+      hasAccess === true &&
+      newKarmaAmount >= 0,
   })
   const contractWrite = useContractWrite(config)
 
@@ -50,6 +51,10 @@ export function useTransferKarma(
 
       if (karmaAccessControlAddress === undefined || studentAddress === undefined || newKarmaAmount === undefined) {
         throw new Error('Please fill in all the required form fields.')
+      }
+
+      if (newKarmaAmount < 0) {
+        throw new Error('Invalid karma amount. The amount cannot be negative.')
       }
 
       if (hasAccess !== true) {
