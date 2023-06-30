@@ -14,10 +14,12 @@ import {
   useDisclosure,
   BoxProps,
   FlexProps,
+  Accordion,
 } from '@chakra-ui/react'
-import { FiMenu, FiHome, FiUsers, FiZap, FiBookOpen } from 'react-icons/fi'
+import { FiMenu, FiUsers, FiZap, FiBookOpen } from 'react-icons/fi'
+import { FaVoteYea } from 'react-icons/fa'
 import { useRouter } from 'next/router'
-import { NavItem } from './DrawerNavItem'
+import { NavItemSimple, NavItemDropdown } from './DrawerNavItem'
 import { Address } from 'viem'
 import { CourseProvider } from '../CourseProvider'
 import { useNetwork } from 'wagmi'
@@ -45,44 +47,43 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
         <Logo />
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
-      <NavItem
-        key={'home'}
-        icon={FiHome}
-        href={'/'}
-        display={{ md: 'none', sm: 'block' }}
-      >
-        Home
-      </NavItem>
-      <NavItem
-        key={'info'}
-        icon={FiBookOpen}
-        href={`/course/${address}/info`}
-        isActive={pathname === '/course/[address]/info'}
-      >
-        Info
-      </NavItem>
-      {/* <NavItem key={'dashboard'} icon={FiHome} href={`#`}>
-        Dashboard
-      </NavItem> */}
-      <NavItem
-        key={'students'}
-        icon={FiUsers}
-        href={`/course/${address}/students/list`}
-        isActive={pathname.startsWith('/course/[address]/students')}
-      >
-        Students
-      </NavItem>
-      <NavItem
-        key={'karma'}
-        icon={FiZap}
-        href={`/course/${address}/karma/transfer`}
-        isActive={pathname.startsWith('/course/[address]/karma')}
-      >
-        Karma
-      </NavItem>
-      {/* <NavItem key={'vote'} icon={FiHome} href={`#`}>
-        Vote
-      </NavItem> */}
+      <Accordion allowToggle>
+        <NavItemSimple
+          key={'info'}
+          icon={FiBookOpen}
+          isActive={pathname === '/course/[address]/info'}
+          link={{ title: 'Info', href: `/course/${address}/info` }}
+        />
+        <NavItemDropdown
+          title={'Students'}
+          key={'students'}
+          icon={FiUsers}
+          isActive={pathname.startsWith('/course/[address]/students')}
+          links={[
+            { title: 'List', href: `/course/${address}/students/list` },
+            { title: 'Enroll', href: `/course/${address}/students/enroll` },
+          ]}
+        />
+        <NavItemSimple
+          key={'karma'}
+          icon={FiZap}
+          isActive={pathname.startsWith('/course/[address]/karma')}
+          link={{ title: 'Karma', href: `/course/${address}/karma/transfer` }}
+        />
+        <NavItemDropdown
+          title={'Vote'}
+          key={'vote'}
+          icon={FaVoteYea}
+          isActive={pathname.startsWith('/course/[address]/proposals')}
+          links={[
+            { title: 'Create', href: `/course/${address}/proposals/create` },
+            {
+              title: 'Explore',
+              href: `/course/${address}/proposals/explore?active=true`,
+            },
+          ]}
+        />
+      </Accordion>
     </Box>
   )
 }

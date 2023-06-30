@@ -14,9 +14,10 @@ import {
   useDisclosure,
   BoxProps,
   FlexProps,
+  Accordion,
 } from '@chakra-ui/react'
-import { FiMenu, FiHome, FiBook } from 'react-icons/fi'
-import { NavItem } from './DrawerNavItem'
+import { FiBook, FiMenu } from 'react-icons/fi'
+import { NavItemDropdown } from './DrawerNavItem'
 import { useRouter } from 'next/router'
 import { Logo } from './Logo'
 
@@ -41,25 +42,19 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
         <Logo />
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
-      <NavItem
-        key={'home'}
-        icon={FiHome}
-        href={'/'}
-        display={{ md: 'none', sm: 'block' }}
-      >
-        Home
-      </NavItem>
-      {/* <NavItem key={'profile'} icon={FiHome} href={'/profile'}>
-        Profile
-      </NavItem> */}
-      <NavItem
-        key={'mycourses'}
-        icon={FiBook}
-        href={'/profile/courses/partecipating'}
-        isActive={pathname.startsWith('/profile/courses/')}
-      >
-        My Courses
-      </NavItem>
+      <Accordion allowToggle>
+        <NavItemDropdown
+          title={'My Courses'}
+          key={'students'}
+          icon={FiBook}
+          isActive={pathname.startsWith('/course/[address]/students')}
+          links={[
+            { title: 'Teaching', href: '/profile/courses/teaching' },
+            { title: 'Partecipating', href: '/profile/courses/partecipating' },
+            { title: 'Create', href: '/profile/courses/create' },
+          ]}
+        />
+      </Accordion>
     </Box>
   )
 }

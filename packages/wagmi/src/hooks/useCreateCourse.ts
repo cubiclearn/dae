@@ -3,6 +3,7 @@ import {useContractWrite, usePrepareContractWrite, usePublicClient} from 'wagmi'
 import {Address} from 'viem'
 import {CredentialsFactoryAbi} from '@dae/abi'
 import {z} from 'zod'
+import {useCreateSnapshotSpace} from '@dae/snapshot'
 
 const metadataSchema = z
   .object({
@@ -20,6 +21,7 @@ export function useCreateCourse(isBurnable: boolean, name: string, symbol: strin
   const [isSuccess, setIsSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isSigning, setIsSigning] = useState(false)
+  const {create: createSnapshotSpace} = useCreateSnapshotSpace()
 
   const {config} = usePrepareContractWrite({
     address: process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as Address,
@@ -53,6 +55,8 @@ export function useCreateCourse(isBurnable: boolean, name: string, symbol: strin
       if (contractWrite.writeAsync === undefined) {
         throw new Error('The data provided is incorrect. Please ensure that you have entered the correct information.')
       }
+
+      await createSnapshotSpace()
 
       const writeResult = await contractWrite.writeAsync!()
       setIsLoading(true)

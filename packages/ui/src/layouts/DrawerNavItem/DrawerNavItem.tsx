@@ -1,39 +1,44 @@
-import NextLink from 'next/link'
-import { Flex, Icon, Link, FlexProps } from '@chakra-ui/react'
+import {
+  Icon,
+  FlexProps,
+  Box,
+  Link,
+  UnorderedList,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
+  ListItem,
+} from '@chakra-ui/react'
 import { IconType } from 'react-icons'
+import NextLink from 'next/link'
 
 interface NavItemProps extends FlexProps {
   icon: IconType
-  href: string
-  children: string
   isActive?: boolean
 }
-export const NavItem = ({
+
+export const NavItemSimple = ({
   icon,
-  children,
-  href,
   isActive,
+  link,
   ...rest
-}: NavItemProps) => {
+}: NavItemProps & { link: { title: string; href: string } }) => {
   return (
     <Link
-      href={href}
+      href={link.href}
       style={{ textDecoration: 'none' }}
       _focus={{ boxShadow: 'none' }}
       as={NextLink}
     >
-      <Flex
-        align='center'
+      <Box
         p='4'
         mx='4'
         my='2'
         borderRadius='lg'
         role='group'
         cursor='pointer'
-        _hover={{
-          bg: 'gray.400',
-          color: 'white',
-        }}
+        _hover={{ ...(!isActive && { bg: 'blackAlpha.50' }) }}
         {...(isActive && {
           bg: 'gray.400',
           color: 'white',
@@ -44,17 +49,78 @@ export const NavItem = ({
           <Icon
             mr='4'
             fontSize='16'
-            _groupHover={{
-              color: 'white',
-            }}
             {...(isActive && {
               color: 'white',
             })}
             as={icon}
           />
         )}
-        {children}
-      </Flex>
+        {link.title}
+      </Box>
     </Link>
+  )
+}
+
+export const NavItemDropdown = ({
+  icon,
+  isActive,
+  links,
+  title,
+  ...rest
+}: NavItemProps & {
+  links: { title: string; href: string }[]
+  title: string
+}) => {
+  return (
+    <AccordionItem border={'none'}>
+      <AccordionButton
+        display={'flex'}
+        justifyContent={'space-between'}
+        width={'85%'}
+        p='4'
+        mx='4'
+        my='2'
+        borderRadius='lg'
+        role='group'
+        cursor='pointer'
+        _hover={{ ...(!isActive && { bg: 'blackAlpha.50' }) }}
+        {...(isActive && {
+          bg: 'gray.400',
+          color: 'white',
+        })}
+      >
+        <Box {...rest}>
+          {icon && (
+            <Icon
+              mr='4'
+              fontSize='16'
+              {...(isActive && {
+                color: 'white',
+              })}
+              as={icon}
+            />
+          )}
+          {title}
+        </Box>
+        <AccordionIcon />
+      </AccordionButton>
+      <AccordionPanel p={0} px='4' mx='6' my='1'>
+        <UnorderedList spacing={3}>
+          {links.map((link) => {
+            return (
+              <ListItem px={2}>
+                <Link
+                  as={NextLink}
+                  href={link.href}
+                  _hover={{ textDecoration: 'none' }}
+                >
+                  {link.title}
+                </Link>
+              </ListItem>
+            )
+          })}
+        </UnorderedList>
+      </AccordionPanel>
+    </AccordionItem>
   )
 }
