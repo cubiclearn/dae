@@ -67,11 +67,11 @@ export const ProposalCountdownTimer: React.FC<ProposalCountdownTimerProps> = ({
 
   if (Date.now() / 1000 > timestamp) {
     return (
-      <VStack spacing={4}>
+      <VStack spacing={2}>
         <Text fontSize={'xl'} fontWeight={'semibold'}>
           Ended on:
         </Text>
-        <Text>{timestampToDate(timestamp)}</Text>
+        <Text fontSize={'lg'}>{timestampToDate(timestamp)}</Text>
       </VStack>
     )
   }

@@ -71,8 +71,8 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
           link={{ title: 'Karma', href: `/course/${address}/karma/transfer` }}
         />
         <NavItemDropdown
-          title={'Vote'}
-          key={'vote'}
+          title={'Proposals'}
+          key={'proposals'}
           icon={FaVoteYea}
           isActive={pathname.startsWith('/course/[address]/proposals')}
           links={[

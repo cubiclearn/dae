@@ -58,7 +58,7 @@ export const ProposalRowList: React.FC<ProposalRowListProps> = ({
   }
 
   return (
-    <VStack spacing={4}>
+    <VStack spacing={8}>
       {data.proposals!.map((proposal) => {
         return <ProposalRow key={proposal.id} proposal={proposal} />
       })}

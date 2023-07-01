@@ -21,7 +21,7 @@ export const FOLLOWS_QUERY = gql`
 export const PROPOSALS_QUERY = gql`
   query Proposals($spaceId: String!, $state: String){
     proposals (
-      first: 20,
+      first: 5,
       skip: 0,
       where: {
         space: $spaceId,
