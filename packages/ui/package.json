@@ -13,6 +13,7 @@
         "@chakra-ui/react": "2.6.1",
         "@dae/abi": "workspace:*",
         "@dae/database": "workspace:*",
+        "@dae/snapshot": "workspace:*",
         "@dae/chains": "workspace:*",
         "@dae/hooks": "workspace:*",
         "@dae/typescript-config": "workspace:*",
@@ -30,7 +31,8 @@
         "react-toastify": "9.1.2",
         "typescript": "5.0.4",
         "viem": "1.0.6",
-        "wagmi": "1.2.0"
+        "wagmi": "1.2.0",
+        "@snapshot-labs/snapshot.js": "0.4.100"
     },
     "license": "MIT",
     "main": "./src/index.ts",

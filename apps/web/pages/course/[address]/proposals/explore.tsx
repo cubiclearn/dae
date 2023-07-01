@@ -1,18 +1,12 @@
 import Head from 'next/head'
 import { Layout } from '@dae/ui'
-import { useSpaceProposals } from '@dae/snapshot'
 import { useRouter } from 'next/router'
 import { Stack, Tabs, TabList, Tab, Link } from '@chakra-ui/react'
 import NextLink from 'next/link'
+import { ProposalRowList } from '@dae/ui'
 
 export default function TransferKarmaPage() {
   const router = useRouter()
-  const { data: spaceData, isLoading: isSpaceDataLoading } = useSpaceProposals(
-    'yam.eth',
-    router.query.active === 'true' ? 'active' : 'closed',
-  )
-
-  console.log(spaceData, isSpaceDataLoading, router.query.active === 'true')
 
   return (
     <>
@@ -40,7 +34,10 @@ export default function TransferKarmaPage() {
               </Link>
             </TabList>
           </Tabs>
-          <p>PROPOSALS</p>
+          <ProposalRowList
+            space='yam.eth'
+            state={router.query.active === 'true' ? 'active' : 'closed'}
+          />
         </Stack>
       </Layout.Course>
     </>

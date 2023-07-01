@@ -7,7 +7,6 @@
         "@dae/abi": "workspace:*",
         "@dae/database": "workspace:*",
         "@dae/ui": "workspace:*",
-        "@dae/snapshot": "workspace:*",
         "@dae/viem-config": "workspace:*",
         "@emotion/react": "11.11.0",
         "@emotion/styled": "11.11.0",

@@ -108,7 +108,7 @@ export const NavItemDropdown = ({
         <UnorderedList spacing={3}>
           {links.map((link) => {
             return (
-              <ListItem px={2}>
+              <ListItem px={2} key={link.title}>
                 <Link
                   as={NextLink}
                   href={link.href}

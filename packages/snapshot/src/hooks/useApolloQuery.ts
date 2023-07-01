@@ -1,15 +1,22 @@
 import { useCallback, useState } from 'react'
 import { apolloClient } from '../graphql/apollo'
-import { ApolloQueryResult, QueryOptions } from '@apollo/client'
+import { ApolloError, QueryOptions } from '@apollo/client'
 
-export function useApolloQuery() {
-  const [error, setError] = useState<string | null>(null)
-  const [isError, setIsError] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
+export type UseApolloQueryResult<T> = {
+  data: any | undefined
+  isLoading: boolean
+  isSuccess: boolean
+  error: ApolloError | undefined
+  isError: boolean
+  query: (queryOptions: QueryOptions) => {}
+}
+
+export const useApolloQuery = (): UseApolloQueryResult<any> => {
+  const [error, setError] = useState<ApolloError | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(true)
-  const [data, setData] = useState<ApolloQueryResult<any> | undefined>(
-    undefined,
-  )
+  const [data, setData] = useState<any | undefined>(null)
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [isError, setIsError] = useState(false)
 
   const query = useCallback(async (queryOptions: QueryOptions) => {
     setIsLoading(true)
@@ -30,9 +37,9 @@ export function useApolloQuery() {
   return {
     data,
     isLoading,
+    error,
     isError,
     isSuccess,
-    error,
     query,
   }
 }
