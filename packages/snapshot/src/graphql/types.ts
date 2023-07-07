@@ -1,3 +1,5 @@
+import { ProposalType } from '@snapshot-labs/snapshot.js/dist/sign/types'
+
 export type Proposal = {
   id: string
   title: string
@@ -12,6 +14,8 @@ export type Proposal = {
   scores_total: number
   scores_updated: number
   author: string
+  type: ProposalType
+  network: string
   space: {
     id: string
     name: string

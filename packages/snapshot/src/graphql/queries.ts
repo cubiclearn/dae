@@ -43,6 +43,8 @@ export const PROPOSALS_QUERY = gql`
       scores_total
       scores_updated
       author
+      type
+      network
       space {
         id
         name

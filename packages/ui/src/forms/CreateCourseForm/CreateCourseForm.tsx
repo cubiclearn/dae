@@ -13,6 +13,7 @@ import {
   AlertDescription,
   Text,
   useToast,
+  FormHelperText,
 } from '@chakra-ui/react'
 import { useCreateCourse } from '@dae/wagmi'
 import { useState, useEffect, useCallback, ChangeEvent, FormEvent } from 'react'
@@ -23,10 +24,25 @@ export const CreateCourseForm = () => {
   const [bUri, setBUri] = useState<string>('')
   const [maxSupply, setMaxSupply] = useState<bigint>(BigInt(0))
   const [isBurnable, setIsBurnable] = useState(false)
+  const [snapshotSpaceENS, setSnapshotSpaceENS] = useState<string>('')
+
   const toast = useToast()
 
-  const { create, isLoading, isError, isSuccess, isSigning, error } =
-    useCreateCourse(isBurnable, name, symbol, bUri, maxSupply)
+  const {
+    create: createCourse,
+    isLoading,
+    isError,
+    isSuccess,
+    isSigning,
+    error,
+  } = useCreateCourse(
+    isBurnable,
+    name,
+    symbol,
+    bUri,
+    maxSupply,
+    snapshotSpaceENS,
+  )
 
   useEffect(() => {
     if (isError) {
@@ -54,6 +70,7 @@ export const CreateCourseForm = () => {
     setSymbol('')
     setBUri('')
     setMaxSupply(BigInt(0))
+    setSnapshotSpaceENS('')
   }
 
   const handleCredentialsTypeChange = useCallback(
@@ -80,6 +97,14 @@ export const CreateCourseForm = () => {
     (event: ChangeEvent<HTMLInputElement>) => {
       const input = event.target.value
       setName(input)
+    },
+    [],
+  )
+
+  const handleSnapshotSpaceENSChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const input = event.target.value
+      setSnapshotSpaceENS(input)
     },
     [],
   )
@@ -112,7 +137,7 @@ export const CreateCourseForm = () => {
     event.preventDefault()
 
     try {
-      await create()
+      await createCourse()
       clearInputFields()
     } catch (_e: any) {}
   }
@@ -170,6 +195,18 @@ export const CreateCourseForm = () => {
               type='bUri'
               autoComplete='off'
               placeholder=''
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel>Snapshot Space ENS:</FormLabel>
+            <FormHelperText>
+              If you do not have one ENS name associated with your address,
+              register one here:
+            </FormHelperText>
+            <Input
+              onChange={handleSnapshotSpaceENSChange}
+              value={snapshotSpaceENS}
+              type='text'
             />
           </FormControl>
           <Button

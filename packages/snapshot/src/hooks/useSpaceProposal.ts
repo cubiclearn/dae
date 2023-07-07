@@ -1,20 +1,20 @@
-import { PROPOSALS_QUERY } from '../graphql/queries'
+import { PROPOSAL_QUERY } from '../graphql/queries'
 import { useApolloQuery } from './useApolloQuery'
 import { useEffect } from 'react'
 
-export const useSpaceProposal = (spaceId: String | undefined) => {
+export const useSpaceProposal = (proposalId: String | undefined) => {
   const { data, error, isLoading, isError, isSuccess, query } = useApolloQuery()
 
   useEffect(() => {
-    if (spaceId !== undefined) {
+    if (proposalId !== undefined) {
       query({
-        query: PROPOSALS_QUERY,
+        query: PROPOSAL_QUERY,
         variables: {
-          spaceId: spaceId,
+          proposalId: proposalId,
         },
       })
     }
-  }, [spaceId])
+  }, [proposalId])
 
   return {
     data,

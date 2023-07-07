@@ -32,6 +32,7 @@
     },
     "devDependencies": {
         "@dae/abi": "workspace:*",
+        "@dae/database": "workspace:*",
         "@dae/snapshot": "workspace:*",
         "@dae/typescript-config": "workspace:*",
         "@types/node": "18.11.18",

@@ -22,21 +22,31 @@ export const ProposalStats: React.FC<ProposalStatsProps> = ({
     .sort((a, b) => b.score - a.score)
 
   return (
-    <VStack width={'100%'} spacing={4}>
-      {sortedChoices.map(({ choice, score }) => {
-        return (
-          <VStack spacing={2} alignItems={'flex-start'} width={'100%'}>
-            <Text fontSize={'sm'} fontWeight={'semibold'}>
-              {choice}
-            </Text>
-            <Progress
-              size='lg'
-              value={(score / total_score) * 100}
+    <VStack alignItems={'flex-start'} width={'100%'}>
+      <Text fontSize={'lg'} fontWeight={'semibold'}>
+        Votes:
+      </Text>
+      <VStack width={'100%'} spacing={4}>
+        {sortedChoices.map(({ choice, score }) => {
+          return (
+            <VStack
+              spacing={2}
+              alignItems={'flex-start'}
               width={'100%'}
-            />
-          </VStack>
-        )
-      })}
+              key={choice}
+            >
+              <Text fontSize={'sm'} fontWeight={'semibold'}>
+                {choice}
+              </Text>
+              <Progress
+                size='lg'
+                value={(score / total_score) * 100}
+                width={'100%'}
+              />
+            </VStack>
+          )
+        })}
+      </VStack>
     </VStack>
   )
 }

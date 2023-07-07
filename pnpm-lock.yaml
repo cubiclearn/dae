@@ -264,6 +264,9 @@ importers:
       '@dae/abi':
         specifier: workspace:*
         version: link:../abi
+      '@dae/chains':
+        specifier: workspace:*
+        version: link:../chains
       '@dae/typescript-config':
         specifier: workspace:*
         version: link:../../config/typescript
@@ -397,6 +400,9 @@ importers:
       '@dae/abi':
         specifier: workspace:*
         version: link:../abi
+      '@dae/database':
+        specifier: workspace:*
+        version: link:../database
       '@dae/snapshot':
         specifier: workspace:*
         version: link:../snapshot

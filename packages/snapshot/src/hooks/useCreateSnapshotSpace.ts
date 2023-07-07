@@ -1,51 +1,104 @@
-import {useAccount} from 'wagmi'
+import { Address, useAccount, useNetwork } from 'wagmi'
 import snapshot from '@snapshot-labs/snapshot.js'
-import {useEthersSigner} from './useEthersSigner'
+import { useEthersSigner } from './useEthersSigner'
+import { ChainSnapshotHub } from '@dae/chains'
 
-export const useCreateSnapshotSpace = () => {
-  const {address} = useAccount()
-  const hub = 'https://testnet.snapshot.org'
-  const snapshotClient = new snapshot.Client712(hub)
-  const signer = useEthersSigner()
-  //const provider = new providers.Web3Provider(publicClient.transport)
-
-  const create = async () => {
-    const spaceSettings = JSON.stringify({
-      name: 'Loot Owners',
-      skin: 'indexed',
-      about: '',
-      admins: ['0x91288986FFaa5F604C14E8df3968cd594AB6150C'],
-      avatar: 'https://pbs.twimg.com/profile_images/1431587138202701826/lpgblc4h_400x400.jpg',
-      github: 'lootproject',
-      symbol: 'LOOT',
-      filters: {
-        minScore: 1,
-        onlyMembers: false,
-      },
-      members: [],
-      network: '1',
-      plugins: {},
-      twitter: 'lootproject',
-      strategies: [
-        {
-          name: 'erc721',
-          params: {
-            symbol: 'LOOT',
-            address: '0xff9c1b15b16263c61d017ee9f65c50e4ae0113d7',
+const buildSpaceSettings = (
+  ownerAddress: Address,
+  spaceName: string,
+  spaceSymbol: string,
+  spaceDescription: string,
+  chainId: string,
+  karmaAccessControlAddress: Address,
+) => {
+  return JSON.stringify({
+    name: spaceName,
+    skin: 'indexed',
+    about: spaceDescription,
+    admins: [ownerAddress],
+    avatar:
+      'https://pbs.twimg.com/profile_images/1431587138202701826/lpgblc4h_400x400.jpg',
+    symbol: spaceSymbol,
+    filters: {
+      minScore: 1,
+      onlyMembers: true,
+    },
+    network: chainId,
+    strategies: [
+      {
+        name: 'contract-call',
+        params: {
+          symbol: 'Karma',
+          address: karmaAccessControlAddress,
+          decimals: 0,
+          methodABI: {
+            inputs: [
+              {
+                internalType: 'address',
+                name: '_user',
+                type: 'address',
+              },
+            ],
+            name: 'ratingOf',
+            outputs: [
+              {
+                internalType: 'uint64',
+                name: '',
+                type: 'uint64',
+              },
+            ],
+            stateMutability: 'view',
+            type: 'function',
           },
         },
-      ],
-      validation: {
-        name: 'basic',
-        params: {},
       },
-    })
+    ],
+    validation: {
+      name: 'basic',
+      params: {},
+    },
+  })
+}
+
+export const useCreateSnapshotSpace = () => {
+  const { address } = useAccount()
+  const { chain } = useNetwork()
+  const spaceNetwork = chain!.id as keyof typeof ChainSnapshotHub
+  const hub = ChainSnapshotHub[spaceNetwork]
+  const snapshotClient = new snapshot.Client712(hub)
+  const signer = useEthersSigner()
+
+  const create = async (
+    snapshotSpaceENS: string,
+    spaceName: string,
+    spaceSymbol: string,
+    spaceDescription: string,
+    karmaAccessControlAddress: string,
+  ) => {
+    if (!chain) {
+      throw new Error(
+        'The data provided is incorrect. Please ensure that you have entered the correct information.',
+      )
+    }
+
+    const spaceSettings = buildSpaceSettings(
+      address as Address,
+      spaceName,
+      spaceSymbol,
+      spaceDescription,
+      chain.id.toString(),
+      karmaAccessControlAddress as Address,
+    )
 
     try {
-      const receipt = await snapshotClient.space(signer as any, address as string, {
-        space: 'ndrew.eth',
-        settings: spaceSettings,
-      })
+      const receipt = await snapshotClient.space(
+        signer as any,
+        address as string,
+        {
+          space: snapshotSpaceENS,
+          settings: spaceSettings,
+        },
+      )
 
       console.log(receipt)
     } catch (_e) {
