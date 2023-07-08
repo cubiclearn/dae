@@ -91,16 +91,10 @@ export const useCreateSnapshotSpace = () => {
     )
 
     try {
-      const receipt = await snapshotClient.space(
-        signer as any,
-        address as string,
-        {
-          space: snapshotSpaceENS,
-          settings: spaceSettings,
-        },
-      )
-
-      console.log(receipt)
+      await snapshotClient.space(signer as any, address as string, {
+        space: snapshotSpaceENS,
+        settings: spaceSettings,
+      })
     } catch (_e) {
       console.log(_e)
     }

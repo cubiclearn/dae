@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import {
-  mainnet,
   useAccount,
   useContractWrite,
   useNetwork,
@@ -14,7 +13,7 @@ import { z } from 'zod'
 import { useCreateSnapshotSpace } from '@dae/snapshot'
 import type { Course } from '@dae/database'
 import { createPublicClient, http } from 'viem'
-import { goerli } from 'viem/chains'
+import { mainnet, goerli } from 'viem/chains'
 
 const metadataSchema = z
   .object({
@@ -80,7 +79,6 @@ export function useCreateCourse(
       })
 
       if (resolverAddress !== address) {
-        console.log(resolverAddress)
         throw new Error('You are not the owner of this ENS address.')
       }
 

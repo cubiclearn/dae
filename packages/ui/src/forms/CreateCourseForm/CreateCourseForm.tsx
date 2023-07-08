@@ -14,9 +14,15 @@ import {
   Text,
   useToast,
   FormHelperText,
+  FormErrorMessage,
+  Link,
 } from '@chakra-ui/react'
 import { useCreateCourse } from '@dae/wagmi'
 import { useState, useEffect, useCallback, ChangeEvent, FormEvent } from 'react'
+import { createPublicClient, http } from 'viem'
+import { normalize } from 'viem/ens'
+import { mainnet, goerli } from 'viem/chains'
+import { useAccount, useNetwork } from 'wagmi'
 
 export const CreateCourseForm = () => {
   const [symbol, setSymbol] = useState<string>('')
@@ -25,6 +31,11 @@ export const CreateCourseForm = () => {
   const [maxSupply, setMaxSupply] = useState<bigint>(BigInt(0))
   const [isBurnable, setIsBurnable] = useState(false)
   const [snapshotSpaceENS, setSnapshotSpaceENS] = useState<string>('')
+  const [isSnapshotSpaceENSOwner, setIsSnapshotSpaceENSOwner] = useState<
+    boolean | undefined
+  >(undefined)
+  const { chain } = useNetwork()
+  const { address } = useAccount()
 
   const toast = useToast()
 
@@ -43,6 +54,23 @@ export const CreateCourseForm = () => {
     maxSupply,
     snapshotSpaceENS,
   )
+
+  const ensCheckerPublicClient = createPublicClient({
+    chain: chain && !chain.testnet ? mainnet : goerli,
+    transport: http(),
+  })
+
+  useEffect(() => {
+    const checkENSOwner = async () => {
+      if (snapshotSpaceENS.endsWith('.eth')) {
+        const ENSOwner = await ensCheckerPublicClient.getEnsAddress({
+          name: normalize(snapshotSpaceENS),
+        })
+        setIsSnapshotSpaceENSOwner(ENSOwner === address)
+      }
+    }
+    checkENSOwner()
+  }, [snapshotSpaceENS])
 
   useEffect(() => {
     if (isError) {
@@ -197,17 +225,32 @@ export const CreateCourseForm = () => {
               placeholder=''
             />
           </FormControl>
-          <FormControl>
+          <FormControl isInvalid={isSnapshotSpaceENSOwner === false}>
             <FormLabel>Snapshot Space ENS:</FormLabel>
-            <FormHelperText>
-              If you do not have one ENS name associated with your address,
-              register one here:
-            </FormHelperText>
+
             <Input
               onChange={handleSnapshotSpaceENSChange}
               value={snapshotSpaceENS}
               type='text'
             />
+            {isSnapshotSpaceENSOwner === false ? (
+              <FormErrorMessage>
+                You are not the owner of this ENS name. Register one on{' '}
+                <Link href='https://app.ens.domains/' isExternal>
+                  https://app.ens.domains/
+                </Link>{' '}
+                on {chain?.testnet ? 'Goerli Testnet' : 'Ethereum Mainnet'}
+              </FormErrorMessage>
+            ) : (
+              <FormHelperText>
+                If you do not have one ENS name associated with your address,
+                register one on{' '}
+                <Link href='https://app.ens.domains/' isExternal>
+                  https://app.ens.domains/
+                </Link>{' '}
+                on {chain?.testnet ? 'Goerli Testnet' : 'Ethereum Mainnet'}
+              </FormHelperText>
+            )}
           </FormControl>
           <Button
             colorScheme='blue'
