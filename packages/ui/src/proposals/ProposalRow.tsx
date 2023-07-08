@@ -42,7 +42,7 @@ export const ProposalRow: React.FC<ProposalRowProps> = ({ proposal }) => {
             />
             <ProposalDescription proposal={proposal} />
           </VStack>
-          {proposal.state === 'closed' ? (
+          {proposal.state === 'active' ? (
             <VStack
               py={4}
               borderTop={'1px solid'}

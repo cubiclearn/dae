@@ -1,9 +1,10 @@
 import { PROPOSAL_VOTES_QUERY } from '../graphql/queries'
-import { useApolloQuery } from './useApolloQuery'
+import { useSnapshotApolloQuery } from './useApolloQuery'
 import { useEffect } from 'react'
 
 export const useSpaceProposalVotes = (proposalId: String | undefined) => {
-  const { data, error, isLoading, isError, isSuccess, query } = useApolloQuery()
+  const { data, error, isLoading, isError, isSuccess, query } =
+    useSnapshotApolloQuery()
 
   useEffect(() => {
     if (proposalId !== undefined) {

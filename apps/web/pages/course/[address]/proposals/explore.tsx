@@ -35,7 +35,6 @@ export default function TransferKarmaPage() {
             </TabList>
           </Tabs>
           <ProposalRowList
-            space='yam.eth'
             state={router.query.active === 'true' ? 'active' : 'closed'}
           />
         </Stack>

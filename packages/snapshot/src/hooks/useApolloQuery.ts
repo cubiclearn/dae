@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import { apolloClient } from '../graphql/apollo'
 import { ApolloError, QueryOptions } from '@apollo/client'
+import { useNetwork } from 'wagmi'
 
 export type UseApolloQueryResult<T> = {
   data: any | undefined
@@ -11,7 +12,7 @@ export type UseApolloQueryResult<T> = {
   query: (queryOptions: QueryOptions) => {}
 }
 
-export const useApolloQuery = (): UseApolloQueryResult<any> => {
+export const useApolloQuery = (uri: string): UseApolloQueryResult<any> => {
   const [error, setError] = useState<ApolloError | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(true)
   const [data, setData] = useState<any | undefined>(null)
@@ -21,7 +22,8 @@ export const useApolloQuery = (): UseApolloQueryResult<any> => {
   const query = useCallback(async (queryOptions: QueryOptions) => {
     setIsLoading(true)
     try {
-      const response = await apolloClient.query(queryOptions)
+      const client = apolloClient(uri)
+      const response = await client.query(queryOptions)
       setIsLoading(false)
       setIsSuccess(true)
       setData(response.data)
@@ -42,4 +44,13 @@ export const useApolloQuery = (): UseApolloQueryResult<any> => {
     isSuccess,
     query,
   }
+}
+
+export const useSnapshotApolloQuery = () => {
+  const { chain } = useNetwork()
+  return useApolloQuery(
+    chain?.testnet
+      ? 'https://testnet.snapshot.org/graphql'
+      : 'https://hub.snapshot.org/graphql',
+  )
 }

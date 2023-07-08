@@ -12,17 +12,18 @@ import {
 } from '@chakra-ui/react'
 import { useSpaceProposals } from '@dae/snapshot'
 import { ProposalRow } from './ProposalRow'
+import { useCourseData } from '../CourseProvider'
 
 type ProposalRowListProps = {
-  space: string
   state: string
 }
 
-export const ProposalRowList: React.FC<ProposalRowListProps> = ({
-  space,
-  state,
-}) => {
-  const { data, isLoading, error } = useSpaceProposals(space, state)
+export const ProposalRowList: React.FC<ProposalRowListProps> = ({ state }) => {
+  const course = useCourseData()
+  const { data, isLoading, error } = useSpaceProposals(
+    course.data ? course.data.snapshot_space_ens : undefined,
+    state,
+  )
 
   if (isLoading) {
     return (
@@ -59,7 +60,7 @@ export const ProposalRowList: React.FC<ProposalRowListProps> = ({
   }
 
   return (
-    <Accordion allowToggle allowMultiple>
+    <Accordion allowMultiple>
       <VStack spacing={6}>
         {data.proposals!.map((proposal) => {
           return <ProposalRow key={proposal.id} proposal={proposal} />

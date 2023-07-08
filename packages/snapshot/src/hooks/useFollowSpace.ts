@@ -1,13 +1,14 @@
 import { Address } from 'viem'
 import { FOLLOWS_QUERY } from '../graphql/queries'
-import { useApolloQuery } from './useApolloQuery'
+import { useSnapshotApolloQuery } from './useApolloQuery'
 import { useEffect } from 'react'
 
 export const useFollowSpace = (
   address: Address | undefined,
   spaceENSAddress?: String,
 ) => {
-  const { data, error, isLoading, isError, isSuccess, query } = useApolloQuery()
+  const { data, error, isLoading, isError, isSuccess, query } =
+    useSnapshotApolloQuery()
 
   useEffect(() => {
     if (address !== undefined) {

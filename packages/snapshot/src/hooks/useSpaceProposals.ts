@@ -1,5 +1,5 @@
 import { PROPOSALS_QUERY } from '../graphql/queries'
-import { useApolloQuery } from './useApolloQuery'
+import { useSnapshotApolloQuery } from './useApolloQuery'
 import { useEffect } from 'react'
 import { Proposal } from '../graphql/types'
 
@@ -15,7 +15,8 @@ export const useSpaceProposals = (
   spaceId: String | undefined,
   state: String | undefined,
 ): UseSpaceProposalsResult => {
-  const { data, error, isLoading, isError, isSuccess, query } = useApolloQuery()
+  const { data, error, isLoading, isError, isSuccess, query } =
+    useSnapshotApolloQuery()
 
   useEffect(() => {
     if (spaceId !== undefined && state !== undefined) {
