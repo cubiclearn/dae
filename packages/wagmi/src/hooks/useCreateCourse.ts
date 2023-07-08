@@ -115,6 +115,7 @@ export function useCreateCourse(
         body: JSON.stringify({
           txHash: txReceipt.transactionHash,
           chainId: publicClient.chain.id,
+          snapshotSpaceENS: snapshotSpaceENS,
         }),
         headers: {
           'Content-type': 'application/json; charset=UTF-8',

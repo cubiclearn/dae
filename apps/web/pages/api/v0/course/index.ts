@@ -7,6 +7,7 @@ import { getChainFromId } from '../../../../lib/functions'
 import { getCourse } from '../../../../lib/api'
 import { config as TransportConfig } from '@dae/viem-config'
 import { decodeEventLog } from 'viem'
+import type { Course } from '@dae/database'
 
 export default async function handler(
   req: NextApiRequest,
@@ -31,7 +32,7 @@ export default async function handler(
       res.status(500).json({ message: e.message || 'Internal Server Error' })
     }
   } else if (req.method === 'POST') {
-    const { txHash, chainId } = req.body
+    const { txHash, chainId, snapshotSpaceENS } = req.body
 
     const client = createPublicClient({
       chain: getChainFromId[chainId],
@@ -124,7 +125,8 @@ export default async function handler(
         chainId: chainId,
         karma_access_control_address:
           txLogsDecoded.args.karmaAccessControl.toLowerCase(),
-      }
+        snapshot_space_ens: snapshotSpaceENS,
+      } as Course
 
       await prisma.course.create({
         data: courseData,
