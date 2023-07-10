@@ -15,6 +15,7 @@ import {
   AlertDescription,
   AlertIcon,
   AlertTitle,
+  Textarea,
 } from '@chakra-ui/react'
 import { useCreateProposal } from '@dae/snapshot'
 import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from 'react'
@@ -53,7 +54,7 @@ export const CreateProposalForm = () => {
   const [proposalDescription, setProposalDescription] = useState<string>('')
   const [proposalDiscussionLink, setProposalDiscussionLink] =
     useState<string>('')
-  const [proposalChoices, setProposalChoices] = useState<string[]>([])
+  const [proposalChoices, setProposalChoices] = useState<string[]>([''])
   const [proposalEndDate, setProposalEndDate] = useState(new Date())
 
   const handleProposalTitleChange = useCallback(
@@ -65,7 +66,7 @@ export const CreateProposalForm = () => {
   )
 
   const handleProposalDescriptionChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
+    (event: ChangeEvent<HTMLTextAreaElement>) => {
       const input = event.target.value
       setProposalDescription(input)
     },
@@ -147,10 +148,9 @@ export const CreateProposalForm = () => {
           </FormControl>
           <FormControl>
             <FormLabel>Description:</FormLabel>
-            <Input
+            <Textarea
               onChange={handleProposalDescriptionChange}
               value={proposalDescription}
-              type='text'
             />
           </FormControl>
           <FormControl>
