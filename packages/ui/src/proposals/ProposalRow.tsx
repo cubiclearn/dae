@@ -1,25 +1,32 @@
-import {
-  Box,
-  Text,
-  VStack,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-} from '@chakra-ui/react'
+import { Box, Text, VStack, HStack, Link } from '@chakra-ui/react'
 import { Proposal } from '@dae/snapshot'
 import { ProposalCountdownTimer } from './ProposalCountdown'
-import { ProposalStats } from './ProposalStats'
-import { ProposalVote } from './ProposalVote'
-import { ProposalDescription } from './ProposalDescription'
+import NextLink from 'next/link'
+import { useRouter } from 'next/router'
 
 type ProposalRowProps = {
   proposal: Proposal
 }
 
 export const ProposalRow: React.FC<ProposalRowProps> = ({ proposal }) => {
+  const router = useRouter()
+  const { address: courseAddress } = router.query
+
   return (
-    <AccordionItem borderWidth={1} borderRadius={'lg'} width={'100%'}>
-      <AccordionButton textAlign={'left'} py={4}>
+    <Link
+      width={'100%'}
+      as={NextLink}
+      href={`/course/${courseAddress}/proposals/${proposal.id}`}
+      _hover={{ textDecoration: 'none' }}
+    >
+      <HStack
+        alignItems={'flex-start'}
+        width={'100%'}
+        borderWidth={'1px'}
+        borderColor={'gray.200'}
+        borderRadius={'xl'}
+        padding={6}
+      >
         <Box width={'60%'}>
           <VStack width={'100%'} alignItems={'flex-start'}>
             <Text fontSize={'xl'} fontWeight={'semibold'}>
@@ -31,32 +38,7 @@ export const ProposalRow: React.FC<ProposalRowProps> = ({ proposal }) => {
         <Box width={'40%'}>
           <ProposalCountdownTimer timestamp={proposal.end} />
         </Box>
-      </AccordionButton>
-      <AccordionPanel py={4} borderTop={'1px solid'} borderColor={'gray.200'}>
-        <VStack spacing={8} alignItems={'flex-start'} width={'100%'}>
-          <VStack width={'100%'} alignItems={'flex-start'} spacing={8}>
-            <ProposalStats
-              choices={proposal.choices}
-              scores={proposal.scores}
-              total_score={proposal.scores_total}
-            />
-            <ProposalDescription proposal={proposal} />
-          </VStack>
-          {proposal.state === 'active' ? (
-            <VStack
-              py={4}
-              borderTop={'1px solid'}
-              borderColor={'gray.200'}
-              width={'100%'}
-              alignItems={'flex-start'}
-            >
-              <ProposalVote proposal={proposal} />
-            </VStack>
-          ) : (
-            <></>
-          )}
-        </VStack>
-      </AccordionPanel>
-    </AccordionItem>
+      </HStack>
+    </Link>
   )
 }

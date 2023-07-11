@@ -76,11 +76,11 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
           icon={FaVoteYea}
           isActive={pathname.startsWith('/course/[address]/proposals')}
           links={[
-            { title: 'Create', href: `/course/${address}/proposals/create` },
             {
               title: 'Explore',
               href: `/course/${address}/proposals/explore?active=true`,
             },
+            { title: 'Create', href: `/course/${address}/proposals/create` },
           ]}
         />
       </Accordion>

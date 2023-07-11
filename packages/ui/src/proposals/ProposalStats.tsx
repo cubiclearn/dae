@@ -23,8 +23,8 @@ export const ProposalStats: React.FC<ProposalStatsProps> = ({
 
   return (
     <VStack alignItems={'flex-start'} width={'100%'}>
-      <Text fontSize={'lg'} fontWeight={'semibold'}>
-        Votes:
+      <Text fontSize={'lg'} fontWeight={'bold'}>
+        Votes
       </Text>
       <VStack width={'100%'} spacing={4}>
         {sortedChoices.map(({ choice, score }) => {
@@ -35,8 +35,11 @@ export const ProposalStats: React.FC<ProposalStatsProps> = ({
               width={'100%'}
               key={choice}
             >
-              <Text fontSize={'sm'} fontWeight={'semibold'}>
+              <Text fontSize={'md'} fontWeight={'semibold'}>
                 {choice}
+              </Text>
+              <Text fontSize={'xs'} fontWeight={'semibold'}>
+                {score}
               </Text>
               <Progress
                 size='lg'

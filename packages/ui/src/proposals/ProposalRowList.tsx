@@ -8,7 +8,6 @@ import {
   Center,
   Spinner,
   VStack,
-  Accordion,
 } from '@chakra-ui/react'
 import { useSpaceProposals } from '@dae/snapshot'
 import { ProposalRow } from './ProposalRow'
@@ -60,12 +59,10 @@ export const ProposalRowList: React.FC<ProposalRowListProps> = ({ state }) => {
   }
 
   return (
-    <Accordion allowMultiple>
-      <VStack spacing={6}>
-        {data.proposals!.map((proposal) => {
-          return <ProposalRow key={proposal.id} proposal={proposal} />
-        })}
-      </VStack>
-    </Accordion>
+    <VStack spacing={6}>
+      {data.proposals!.map((proposal) => {
+        return <ProposalRow key={proposal.id} proposal={proposal} />
+      })}
+    </VStack>
   )
 }

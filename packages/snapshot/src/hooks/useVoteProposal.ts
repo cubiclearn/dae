@@ -38,7 +38,7 @@ export const useVotePropsal = (
     } catch (error: any) {
       setIsLoading(false)
       setIsError(true)
-      setError(error.message)
+      setError(error.error_description)
       throw error
     }
   }

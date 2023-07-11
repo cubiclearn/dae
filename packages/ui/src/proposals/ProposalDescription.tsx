@@ -19,8 +19,8 @@ export const ProposalDescription: React.FC<ProposalDescriptionProps> = ({
 }) => {
   return (
     <VStack spacing={4} alignItems={'flex-start'}>
-      <Text fontSize={'lg'} fontWeight={'semibold'}>
-        Description:
+      <Text fontSize={'lg'} fontWeight={'bold'}>
+        Description
       </Text>
       <ReactMarkdown
         components={{

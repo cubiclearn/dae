@@ -69,8 +69,8 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
 
   return (
     <VStack spacing={4} alignItems={'flex-start'}>
-      <Text fontSize={'lg'} fontWeight={'semibold'}>
-        Cast a vote:
+      <Text fontSize={'lg'} fontWeight={'bold'}>
+        Cast a vote
       </Text>
       <VStack spacing={4} alignItems={'flex-start'}>
         <HStack spacing={4} alignItems={'flex-start'}>

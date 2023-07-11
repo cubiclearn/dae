@@ -64,7 +64,13 @@ export const PROPOSAL_QUERY = gql`
       end
       snapshot
       state
+      scores
+      scores_by_strategy
+      scores_total
+      scores_updated
       author
+      type
+      network
       space {
         id
         name

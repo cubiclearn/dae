@@ -7,7 +7,7 @@ import { ProposalRowList } from '@dae/ui'
 
 export default function TransferKarmaPage() {
   const router = useRouter()
-
+  const { active } = router.query
   return (
     <>
       <Head>
@@ -18,7 +18,7 @@ export default function TransferKarmaPage() {
       </Head>
       <Layout.Course heading='Course proposals'>
         <Stack spacing={8}>
-          <Tabs index={router.query.active === 'true' ? 0 : 1}>
+          <Tabs index={active === 'true' ? 0 : 1}>
             <TabList>
               <Link
                 as={NextLink}
