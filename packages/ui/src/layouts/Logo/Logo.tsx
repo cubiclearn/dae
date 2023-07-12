@@ -13,9 +13,9 @@ export const Logo: FC = () => {
       }}
       href={'/'}
     >
-      <HStack spacing={2}>
+      <HStack spacing={3}>
         <Image src='/dae-logo.png' width={8} height={8} alt='DAE Logo' />
-        <Text>DAE</Text>
+        <Text fontWeight={'bold'}>DAE</Text>
       </HStack>
     </Link>
   )

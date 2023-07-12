@@ -7,6 +7,7 @@ import { SessionProvider } from 'next-auth/react'
 import { ChakraProvider } from '@chakra-ui/react'
 import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import { WagmiConfig, createConfig, configureChains } from 'wagmi'
+import { infuraProvider } from 'wagmi/providers/infura'
 import { sepolia, foundry } from 'wagmi/chains'
 import { publicProvider } from 'wagmi/providers/public'
 import { Session } from 'next-auth'
@@ -21,12 +22,15 @@ const supportedChains =
 
 export const { chains, publicClient, webSocketPublicClient } = configureChains(
   supportedChains,
-  [publicProvider()],
+  [
+    publicProvider(),
+    infuraProvider({ apiKey: process.env.INFURA_API_KEY as string }),
+  ],
 )
 
 const { connectors } = getDefaultWallets({
   appName: 'Decentralized Autonomous Education (DAE)',
-  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'projectid',
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string,
   chains,
 })
 

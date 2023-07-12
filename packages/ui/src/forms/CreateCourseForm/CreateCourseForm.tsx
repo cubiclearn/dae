@@ -13,9 +13,16 @@ import {
   AlertDescription,
   Text,
   useToast,
+  FormHelperText,
+  FormErrorMessage,
+  Link,
 } from '@chakra-ui/react'
 import { useCreateCourse } from '@dae/wagmi'
 import { useState, useEffect, useCallback, ChangeEvent, FormEvent } from 'react'
+import { createPublicClient, http } from 'viem'
+import { normalize } from 'viem/ens'
+import { mainnet, goerli } from 'viem/chains'
+import { useAccount, useNetwork } from 'wagmi'
 
 export const CreateCourseForm = () => {
   const [symbol, setSymbol] = useState<string>('')
@@ -23,10 +30,49 @@ export const CreateCourseForm = () => {
   const [bUri, setBUri] = useState<string>('')
   const [maxSupply, setMaxSupply] = useState<bigint>(BigInt(0))
   const [isBurnable, setIsBurnable] = useState(false)
+  const [snapshotSpaceENS, setSnapshotSpaceENS] = useState<string>('')
+  const [isSnapshotSpaceENSOwner, setIsSnapshotSpaceENSOwner] = useState<
+    boolean | undefined
+  >(undefined)
+  const { chain } = useNetwork()
+  const { address } = useAccount()
+
   const toast = useToast()
 
-  const { create, isLoading, isError, isSuccess, isSigning, error } =
-    useCreateCourse(isBurnable, name, symbol, bUri, maxSupply)
+  const {
+    create: createCourse,
+    isLoading,
+    isError,
+    isSuccess,
+    isSigning,
+    error,
+  } = useCreateCourse(
+    isBurnable,
+    name,
+    symbol,
+    bUri,
+    maxSupply,
+    snapshotSpaceENS,
+  )
+
+  const ensCheckerPublicClient = createPublicClient({
+    chain: chain && !chain.testnet ? mainnet : goerli,
+    transport: http(),
+  })
+
+  useEffect(() => {
+    const checkENSOwner = async () => {
+      if (snapshotSpaceENS.endsWith('.eth')) {
+        const ENSOwner = await ensCheckerPublicClient.getEnsAddress({
+          name: normalize(snapshotSpaceENS),
+        })
+        setIsSnapshotSpaceENSOwner(ENSOwner === address)
+      } else {
+        setIsSnapshotSpaceENSOwner(undefined)
+      }
+    }
+    checkENSOwner()
+  }, [snapshotSpaceENS])
 
   useEffect(() => {
     if (isError) {
@@ -54,6 +100,7 @@ export const CreateCourseForm = () => {
     setSymbol('')
     setBUri('')
     setMaxSupply(BigInt(0))
+    setSnapshotSpaceENS('')
   }
 
   const handleCredentialsTypeChange = useCallback(
@@ -80,6 +127,14 @@ export const CreateCourseForm = () => {
     (event: ChangeEvent<HTMLInputElement>) => {
       const input = event.target.value
       setName(input)
+    },
+    [],
+  )
+
+  const handleSnapshotSpaceENSChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const input = event.target.value
+      setSnapshotSpaceENS(input)
     },
     [],
   )
@@ -112,7 +167,7 @@ export const CreateCourseForm = () => {
     event.preventDefault()
 
     try {
-      await create()
+      await createCourse()
       clearInputFields()
     } catch (_e: any) {}
   }
@@ -146,11 +201,21 @@ export const CreateCourseForm = () => {
           </FormControl>
           <FormControl>
             <FormLabel>Course Name:</FormLabel>
-            <Input onChange={handleNameChange} value={name} type='text' />
+            <Input
+              onChange={handleNameChange}
+              value={name}
+              type='text'
+              placeholder='Name'
+            />
           </FormControl>
           <FormControl>
             <FormLabel>Symbol:</FormLabel>
-            <Input onChange={handleSymbolChange} value={symbol} type='text' />
+            <Input
+              onChange={handleSymbolChange}
+              value={symbol}
+              type='text'
+              placeholder='Symbol'
+            />
           </FormControl>
           <FormControl>
             <FormLabel>Max partecipants:</FormLabel>
@@ -160,17 +225,50 @@ export const CreateCourseForm = () => {
               autoComplete='off'
               autoCorrect='off'
               type='text'
+              placeholder='10'
             />
           </FormControl>
           <FormControl>
-            <FormLabel>Metadata URL (https://yourmetadata.com):</FormLabel>
+            <FormLabel>Metadata URL:</FormLabel>
             <Input
               onChange={handleBUriChange}
               value={bUri}
-              type='bUri'
+              type='text'
               autoComplete='off'
-              placeholder=''
+              placeholder='https://your-metadata.com'
             />
+          </FormControl>
+          <FormControl isInvalid={isSnapshotSpaceENSOwner === false}>
+            <FormLabel>Snapshot Space ENS:</FormLabel>
+            <Input
+              onChange={handleSnapshotSpaceENSChange}
+              value={snapshotSpaceENS}
+              type='text'
+              placeholder='your-ens.eth'
+            />
+            {isSnapshotSpaceENSOwner === false ? (
+              <FormErrorMessage>
+                You are not the owner of this ENS name. Register one on{' '}
+                <Link href='https://app.ens.domains/' isExternal>
+                  https://app.ens.domains/
+                </Link>{' '}
+                on {chain?.testnet ? 'Goerli Testnet' : 'Ethereum Mainnet'}
+              </FormErrorMessage>
+            ) : isSnapshotSpaceENSOwner === true ? (
+              <FormHelperText color={'green.500'}>
+                Great! You are the owner of this ENS namespace and you can
+                register a new course on it.
+              </FormHelperText>
+            ) : (
+              <FormHelperText>
+                If you do not have one ENS name associated with your address,
+                register one on{' '}
+                <Link href='https://app.ens.domains/' isExternal>
+                  https://app.ens.domains/
+                </Link>{' '}
+                on {chain?.testnet ? 'Goerli Testnet' : 'Ethereum Mainnet'}
+              </FormHelperText>
+            )}
           </FormControl>
           <Button
             colorScheme='blue'

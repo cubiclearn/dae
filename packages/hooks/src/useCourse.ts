@@ -1,4 +1,4 @@
-import {Address} from 'viem'
+import { Address } from 'viem'
 import useSWR from 'swr'
 
 const fetcher = async (url: string) => {
@@ -7,7 +7,10 @@ const fetcher = async (url: string) => {
 }
 
 export const useCourse = (address: Address, chainId: number) => {
-  const {data, error, isLoading} = useSWR(`/api/v0/course?address=${address}&chainId=${chainId}`, fetcher)
+  const { data, error, isLoading } = useSWR(
+    `/api/v0/course?address=${address}&chainId=${chainId}`,
+    fetcher,
+  )
 
   return {
     data,

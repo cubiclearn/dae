@@ -31,6 +31,7 @@ model Course {
   timestamp      Int
   chainId        Int
   karma_access_control_address String
+  snapshot_space_ens String @default("red-panda.eth")
   CourseStudents CourseStudents[]
   @@unique([address, chainId])
 }
