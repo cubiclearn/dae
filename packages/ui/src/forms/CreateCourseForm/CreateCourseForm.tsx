@@ -67,6 +67,8 @@ export const CreateCourseForm = () => {
           name: normalize(snapshotSpaceENS),
         })
         setIsSnapshotSpaceENSOwner(ENSOwner === address)
+      } else {
+        setIsSnapshotSpaceENSOwner(undefined)
       }
     }
     checkENSOwner()
@@ -199,11 +201,21 @@ export const CreateCourseForm = () => {
           </FormControl>
           <FormControl>
             <FormLabel>Course Name:</FormLabel>
-            <Input onChange={handleNameChange} value={name} type='text' />
+            <Input
+              onChange={handleNameChange}
+              value={name}
+              type='text'
+              placeholder='Name'
+            />
           </FormControl>
           <FormControl>
             <FormLabel>Symbol:</FormLabel>
-            <Input onChange={handleSymbolChange} value={symbol} type='text' />
+            <Input
+              onChange={handleSymbolChange}
+              value={symbol}
+              type='text'
+              placeholder='Symbol'
+            />
           </FormControl>
           <FormControl>
             <FormLabel>Max partecipants:</FormLabel>
@@ -213,25 +225,26 @@ export const CreateCourseForm = () => {
               autoComplete='off'
               autoCorrect='off'
               type='text'
+              placeholder='10'
             />
           </FormControl>
           <FormControl>
-            <FormLabel>Metadata URL (https://yourmetadata.com):</FormLabel>
+            <FormLabel>Metadata URL:</FormLabel>
             <Input
               onChange={handleBUriChange}
               value={bUri}
-              type='bUri'
+              type='text'
               autoComplete='off'
-              placeholder=''
+              placeholder='https://your-metadata.com'
             />
           </FormControl>
           <FormControl isInvalid={isSnapshotSpaceENSOwner === false}>
             <FormLabel>Snapshot Space ENS:</FormLabel>
-
             <Input
               onChange={handleSnapshotSpaceENSChange}
               value={snapshotSpaceENS}
               type='text'
+              placeholder='your-ens.eth'
             />
             {isSnapshotSpaceENSOwner === false ? (
               <FormErrorMessage>
@@ -241,6 +254,11 @@ export const CreateCourseForm = () => {
                 </Link>{' '}
                 on {chain?.testnet ? 'Goerli Testnet' : 'Ethereum Mainnet'}
               </FormErrorMessage>
+            ) : isSnapshotSpaceENSOwner === true ? (
+              <FormHelperText color={'green.500'}>
+                Great! You are the owner of this ENS namespace and you can
+                register a new course on it.
+              </FormHelperText>
             ) : (
               <FormHelperText>
                 If you do not have one ENS name associated with your address,
