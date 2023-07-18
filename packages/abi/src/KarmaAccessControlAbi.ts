@@ -39,9 +39,9 @@ export const KarmaAccessControlAbi = [
       },
       {
         indexed: false,
-        internalType: 'uint64',
+        internalType: 'int8',
         name: '_rating',
-        type: 'uint64',
+        type: 'int8',
       },
     ],
     name: 'Rating',
@@ -96,6 +96,25 @@ export const KarmaAccessControlAbi = [
     inputs: [
       {
         internalType: 'address',
+        name: '_operator',
+        type: 'address',
+      },
+    ],
+    name: 'isOperator',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
         name: '',
         type: 'address',
       },
@@ -103,9 +122,9 @@ export const KarmaAccessControlAbi = [
     name: 'karma',
     outputs: [
       {
-        internalType: 'uint64',
+        internalType: 'int8',
         name: '',
-        type: 'uint64',
+        type: 'int8',
       },
     ],
     stateMutability: 'view',
@@ -131,29 +150,10 @@ export const KarmaAccessControlAbi = [
         name: '_user',
         type: 'address',
       },
-    ],
-    name: 'quadraticRatingOf',
-    outputs: [
       {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: '_user',
-        type: 'address',
-      },
-      {
-        internalType: 'uint64',
+        internalType: 'int8',
         name: '_rating',
-        type: 'uint64',
+        type: 'int8',
       },
     ],
     name: 'rate',
@@ -172,9 +172,9 @@ export const KarmaAccessControlAbi = [
     name: 'ratingOf',
     outputs: [
       {
-        internalType: 'uint64',
+        internalType: 'int8',
         name: '',
-        type: 'uint64',
+        type: 'int8',
       },
     ],
     stateMutability: 'view',

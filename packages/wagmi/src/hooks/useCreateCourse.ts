@@ -1,78 +1,99 @@
-import { useState } from 'react'
-import {
-  useAccount,
-  useContractWrite,
-  useNetwork,
-  usePrepareContractWrite,
-  usePublicClient,
-} from 'wagmi'
+import { useState, useMemo } from 'react'
+import { Chain, useContractWrite, usePublicClient } from 'wagmi'
 import { normalize } from 'viem/ens'
 import { Address } from 'viem'
 import { CredentialsFactoryAbi } from '@dae/abi'
-import { z } from 'zod'
 import { useCreateSnapshotSpace } from '@dae/snapshot'
 import type { Course } from '@dae/database'
 import { createPublicClient, http } from 'viem'
 import { mainnet, goerli } from 'viem/chains'
+import { FactoryContractAddress } from '@dae/chains'
 
-const metadataSchema = z
-  .object({
-    name: z.string(),
-    description: z.string(),
-    image: z.string().url(),
-    website: z.string().url(),
-    access_url: z.string().url(),
-  })
-  .nonstrict()
-
-export function useCreateCourse(
-  isBurnable: boolean,
-  name: string,
-  symbol: string,
-  bUri: string,
-  maxSupply: bigint,
-  snapshotSpaceENS: string,
-) {
+export function useCreateCourse(chain: Chain, address: Address) {
   const [error, setError] = useState<string | null>(null)
   const [isError, setIsError] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isSigning, setIsSigning] = useState(false)
-  const { create: createSnapshotSpace } = useCreateSnapshotSpace()
-  const { chain } = useNetwork()
-  const { address } = useAccount()
+  const [status, setStatus] = useState('')
 
-  const { config } = usePrepareContractWrite({
-    address: process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as Address,
+  const { create: createSnapshotSpace } = useCreateSnapshotSpace()
+
+  const factoryAddress = FactoryContractAddress[
+    chain.id as keyof FactoryContractAddress
+  ] as Address
+
+  const { writeAsync } = useContractWrite({
+    address: factoryAddress,
     functionName: 'createCourse',
-    args: [isBurnable, name, symbol, bUri, maxSupply],
     abi: CredentialsFactoryAbi,
-    enabled:
-      name !== '' && symbol !== '' && bUri !== '' && maxSupply !== BigInt(0),
   })
-  const contractWrite = useContractWrite(config)
   const publicClient = usePublicClient()
 
-  const ensCheckerPublicClient = createPublicClient({
-    chain: chain && !chain.testnet ? mainnet : goerli,
-    transport: http(),
-  })
+  const ensCheckerPublicClient = useMemo(
+    () =>
+      createPublicClient({
+        chain: chain && !chain.testnet && chain.id !== 31337 ? mainnet : goerli,
+        transport: http(),
+      }),
+    [chain],
+  )
 
-  const create = async () => {
+  const uploadCourseMetaToIPFS = async (
+    name: string,
+    description: string,
+    website: string,
+    image: File,
+    snapshotSpaceENS: string,
+    mediaChannel: string,
+  ) => {
+    const formData = new FormData()
+
+    formData.append('file', image)
+
+    formData.append('keys', 'name')
+    formData.append('values', name)
+    formData.append('keys', 'description')
+    formData.append('values', description)
+    formData.append('keys', 'website')
+    formData.append('values', website)
+    formData.append('keys', 'snapshot-ens')
+    formData.append('values', snapshotSpaceENS)
+    formData.append('keys', 'media-channel')
+    formData.append('values', mediaChannel)
+
+    const metadataIPFSResponse = await fetch('/api/v0/course/metadata', {
+      method: 'POST',
+      body: formData,
+    })
+
+    if (!metadataIPFSResponse.ok) {
+      throw new Error(
+        `HTTP ${metadataIPFSResponse.status} - ${metadataIPFSResponse.statusText}`,
+      )
+    }
+
+    const ipfsMetadata = await metadataIPFSResponse.json()
+    return ipfsMetadata
+  }
+
+  const create = async (
+    name: string,
+    description: string,
+    image: File,
+    website: string,
+    mediaChannel: string,
+    magisterBaseKarma: number,
+    discipulusBaseKarma: number,
+    snapshotSpaceENS: string,
+  ) => {
     setIsSuccess(false)
     setIsError(false)
     setIsSigning(true)
+    setIsLoading(true)
 
     try {
-      if (
-        name === '' ||
-        symbol === '' ||
-        bUri === '' ||
-        maxSupply === BigInt(0) ||
-        snapshotSpaceENS === ''
-      ) {
-        throw new Error('Please fill in all the required form fields.')
-      }
+      setStatus('Resolving ENS ownership...')
 
       const resolverAddress = await ensCheckerPublicClient.getEnsAddress({
         name: normalize(snapshotSpaceENS),
@@ -82,27 +103,38 @@ export function useCreateCourse(
         throw new Error('You are not the owner of this ENS address.')
       }
 
-      const courseMetadata = await fetch(bUri)
+      setStatus('Uploading metadata to IPFS...')
 
-      const courseMetadataJson = await courseMetadata.json()
-      const metadataValidationResult =
-        metadataSchema.safeParse(courseMetadataJson)
+      const { Hash: metadataIPFSHash } = await uploadCourseMetaToIPFS(
+        name,
+        description,
+        website,
+        image,
+        snapshotSpaceENS,
+        mediaChannel,
+      )
 
-      if (!metadataValidationResult.success) {
-        throw new Error(
-          'The metadata within the MetadataURL is not in the expected format.',
-        )
-      }
-
-      if (contractWrite.writeAsync === undefined) {
+      if (writeAsync === undefined) {
         throw new Error(
           'The data provided is incorrect. Please ensure that you have entered the correct information.',
         )
       }
 
-      const writeResult = await contractWrite.writeAsync!()
-      setIsLoading(true)
+      const writeResult = await writeAsync({
+        args: [
+          name,
+          'DAEC',
+          `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${metadataIPFSHash}`,
+          BigInt(100),
+          BigInt(magisterBaseKarma),
+          BigInt(discipulusBaseKarma),
+        ],
+      })
+
+      setStatus('Sending transaction to the network...')
+
       setIsSigning(false)
+      setStatus('Waiting for transaction to be completed...')
 
       const txReceipt = await publicClient.waitForTransactionReceipt({
         hash: writeResult.hash,
@@ -113,7 +145,6 @@ export function useCreateCourse(
         body: JSON.stringify({
           txHash: txReceipt.transactionHash,
           chainId: publicClient.chain.id,
-          snapshotSpaceENS: snapshotSpaceENS,
         }),
         headers: {
           'Content-type': 'application/json; charset=UTF-8',
@@ -128,6 +159,8 @@ export function useCreateCourse(
         message: string
         data: Course
       }
+
+      setStatus('Waiting to connect the snapshot space...')
 
       await createSnapshotSpace(
         snapshotSpaceENS,
@@ -144,6 +177,7 @@ export function useCreateCourse(
       setIsSigning(false)
       setIsError(true)
       setError(error.message || 'An error occurred')
+      throw error
     }
   }
 
@@ -154,5 +188,6 @@ export function useCreateCourse(
     isSuccess,
     error,
     isSigning,
+    status,
   }
 }

@@ -3,12 +3,8 @@ import { Layout } from '@dae/ui'
 import { CustomLink } from '@dae/ui'
 import { Stack, Tabs, TabList, Tab } from '@chakra-ui/react'
 import { CourseCardList } from '@dae/ui'
-import { DefaultChain } from '@dae/chains'
-import { useNetwork, useAccount } from 'wagmi'
 
 export default function Teaching() {
-  const { chain } = useNetwork()
-  const { address } = useAccount()
   return (
     <>
       <Head>
@@ -30,11 +26,7 @@ export default function Teaching() {
               </CustomLink>
             </TabList>
           </Tabs>
-          <CourseCardList
-            api_url={`/api/v0/teacher/courses?ownerAddress=${address}&chainId=${
-              chain?.id ? chain.id : DefaultChain.id
-            }`}
-          />
+          <CourseCardList isMagister={true} />
         </Stack>
       </Layout.Profile>
     </>

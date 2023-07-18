@@ -1,7 +1,10 @@
-import {prisma} from '@dae/database'
-import type {Course, CourseStudents} from '@dae/database'
+import { Role, prisma } from '@dae/database'
+import type { Course, CourseStudents } from '@dae/database'
 
-export const getCourse = (address: string, chainId: number): Promise<Course | null> => {
+export const getCourse = (
+  address: string,
+  chainId: number,
+): Promise<Course | null> => {
   return prisma.course.findFirst({
     where: {
       address: address.toLowerCase(),
@@ -10,7 +13,10 @@ export const getCourse = (address: string, chainId: number): Promise<Course | nu
   })
 }
 
-export const getCourseStudents = async (address: string, chainId: number): Promise<CourseStudents[]> => {
+export const getCourseStudents = async (
+  address: string,
+  chainId: number,
+): Promise<CourseStudents[]> => {
   return prisma.courseStudents.findMany({
     where: {
       courseAddress: address.toLowerCase(),
@@ -19,11 +25,19 @@ export const getCourseStudents = async (address: string, chainId: number): Promi
   })
 }
 
-export const getTeacherCourses = async (teacherAddress: string, chainId: number): Promise<Course[]> => {
+export const getMagisterCourses = async (
+  address: string,
+  chainId: number,
+): Promise<Course[]> => {
   return prisma.course.findMany({
     where: {
       chainId: chainId,
-      owner: teacherAddress.toLowerCase(),
+      roles: {
+        some: {
+          userAddress: address,
+          role: Role.MAGISTER,
+        },
+      },
     },
     orderBy: [
       {
@@ -33,24 +47,24 @@ export const getTeacherCourses = async (teacherAddress: string, chainId: number)
   })
 }
 
-export const getStudentCourses = async (studentAddress: string, chainId: number) => {
-  const data = await prisma.courseStudents.findMany({
+export const getDiscipulusCourses = async (
+  address: string,
+  chainId: number,
+): Promise<Course[]> => {
+  return prisma.course.findMany({
     where: {
       chainId: chainId,
-      studentAddress: studentAddress.toLowerCase(),
+      roles: {
+        some: {
+          userAddress: address,
+          role: Role.DISCIPULUS,
+        },
+      },
     },
-    include: {
-      course: true,
-    },
+    orderBy: [
+      {
+        timestamp: 'desc',
+      },
+    ],
   })
-
-  if (data === null) {
-    throw Error('Course does not exist or you have passed the wrong chain')
-  }
-
-  const cleanData = data.map((courseStudentsData) => {
-    return courseStudentsData.course
-  })
-
-  return cleanData
 }

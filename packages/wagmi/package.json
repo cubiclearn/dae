@@ -8,6 +8,7 @@
         "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
     },
     "dependencies": {
+        "swr": "2.1.5",
         "viem": "1.0.6",
         "zod": "^3.21.4"
     },
@@ -32,6 +33,7 @@
     },
     "devDependencies": {
         "@dae/abi": "workspace:*",
+        "@dae/chains": "workspace:*",
         "@dae/database": "workspace:*",
         "@dae/snapshot": "workspace:*",
         "@dae/typescript-config": "workspace:*",

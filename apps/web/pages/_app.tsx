@@ -62,7 +62,9 @@ const MyApp = ({ Component, pageProps }: AppProps<{ session: Session }>) => {
             modalSize='compact'
           >
             <ChakraProvider
-              toastOptions={{ defaultOptions: { position: 'top-right' } }}
+              toastOptions={{
+                defaultOptions: { position: 'top-right' },
+              }}
             >
               <Layout.Base>
                 <Component {...pageProps} />

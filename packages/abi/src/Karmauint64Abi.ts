@@ -59,6 +59,25 @@ export const KarmaUint64Abi = [
     inputs: [
       {
         internalType: 'address',
+        name: '_operator',
+        type: 'address',
+      },
+    ],
+    name: 'isOperator',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
         name: '',
         type: 'address',
       },
