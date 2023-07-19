@@ -18,6 +18,7 @@ export const CourseProvider: FC<{
   children: ReactNode
 }> = ({ address, chainId, children }) => {
   const { data, isLoading, error } = useCourse(address, chainId)
+
   return (
     <Context.Provider
       value={useMemo(

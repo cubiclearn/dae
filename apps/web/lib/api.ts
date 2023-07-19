@@ -1,5 +1,5 @@
-import { Role, prisma } from '@dae/database'
-import type { Course, CourseStudents } from '@dae/database'
+import { prisma } from '@dae/database'
+import type { Course } from '@dae/database'
 
 export const getCourse = (
   address: string,
@@ -8,7 +8,7 @@ export const getCourse = (
   return prisma.course.findFirst({
     where: {
       address: address.toLowerCase(),
-      chainId: chainId,
+      chain_id: chainId,
     },
   })
 }
@@ -31,11 +31,15 @@ export const getMagisterCourses = async (
 ): Promise<Course[]> => {
   return prisma.course.findMany({
     where: {
-      chainId: chainId,
-      roles: {
+      chain_id: chainId,
+      credentials: {
         some: {
-          userAddress: address,
-          role: Role.MAGISTER,
+          type: 'MAGISTER',
+        },
+      },
+      credentials_assignment: {
+        some: {
+          user_address: address,
         },
       },
     },
@@ -53,11 +57,15 @@ export const getDiscipulusCourses = async (
 ): Promise<Course[]> => {
   return prisma.course.findMany({
     where: {
-      chainId: chainId,
-      roles: {
+      chain_id: chainId,
+      credentials: {
         some: {
-          userAddress: address,
-          role: Role.DISCIPULUS,
+          type: 'DISCIPULUS',
+        },
+      },
+      credentials_assignment: {
+        some: {
+          user_address: address,
         },
       },
     },

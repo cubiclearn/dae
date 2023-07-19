@@ -27,6 +27,15 @@ export const ChainSnapshotHub = {
 export type ChainSnapshotHub =
   typeof ChainSnapshotHub[keyof typeof ChainSnapshotHub]
 
+export const ChainSnapshotWebsite = {
+  [ChainId.ETHEREUM]: 'https://snapshot.org',
+  [ChainId.SEPOLIA]: 'https://demo.snapshot.org',
+  [ChainId.FOUNDRY]: 'https://demo.snapshot.org',
+} as const
+
+export type ChainSnapshotWebsite =
+  typeof ChainSnapshotWebsite[keyof typeof ChainSnapshotWebsite]
+
 export const FactoryContractAddress = {
   [ChainId.ETHEREUM]: '',
   [ChainId.SEPOLIA]: '0x53691a3e3adffffc414bb4bf3d8eed5f0539b503',

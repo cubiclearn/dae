@@ -11,8 +11,7 @@ import {
   Spinner,
 } from '@chakra-ui/react'
 import { useCourses } from '@dae/wagmi'
-import { Address } from 'viem'
-import { useAccount, useNetwork } from 'wagmi'
+import { Address, useAccount, useNetwork } from 'wagmi'
 
 interface CourseCardListProps {
   isMagister: boolean
@@ -23,6 +22,12 @@ export const CourseCardList: React.FC<CourseCardListProps> = ({
 }) => {
   const { chain } = useNetwork()
   const { address } = useAccount()
+
+  const { data, error, isLoading } = useCourses(
+    address ? (address as Address) : undefined,
+    chain ? chain.id : undefined,
+    isMagister,
+  )
 
   if (!chain || !chain.id || !address) {
     return (
@@ -38,12 +43,6 @@ export const CourseCardList: React.FC<CourseCardListProps> = ({
       </Alert>
     )
   }
-
-  const { data, error, isLoading } = useCourses(
-    address as Address,
-    chain.id,
-    isMagister,
-  )
 
   if (isLoading) {
     return (
