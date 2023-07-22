@@ -27,7 +27,7 @@ export default async function handler(
 
     try {
       const data = await getCourse(address, parseInt(chainId))
-      res.status(200).json(data)
+      res.status(200).json({ course: data })
     } catch (e) {
       res.status(500).json({ message: e.message || 'Internal Server Error' })
     }
@@ -102,52 +102,7 @@ export default async function handler(
       }
 
       const courseData = await prisma.$transaction(async (prisma) => {
-        const adminCredential = await prisma.credential.upsert({
-          where: { ipfs_cid: 'QmbH5TB6pdQvVu5xdtbq7CDHGdPYFudr4PNqzJczW2xXMa' },
-          create: {
-            name: 'Admin Credential',
-            description: 'The course Admin credential',
-            image_url:
-              'https://dae-demo.infura-ipfs.io/ipfs/QmXibYJSXskaqS7WyXLGwy16vGASqhN75yNUp2UfMRiLkF',
-            ipfs_url:
-              'https://dae-demo.infura-ipfs.io/ipfs/QmbH5TB6pdQvVu5xdtbq7CDHGdPYFudr4PNqzJczW2xXMa',
-            ipfs_cid: 'QmbH5TB6pdQvVu5xdtbq7CDHGdPYFudr4PNqzJczW2xXMa',
-            type: 'ADMIN',
-          },
-          update: {},
-        })
-
-        const magisterCredential = await prisma.credential.upsert({
-          where: { ipfs_cid: 'QmNiv7RuYbcLSbMBhmSeo755TakS45NVYA768yHeUJoSKC' },
-          create: {
-            name: 'Magister Credential',
-            description: 'The course Magister credential',
-            image_url:
-              'https://dae-demo.infura-ipfs.io/ipfs/QmTFVE4FoPJm2vazgVtKajbw2XSNtM2wTDrkUinxMcLbBg',
-            ipfs_url:
-              'https://dae-demo.infura-ipfs.io/ipfs/QmNiv7RuYbcLSbMBhmSeo755TakS45NVYA768yHeUJoSKC',
-            ipfs_cid: 'QmNiv7RuYbcLSbMBhmSeo755TakS45NVYA768yHeUJoSKC',
-            type: 'MAGISTER',
-          },
-          update: {},
-        })
-
-        await prisma.credential.upsert({
-          where: { ipfs_cid: 'QmcV3A5RWD5ygwU71KaH8gFtjxep9BMDGeYECq9bnbyWz8' },
-          create: {
-            name: 'Discipulus Credential',
-            description: 'The course Discipulus credential',
-            image_url:
-              'https://dae-demo.infura-ipfs.io/ipfs/QmUEC1WiGo9Vr3WER68u3T6mSwLexyDXj5G6WUgpVECmBY',
-            ipfs_url:
-              'https://dae-demo.infura-ipfs.io/ipfs/QmcV3A5RWD5ygwU71KaH8gFtjxep9BMDGeYECq9bnbyWz8',
-            ipfs_cid: 'QmcV3A5RWD5ygwU71KaH8gFtjxep9BMDGeYECq9bnbyWz8',
-            type: 'DISCIPULUS',
-          },
-          update: {},
-        })
-
-        const newCourse = await prisma.course.create({
+        const course = await prisma.course.create({
           data: {
             address: contractAddress.toLowerCase(),
             name: jsonMetadata.name,
@@ -163,10 +118,52 @@ export default async function handler(
               txLogsDecoded.args.karmaAccessControl.toLowerCase(),
             snapshot_space_ens: jsonMetadata['snapshot-ens'],
             credentials: {
-              connect: [
-                { ipfs_cid: 'QmbH5TB6pdQvVu5xdtbq7CDHGdPYFudr4PNqzJczW2xXMa' },
-                { ipfs_cid: 'QmNiv7RuYbcLSbMBhmSeo755TakS45NVYA768yHeUJoSKC' },
-                { ipfs_cid: 'QmcV3A5RWD5ygwU71KaH8gFtjxep9BMDGeYECq9bnbyWz8' },
+              connectOrCreate: [
+                {
+                  where: {
+                    ipfs_cid: 'QmbH5TB6pdQvVu5xdtbq7CDHGdPYFudr4PNqzJczW2xXMa',
+                  },
+                  create: {
+                    name: 'Admin Credential',
+                    description: 'The course Admin credential',
+                    image_url:
+                      'https://dae-demo.infura-ipfs.io/ipfs/QmXibYJSXskaqS7WyXLGwy16vGASqhN75yNUp2UfMRiLkF',
+                    ipfs_url:
+                      'https://dae-demo.infura-ipfs.io/ipfs/QmbH5TB6pdQvVu5xdtbq7CDHGdPYFudr4PNqzJczW2xXMa',
+                    ipfs_cid: 'QmbH5TB6pdQvVu5xdtbq7CDHGdPYFudr4PNqzJczW2xXMa',
+                    type: 'ADMIN',
+                  },
+                },
+                {
+                  where: {
+                    ipfs_cid: 'QmNiv7RuYbcLSbMBhmSeo755TakS45NVYA768yHeUJoSKC',
+                  },
+                  create: {
+                    name: 'Magister Credential',
+                    description: 'The course Magister credential',
+                    image_url:
+                      'https://dae-demo.infura-ipfs.io/ipfs/QmTFVE4FoPJm2vazgVtKajbw2XSNtM2wTDrkUinxMcLbBg',
+                    ipfs_url:
+                      'https://dae-demo.infura-ipfs.io/ipfs/QmNiv7RuYbcLSbMBhmSeo755TakS45NVYA768yHeUJoSKC',
+                    ipfs_cid: 'QmNiv7RuYbcLSbMBhmSeo755TakS45NVYA768yHeUJoSKC',
+                    type: 'MAGISTER',
+                  },
+                },
+                {
+                  where: {
+                    ipfs_cid: 'QmcV3A5RWD5ygwU71KaH8gFtjxep9BMDGeYECq9bnbyWz8',
+                  },
+                  create: {
+                    name: 'Discipulus Credential',
+                    description: 'The course Discipulus credential',
+                    image_url:
+                      'https://dae-demo.infura-ipfs.io/ipfs/QmUEC1WiGo9Vr3WER68u3T6mSwLexyDXj5G6WUgpVECmBY',
+                    ipfs_url:
+                      'https://dae-demo.infura-ipfs.io/ipfs/QmcV3A5RWD5ygwU71KaH8gFtjxep9BMDGeYECq9bnbyWz8',
+                    ipfs_cid: 'QmcV3A5RWD5ygwU71KaH8gFtjxep9BMDGeYECq9bnbyWz8',
+                    type: 'DISCIPULUS',
+                  },
+                },
               ],
             },
           },
@@ -176,13 +173,16 @@ export default async function handler(
           data: {
             course: {
               connect: {
-                id: newCourse.id,
+                address_chain_id: {
+                  address: course.address,
+                  chain_id: course.chain_id,
+                },
               },
             },
             user_address: transaction.from,
             credential: {
               connect: {
-                ipfs_cid: adminCredential.ipfs_cid,
+                ipfs_cid: 'QmbH5TB6pdQvVu5xdtbq7CDHGdPYFudr4PNqzJczW2xXMa',
               },
             },
             email: '',
@@ -194,13 +194,16 @@ export default async function handler(
           data: {
             course: {
               connect: {
-                id: newCourse.id,
+                address_chain_id: {
+                  address: course.address,
+                  chain_id: course.chain_id,
+                },
               },
             },
             user_address: transaction.from,
             credential: {
               connect: {
-                ipfs_cid: magisterCredential.ipfs_cid,
+                ipfs_cid: 'QmNiv7RuYbcLSbMBhmSeo755TakS45NVYA768yHeUJoSKC',
               },
             },
             email: '',
@@ -208,7 +211,7 @@ export default async function handler(
           },
         })
 
-        return newCourse
+        return course
       })
 
       res.status(200).json({ message: 'OK!', data: courseData })

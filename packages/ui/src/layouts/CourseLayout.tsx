@@ -16,14 +16,14 @@ import {
   FlexProps,
   Accordion,
 } from '@chakra-ui/react'
-import { FiMenu, FiUsers, FiZap, FiBookOpen } from 'react-icons/fi'
-import { FaVoteYea } from 'react-icons/fa'
+import { FiMenu, FiUsers, FiZap, FiBookOpen, FiShield } from 'react-icons/fi'
+import { MdOutlinePoll } from 'react-icons/md'
 import { useRouter } from 'next/router'
 import { NavItemSimple, NavItemDropdown } from './DrawerNavItem'
 import { Address } from 'viem'
 import { CourseProvider } from '../CourseProvider'
-import { useNetwork } from 'wagmi'
 import { Logo } from './Logo'
+import { Web3SafeContainer } from '../Web3SafeContainer'
 
 interface SidebarProps extends BoxProps {
   onClose: () => void
@@ -55,6 +55,26 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
           link={{ title: 'Info', href: `/course/${address}/info` }}
         />
         <NavItemDropdown
+          title={'Credentials'}
+          key={'credentials'}
+          icon={FiShield}
+          isActive={pathname.startsWith('/course/[address]/credentials')}
+          links={[
+            {
+              title: 'Course Credentials',
+              href: `/course/${address}/credentials/list`,
+            },
+            {
+              title: 'My Credentials',
+              href: `/course/${address}/credentials/granted`,
+            },
+            {
+              title: 'Create',
+              href: `/course/${address}/credentials/create`,
+            },
+          ]}
+        />
+        <NavItemDropdown
           title={'Students'}
           key={'students'}
           icon={FiUsers}
@@ -73,7 +93,7 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
         <NavItemDropdown
           title={'Proposals'}
           key={'proposals'}
-          icon={FaVoteYea}
+          icon={MdOutlinePoll}
           isActive={pathname.startsWith('/course/[address]/proposals')}
           links={[
             {
@@ -131,8 +151,6 @@ type Props = {
 
 export const CourseLayout: FC<Props> = ({ children, heading }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { query } = useRouter()
-  const { chain } = useNetwork()
 
   return (
     <Box minH='100vh'>
@@ -165,9 +183,11 @@ export const CourseLayout: FC<Props> = ({ children, heading }) => {
         <Box display={'flex'} fontSize={'3xl'} fontWeight={'semibold'} mb={8}>
           <Text as='h2'>{heading}</Text>
         </Box>
-        <CourseProvider chainId={chain!.id} address={query.address as Address}>
-          <Box>{children}</Box>
-        </CourseProvider>
+        <Web3SafeContainer>
+          <CourseProvider>
+            <Box>{children}</Box>
+          </CourseProvider>
+        </Web3SafeContainer>
       </Box>
     </Box>
   )

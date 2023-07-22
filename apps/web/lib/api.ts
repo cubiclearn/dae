@@ -1,5 +1,6 @@
 import { prisma } from '@dae/database'
-import type { Course } from '@dae/database'
+import type { Course, Credential } from '@dae/database'
+import { Address } from 'viem'
 
 export const getCourse = (
   address: string,
@@ -39,7 +40,7 @@ export const getMagisterCourses = async (
       },
       credentials_assignment: {
         some: {
-          user_address: address,
+          user_address: address.toLowerCase(),
         },
       },
     },
@@ -65,7 +66,7 @@ export const getDiscipulusCourses = async (
       },
       credentials_assignment: {
         some: {
-          user_address: address,
+          user_address: address.toLowerCase(),
         },
       },
     },
@@ -74,5 +75,71 @@ export const getDiscipulusCourses = async (
         timestamp: 'desc',
       },
     ],
+  })
+}
+
+export const getCourseCredentials = async (
+  courseAddress: string,
+  chainId: number,
+): Promise<Credential[]> => {
+  return prisma.credential.findMany({
+    where: {
+      course_address: courseAddress.toLowerCase(),
+      course_chain_id: chainId,
+    },
+    orderBy: [
+      {
+        name: 'asc',
+      },
+    ],
+  })
+}
+
+export const getUserCourseCredentials = async (
+  userAddress: Address,
+  courseAddress: Address,
+  chainId: number,
+): Promise<Credential[]> => {
+  return prisma.credential.findMany({
+    where: {
+      course_address: courseAddress.toLowerCase(),
+      course_chain_id: chainId,
+      course_credentials: {
+        some: {
+          user_address: userAddress.toLowerCase(),
+        },
+      },
+    },
+    orderBy: {
+      name: 'asc',
+    },
+  })
+}
+
+export const createCourseCredentials = async (
+  courseAddress: Address,
+  chainId: number,
+  credentialData: Credential,
+) => {
+  prisma.course.update({
+    where: {
+      address_chain_id: {
+        address: courseAddress.toLowerCase(),
+        chain_id: chainId,
+      },
+    },
+    data: {
+      credentials: {
+        connectOrCreate: {
+          where: { ipfs_cid: credentialData.ipfs_cid },
+          create: {
+            ...credentialData,
+          },
+        },
+      },
+    },
+    include: {
+      credentials: true,
+    },
   })
 }

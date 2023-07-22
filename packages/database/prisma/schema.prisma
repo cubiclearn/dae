@@ -16,7 +16,6 @@ model Account {
 }
 
 model Course {
-  id                           Int                 @id @default(autoincrement())
   address                      String
   name                         String              @default("")
   description                  String              @default("")
@@ -32,7 +31,7 @@ model Course {
   credentials                  Credential[]
   credentials_assignment       CourseCredentials[]
 
-  @@unique([address, chain_id])
+  @@id([address, chain_id])
 }
 
 enum CredentialType {
@@ -50,7 +49,9 @@ model Credential {
   ipfs_cid           String
   type               CredentialType
   course_credentials CourseCredentials[]
-  course             Course[]
+  course             Course              @relation(fields: [course_address, course_chain_id], references: [address, chain_id])
+  course_address     String
+  course_chain_id    Int
 
   @@id([ipfs_cid])
 }
