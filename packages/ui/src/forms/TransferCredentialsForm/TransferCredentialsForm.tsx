@@ -44,7 +44,7 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
     const { chain } = useNetwork()
     const { data } = useCourseCredentials(courseAddress as Address, chain!.id)
 
-    const { transfer, isLoading, isError, isSuccess, error } =
+    const { transfer, isLoading, isError, isSuccess, error, isSigning } =
       useTransferCredentials(courseAddress as Address)
 
     const toast = useToast()
@@ -190,7 +190,7 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
             <Button
               colorScheme='blue'
               type='submit'
-              isLoading={isLoading}
+              isLoading={isLoading || isSigning}
               loadingText='Submitting'
             >
               Assign Credential

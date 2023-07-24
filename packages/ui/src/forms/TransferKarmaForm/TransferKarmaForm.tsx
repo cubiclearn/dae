@@ -22,8 +22,10 @@ import { useFormik } from 'formik'
 import React, { useEffect } from 'react'
 import { Address } from 'wagmi'
 import * as Yup from 'yup'
-import { useTransferKarma } from '@dae/wagmi'
+import { useKarmaBalance, useTransferKarma } from '@dae/wagmi'
 import { useCourseData } from '../../CourseProvider'
+import { isAddress } from 'viem'
+import { KarmaCounter } from './KarmaCounter'
 
 const ethereumAddressRegex = /^0x([A-Fa-f0-9]{40})$/
 
@@ -36,9 +38,10 @@ const validationSchema = Yup.object().shape({
 
 export const TransferKarmaForm: React.FC<any> = () => {
   const { data } = useCourseData()
-  const { transfer, isLoading, isError, isSuccess, error } = useTransferKarma(
-    data?.karma_access_control_address as Address | undefined,
-  )
+  const { transfer, isLoading, isError, isSuccess, error, isSigning } =
+    useTransferKarma(
+      data ? (data.karma_access_control_address as Address) : undefined,
+    )
 
   const toast = useToast()
 
@@ -62,6 +65,11 @@ export const TransferKarmaForm: React.FC<any> = () => {
     },
     validationSchema: validationSchema,
   })
+
+  const { data: karmaBalance } = useKarmaBalance(
+    data ? (data.karma_access_control_address as Address) : undefined,
+    isAddress(values.userAddress) ? values.userAddress : undefined,
+  )
 
   useEffect(() => {
     if (isError) {
@@ -97,48 +105,57 @@ export const TransferKarmaForm: React.FC<any> = () => {
               course!
             </Text>
           </Box>
-          <FormControl
-            isRequired
-            isInvalid={!!errors.userAddress && touched.userAddress}
-          >
-            <FormLabel>Ethereum Address</FormLabel>
-            <Input
-              id='userAddress'
-              value={values.userAddress}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              type='text'
-              placeholder='Etereum Address'
-            />
-            <FormErrorMessage>{errors.userAddress}</FormErrorMessage>
-          </FormControl>
-          <FormControl
-            isRequired
-            isInvalid={!!errors.karmaIncrement && touched.karmaIncrement}
-          >
-            <FormLabel>Magister base karma</FormLabel>
-            <NumberInput
-              allowMouseWheel
-              defaultValue={0}
-              id='karmaIncrement'
-              onChange={(_valueAsString, valueAsNumber) =>
-                setFieldValue('karmaIncrement', valueAsNumber)
-              }
-              value={values.karmaIncrement}
-              onBlur={handleBlur}
-            >
-              <NumberInputField />
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
-            <FormErrorMessage>{errors.karmaIncrement}</FormErrorMessage>
-          </FormControl>
+          <Stack direction={'row'} spacing={'30px'}>
+            <Stack width={'80%'} spacing={'10px'}>
+              <FormControl
+                isRequired
+                isInvalid={!!errors.userAddress && touched.userAddress}
+              >
+                <FormLabel>Ethereum Address</FormLabel>
+                <Input
+                  id='userAddress'
+                  value={values.userAddress}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  type='text'
+                  placeholder='Etereum Address'
+                />
+                <FormErrorMessage>{errors.userAddress}</FormErrorMessage>
+              </FormControl>
+              <FormControl
+                isRequired
+                isInvalid={!!errors.karmaIncrement && touched.karmaIncrement}
+              >
+                <FormLabel>Karma increment</FormLabel>
+                <NumberInput
+                  allowMouseWheel
+                  defaultValue={0}
+                  min={karmaBalance ? -Number(karmaBalance) : 0}
+                  id='karmaIncrement'
+                  onChange={(_valueAsString, valueAsNumber) =>
+                    setFieldValue('karmaIncrement', valueAsNumber)
+                  }
+                  value={values.karmaIncrement}
+                  onBlur={handleBlur}
+                >
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+                <FormErrorMessage>{errors.karmaIncrement}</FormErrorMessage>
+              </FormControl>
+            </Stack>
+            <Box width={'20%'}>
+              <KarmaCounter karmaAmount={Number(karmaBalance)} />
+            </Box>
+          </Stack>
+
           <Button
             colorScheme='blue'
             type='submit'
-            isLoading={isLoading}
+            isLoading={isLoading || isSigning}
             loadingText='Submitting'
           >
             Assign Credential
