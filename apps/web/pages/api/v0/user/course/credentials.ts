@@ -55,6 +55,8 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
       hash: txHash,
     })
 
+    const courseAddress: Address = txRecept.to
+
     const txLogsDecoded = txRecept.logs.map((log) => {
       return decodeEventLog({
         abi: CredentialsBurnableAbi,
@@ -64,12 +66,12 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     })
 
     const issuedLog = txLogsDecoded.filter(
-      (log) => log.eventName === 'Issued',
+      (log: any) => log.eventName === 'Issued',
     ) as [CredentialIssuedLog]
 
     const tokenURI = await client.readContract({
       abi: CredentialsBurnableAbi,
-      address: txRecept.to,
+      address: courseAddress,
       functionName: 'tokenURI',
       args: [issuedLog[0].args.tokenId],
     })
@@ -82,7 +84,7 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
         course: {
           connect: {
             address_chain_id: {
-              address: txRecept.to as string,
+              address: courseAddress,
               chain_id: parseInt(chainId),
             },
           },
@@ -90,7 +92,10 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
         user_address: issuedLog[0].args.to,
         credential: {
           connect: {
-            ipfs_cid: ipfsCID,
+            course_address_ipfs_cid: {
+              ipfs_cid: ipfsCID,
+              course_address: courseAddress,
+            },
           },
         },
         email: discordUsername ? discordUsername : '',

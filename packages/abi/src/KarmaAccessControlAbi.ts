@@ -1,15 +1,20 @@
-export const KarmaAccessControlAbi = [
+export const KarmaAccessControlAbiUint64 = [
   {
     inputs: [
       {
-        internalType: 'contract SoulboundNFT',
+        internalType: 'contract CredentialsBurnable',
         name: '_credentials',
         type: 'address',
       },
       {
-        internalType: 'address',
-        name: '_operator',
-        type: 'address',
+        internalType: 'uint64',
+        name: '_baseMagisterKarma',
+        type: 'uint64',
+      },
+      {
+        internalType: 'uint64',
+        name: '_baseDiscipulusKarma',
+        type: 'uint64',
       },
     ],
     stateMutability: 'nonpayable',
@@ -39,9 +44,9 @@ export const KarmaAccessControlAbi = [
       },
       {
         indexed: false,
-        internalType: 'int8',
+        internalType: 'uint64',
         name: '_rating',
-        type: 'int8',
+        type: 'uint64',
       },
     ],
     name: 'Rating',
@@ -62,10 +67,36 @@ export const KarmaAccessControlAbi = [
   },
   {
     inputs: [],
+    name: 'BASE_DISCIPULUS_KARMA',
+    outputs: [
+      {
+        internalType: 'uint64',
+        name: '',
+        type: 'uint64',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'BASE_MAGISTER_KARMA',
+    outputs: [
+      {
+        internalType: 'uint64',
+        name: '',
+        type: 'uint64',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'credentials',
     outputs: [
       {
-        internalType: 'contract SoulboundNFT',
+        internalType: 'contract CredentialsBurnable',
         name: '',
         type: 'address',
       },
@@ -122,12 +153,30 @@ export const KarmaAccessControlAbi = [
     name: 'karma',
     outputs: [
       {
-        internalType: 'int8',
+        internalType: 'uint64',
         name: '',
-        type: 'int8',
+        type: 'uint64',
       },
     ],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address[]',
+        name: '_users',
+        type: 'address[]',
+      },
+      {
+        internalType: 'uint64[]',
+        name: '_ratings',
+        type: 'uint64[]',
+      },
+    ],
+    name: 'multiRate',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
@@ -150,10 +199,29 @@ export const KarmaAccessControlAbi = [
         name: '_user',
         type: 'address',
       },
+    ],
+    name: 'quadraticRatingOf',
+    outputs: [
       {
-        internalType: 'int8',
+        internalType: 'uint64',
+        name: '',
+        type: 'uint64',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_user',
+        type: 'address',
+      },
+      {
+        internalType: 'uint64',
         name: '_rating',
-        type: 'int8',
+        type: 'uint64',
       },
     ],
     name: 'rate',
@@ -172,9 +240,9 @@ export const KarmaAccessControlAbi = [
     name: 'ratingOf',
     outputs: [
       {
-        internalType: 'int8',
+        internalType: 'uint64',
         name: '',
-        type: 'int8',
+        type: 'uint64',
       },
     ],
     stateMutability: 'view',

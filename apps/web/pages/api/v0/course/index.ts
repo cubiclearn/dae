@@ -7,7 +7,6 @@ import { getChainFromId } from '../../../../lib/functions'
 import { getCourse } from '../../../../lib/api'
 import { config as TransportConfig } from '@dae/viem-config'
 import { decodeEventLog } from 'viem'
-import { FactoryContractAddress } from '@dae/chains'
 
 export default async function handler(
   req: NextApiRequest,
@@ -39,32 +38,50 @@ export default async function handler(
       transport: TransportConfig[chainId]?.transport,
     })
 
-    const factoryAddress = FactoryContractAddress[
-      chainId as keyof FactoryContractAddress
-    ] as Address
-
     try {
       const transaction = await client.waitForTransactionReceipt({
         hash: txHash,
       })
 
-      const txLogs = await client.getTransactionReceipt({ hash: txHash })
+      const txRecept = await client.getTransactionReceipt({ hash: txHash })
 
-      const txKarmaControlLog = txLogs.logs.find(
-        (log) => log.address === factoryAddress,
-      )
+      const txFactoryLogsDecoded: any = txRecept.logs
+        .map((log) => {
+          try {
+            return {
+              address: log.address,
+              ...decodeEventLog({
+                abi: CredentialsFactoryAbi,
+                data: log.data,
+                topics: log.topics,
+              }),
+            }
+          } catch (_e) {}
+        })
+        .filter((decodedLog) => decodedLog !== undefined)
 
-      if (!txKarmaControlLog) {
-        throw new Error('Transaction log not found')
-      }
+      const txCredentialLogsDecoded: any = txRecept.logs
+        .map((log) => {
+          try {
+            return {
+              address: log.address,
+              ...decodeEventLog({
+                abi: CredentialsBurnableAbi,
+                data: log.data,
+                topics: log.topics,
+              }),
+            }
+          } catch (_e) {}
+        })
+        .filter((decodedLog) => decodedLog !== undefined)
 
-      const txLogsDecoded = decodeEventLog({
-        abi: CredentialsFactoryAbi,
-        data: txKarmaControlLog.data,
-        topics: txKarmaControlLog.topics,
-      })
+      const karmaAccessControlCreatedLog = txFactoryLogsDecoded.filter(
+        (log: any) => log.eventName === 'KarmaAccessControlCreated',
+      )[0]
 
-      const contractAddress = txLogs.logs[0].address
+      const contractAddress: Address = txCredentialLogsDecoded[0].address
+      const karmaAccessControlAddress: Address =
+        karmaAccessControlCreatedLog.args.karmaAccessControl
 
       const [symbol, baseURI] = await Promise.all([
         client.readContract({
@@ -115,7 +132,7 @@ export default async function handler(
             timestamp: Number(timestamp),
             chain_id: Number(chainId),
             karma_access_control_address:
-              txLogsDecoded.args.karmaAccessControl.toLowerCase(),
+              karmaAccessControlAddress.toLowerCase(),
             snapshot_space_ens: jsonMetadata['snapshot-ens'],
           },
         })

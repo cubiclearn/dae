@@ -71,7 +71,6 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     const metadataURL = `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${ipfsMetadata.data.Hash}`
-    console.log(metadataURL)
 
     //Create the credential using Prisma with the obtained IPFS CID and other data
     const credential = await prisma.credential.create({

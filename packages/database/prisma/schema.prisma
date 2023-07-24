@@ -54,7 +54,7 @@ model Credential {
   course_address   String
   course_chain_id  Int
 
-  @@unique([ipfs_cid])
+  @@unique([course_address, ipfs_cid])
 }
 
 model UserCredentials {
