@@ -2,8 +2,11 @@ import { Address } from 'viem'
 import useSWR from 'swr'
 import { Course } from '@dae/database'
 
-export interface MagisterCoursesResponse {
-  courses: Course[]
+export interface UserCoursesResponse {
+  success: boolean
+  data: {
+    courses: Course[]
+  }
 }
 
 const fetcher = async (url: string) => {
@@ -11,21 +14,19 @@ const fetcher = async (url: string) => {
   if (!response.ok) {
     throw new Error('Failed to fetch data')
   }
-  return response.json() as Promise<MagisterCoursesResponse>
+  return response.json() as Promise<UserCoursesResponse>
 }
 
-export const useCourses = (
+export const useUserCourses = (
   address: Address | undefined,
   chainId: number | undefined,
-  magister: boolean,
+  role: 'MAGISTER' | 'DISCIPULUS',
 ) => {
-  const url = `/api/v0/${
-    magister ? 'magister' : 'discipulus'
-  }/courses?address=${address}&chainId=${chainId}`
+  const url = `/api/v0/user/courses?userAddress=${address}&chainId=${chainId}&role=${role}`
 
   const shouldFetch = address !== undefined && chainId !== undefined
 
-  const { data, error, isLoading } = useSWR<MagisterCoursesResponse>(
+  const { data, error, isLoading } = useSWR<UserCoursesResponse>(
     shouldFetch ? url : null,
     fetcher,
   )

@@ -1,15 +1,13 @@
 import Head from 'next/head'
-import { Layout, Web3SafeContainer, CreateCredentialsForm } from '@dae/ui'
+import { Layout, CreateCredentialsForm } from '@dae/ui'
 import { CustomLink } from '@dae/ui'
 import { Stack, Tabs, TabList, Tab } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { Address } from 'viem'
-import { useNetwork } from 'wagmi'
 
 export default function Teaching() {
   const router = useRouter()
   const courseAddress = router.query.address as Address
-  const { chain } = useNetwork()
 
   return (
     <>
@@ -34,12 +32,7 @@ export default function Teaching() {
               </CustomLink>
             </TabList>
           </Tabs>
-          <Web3SafeContainer>
-            <CreateCredentialsForm
-              courseAddress={courseAddress}
-              chainId={chain!.id}
-            />
-          </Web3SafeContainer>
+          <CreateCredentialsForm courseAddress={courseAddress} />
         </Stack>
       </Layout.Course>
     </>

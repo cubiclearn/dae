@@ -10,23 +10,25 @@ import {
   Center,
   Spinner,
 } from '@chakra-ui/react'
-import { useCourses } from '@dae/wagmi'
+import { useUserCourses } from '@dae/wagmi'
 import { Address, useAccount, useNetwork } from 'wagmi'
 
 interface CourseCardListProps {
-  isMagister: boolean
+  role: 'MAGISTER' | 'DISCIPULUS'
 }
 
-export const CourseCardList: React.FC<CourseCardListProps> = ({
-  isMagister,
-}) => {
+export const CourseCardList: React.FC<CourseCardListProps> = ({ role }) => {
   const { chain } = useNetwork()
   const { address } = useAccount()
 
-  const { data, error, isLoading } = useCourses(
+  const {
+    data: response,
+    error,
+    isLoading,
+  } = useUserCourses(
     address ? (address as Address) : undefined,
     chain ? chain.id : undefined,
-    isMagister,
+    role,
   )
 
   if (!chain || !chain.id || !address) {
@@ -66,7 +68,7 @@ export const CourseCardList: React.FC<CourseCardListProps> = ({
     )
   }
 
-  if (!data || data.courses.length === 0) {
+  if (!response || response.data.courses.length === 0) {
     return (
       <Alert status='info'>
         <AlertIcon />
@@ -83,8 +85,8 @@ export const CourseCardList: React.FC<CourseCardListProps> = ({
       columns={{ sm: 1, md: 2, lg: 3, xl: 5 }}
       spacing={{ sm: 0, md: 8 }}
     >
-      {data.courses.map((course) => (
-        <CourseCard key={course.id} data={course} />
+      {response.data.courses.map((course) => (
+        <CourseCard key={course.address} data={course} />
       ))}
     </SimpleGrid>
   )

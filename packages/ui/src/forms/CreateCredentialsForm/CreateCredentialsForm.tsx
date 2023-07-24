@@ -17,6 +17,7 @@ import { useCreateCredential } from '@dae/wagmi'
 import { useFormik } from 'formik'
 import { useRouter } from 'next/router'
 import React, { useEffect } from 'react'
+import { useNetwork } from 'wagmi'
 import * as Yup from 'yup'
 
 const validationSchema = Yup.object().shape({
@@ -27,14 +28,13 @@ const validationSchema = Yup.object().shape({
 
 type CreateCredentialsFormProps = {
   courseAddress: string
-  chainId: number
 }
 
 export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
   courseAddress,
-  chainId,
 }) => {
   const { create, isLoading, isSuccess, isError, error } = useCreateCredential()
+  const { chain } = useNetwork()
   const router = useRouter()
   const toast = useToast()
 
@@ -60,12 +60,10 @@ export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
         formData.set('name', values.name)
         formData.set('description', values.description)
         formData.set('courseAddress', courseAddress)
-        formData.set('chainId', chainId.toString())
+        formData.set('chainId', chain!.id.toString())
         await create(formData)
         router.push(`/course/${courseAddress}/credentials/list`)
-      } catch (error: any) {
-        console.log(error)
-      }
+      } catch (_e) {}
     },
     validationSchema: validationSchema,
   })
@@ -100,8 +98,8 @@ export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
               Create credentials form
             </Text>
             <Text fontSize='lg'>
-              Fill in all the form fields to create a new course and start
-              teaching!
+              Fill in all the form fields to create a new credential for this
+              course!
             </Text>
           </Box>
           <FormControl isRequired isInvalid={!!errors.name && touched.name}>

@@ -2,7 +2,7 @@ import { Address } from 'viem'
 import useSWR from 'swr'
 import { Course } from '@dae/database'
 
-export interface CourseResponse {
+export interface UseCourseResponse {
   course: Course
 }
 
@@ -11,7 +11,7 @@ const fetcher = async (url: string) => {
   if (!response.ok) {
     throw new Error('Failed to fetch data')
   }
-  return response.json() as Promise<CourseResponse>
+  return response.json() as Promise<UseCourseResponse>
 }
 
 interface UseCourseData {
@@ -28,7 +28,7 @@ export const useCourse = (
 
   const shouldFetch = courseAddress !== undefined && chainId !== undefined
 
-  const { data, error, isLoading } = useSWR<CourseResponse>(
+  const { data, error, isLoading } = useSWR<UseCourseResponse>(
     shouldFetch ? url : null,
     fetcher,
   )

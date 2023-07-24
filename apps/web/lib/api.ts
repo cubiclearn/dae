@@ -1,5 +1,10 @@
 import { prisma } from '@dae/database'
-import type { Course, Credential } from '@dae/database'
+import type {
+  Course,
+  UserCredentials,
+  Credential,
+  CredentialType,
+} from '@dae/database'
 import { Address } from 'viem'
 
 export const getCourse = (
@@ -15,58 +20,36 @@ export const getCourse = (
 }
 
 export const getCourseStudents = async (
-  address: string,
+  courseAddress: string,
   chainId: number,
-): Promise<CourseStudents[]> => {
-  return prisma.courseStudents.findMany({
+): Promise<UserCredentials[]> => {
+  return prisma.userCredentials.findMany({
     where: {
-      courseAddress: address.toLowerCase(),
-      chainId: chainId,
+      course_address: courseAddress.toLowerCase(),
+      chain_id: chainId,
+      credential: {
+        type: 'DISCIPULUS',
+      },
     },
   })
 }
 
-export const getMagisterCourses = async (
-  address: string,
+export const getUserCourses = async (
+  userAddress: string,
   chainId: number,
+  type: CredentialType,
 ): Promise<Course[]> => {
   return prisma.course.findMany({
     where: {
       chain_id: chainId,
       credentials: {
         some: {
-          type: 'MAGISTER',
-        },
-      },
-      credentials_assignment: {
-        some: {
-          user_address: address.toLowerCase(),
-        },
-      },
-    },
-    orderBy: [
-      {
-        timestamp: 'desc',
-      },
-    ],
-  })
-}
-
-export const getDiscipulusCourses = async (
-  address: string,
-  chainId: number,
-): Promise<Course[]> => {
-  return prisma.course.findMany({
-    where: {
-      chain_id: chainId,
-      credentials: {
-        some: {
-          type: 'DISCIPULUS',
-        },
-      },
-      credentials_assignment: {
-        some: {
-          user_address: address.toLowerCase(),
+          type,
+          user_credentials: {
+            some: {
+              user_address: userAddress.toLowerCase(),
+            },
+          },
         },
       },
     },
@@ -104,7 +87,7 @@ export const getUserCourseCredentials = async (
     where: {
       course_address: courseAddress.toLowerCase(),
       course_chain_id: chainId,
-      course_credentials: {
+      user_credentials: {
         some: {
           user_address: userAddress.toLowerCase(),
         },
@@ -131,7 +114,7 @@ export const createCourseCredentials = async (
     data: {
       credentials: {
         connectOrCreate: {
-          where: { ipfs_cid: credentialData.ipfs_cid },
+          where: { id: credentialData.id },
           create: {
             ...credentialData,
           },

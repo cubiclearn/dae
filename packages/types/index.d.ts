@@ -7,3 +7,5 @@ export interface CourseMetadata {
   }
 
 export type CredentialTransferLog = {eventName : string, args : {from : `0x${string}`, to : `0x${string}`, tokenId : bigint}}
+
+export type CredentialIssuedLog = {eventName : string, args : {from : `0x${string}`, to : `0x${string}`, tokenId : bigint, burnAuth: bigint}}

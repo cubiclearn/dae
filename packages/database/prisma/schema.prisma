@@ -17,19 +17,19 @@ model Account {
 
 model Course {
   address                      String
-  name                         String              @default("")
-  description                  String              @default("")
-  symbol                       String              @default("")
-  image_url                    String              @default("")
-  website_url                  String              @default("")
-  media_channel                String              @default("")
-  ipfs_metadata                String              @default("")
+  name                         String            @default("")
+  description                  String            @default("")
+  symbol                       String            @default("")
+  image_url                    String            @default("")
+  website_url                  String            @default("")
+  media_channel                String            @default("")
+  ipfs_metadata                String            @default("")
   timestamp                    Int
   chain_id                     Int
   karma_access_control_address String
-  snapshot_space_ens           String              @default("")
+  snapshot_space_ens           String            @default("")
+  user_credentials             UserCredentials[]
   credentials                  Credential[]
-  credentials_assignment       CourseCredentials[]
 
   @@id([address, chain_id])
 }
@@ -42,29 +42,30 @@ enum CredentialType {
 }
 
 model Credential {
-  name               String
-  description        String
-  image_url          String
-  ipfs_url           String
-  ipfs_cid           String
-  type               CredentialType
-  course_credentials CourseCredentials[]
-  course             Course              @relation(fields: [course_address, course_chain_id], references: [address, chain_id])
-  course_address     String
-  course_chain_id    Int
+  id               Int               @id @default(autoincrement())
+  name             String
+  description      String
+  image_url        String
+  ipfs_url         String
+  ipfs_cid         String
+  type             CredentialType
+  user_credentials UserCredentials[]
+  course           Course            @relation(fields: [course_address, course_chain_id], references: [address, chain_id])
+  course_address   String
+  course_chain_id  Int
 
-  @@id([ipfs_cid])
+  @@unique([ipfs_cid])
 }
 
-model CourseCredentials {
-  course              Course     @relation(fields: [course_address, chain_id], references: [address, chain_id])
-  course_address      String
-  chain_id            Int
-  user_address        String
-  credential          Credential @relation(fields: [credential_ipfs_cid], references: [ipfs_cid])
-  credential_ipfs_cid String
-  email               String     @default("")
-  discord_handle      String     @default("")
+model UserCredentials {
+  course         Course     @relation(fields: [course_address, chain_id], references: [address, chain_id])
+  course_address String
+  chain_id       Int
+  user_address   String
+  credential     Credential @relation(fields: [credential_id], references: [id])
+  credential_id  Int
+  email          String     @default("")
+  discord_handle String     @default("")
 
-  @@id([course_address, user_address, credential_ipfs_cid])
+  @@id([course_address, user_address, credential_id])
 }

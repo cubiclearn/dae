@@ -4,13 +4,12 @@ import { Stack, Tabs, TabList, Tab, Link } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { StudentsRowList } from '@dae/ui'
-import { useNetwork } from 'wagmi'
-import { DefaultChain } from '@dae/chains'
+import { Address } from 'wagmi'
 
 export default function StudentsList() {
   const router = useRouter()
-  const address = router.query.address as string | undefined
-  const { chain } = useNetwork()
+  const courseAddress = router.query.address as Address
+
   return (
     <>
       <Head>
@@ -26,18 +25,14 @@ export default function StudentsList() {
               <Tab>Students List</Tab>
               <Link
                 as={NextLink}
-                href={`/course/${address}/students/enroll`}
+                href={`/course/${courseAddress}/students/enroll`}
                 style={{ textDecoration: 'none' }}
               >
                 <Tab>Enroll New Students</Tab>
               </Link>
             </TabList>
           </Tabs>
-          <StudentsRowList
-            api_url={`/api/v0/course/students?studentAddress=${address}&chainId=${
-              chain?.id ? chain.id : DefaultChain.id
-            }`}
-          />
+          <StudentsRowList courseAddress={courseAddress} />
         </Stack>
       </Layout.Course>
     </>

@@ -1,13 +1,12 @@
 import Head from 'next/head'
-import { Layout } from '@dae/ui'
+import { Layout, TransferCredentialsForm } from '@dae/ui'
 import { Stack, Tabs, TabList, Tab, Link } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { CredentialsAirDropForm } from '@dae/ui'
 
 export default function ProfilePage() {
   const { query } = useRouter()
-  const address = query.address as string | undefined
+  const courseAddress = query.address as string
 
   return (
     <>
@@ -23,7 +22,7 @@ export default function ProfilePage() {
             <TabList>
               <Link
                 as={NextLink}
-                href={`/course/${address}/students/list`}
+                href={`/course/${courseAddress}/students/list`}
                 style={{ textDecoration: 'none' }}
               >
                 <Tab>Students List</Tab>
@@ -31,7 +30,7 @@ export default function ProfilePage() {
               <Tab>Enroll New Students</Tab>
             </TabList>
           </Tabs>
-          <CredentialsAirDropForm />
+          <TransferCredentialsForm courseAddress={courseAddress} />
         </Stack>
       </Layout.Course>
     </>

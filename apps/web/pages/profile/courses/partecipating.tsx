@@ -26,7 +26,7 @@ export default function Partecipating() {
               </CustomLink>
             </TabList>
           </Tabs>
-          <CourseCardList isMagister={false} />
+          <CourseCardList role='DISCIPULUS' />
         </Stack>
       </Layout.Profile>
     </>

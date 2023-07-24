@@ -26,7 +26,7 @@ export default function Teaching() {
               </CustomLink>
             </TabList>
           </Tabs>
-          <CourseCardList isMagister={true} />
+          <CourseCardList role='MAGISTER' />
         </Stack>
       </Layout.Profile>
     </>
