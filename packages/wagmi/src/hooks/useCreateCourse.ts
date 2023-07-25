@@ -28,6 +28,7 @@ export function useCreateCourse(chain: Chain, address: Address) {
     functionName: 'createCourse',
     abi: CredentialsFactoryAbi,
   })
+
   const publicClient = usePublicClient()
 
   const ensCheckerPublicClient = useMemo(

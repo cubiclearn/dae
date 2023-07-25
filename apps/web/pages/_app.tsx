@@ -25,8 +25,10 @@ const supportedChains =
 export const { chains, publicClient, webSocketPublicClient } = configureChains(
   supportedChains,
   [
+    infuraProvider({
+      apiKey: process.env.NEXT_PUBLIC_INFURA_API_KEY as string,
+    }),
     publicProvider(),
-    infuraProvider({ apiKey: process.env.INFURA_API_KEY as string }),
   ],
 )
 

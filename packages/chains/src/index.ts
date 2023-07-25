@@ -38,7 +38,7 @@ export type ChainSnapshotWebsite =
 
 export const FactoryContractAddress = {
   [ChainId.ETHEREUM]: '',
-  [ChainId.SEPOLIA]: '0x53691a3e3adffffc414bb4bf3d8eed5f0539b503',
+  [ChainId.SEPOLIA]: '0xb2c5d323c04e85dff36d531bd082cfa11846d9cc',
   [ChainId.FOUNDRY]: process.env.NEXT_PUBLIC_FOUNDRY_FACTORY_CONTRACT_ADDRESS,
 } as const
 
