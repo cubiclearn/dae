@@ -40,44 +40,6 @@ export function useCreateCourse(chain: Chain, address: Address) {
     [chain],
   )
 
-  const uploadCourseMetaToIPFS = async (
-    name: string,
-    description: string,
-    website: string,
-    image: File,
-    snapshotSpaceENS: string,
-    mediaChannel: string,
-  ) => {
-    const formData = new FormData()
-
-    formData.append('file', image)
-
-    formData.append('keys', 'name')
-    formData.append('values', name)
-    formData.append('keys', 'description')
-    formData.append('values', description)
-    formData.append('keys', 'website')
-    formData.append('values', website)
-    formData.append('keys', 'snapshot-ens')
-    formData.append('values', snapshotSpaceENS)
-    formData.append('keys', 'media-channel')
-    formData.append('values', mediaChannel)
-
-    const metadataIPFSResponse = await fetch('/api/v0/course/metadata', {
-      method: 'POST',
-      body: formData,
-    })
-
-    if (!metadataIPFSResponse.ok) {
-      throw new Error(
-        `HTTP ${metadataIPFSResponse.status} - ${metadataIPFSResponse.statusText}`,
-      )
-    }
-
-    const ipfsMetadata = await metadataIPFSResponse.json()
-    return ipfsMetadata
-  }
-
   const create = async (
     name: string,
     description: string,
@@ -106,14 +68,26 @@ export function useCreateCourse(chain: Chain, address: Address) {
 
       setStatus('Uploading metadata to IPFS...')
 
-      const { Hash: metadataIPFSHash } = await uploadCourseMetaToIPFS(
-        name,
-        description,
-        website,
-        image,
-        snapshotSpaceENS,
-        mediaChannel,
-      )
+      const formData = new FormData()
+
+      formData.append('file', image)
+
+      formData.append('name', name)
+      formData.append('description', description)
+      formData.append('website', website)
+      formData.append('snapshot-ens', snapshotSpaceENS)
+      formData.append('media-channel', mediaChannel)
+
+      const uploadMetadataResponse = await fetch('/api/v0/course/metadata', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!uploadMetadataResponse.ok) {
+        throw new Error('Error uploading course metadata to IPFS')
+      }
+
+      const { Hash: metadataIPFSHash } = await uploadMetadataResponse.json()
 
       if (writeAsync === undefined) {
         throw new Error(
