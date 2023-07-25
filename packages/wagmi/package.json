@@ -9,8 +9,7 @@
     },
     "dependencies": {
         "swr": "2.1.5",
-        "viem": "1.0.6",
-        "zod": "3.21.4"
+        "viem": "1.0.6"
     },
     "sideEffects": false,
     "type": "module",
