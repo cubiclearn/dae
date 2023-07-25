@@ -72,6 +72,10 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
               title: 'Create',
               href: `/course/${address}/credentials/create`,
             },
+            {
+              title: 'Transfer',
+              href: `/course/${address}/credentials/transfer`,
+            },
           ]}
         />
         <NavItemDropdown

@@ -13,7 +13,7 @@ export const useCreateCredential = () => {
     setError('')
 
     try {
-      const metadataIPFSResponse = await fetch('/api/v0/course/credentials', {
+      const metadataIPFSResponse = await fetch('/api/v0/course/credential', {
         method: 'POST',
         body: formData,
       })

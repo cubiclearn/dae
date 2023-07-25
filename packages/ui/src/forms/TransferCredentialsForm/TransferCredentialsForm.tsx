@@ -42,7 +42,7 @@ type TransferCredentialsFormProps = {
 export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
   ({ courseAddress }) => {
     const { chain } = useNetwork()
-    const { data } = useCourseCredentials(courseAddress as Address, chain!.id)
+    const { data } = useCourseCredentials(courseAddress as Address, chain?.id)
 
     const { transfer, isLoading, isError, isSuccess, error, isSigning } =
       useTransferCredentials(courseAddress as Address)
@@ -109,11 +109,11 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
           <Stack spacing={4}>
             <Box>
               <Text fontWeight='semibold' fontSize='3xl'>
-                Create credentials form
+                Transfer credential
               </Text>
               <Text fontSize='lg'>
-                Fill in all the form fields to create a new credential for this
-                course!
+                Fill in all the form fields to transfer a credential to a
+                selected user!
               </Text>
             </Box>
             <FormControl
@@ -170,8 +170,8 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
                   setFieldValue('tokenURI', event.target.value)
                 }}
               >
-                {data?.credentials ? (
-                  data.credentials.map((credential) => {
+                {data ? (
+                  data.map((credential) => {
                     return (
                       <option
                         key={credential.ipfs_cid}

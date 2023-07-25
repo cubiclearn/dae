@@ -2,7 +2,7 @@ import Head from 'next/head'
 import { Layout, Web3SafeContainer } from '@dae/ui'
 import { CustomLink } from '@dae/ui'
 import { Stack, Tabs, TabList, Tab } from '@chakra-ui/react'
-import { MyCredentialsList } from '@dae/ui'
+import { TransferCredentialsForm } from '@dae/ui'
 import { useRouter } from 'next/router'
 import { Address } from 'viem'
 
@@ -20,7 +20,7 @@ export default function Teaching() {
       </Head>
       <Layout.Course heading='Credentials'>
         <Stack spacing={8}>
-          <Tabs defaultIndex={1}>
+          <Tabs defaultIndex={3}>
             <TabList>
               <CustomLink href={`/course/${courseAddress}/credentials/list`}>
                 <Tab>Course Credentials</Tab>
@@ -39,7 +39,7 @@ export default function Teaching() {
             </TabList>
           </Tabs>
           <Web3SafeContainer>
-            <MyCredentialsList courseAddress={courseAddress} />
+            <TransferCredentialsForm courseAddress={courseAddress} />
           </Web3SafeContainer>
         </Stack>
       </Layout.Course>

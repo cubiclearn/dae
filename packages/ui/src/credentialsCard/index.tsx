@@ -1,2 +1,2 @@
-export * from './CredentialsCard'
-export * from './CredentialsCardList'
+export * from './MyCredentialsList'
+export * from './CourseCredentialsList'

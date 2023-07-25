@@ -11,7 +11,7 @@ export default function TransferKarmaPage() {
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      <Layout.Course heading='Create proposal'>
+      <Layout.Course heading='Proposals'>
         <CreateProposalForm />
       </Layout.Course>
     </>

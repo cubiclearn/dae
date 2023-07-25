@@ -157,17 +157,17 @@ export function useCreateCourse(chain: Chain, address: Address) {
 
       const responseData = (await response.json()) as {
         message: string
-        data: Course
+        data: { course: Course }
       }
 
       setStatus('Waiting to connect the snapshot space...')
 
       await createSnapshotSpace(
         snapshotSpaceENS,
-        responseData.data.name,
-        responseData.data.symbol,
-        responseData.data.description,
-        responseData.data.karma_access_control_address,
+        responseData.data.course.name,
+        responseData.data.course.symbol,
+        responseData.data.course.description,
+        responseData.data.course.karma_access_control_address,
       )
 
       setIsLoading(false)

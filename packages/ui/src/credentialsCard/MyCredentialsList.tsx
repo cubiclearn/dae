@@ -10,31 +10,21 @@ import {
   Center,
   Spinner,
 } from '@chakra-ui/react'
-import { Credential } from '@dae/database'
-import useSWR from 'swr'
-
-export interface CourseCredentialsResponse {
-  credentials: Credential[]
-}
-
-const fetcher = async (url: string) => {
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error('Failed to fetch data')
-  }
-  return response.json() as Promise<CourseCredentialsResponse>
-}
+import { useUserCourseCredentials } from '@dae/wagmi'
+import { Address, useNetwork } from 'wagmi'
 
 interface CourseCardListProps {
-  apiUrl: string
+  courseAddress: Address
 }
 
-export const CredentialsCardList: React.FC<CourseCardListProps> = ({
-  apiUrl,
+export const MyCredentialsList: React.FC<CourseCardListProps> = ({
+  courseAddress,
 }) => {
-  const { data, error, isLoading } = useSWR<CourseCredentialsResponse>(
-    apiUrl ? apiUrl : null,
-    fetcher,
+  const { chain } = useNetwork()
+
+  const { data, error, isLoading } = useUserCourseCredentials(
+    courseAddress,
+    chain?.id,
   )
 
   if (isLoading) {
@@ -59,7 +49,7 @@ export const CredentialsCardList: React.FC<CourseCardListProps> = ({
     )
   }
 
-  if (!data || data.credentials.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <Alert status='info'>
         <AlertIcon />
@@ -76,7 +66,7 @@ export const CredentialsCardList: React.FC<CourseCardListProps> = ({
       columns={{ sm: 1, md: 2, lg: 3, xl: 5 }}
       spacing={{ sm: 0, md: 8 }}
     >
-      {data.credentials.map((credential) => (
+      {data.map((credential) => (
         <CredentialsCard key={credential.ipfs_cid} data={credential} />
       ))}
     </SimpleGrid>

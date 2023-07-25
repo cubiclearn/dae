@@ -1,16 +1,17 @@
 import { Address } from 'viem'
 import useSWR from 'swr'
-import { Course } from '@dae/database'
+import { Credential } from '@dae/database'
+import { useAccount } from 'wagmi'
 
-interface UseCourseData {
-  data: Course | null
+interface UseCourseCredentialsData {
+  data: Credential[] | null
   error: Error | null
   isLoading: boolean
 }
 
 interface ApiResponse {
   success: boolean
-  data?: { course: Course }
+  data?: { credentials: Credential[] | null }
   error?: string
 }
 
@@ -22,13 +23,14 @@ const fetcher = async (url: string) => {
   return response.json()
 }
 
-export const useCourse = (
+export const useUserCourseCredentials = (
   courseAddress: Address | undefined,
   chainId: number | undefined,
-): UseCourseData => {
-  const url = `/api/v0/course?address=${courseAddress}&chainId=${chainId}`
+): UseCourseCredentialsData => {
+  const { address: userAddress } = useAccount()
+  const url = `/api/v0/user/course/credentials?courseAddress=${courseAddress}&chainId=${chainId}&userAddress=${userAddress}`
 
-  const shouldFetch = courseAddress !== undefined && chainId !== undefined
+  const shouldFetch = courseAddress && chainId && userAddress
 
   const {
     data: response,
@@ -37,7 +39,7 @@ export const useCourse = (
   } = useSWR<ApiResponse>(shouldFetch ? url : null, fetcher)
 
   return {
-    data: response?.data?.course ?? null,
+    data: response?.data?.credentials ?? null,
     error,
     isLoading,
   }

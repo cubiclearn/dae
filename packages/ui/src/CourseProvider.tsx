@@ -28,7 +28,7 @@ export const CourseProvider: FC<{
     <Context.Provider
       value={useMemo(
         () => ({
-          data,
+          data: data,
           isLoading,
           error,
         }),
