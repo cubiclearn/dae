@@ -1,13 +1,10 @@
-import {useState} from 'react'
-import {useContractWrite, useContractRead, usePublicClient} from 'wagmi'
-import {Address} from 'viem'
-import {usePrepareContractWrite} from 'wagmi'
-import {KarmaAccessControlAbi} from '@dae/abi'
+import { useState } from 'react'
+import { useContractWrite, usePublicClient } from 'wagmi'
+import { Address } from 'viem'
+import { KarmaAccessControlAbiUint64 } from '@dae/abi'
 
 export function useTransferKarma(
   karmaAccessControlAddress: Address | undefined,
-  studentAddress: Address | undefined,
-  newKarmaAmount: bigint | undefined
 ) {
   const [error, setError] = useState<string | null>(null)
   const [isError, setIsError] = useState(false)
@@ -17,59 +14,65 @@ export function useTransferKarma(
 
   const publicClient = usePublicClient()
 
-  const {data: hasAccess} = useContractRead({
-    address: karmaAccessControlAddress,
-    abi: KarmaAccessControlAbi,
-    args: [studentAddress !== undefined ? studentAddress : '0x0000000000000000000000000000000000000000'],
-    functionName: 'hasAccess',
-    enabled: karmaAccessControlAddress !== undefined && studentAddress !== undefined,
-  })
-
-  const {config} = usePrepareContractWrite({
-    abi: KarmaAccessControlAbi,
+  const { writeAsync } = useContractWrite({
+    abi: KarmaAccessControlAbiUint64,
     address: karmaAccessControlAddress,
     functionName: 'rate',
-    args: [
-      studentAddress !== undefined ? studentAddress : '0x0000000000000000000000000000000000000000',
-      newKarmaAmount !== undefined ? newKarmaAmount : BigInt(0),
-    ],
-    enabled:
-      karmaAccessControlAddress !== undefined &&
-      studentAddress !== undefined &&
-      newKarmaAmount !== undefined &&
-      hasAccess === true &&
-      newKarmaAmount >= 0,
   })
-  const contractWrite = useContractWrite(config)
 
-  const transferKarma = async (): Promise<void> => {
+  const transfer = async (
+    userAddress: Address,
+    karmaIncrement: number,
+  ): Promise<void> => {
     try {
       setIsSuccess(false)
       setIsError(false)
       setIsSigning(true)
       setIsLoading(false)
 
-      if (karmaAccessControlAddress === undefined || studentAddress === undefined || newKarmaAmount === undefined) {
-        throw new Error('Please fill in all the required form fields.')
+      if (karmaAccessControlAddress === undefined) {
+        throw new Error('Karma Access Control Address is invalid')
       }
 
-      if (newKarmaAmount < 0) {
+      const hasAccess = await publicClient.readContract({
+        abi: KarmaAccessControlAbiUint64,
+        address: karmaAccessControlAddress,
+        functionName: 'hasAccess',
+        args: [userAddress],
+      })
+
+      if (hasAccess !== true) {
+        throw new Error(
+          'The provided address does not correspond to an enrolled course participant.',
+        )
+      }
+
+      const userCurrentKarmaAmount = await publicClient.readContract({
+        abi: KarmaAccessControlAbiUint64,
+        address: karmaAccessControlAddress,
+        functionName: 'ratingOf',
+        args: [userAddress],
+      })
+
+      if (Number(userCurrentKarmaAmount) + karmaIncrement < 0) {
         throw new Error('Invalid karma amount. The amount cannot be negative.')
       }
 
-      if (hasAccess !== true) {
-        throw new Error('The provided address does not correspond to an enrolled course participant.')
+      if (writeAsync === undefined) {
+        throw new Error(
+          'The data provided is incorrect. Please ensure that you have entered the correct information.',
+        )
       }
 
-      if (contractWrite.writeAsync === undefined) {
-        throw new Error('The data provided is incorrect. Please ensure that you have entered the correct information.')
-      }
-
-      const data = await contractWrite.writeAsync()
+      const data = await writeAsync({
+        args: [userAddress, userCurrentKarmaAmount + BigInt(karmaIncrement)],
+      })
       setIsLoading(true)
       setIsSigning(false)
 
-      await publicClient.waitForTransactionReceipt({hash: data.hash as Address})
+      await publicClient.waitForTransactionReceipt({
+        hash: data.hash as Address,
+      })
       setIsLoading(false)
       setIsSuccess(true)
     } catch (error: any) {
@@ -82,7 +85,7 @@ export function useTransferKarma(
   }
 
   return {
-    transferKarma,
+    transfer,
     isLoading,
     isError,
     isSuccess,

@@ -1,8 +1,6 @@
 import React from 'react'
-import useSWR, { SWRResponse } from 'swr'
 import { Table, TableContainer, Tbody, Th, Thead, Tr } from '@chakra-ui/react'
 import { StudentsRow } from './StudentsRow'
-import type { CourseStudents } from '@dae/database'
 import {
   Alert,
   AlertIcon,
@@ -12,22 +10,23 @@ import {
   Center,
   Spinner,
 } from '@chakra-ui/react'
+import { useCourseStudents } from '@dae/wagmi'
+import { Address, useNetwork } from 'wagmi'
 
 interface StudentsRowListProps {
-  api_url: string
+  courseAddress: Address
 }
 
-const fetcher = (url: string): Promise<CourseStudents[]> =>
-  fetch(url).then((r) => r.json())
-
 export const StudentsRowList: React.FC<StudentsRowListProps> = ({
-  api_url,
+  courseAddress,
 }) => {
+  const { chain } = useNetwork()
+
   const {
-    data,
+    data: response,
     error,
     isLoading,
-  }: SWRResponse<CourseStudents[], any, boolean> = useSWR(api_url, fetcher)
+  } = useCourseStudents(courseAddress, chain?.id)
 
   if (isLoading) {
     return (
@@ -51,7 +50,7 @@ export const StudentsRowList: React.FC<StudentsRowListProps> = ({
     )
   }
 
-  if (!data || data.length === 0) {
+  if (!response || response.data.students.length === 0) {
     return (
       <Alert status='info'>
         <AlertIcon />
@@ -76,8 +75,8 @@ export const StudentsRowList: React.FC<StudentsRowListProps> = ({
           </Tr>
         </Thead>
         <Tbody>
-          {data.map((student) => (
-            <StudentsRow key={student.studentAddress} student={student} />
+          {response.data.students.map((student) => (
+            <StudentsRow key={student.user_address} student={student} />
           ))}
         </Tbody>
       </Table>

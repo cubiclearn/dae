@@ -18,7 +18,10 @@
                 "NEXTAUTH_SECRET",
                 "NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS",
                 "INFURA_API_KEY",
-                "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID"
+                "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID",
+                "INFURA_IPFS_API_KEY",
+                "INFURA_IPFS_API_SECRET",
+                "NEXT_PUBLIC_IPFS_GATEWAY_URL"
             ]
         },
         "start": {
@@ -36,7 +39,10 @@
                 "NEXTAUTH_SECRET",
                 "NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS",
                 "INFURA_API_KEY",
-                "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID"
+                "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID",
+                "INFURA_IPFS_API_KEY",
+                "INFURA_IPFS_API_SECRET",
+                "NEXT_PUBLIC_IPFS_GATEWAY_URL"
             ],
             "persistent": true
         },
@@ -50,7 +56,10 @@
                 "NEXTAUTH_SECRET",
                 "NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS",
                 "INFURA_API_KEY",
-                "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID"
+                "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID",
+                "INFURA_IPFS_API_KEY",
+                "INFURA_IPFS_API_SECRET",
+                "NEXT_PUBLIC_IPFS_GATEWAY_URL"
             ],
             "cache": false,
             "persistent": true

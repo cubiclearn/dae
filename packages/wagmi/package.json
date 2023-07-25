@@ -8,8 +8,8 @@
         "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
     },
     "dependencies": {
-        "viem": "1.0.6",
-        "zod": "^3.21.4"
+        "swr": "2.1.5",
+        "viem": "1.0.6"
     },
     "sideEffects": false,
     "type": "module",
@@ -32,8 +32,10 @@
     },
     "devDependencies": {
         "@dae/abi": "workspace:*",
+        "@dae/chains": "workspace:*",
         "@dae/database": "workspace:*",
         "@dae/snapshot": "workspace:*",
+        "@dae/types": "workspace:*",
         "@dae/typescript-config": "workspace:*",
         "@types/node": "18.11.18",
         "@types/react": "18.0.22",

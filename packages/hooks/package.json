@@ -16,8 +16,8 @@
         "viem": "1.0.6"
     },
     "peerDependencies": {
-        "react": "*",
-        "react-dom": "*"
+        "react": "18.2.0",
+        "react-dom": "18.2.0"
     },
     "license": "MIT",
     "main": "./dist/index.js",

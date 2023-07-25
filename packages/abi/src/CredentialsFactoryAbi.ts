@@ -21,11 +21,6 @@ export const CredentialsFactoryAbi = [
   {
     inputs: [
       {
-        internalType: 'bool',
-        name: 'isBurnable',
-        type: 'bool',
-      },
-      {
         internalType: 'string',
         name: '_name',
         type: 'string',
@@ -44,6 +39,16 @@ export const CredentialsFactoryAbi = [
         internalType: 'uint256',
         name: 'maxSupply',
         type: 'uint256',
+      },
+      {
+        internalType: 'uint64',
+        name: '_baseMagisterKarma',
+        type: 'uint64',
+      },
+      {
+        internalType: 'uint64',
+        name: '_baseDiscipulusKarma',
+        type: 'uint64',
       },
     ],
     name: 'createCourse',

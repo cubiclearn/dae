@@ -26,3 +26,21 @@ export const ChainSnapshotHub = {
 
 export type ChainSnapshotHub =
   typeof ChainSnapshotHub[keyof typeof ChainSnapshotHub]
+
+export const ChainSnapshotWebsite = {
+  [ChainId.ETHEREUM]: 'https://snapshot.org',
+  [ChainId.SEPOLIA]: 'https://demo.snapshot.org',
+  [ChainId.FOUNDRY]: 'https://demo.snapshot.org',
+} as const
+
+export type ChainSnapshotWebsite =
+  typeof ChainSnapshotWebsite[keyof typeof ChainSnapshotWebsite]
+
+export const FactoryContractAddress = {
+  [ChainId.ETHEREUM]: '',
+  [ChainId.SEPOLIA]: '0xb2c5d323c04e85dff36d531bd082cfa11846d9cc',
+  [ChainId.FOUNDRY]: process.env.NEXT_PUBLIC_FOUNDRY_FACTORY_CONTRACT_ADDRESS,
+} as const
+
+export type FactoryContractAddress =
+  typeof FactoryContractAddress[keyof typeof FactoryContractAddress]

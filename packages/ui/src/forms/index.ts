@@ -1,4 +1,5 @@
 export * from './CreateCourseForm'
-export * from './KarmaTransferForm'
-export * from './CredentialsAirdropForm'
+export * from './TransferCredentialsForm'
 export * from './CreateProposalForm'
+export * from './CreateCredentialsForm'
+export * from './TransferKarmaForm'

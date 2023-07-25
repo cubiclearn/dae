@@ -36,12 +36,13 @@
                 "DATABASE_URL"
             ]
         },
-        "push": {
+        "db:push": {
             "dependsOn": [
                 "generate"
             ],
             "cache": false
         },
+        "db:format": {},
         "generate": {
             "dependsOn": [],
             "cache": false
@@ -58,11 +59,27 @@
                 "generate"
             ]
         },
+        "db:migrate:diff": {
+            "dependsOn": [
+                "generate"
+            ]
+        },
+        "db:migrate:diff:solve": {
+            "dependsOn": [
+                "generate"
+            ]
+        },
+        "db:migrate:resolve": {
+            "dependsOn": [
+                "generate"
+            ]
+        },
         "db:migrate:deploy": {
             "dependsOn": [
                 "generate"
             ]
         },
+        "db:migrate:reset": {},
         "deploy": {
             "dependsOn": [
                 "build",

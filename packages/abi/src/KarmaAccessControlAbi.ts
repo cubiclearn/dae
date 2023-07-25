@@ -1,15 +1,20 @@
-export const KarmaAccessControlAbi = [
+export const KarmaAccessControlAbiUint64 = [
   {
     inputs: [
       {
-        internalType: 'contract SoulboundNFT',
+        internalType: 'contract CredentialsBurnable',
         name: '_credentials',
         type: 'address',
       },
       {
-        internalType: 'address',
-        name: '_operator',
-        type: 'address',
+        internalType: 'uint64',
+        name: '_baseMagisterKarma',
+        type: 'uint64',
+      },
+      {
+        internalType: 'uint64',
+        name: '_baseDiscipulusKarma',
+        type: 'uint64',
       },
     ],
     stateMutability: 'nonpayable',
@@ -62,10 +67,36 @@ export const KarmaAccessControlAbi = [
   },
   {
     inputs: [],
+    name: 'BASE_DISCIPULUS_KARMA',
+    outputs: [
+      {
+        internalType: 'uint64',
+        name: '',
+        type: 'uint64',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'BASE_MAGISTER_KARMA',
+    outputs: [
+      {
+        internalType: 'uint64',
+        name: '',
+        type: 'uint64',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'credentials',
     outputs: [
       {
-        internalType: 'contract SoulboundNFT',
+        internalType: 'contract CredentialsBurnable',
         name: '',
         type: 'address',
       },
@@ -96,6 +127,25 @@ export const KarmaAccessControlAbi = [
     inputs: [
       {
         internalType: 'address',
+        name: '_operator',
+        type: 'address',
+      },
+    ],
+    name: 'isOperator',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
         name: '',
         type: 'address',
       },
@@ -109,6 +159,24 @@ export const KarmaAccessControlAbi = [
       },
     ],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address[]',
+        name: '_users',
+        type: 'address[]',
+      },
+      {
+        internalType: 'uint64[]',
+        name: '_ratings',
+        type: 'uint64[]',
+      },
+    ],
+    name: 'multiRate',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
   {

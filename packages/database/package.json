@@ -29,12 +29,12 @@
         "prebuild": "npm run generate",
         "predev": "npm run generate",
         "publish": "prisma db push",
-        "pull": "prisma db pull",
-        "push": "prisma db push",
-        "studio": "prisma studio",
+        "db:push": "prisma db push --force-reset",
+        "db:format": "prisma format",
         "db:studio": "prisma studio",
-        "db:migrate:dev": "prisma migrate dev",
-        "db:migrate:deploy": "prisma migrate deploy"
+        "db:migrate:dev": "prisma migrate dev --create-only --preview-feature",
+        "db:migrate:deploy": "prisma migrate deploy",
+        "db:migrate:reset": "prisma migrate reset --force"
     },
     "source": "./src/index.ts",
     "types": "./dist/index.d.ts"
