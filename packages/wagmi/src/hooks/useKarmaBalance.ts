@@ -6,7 +6,15 @@ export const useKarmaBalance = (
   karmaAccessControlAddress: Address | undefined,
   userAddress: Address | undefined,
 ) => {
-  const shouldFetch = karmaAccessControlAddress && userAddress
+  const { data: hasAccess } = useContractRead({
+    address: karmaAccessControlAddress,
+    abi: KarmaAccessControlAbiUint64,
+    functionName: 'hasAccess',
+    args: [userAddress ?? '0x0000000000000000000000000000000000000000'],
+    enabled: !!userAddress,
+  })
+
+  const shouldFetch = karmaAccessControlAddress && userAddress && hasAccess
 
   const { data, isLoading, error, isError, isSuccess } = useContractRead({
     address: karmaAccessControlAddress,

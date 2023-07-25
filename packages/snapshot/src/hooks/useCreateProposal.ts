@@ -3,6 +3,7 @@ import snapshot from '@snapshot-labs/snapshot.js'
 import { useEthersSigner } from './useEthersSigner'
 import { ChainSnapshotHub } from '@dae/chains'
 import { useState } from 'react'
+import { Proposal } from '@snapshot-labs/snapshot.js/dist/sign/types'
 
 export const useCreateProposal = (snapshotSpaceENS: string | undefined) => {
   const { address } = useAccount()
@@ -17,6 +18,7 @@ export const useCreateProposal = (snapshotSpaceENS: string | undefined) => {
   const spaceNetwork = chain!.id as keyof typeof ChainSnapshotHub
   const hub = ChainSnapshotHub[spaceNetwork]
   const snapshotClient = new snapshot.Client712(hub)
+
   const signer = useEthersSigner()
 
   const create = async (
@@ -47,18 +49,22 @@ export const useCreateProposal = (snapshotSpaceENS: string | undefined) => {
         throw new Error('The end date cannot be in the past.')
       }
 
-      await snapshotClient.proposal(signer as any, address as string, {
-        space: snapshotSpaceENS,
-        type: 'single-choice',
-        title: proposalTitle,
-        body: proposalDescription,
-        choices: choices,
-        start: Math.floor(Date.now() / 1000),
-        end: endTime,
-        snapshot: Number(blockNumber),
-        discussion: discussion,
-        plugins: JSON.stringify({}),
-      })
+      await snapshotClient.proposal(
+        signer as any,
+        address as string,
+        {
+          space: snapshotSpaceENS,
+          type: 'single-choice',
+          title: proposalTitle,
+          body: proposalDescription,
+          choices: choices,
+          start: Math.floor(Date.now() / 1000),
+          end: endTime,
+          snapshot: Number(blockNumber),
+          discussion: discussion,
+          plugins: JSON.stringify({}),
+        } as Proposal,
+      )
 
       setIsLoading(false)
       setIsSuccess(true)
@@ -66,6 +72,7 @@ export const useCreateProposal = (snapshotSpaceENS: string | undefined) => {
       setIsLoading(false)
       setIsError(true)
       setError(error.message)
+      console.log(error)
       throw error
     }
   }

@@ -80,19 +80,19 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
     useEffect(() => {
       if (isError) {
         toast({
-          title: 'Error creating credential.',
+          title: 'Error transferring credential.',
           status: 'error',
         })
       }
       if (isSuccess) {
         toast({
-          title: 'Credential created with success!',
+          title: 'Credential transferred with success!',
           status: 'success',
         })
       }
       if (isLoading) {
         toast({
-          title: 'Creating new credential...',
+          title: 'Transferring selected credential...',
           status: 'info',
         })
       }

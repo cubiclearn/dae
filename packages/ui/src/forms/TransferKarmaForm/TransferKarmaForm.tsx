@@ -98,11 +98,11 @@ export const TransferKarmaForm: React.FC<any> = () => {
         <Stack spacing={4}>
           <Box>
             <Text fontWeight='semibold' fontSize='3xl'>
-              Create credentials form
+              Tranfer Karma
             </Text>
             <Text fontSize='lg'>
-              Fill in all the form fields to create a new credential for this
-              course!
+              Please complete all the required fields to initiate a karma
+              transfer to another user.
             </Text>
           </Box>
           <Stack direction={'row'} spacing={'30px'}>

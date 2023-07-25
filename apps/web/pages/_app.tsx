@@ -8,7 +8,7 @@ import { ChakraProvider } from '@chakra-ui/react'
 import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import { WagmiConfig, createConfig, configureChains } from 'wagmi'
 import { infuraProvider } from 'wagmi/providers/infura'
-import { sepolia, foundry } from 'wagmi/chains'
+import { sepolia, foundry, goerli } from 'wagmi/chains'
 import { publicProvider } from 'wagmi/providers/public'
 import { Session } from 'next-auth'
 import { Layout } from '@dae/ui'
@@ -18,7 +18,9 @@ import {
 } from '@rainbow-me/rainbowkit-siwe-next-auth'
 
 const supportedChains =
-  process.env.NODE_ENV !== 'production' ? [sepolia, foundry] : [sepolia]
+  process.env.NODE_ENV !== 'production'
+    ? [sepolia, goerli, foundry]
+    : [goerli, sepolia]
 
 export const { chains, publicClient, webSocketPublicClient } = configureChains(
   supportedChains,

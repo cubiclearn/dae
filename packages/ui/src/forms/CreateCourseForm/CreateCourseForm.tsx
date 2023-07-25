@@ -18,7 +18,7 @@ import {
   Text,
   useToast,
 } from '@chakra-ui/react'
-import { useCreateCourse } from '@dae/wagmi'
+import { useCreateCourse, useIsENSOwner } from '@dae/wagmi'
 import { useFormik } from 'formik'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
@@ -110,6 +110,8 @@ export const CreateCourseForm = () => {
     },
     validationSchema: validationSchema,
   })
+
+  const { data: isENSOwner } = useIsENSOwner(address, values.snapshotSpaceENS)
 
   useEffect(() => {
     if (isError) {
@@ -267,7 +269,10 @@ export const CreateCourseForm = () => {
           </FormControl>
           <FormControl
             isRequired
-            isInvalid={!!errors.snapshotSpaceENS && touched.snapshotSpaceENS}
+            isInvalid={
+              (!!errors.snapshotSpaceENS && touched.snapshotSpaceENS) ||
+              isENSOwner === false
+            }
           >
             <FormLabel>Snapshot Space ENS</FormLabel>
             <Input
@@ -278,7 +283,10 @@ export const CreateCourseForm = () => {
               type='text'
               placeholder='your-ens.eth'
             />
-            <FormErrorMessage>{errors.snapshotSpaceENS}</FormErrorMessage>
+            <FormErrorMessage>
+              {errors.snapshotSpaceENS ||
+                (!isENSOwner && 'You are not the owner of this ENS address.')}
+            </FormErrorMessage>
           </FormControl>
           <Button
             colorScheme='blue'
