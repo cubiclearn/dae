@@ -33,9 +33,6 @@
         "db:format": "prisma format",
         "db:studio": "prisma studio",
         "db:migrate:dev": "prisma migrate dev --create-only --preview-feature",
-        "db:migrate:diff": "prisma migrate diff --from-empty --to-schema-datamodel ./prisma/schema.prisma --script > ./prisma/migrations/00_init/migration.sql",
-        "db:migrate:diff:solve": "prisma migrate resolve --applied 00_init",
-        "db:migrate:resolve": "prisma migrate resolve",
         "db:migrate:deploy": "prisma migrate deploy",
         "db:migrate:reset": "prisma migrate reset --force"
     },

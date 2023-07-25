@@ -8,10 +8,10 @@
         "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
     },
     "dependencies": {
-        "@apollo/client": "^3.7.16",
+        "@apollo/client": "3.7.16",
         "@snapshot-labs/snapshot.js": "0.4.100",
         "ethers": "5.7.2",
-        "graphql": "^16.7.1",
+        "graphql": "16.7.1",
         "viem": "1.0.6"
     },
     "sideEffects": false,

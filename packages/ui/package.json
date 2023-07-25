@@ -6,11 +6,11 @@
         "@chakra-ui/icons": "2.0.19",
         "@chakra-ui/system": "2.5.7",
         "@rainbow-me/rainbowkit": "1.0.2",
-        "formik": "^2.4.2",
+        "formik": "2.4.2",
         "react-icons": "4.8.0",
-        "react-markdown": "^8.0.7",
+        "react-markdown": "8.0.7",
         "swr": "2.1.5",
-        "yup": "^1.2.0"
+        "yup": "1.2.0"
     },
     "devDependencies": {
         "@chakra-ui/react": "2.6.1",
