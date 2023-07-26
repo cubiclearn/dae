@@ -127,7 +127,8 @@ export function useCreateCourse(chain: Chain, address: Address) {
       })
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status} - ${response.statusText}`)
+        const responseJSON = await response.json()
+        throw new Error(responseJSON.error)
       }
 
       const responseData = (await response.json()) as {
