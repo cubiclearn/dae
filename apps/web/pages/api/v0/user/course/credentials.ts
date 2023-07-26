@@ -55,7 +55,7 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
       hash: txHash,
     })
 
-    const courseAddress: Address = txRecept.to
+    const courseAddress = txRecept.to as Address
 
     const txLogsDecoded = txRecept.logs.map((log) => {
       return decodeEventLog({

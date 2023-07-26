@@ -74,19 +74,19 @@ export const TransferKarmaForm: React.FC<any> = () => {
   useEffect(() => {
     if (isError) {
       toast({
-        title: 'Error creating credential.',
+        title: 'Error transferring karma.',
         status: 'error',
       })
     }
     if (isSuccess) {
       toast({
-        title: 'Credential created with success!',
+        title: 'Karma transferred with success!',
         status: 'success',
       })
     }
     if (isLoading) {
       toast({
-        title: 'Creating new credential...',
+        title: 'Transferring karma...',
         status: 'info',
       })
     }

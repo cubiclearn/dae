@@ -56,7 +56,7 @@ export const EnrollStudentsForm: React.FC<TransferCredentialsFormProps> = ({
         try {
           await transfer(
             values.userAddress as Address,
-            'https://dae-demo.infura-ipfs.io/ipfs/QmcV3A5RWD5ygwU71KaH8gFtjxep9BMDGeYECq9bnbyWz8',
+            'https://dae-demo.infura-ipfs.io/ipfs/QmPfKCv7ZAz8294ShRTcHft5LSM9YaDJ4NTjZisCkhFxW8',
             values.userDiscordUsername,
             values.userEmail,
           )
