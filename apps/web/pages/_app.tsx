@@ -18,12 +18,10 @@ import {
 } from '@rainbow-me/rainbowkit-siwe-next-auth'
 
 const supportedChains =
-  process.env.NODE_ENV !== 'production'
-    ? [sepolia, goerli, foundry]
-    : [goerli, sepolia]
+  process.env.NODE_ENV !== 'production' ? [sepolia, foundry] : [sepolia]
 
 export const { chains, publicClient, webSocketPublicClient } = configureChains(
-  supportedChains,
+  [...supportedChains, goerli],
   [
     infuraProvider({
       apiKey: process.env.NEXT_PUBLIC_INFURA_API_KEY as string,
@@ -62,7 +60,7 @@ const MyApp = ({ Component, pageProps }: AppProps<{ session: Session }>) => {
         >
           <RainbowKitProvider
             appInfo={appInfo}
-            chains={chains}
+            chains={supportedChains}
             modalSize='compact'
           >
             <ChakraProvider
