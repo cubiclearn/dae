@@ -142,13 +142,13 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
           await Promise.all([
             prisma.credential.create({
               data: {
-                name: 'Admin Credential',
+                name: 'Admin',
                 description: 'The course Admin credential',
                 image_url:
                   'https://dae-demo.infura-ipfs.io/ipfs/QmXibYJSXskaqS7WyXLGwy16vGASqhN75yNUp2UfMRiLkF',
                 ipfs_url:
-                  'https://dae-demo.infura-ipfs.io/ipfs/QmbH5TB6pdQvVu5xdtbq7CDHGdPYFudr4PNqzJczW2xXMa',
-                ipfs_cid: 'QmbH5TB6pdQvVu5xdtbq7CDHGdPYFudr4PNqzJczW2xXMa',
+                  'https://dae-demo.infura-ipfs.io/ipfs/QmWNqAC88Sbti885sSbax9RK1Sfbo3akVeue5SMEhXWbjN',
+                ipfs_cid: 'QmWNqAC88Sbti885sSbax9RK1Sfbo3akVeue5SMEhXWbjN',
                 type: 'ADMIN',
                 course: {
                   connect: {
@@ -162,13 +162,13 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
             }),
             prisma.credential.create({
               data: {
-                name: 'Magister Credential',
+                name: 'Magister',
                 description: 'The course Magister credential',
                 image_url:
                   'https://dae-demo.infura-ipfs.io/ipfs/QmTFVE4FoPJm2vazgVtKajbw2XSNtM2wTDrkUinxMcLbBg',
                 ipfs_url:
-                  'https://dae-demo.infura-ipfs.io/ipfs/QmNiv7RuYbcLSbMBhmSeo755TakS45NVYA768yHeUJoSKC',
-                ipfs_cid: 'QmNiv7RuYbcLSbMBhmSeo755TakS45NVYA768yHeUJoSKC',
+                  'https://dae-demo.infura-ipfs.io/ipfs/QmXRAu1zZ7igsNWo8egMDH3g77vFQgZHfcE2k6hoJp4JwT',
+                ipfs_cid: 'QmXRAu1zZ7igsNWo8egMDH3g77vFQgZHfcE2k6hoJp4JwT',
                 type: 'MAGISTER',
                 course: {
                   connect: {
@@ -182,13 +182,13 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
             }),
             prisma.credential.create({
               data: {
-                name: 'Discipulus Credential',
+                name: 'Discipulus',
                 description: 'The course Discipulus credential',
                 image_url:
                   'https://dae-demo.infura-ipfs.io/ipfs/QmUEC1WiGo9Vr3WER68u3T6mSwLexyDXj5G6WUgpVECmBY',
                 ipfs_url:
-                  'https://dae-demo.infura-ipfs.io/ipfs/QmcV3A5RWD5ygwU71KaH8gFtjxep9BMDGeYECq9bnbyWz8',
-                ipfs_cid: 'QmcV3A5RWD5ygwU71KaH8gFtjxep9BMDGeYECq9bnbyWz8',
+                  'https://dae-demo.infura-ipfs.io/ipfs/QmPfKCv7ZAz8294ShRTcHft5LSM9YaDJ4NTjZisCkhFxW8',
+                ipfs_cid: 'QmPfKCv7ZAz8294ShRTcHft5LSM9YaDJ4NTjZisCkhFxW8',
                 type: 'DISCIPULUS',
                 course: {
                   connect: {
