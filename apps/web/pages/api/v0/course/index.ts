@@ -138,110 +138,112 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
           },
         })
 
-        const adminCredential = await prisma.credential.create({
-          data: {
-            name: 'Admin Credential',
-            description: 'The course Admin credential',
-            image_url:
-              'https://dae-demo.infura-ipfs.io/ipfs/QmXibYJSXskaqS7WyXLGwy16vGASqhN75yNUp2UfMRiLkF',
-            ipfs_url:
-              'https://dae-demo.infura-ipfs.io/ipfs/QmbH5TB6pdQvVu5xdtbq7CDHGdPYFudr4PNqzJczW2xXMa',
-            ipfs_cid: 'QmbH5TB6pdQvVu5xdtbq7CDHGdPYFudr4PNqzJczW2xXMa',
-            type: 'ADMIN',
-            course: {
-              connect: {
-                address_chain_id: {
-                  address: course.address,
-                  chain_id: course.chain_id,
+        const [adminCredential, magisterCredential, _discipulusCredential] =
+          await Promise.all([
+            prisma.credential.create({
+              data: {
+                name: 'Admin Credential',
+                description: 'The course Admin credential',
+                image_url:
+                  'https://dae-demo.infura-ipfs.io/ipfs/QmXibYJSXskaqS7WyXLGwy16vGASqhN75yNUp2UfMRiLkF',
+                ipfs_url:
+                  'https://dae-demo.infura-ipfs.io/ipfs/QmbH5TB6pdQvVu5xdtbq7CDHGdPYFudr4PNqzJczW2xXMa',
+                ipfs_cid: 'QmbH5TB6pdQvVu5xdtbq7CDHGdPYFudr4PNqzJczW2xXMa',
+                type: 'ADMIN',
+                course: {
+                  connect: {
+                    address_chain_id: {
+                      address: course.address,
+                      chain_id: course.chain_id,
+                    },
+                  },
                 },
               },
-            },
-          },
-        })
+            }),
+            prisma.credential.create({
+              data: {
+                name: 'Magister Credential',
+                description: 'The course Magister credential',
+                image_url:
+                  'https://dae-demo.infura-ipfs.io/ipfs/QmTFVE4FoPJm2vazgVtKajbw2XSNtM2wTDrkUinxMcLbBg',
+                ipfs_url:
+                  'https://dae-demo.infura-ipfs.io/ipfs/QmNiv7RuYbcLSbMBhmSeo755TakS45NVYA768yHeUJoSKC',
+                ipfs_cid: 'QmNiv7RuYbcLSbMBhmSeo755TakS45NVYA768yHeUJoSKC',
+                type: 'MAGISTER',
+                course: {
+                  connect: {
+                    address_chain_id: {
+                      address: course.address,
+                      chain_id: course.chain_id,
+                    },
+                  },
+                },
+              },
+            }),
+            prisma.credential.create({
+              data: {
+                name: 'Discipulus Credential',
+                description: 'The course Discipulus credential',
+                image_url:
+                  'https://dae-demo.infura-ipfs.io/ipfs/QmUEC1WiGo9Vr3WER68u3T6mSwLexyDXj5G6WUgpVECmBY',
+                ipfs_url:
+                  'https://dae-demo.infura-ipfs.io/ipfs/QmcV3A5RWD5ygwU71KaH8gFtjxep9BMDGeYECq9bnbyWz8',
+                ipfs_cid: 'QmcV3A5RWD5ygwU71KaH8gFtjxep9BMDGeYECq9bnbyWz8',
+                type: 'DISCIPULUS',
+                course: {
+                  connect: {
+                    address_chain_id: {
+                      address: course.address,
+                      chain_id: course.chain_id,
+                    },
+                  },
+                },
+              },
+            }),
+          ])
 
-        const magisterCredential = await prisma.credential.create({
-          data: {
-            name: 'Magister Credential',
-            description: 'The course Magister credential',
-            image_url:
-              'https://dae-demo.infura-ipfs.io/ipfs/QmTFVE4FoPJm2vazgVtKajbw2XSNtM2wTDrkUinxMcLbBg',
-            ipfs_url:
-              'https://dae-demo.infura-ipfs.io/ipfs/QmNiv7RuYbcLSbMBhmSeo755TakS45NVYA768yHeUJoSKC',
-            ipfs_cid: 'QmNiv7RuYbcLSbMBhmSeo755TakS45NVYA768yHeUJoSKC',
-            type: 'MAGISTER',
-            course: {
-              connect: {
-                address_chain_id: {
-                  address: course.address,
-                  chain_id: course.chain_id,
+        await Promise.all([
+          prisma.userCredentials.create({
+            data: {
+              course: {
+                connect: {
+                  address_chain_id: {
+                    address: course.address,
+                    chain_id: course.chain_id,
+                  },
                 },
               },
-            },
-          },
-        })
-
-        await prisma.credential.create({
-          data: {
-            name: 'Discipulus Credential',
-            description: 'The course Discipulus credential',
-            image_url:
-              'https://dae-demo.infura-ipfs.io/ipfs/QmUEC1WiGo9Vr3WER68u3T6mSwLexyDXj5G6WUgpVECmBY',
-            ipfs_url:
-              'https://dae-demo.infura-ipfs.io/ipfs/QmcV3A5RWD5ygwU71KaH8gFtjxep9BMDGeYECq9bnbyWz8',
-            ipfs_cid: 'QmcV3A5RWD5ygwU71KaH8gFtjxep9BMDGeYECq9bnbyWz8',
-            type: 'DISCIPULUS',
-            course: {
-              connect: {
-                address_chain_id: {
-                  address: course.address,
-                  chain_id: course.chain_id,
+              user_address: transaction.from,
+              credential: {
+                connect: {
+                  id: adminCredential.id,
                 },
               },
+              email: '',
+              discord_handle: '',
             },
-          },
-        })
-
-        await prisma.userCredentials.create({
-          data: {
-            course: {
-              connect: {
-                address_chain_id: {
-                  address: course.address,
-                  chain_id: course.chain_id,
+          }),
+          await prisma.userCredentials.create({
+            data: {
+              course: {
+                connect: {
+                  address_chain_id: {
+                    address: course.address,
+                    chain_id: course.chain_id,
+                  },
                 },
               },
-            },
-            user_address: transaction.from,
-            credential: {
-              connect: {
-                id: adminCredential.id,
-              },
-            },
-            email: '',
-            discord_handle: '',
-          },
-        })
-
-        await prisma.userCredentials.create({
-          data: {
-            course: {
-              connect: {
-                address_chain_id: {
-                  address: course.address,
-                  chain_id: course.chain_id,
+              user_address: transaction.from,
+              credential: {
+                connect: {
+                  id: magisterCredential.id,
                 },
               },
+              email: '',
+              discord_handle: '',
             },
-            user_address: transaction.from,
-            credential: {
-              connect: {
-                id: magisterCredential.id,
-              },
-            },
-            email: '',
-            discord_handle: '',
-          },
-        })
+          }),
+        ])
 
         return course
       },
