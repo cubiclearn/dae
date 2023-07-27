@@ -15,6 +15,7 @@ import {
   BoxProps,
   FlexProps,
   Accordion,
+  Stack,
 } from '@chakra-ui/react'
 import { FiMenu, FiUsers, FiZap, FiBookOpen, FiShield } from 'react-icons/fi'
 import { MdOutlinePoll } from 'react-icons/md'
@@ -197,6 +198,7 @@ type Props = {
 
 export const CourseLayout: FC<Props> = ({ children, heading }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const { query } = useRouter()
 
   return (
     <Box minH='100vh'>
@@ -228,11 +230,17 @@ export const CourseLayout: FC<Props> = ({ children, heading }) => {
         overflow={'auto'}
         p={8}
       >
-        <Box display={'flex'} fontSize={'3xl'} fontWeight={'semibold'} mb={8}>
-          <Text as='h2' fontSize={'3xl'}>
+        <Stack direction='column' mb={8}>
+          <Text
+            as='h2'
+            fontSize={'3xl'}
+            fontWeight={'semibold'}
+            textTransform={'capitalize'}
+          >
             {heading}
           </Text>
-        </Box>
+          <Text>Course: {query.address}</Text>
+        </Stack>
         <Web3SafeContainer>
           <CourseProvider>
             <Box>{children}</Box>

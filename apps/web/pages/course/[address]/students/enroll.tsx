@@ -1,7 +1,6 @@
 import Head from 'next/head'
 import { EnrollStudentsForm, Layout } from '@dae/ui'
-import { Stack, Tabs, TabList, Tab, Link } from '@chakra-ui/react'
-import NextLink from 'next/link'
+import { Stack } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 
 export default function ProfilePage() {
@@ -16,20 +15,8 @@ export default function ProfilePage() {
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      <Layout.Course heading='Students'>
+      <Layout.Course heading='Enroll student'>
         <Stack spacing={8}>
-          <Tabs defaultIndex={1}>
-            <TabList>
-              <Link
-                as={NextLink}
-                href={`/course/${courseAddress}/students/list`}
-                style={{ textDecoration: 'none' }}
-              >
-                <Tab>Students List</Tab>
-              </Link>
-              <Tab>Enroll New Students</Tab>
-            </TabList>
-          </Tabs>
           <EnrollStudentsForm courseAddress={courseAddress} />
         </Stack>
       </Layout.Course>

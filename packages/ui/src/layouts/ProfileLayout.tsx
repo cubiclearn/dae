@@ -15,11 +15,13 @@ import {
   BoxProps,
   FlexProps,
   Accordion,
+  Stack,
 } from '@chakra-ui/react'
 import { FiBook, FiMenu } from 'react-icons/fi'
 import { NavItemDropdown } from './DrawerNavItem'
 import { useRouter } from 'next/router'
 import { Logo } from './Logo'
+import { Web3SafeContainer } from '../Web3SafeContainer'
 
 interface SidebarProps extends BoxProps {
   onClose: () => void
@@ -70,7 +72,7 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
             {
               title: 'Create',
               href: '/profile/courses/create',
-              active: pathname.startsWith('/profile/courses/partecipating'),
+              active: pathname.startsWith('/profile/courses/create'),
             },
           ]}
         />
@@ -153,10 +155,14 @@ export const ProfileLayout: FC<Props> = ({ children, heading }) => {
         height={'calc(100% - 80px)'}
         bg={'gray.50'}
       >
-        <Box display={'flex'} fontSize={'3xl'} fontWeight={'semibold'} mb={8}>
-          <Text fontSize={'3xl'}>{heading}</Text>
-        </Box>
-        <Box>{children}</Box>
+        <Stack display={'flex'} fontSize={'3xl'} fontWeight={'semibold'} mb={8}>
+          <Text as='h2' fontSize={'3xl'} textTransform={'capitalize'}>
+            {heading}
+          </Text>
+        </Stack>
+        <Web3SafeContainer>
+          <Box>{children}</Box>
+        </Web3SafeContainer>
       </Box>
     </Box>
   )

@@ -16,7 +16,7 @@ export default function TransferKarmaPage() {
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      <Layout.Course heading='Proposals'>
+      <Layout.Course heading='Explore proposals'>
         <Stack spacing={8}>
           <Tabs index={active === 'true' ? 0 : 1}>
             <TabList>
