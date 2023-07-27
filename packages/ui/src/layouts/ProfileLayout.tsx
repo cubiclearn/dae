@@ -15,14 +15,24 @@ import {
   BoxProps,
   FlexProps,
   Accordion,
+  Stack,
 } from '@chakra-ui/react'
 import { FiBook, FiMenu } from 'react-icons/fi'
 import { NavItemDropdown } from './DrawerNavItem'
 import { useRouter } from 'next/router'
 import { Logo } from './Logo'
+import { Web3SafeContainer } from '../Web3SafeContainer'
 
 interface SidebarProps extends BoxProps {
   onClose: () => void
+}
+
+const openedAccorditionIndex = (pathname: string) => {
+  if (pathname.startsWith('/profile/courses')) {
+    return 0
+  } else {
+    return undefined
+  }
 }
 
 const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
@@ -42,16 +52,28 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
         <Logo />
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
-      <Accordion allowToggle>
+      <Accordion allowToggle defaultIndex={openedAccorditionIndex(pathname)}>
         <NavItemDropdown
           title={'My Courses'}
           key={'students'}
           icon={FiBook}
-          isActive={pathname.startsWith('/course/[address]/students')}
+          isActive={pathname.startsWith('/profile/courses')}
           links={[
-            { title: 'Teaching', href: '/profile/courses/teaching' },
-            { title: 'Partecipating', href: '/profile/courses/partecipating' },
-            { title: 'Create', href: '/profile/courses/create' },
+            {
+              title: 'Teaching',
+              href: '/profile/courses/teaching',
+              active: pathname.startsWith('/profile/courses/teaching'),
+            },
+            {
+              title: 'Partecipating',
+              href: '/profile/courses/partecipating',
+              active: pathname.startsWith('/profile/courses/partecipating'),
+            },
+            {
+              title: 'Create',
+              href: '/profile/courses/create',
+              active: pathname.startsWith('/profile/courses/create'),
+            },
           ]}
         />
       </Accordion>
@@ -76,7 +98,7 @@ export const Header: FC<HeaderProps> = ({ onOpen, ...rest }) => {
       position={'fixed'}
       right={0}
       zIndex={'sticky'}
-      width={{ sm: '100%', md: 'calc(100% - 240px)' }}
+      width={{ md: 'calc(100% - 240px)', base: '100%' }}
       {...rest}
     >
       <IconButton
@@ -126,15 +148,21 @@ export const ProfileLayout: FC<Props> = ({ children, heading }) => {
       <Box
         position={'absolute'}
         top={'80px'}
-        width={{ sm: '100%', md: 'calc(100% - 240px)' }}
+        width={{ md: 'calc(100% - 240px)', base: '100%' }}
         right={0}
         overflow={'auto'}
         p={8}
+        height={'calc(100% - 80px)'}
+        bg={'gray.50'}
       >
-        <Box display={'flex'} fontSize={'3xl'} fontWeight={'semibold'} mb={8}>
-          <Text as='h2'>{heading}</Text>
-        </Box>
-        <Box>{children}</Box>
+        <Stack display={'flex'} fontSize={'3xl'} fontWeight={'semibold'} mb={8}>
+          <Text as='h2' fontSize={'3xl'} textTransform={'capitalize'}>
+            {heading}
+          </Text>
+        </Stack>
+        <Web3SafeContainer>
+          <Box>{children}</Box>
+        </Web3SafeContainer>
       </Box>
     </Box>
   )

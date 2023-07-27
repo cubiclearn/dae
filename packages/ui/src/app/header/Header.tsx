@@ -12,7 +12,6 @@ type HeaderProps = {
 export const Header: FC<HeaderProps> = ({
   onOpen,
   showDrawerButton,
-  ...rest
 }): JSX.Element => {
   return (
     <Flex
@@ -22,26 +21,26 @@ export const Header: FC<HeaderProps> = ({
       bg={useColorModeValue('white', 'gray.900')}
       borderBottomWidth='1px'
       borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
-      justifyContent={{
-        base: showDrawerButton ? 'space-between' : 'flex-end',
-        md: 'space-between',
-      }}
+      justifyContent={'space-between'}
       as='header'
       position={'fixed'}
       right={0}
       zIndex={'sticky'}
       width={'100%'}
       top={'0'}
-      {...rest}
     >
-      <IconButton
-        display={{ base: showDrawerButton ? 'block' : 'none', md: 'none' }}
-        alignSelf={'flex-end'}
-        onClick={onOpen}
-        variant='outline'
-        aria-label='open menu'
-        icon={<FiMenu />}
-      />
+      {showDrawerButton ? (
+        <IconButton
+          display={'block'}
+          alignSelf={'flex-end'}
+          onClick={onOpen}
+          variant='outline'
+          aria-label='open menu'
+          icon={<FiMenu />}
+        />
+      ) : (
+        <></>
+      )}
       <Logo />
 
       {/* <SearchBar /> */}

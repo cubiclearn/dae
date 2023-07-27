@@ -9,6 +9,7 @@ import {
   Box,
   Center,
   Spinner,
+  Text,
 } from '@chakra-ui/react'
 import { useCourseStudents } from '@dae/wagmi'
 import { Address, useNetwork } from 'wagmi'
@@ -65,21 +66,28 @@ export const StudentsRowList: React.FC<StudentsRowListProps> = ({
   }
 
   return (
-    <TableContainer>
-      <Table variant='simple'>
-        <Thead>
-          <Tr>
-            <Th>{''}</Th>
-            <Th>Student Address</Th>
-            <Th isNumeric>Karma</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {response.data.students.map((student) => (
-            <StudentsRow key={student.user_address} student={student} />
-          ))}
-        </Tbody>
-      </Table>
-    </TableContainer>
+    <Box padding={8} borderRadius='xl' bg={'white'} boxShadow={'base'}>
+      <Box pb={2}>
+        <Text fontWeight='semibold' fontSize='xl'>
+          Students list
+        </Text>
+      </Box>
+      <TableContainer>
+        <Table variant='simple'>
+          <Thead>
+            <Tr>
+              <Th>{''}</Th>
+              <Th>Student Address</Th>
+              <Th isNumeric>Karma</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {response.data.students.map((student) => (
+              <StudentsRow key={student.user_address} student={student} />
+            ))}
+          </Tbody>
+        </Table>
+      </TableContainer>
+    </Box>
   )
 }

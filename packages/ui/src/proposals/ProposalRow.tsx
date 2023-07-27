@@ -22,10 +22,10 @@ export const ProposalRow: React.FC<ProposalRowProps> = ({ proposal }) => {
       <HStack
         alignItems={'flex-start'}
         width={'100%'}
-        borderWidth={'1px'}
-        borderColor={'gray.200'}
         borderRadius={'xl'}
-        padding={6}
+        padding={8}
+        bg={'white'}
+        boxShadow={'base'}
       >
         <Box width={'60%'}>
           <VStack width={'100%'} alignItems={'flex-start'}>

@@ -10,7 +10,6 @@ import {
   FormLabel,
   Input,
   Stack,
-  Text,
   useToast,
 } from '@chakra-ui/react'
 import { useCreateCredential } from '@dae/wagmi'
@@ -90,18 +89,9 @@ export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
   }, [isLoading, isError, isSuccess])
 
   return (
-    <Box padding={8} borderRadius='xl' borderColor='gray.300' borderWidth='1px'>
+    <Box padding={8} borderRadius='xl' bg={'white'} boxShadow={'base'}>
       <form onSubmit={handleSubmit}>
         <Stack spacing={4}>
-          <Box>
-            <Text fontWeight='semibold' fontSize='3xl'>
-              Create credentials form
-            </Text>
-            <Text fontSize='lg'>
-              Fill in all the form fields to create a new credential for this
-              course!
-            </Text>
-          </Box>
           <FormControl isRequired isInvalid={!!errors.name && touched.name}>
             <FormLabel>Name</FormLabel>
             <Input
@@ -149,7 +139,7 @@ export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
             isLoading={isLoading}
             loadingText='Submitting'
           >
-            Create course
+            Create credential
           </Button>
           {isError ? (
             <Alert status='error'>

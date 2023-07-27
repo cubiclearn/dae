@@ -40,7 +40,7 @@ export const NavItemSimple = ({
         cursor='pointer'
         _hover={{ ...(!isActive && { bg: 'blackAlpha.50' }) }}
         {...(isActive && {
-          bg: 'gray.400',
+          bg: 'blue.500',
           color: 'white',
         })}
         {...rest}
@@ -68,7 +68,7 @@ export const NavItemDropdown = ({
   title,
   ...rest
 }: NavItemProps & {
-  links: { title: string; href: string }[]
+  links: { title: string; href: string; active: boolean }[]
   title: string
 }) => {
   return (
@@ -85,7 +85,7 @@ export const NavItemDropdown = ({
         cursor='pointer'
         _hover={{ ...(!isActive && { bg: 'blackAlpha.50' }) }}
         {...(isActive && {
-          bg: 'gray.400',
+          bg: 'blue.500',
           color: 'white',
         })}
       >
@@ -113,6 +113,7 @@ export const NavItemDropdown = ({
                   as={NextLink}
                   href={link.href}
                   _hover={{ textDecoration: 'none' }}
+                  fontWeight={link.active ? 'bold' : 'normal'}
                 >
                   {link.title}
                 </Link>

@@ -10,7 +10,6 @@ import {
   FormLabel,
   Input,
   Stack,
-  Text,
   useToast,
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
@@ -88,18 +87,9 @@ export const EnrollStudentsForm: React.FC<TransferCredentialsFormProps> = ({
   }, [isLoading, isError, isSuccess])
 
   return (
-    <Box padding={8} borderRadius='xl' borderColor='gray.300' borderWidth='1px'>
+    <Box padding={8} borderRadius='xl' bg={'white'} boxShadow={'base'}>
       <form onSubmit={handleSubmit}>
         <Stack spacing={4}>
-          <Box>
-            <Text fontWeight='semibold' fontSize='3xl'>
-              Enroll student
-            </Text>
-            <Text fontSize='lg'>
-              Fill in all the form fields to enroll a new student to this
-              course!
-            </Text>
-          </Box>
           <FormControl
             isRequired
             isInvalid={!!errors.userAddress && touched.userAddress}
@@ -149,7 +139,7 @@ export const EnrollStudentsForm: React.FC<TransferCredentialsFormProps> = ({
             isLoading={isLoading || isSigning}
             loadingText='Submitting'
           >
-            Assign Credential
+            Enroll student
           </Button>
           {isError ? (
             <Alert status='error'>

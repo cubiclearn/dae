@@ -1,7 +1,6 @@
 import Head from 'next/head'
 import { Layout } from '@dae/ui'
-import { Stack, Tabs, TabList, Tab, Link } from '@chakra-ui/react'
-import NextLink from 'next/link'
+import { Stack } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { StudentsRowList } from '@dae/ui'
 import { Address } from 'wagmi'
@@ -18,20 +17,8 @@ export default function StudentsList() {
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      <Layout.Course heading='Students'>
+      <Layout.Course heading='Course students'>
         <Stack spacing={8}>
-          <Tabs defaultIndex={0}>
-            <TabList>
-              <Tab>Students List</Tab>
-              <Link
-                as={NextLink}
-                href={`/course/${courseAddress}/students/enroll`}
-                style={{ textDecoration: 'none' }}
-              >
-                <Tab>Enroll New Students</Tab>
-              </Link>
-            </TabList>
-          </Tabs>
           <StudentsRowList courseAddress={courseAddress} />
         </Stack>
       </Layout.Course>

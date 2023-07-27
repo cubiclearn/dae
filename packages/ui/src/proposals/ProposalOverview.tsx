@@ -64,10 +64,10 @@ export const ProposalOverview: React.FC<ProposalOverviewProps> = ({
     <VStack
       alignItems={'flex-start'}
       width={'100%'}
-      borderWidth={'1px'}
-      borderColor={'gray.200'}
-      borderRadius={'xl'}
-      px={6}
+      padding={8}
+      borderRadius='xl'
+      bg={'white'}
+      boxShadow={'base'}
     >
       <HStack alignItems={'flex-start'} width={'100%'} py={6}>
         <Box width={'60%'}>

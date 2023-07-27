@@ -1,7 +1,6 @@
 import Head from 'next/head'
-import { Layout, Web3SafeContainer } from '@dae/ui'
-import { CustomLink } from '@dae/ui'
-import { Stack, Tabs, TabList, Tab } from '@chakra-ui/react'
+import { Layout } from '@dae/ui'
+import { Stack } from '@chakra-ui/react'
 import { MyCredentialsList } from '@dae/ui'
 import { useRouter } from 'next/router'
 import { Address } from 'viem'
@@ -18,29 +17,9 @@ export default function Teaching() {
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      <Layout.Course heading='Credentials'>
+      <Layout.Course heading='My credentials'>
         <Stack spacing={8}>
-          <Tabs defaultIndex={1}>
-            <TabList>
-              <CustomLink href={`/course/${courseAddress}/credentials/list`}>
-                <Tab>Course Credentials</Tab>
-              </CustomLink>
-              <CustomLink href={`/course/${courseAddress}/credentials/granted`}>
-                <Tab>My Credentials</Tab>
-              </CustomLink>
-              <CustomLink href={`/course/${courseAddress}/credentials/create`}>
-                <Tab>Create</Tab>
-              </CustomLink>
-              <CustomLink
-                href={`/course/${courseAddress}/credentials/transfer`}
-              >
-                <Tab>Transfer</Tab>
-              </CustomLink>
-            </TabList>
-          </Tabs>
-          <Web3SafeContainer>
-            <MyCredentialsList courseAddress={courseAddress} />
-          </Web3SafeContainer>
+          <MyCredentialsList courseAddress={courseAddress} />
         </Stack>
       </Layout.Course>
     </>
