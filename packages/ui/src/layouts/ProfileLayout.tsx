@@ -60,6 +60,11 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
           isActive={pathname.startsWith('/profile/courses')}
           links={[
             {
+              title: 'Create',
+              href: '/profile/courses/create',
+              active: pathname.startsWith('/profile/courses/create'),
+            },
+            {
               title: 'Teaching',
               href: '/profile/courses/teaching',
               active: pathname.startsWith('/profile/courses/teaching'),
@@ -68,11 +73,6 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
               title: 'Partecipating',
               href: '/profile/courses/partecipating',
               active: pathname.startsWith('/profile/courses/partecipating'),
-            },
-            {
-              title: 'Create',
-              href: '/profile/courses/create',
-              active: pathname.startsWith('/profile/courses/create'),
             },
           ]}
         />

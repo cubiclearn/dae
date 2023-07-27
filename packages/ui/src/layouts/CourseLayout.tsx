@@ -137,17 +137,15 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
           isActive={pathname.startsWith('/course/[address]/proposals')}
           links={[
             {
+              title: 'Create',
+              href: `/course/${address}/proposals/create`,
+              active: pathname.startsWith('/course/[address]/proposals/create'),
+            },
+            {
               title: 'Explore',
               href: `/course/${address}/proposals/explore?active=true`,
               active: pathname.startsWith(
-                '/course/[address]/proposals/explore?active=true',
-              ),
-            },
-            {
-              title: 'Create',
-              href: `/course/${address}/proposals/create`,
-              active: pathname.startsWith(
-                '/course/[address]/proposals/explore?active=true',
+                '/course/[address]/proposals/explore',
               ),
             },
           ]}
@@ -247,6 +245,7 @@ export const CourseLayout: FC<Props> = ({ children, heading }) => {
               as={NextLink}
               href={`https://etherscan.io/address/${query.address}`}
               textDecoration={'none'}
+              target='_blank'
             >
               {query.address}
             </Link>
