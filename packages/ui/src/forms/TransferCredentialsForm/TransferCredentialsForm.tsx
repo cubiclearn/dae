@@ -11,7 +11,6 @@ import {
   Input,
   Select,
   Stack,
-  Text,
   useToast,
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
@@ -102,15 +101,6 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
       <Box padding={8} borderRadius='xl' bg={'white'} boxShadow={'base'}>
         <form onSubmit={handleSubmit}>
           <Stack spacing={4}>
-            <Box>
-              <Text fontWeight='semibold' fontSize='3xl'>
-                Transfer credential
-              </Text>
-              <Text fontSize='lg'>
-                Fill in all the form fields to transfer a credential to a
-                selected user!
-              </Text>
-            </Box>
             <FormControl
               isRequired
               isInvalid={!!errors.userAddress && touched.userAddress}

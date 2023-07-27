@@ -16,6 +16,7 @@ import {
   FlexProps,
   Accordion,
   Stack,
+  Link,
 } from '@chakra-ui/react'
 import { FiMenu, FiUsers, FiZap, FiBookOpen, FiShield } from 'react-icons/fi'
 import { MdOutlinePoll } from 'react-icons/md'
@@ -25,6 +26,7 @@ import { Address } from 'viem'
 import { CourseProvider } from '../CourseProvider'
 import { Logo } from './Logo'
 import { Web3SafeContainer } from '../Web3SafeContainer'
+import NextLink from 'next/link'
 
 interface SidebarProps extends BoxProps {
   onClose: () => void
@@ -239,7 +241,16 @@ export const CourseLayout: FC<Props> = ({ children, heading }) => {
           >
             {heading}
           </Text>
-          <Text>Course: {query.address}</Text>
+          <Text>
+            Course:{' '}
+            <Link
+              as={NextLink}
+              href={`https://etherscan.io/address/${query.address}`}
+              textDecoration={'none'}
+            >
+              {query.address}
+            </Link>
+          </Text>
         </Stack>
         <Web3SafeContainer>
           <CourseProvider>

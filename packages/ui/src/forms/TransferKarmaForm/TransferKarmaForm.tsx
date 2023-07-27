@@ -15,7 +15,6 @@ import {
   NumberInputField,
   NumberInputStepper,
   Stack,
-  Text,
   useToast,
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
@@ -96,15 +95,6 @@ export const TransferKarmaForm: React.FC<any> = () => {
     <Box padding={8} borderRadius='xl' bg={'white'} boxShadow={'base'}>
       <form onSubmit={handleSubmit}>
         <Stack spacing={4}>
-          <Box>
-            <Text fontWeight='semibold' fontSize='3xl'>
-              Tranfer Karma
-            </Text>
-            <Text fontSize='lg'>
-              Please complete all the required fields to initiate a karma
-              transfer to another user.
-            </Text>
-          </Box>
           <Stack direction={'row'} spacing={'30px'}>
             <Stack width={'80%'} spacing={'10px'}>
               <FormControl
@@ -158,7 +148,7 @@ export const TransferKarmaForm: React.FC<any> = () => {
             isLoading={isLoading || isSigning}
             loadingText='Submitting'
           >
-            Assign Credential
+            Transfer karma
           </Button>
           {isError ? (
             <Alert status='error'>
