@@ -52,7 +52,7 @@ export const ProposalRowList: React.FC<ProposalRowListProps> = ({ state }) => {
         <AlertIcon />
         <Box>
           <AlertTitle>Nothing to show.</AlertTitle>
-          <AlertDescription>There is no course to show</AlertDescription>
+          <AlertDescription>There is no proposal to show</AlertDescription>
         </Box>
       </Alert>
     )
