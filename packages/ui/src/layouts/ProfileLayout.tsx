@@ -25,6 +25,14 @@ interface SidebarProps extends BoxProps {
   onClose: () => void
 }
 
+const openedAccorditionIndex = (pathname: string) => {
+  if (pathname.startsWith('/profile/courses')) {
+    return 0
+  } else {
+    return undefined
+  }
+}
+
 const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
   const { pathname } = useRouter()
   return (
@@ -42,16 +50,28 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
         <Logo />
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
-      <Accordion allowToggle>
+      <Accordion allowToggle defaultIndex={openedAccorditionIndex(pathname)}>
         <NavItemDropdown
           title={'My Courses'}
           key={'students'}
           icon={FiBook}
-          isActive={pathname.startsWith('/course/[address]/students')}
+          isActive={pathname.startsWith('/profile/courses')}
           links={[
-            { title: 'Teaching', href: '/profile/courses/teaching' },
-            { title: 'Partecipating', href: '/profile/courses/partecipating' },
-            { title: 'Create', href: '/profile/courses/create' },
+            {
+              title: 'Teaching',
+              href: '/profile/courses/teaching',
+              active: pathname.startsWith('/profile/courses/teaching'),
+            },
+            {
+              title: 'Partecipating',
+              href: '/profile/courses/partecipating',
+              active: pathname.startsWith('/profile/courses/partecipating'),
+            },
+            {
+              title: 'Create',
+              href: '/profile/courses/create',
+              active: pathname.startsWith('/profile/courses/partecipating'),
+            },
           ]}
         />
       </Accordion>
@@ -130,9 +150,11 @@ export const ProfileLayout: FC<Props> = ({ children, heading }) => {
         right={0}
         overflow={'auto'}
         p={8}
+        height={'calc(100% - 80px)'}
+        bg={'gray.50'}
       >
         <Box display={'flex'} fontSize={'3xl'} fontWeight={'semibold'} mb={8}>
-          <Text as='h2'>{heading}</Text>
+          <Text fontSize={'3xl'}>{heading}</Text>
         </Box>
         <Box>{children}</Box>
       </Box>

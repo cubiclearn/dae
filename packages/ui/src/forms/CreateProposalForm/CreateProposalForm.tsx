@@ -135,7 +135,7 @@ export const CreateProposalForm = () => {
     } catch (_e) {}
   }
   return (
-    <Box padding={8} borderRadius='xl' borderColor='gray.300' borderWidth='1px'>
+    <Box padding={8} borderRadius='xl' bg={'white'} boxShadow={'base'}>
       <form onSubmit={handleCreateProposal}>
         <VStack spacing={4} alignItems={'flex-start'}>
           <FormControl>

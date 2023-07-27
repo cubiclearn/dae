@@ -90,7 +90,7 @@ export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
   }, [isLoading, isError, isSuccess])
 
   return (
-    <Box padding={8} borderRadius='xl' borderColor='gray.300' borderWidth='1px'>
+    <Box padding={8} borderRadius='xl' bg={'white'} boxShadow={'base'}>
       <form onSubmit={handleSubmit}>
         <Stack spacing={4}>
           <Box>

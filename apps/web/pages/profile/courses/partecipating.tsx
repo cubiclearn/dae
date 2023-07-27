@@ -1,7 +1,6 @@
 import Head from 'next/head'
 import { Layout } from '@dae/ui'
-import { Stack, Tabs, TabList, Tab } from '@chakra-ui/react'
-import { CustomLink } from '@dae/ui'
+import { Stack } from '@chakra-ui/react'
 import { CourseCardList } from '@dae/ui'
 
 export default function Partecipating() {
@@ -15,17 +14,6 @@ export default function Partecipating() {
       </Head>
       <Layout.Profile heading='Partecipating'>
         <Stack spacing={8}>
-          <Tabs defaultIndex={1}>
-            <TabList>
-              <CustomLink href='/profile/courses/teaching'>
-                <Tab>Teaching</Tab>
-              </CustomLink>
-              <Tab>Partecipating</Tab>
-              <CustomLink href='/profile/courses/create'>
-                <Tab>Create</Tab>
-              </CustomLink>
-            </TabList>
-          </Tabs>
           <CourseCardList role='DISCIPULUS' />
         </Stack>
       </Layout.Profile>

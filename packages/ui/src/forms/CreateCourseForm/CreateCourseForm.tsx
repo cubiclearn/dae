@@ -15,7 +15,6 @@ import {
   NumberInputField,
   NumberInputStepper,
   Stack,
-  Text,
   useToast,
 } from '@chakra-ui/react'
 import { useCreateCourse, useIsENSOwner } from '@dae/wagmi'
@@ -135,18 +134,9 @@ export const CreateCourseForm = () => {
   }, [isLoading, isError, isSuccess, status])
 
   return (
-    <Box padding={8} borderRadius='xl' borderColor='gray.300' borderWidth='1px'>
+    <Box padding={8} borderRadius='xl' bg={'white'} boxShadow={'base'}>
       <form onSubmit={handleSubmit}>
         <Stack spacing={4}>
-          <Box>
-            <Text fontWeight='semibold' fontSize='3xl'>
-              Create new course
-            </Text>
-            <Text fontSize='lg'>
-              Fill in all the form fields to create a new course and start
-              teaching!
-            </Text>
-          </Box>
           <FormControl isRequired isInvalid={!!errors.name && touched.name}>
             <FormLabel>Name</FormLabel>
             <Input

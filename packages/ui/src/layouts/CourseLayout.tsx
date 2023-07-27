@@ -29,6 +29,18 @@ interface SidebarProps extends BoxProps {
   onClose: () => void
 }
 
+const openedAccorditionIndex = (pathname: string) => {
+  if (pathname.startsWith('/course/[address]/credentials')) {
+    return 0
+  } else if (pathname.startsWith('/course/[address]/students')) {
+    return 1
+  } else if (pathname.startsWith('/course/[address]/proposals')) {
+    return 2
+  } else {
+    return undefined
+  }
+}
+
 const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
   const { query, pathname } = useRouter()
   const address = query.address as Address
@@ -47,7 +59,7 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
         <Logo />
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
-      <Accordion allowToggle>
+      <Accordion allowToggle defaultIndex={openedAccorditionIndex(pathname)}>
         <NavItemSimple
           key={'info'}
           icon={FiBookOpen}
@@ -63,18 +75,28 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
             {
               title: 'Course Credentials',
               href: `/course/${address}/credentials/list`,
+              active: pathname.startsWith('/course/[address]/credentials/list'),
             },
             {
               title: 'My Credentials',
               href: `/course/${address}/credentials/granted`,
+              active: pathname.startsWith(
+                '/course/[address]/credentials/granted',
+              ),
             },
             {
               title: 'Create',
               href: `/course/${address}/credentials/create`,
+              active: pathname.startsWith(
+                '/course/[address]/credentials/create',
+              ),
             },
             {
               title: 'Transfer',
               href: `/course/${address}/credentials/transfer`,
+              active: pathname.startsWith(
+                '/course/[address]/credentials/transfer',
+              ),
             },
           ]}
         />
@@ -84,15 +106,26 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
           icon={FiUsers}
           isActive={pathname.startsWith('/course/[address]/students')}
           links={[
-            { title: 'List', href: `/course/${address}/students/list` },
-            { title: 'Enroll', href: `/course/${address}/students/enroll` },
+            {
+              title: 'List',
+              href: `/course/${address}/students/list`,
+              active: pathname.startsWith('/course/[address]/students/list'),
+            },
+            {
+              title: 'Enroll',
+              href: `/course/${address}/students/enroll`,
+              active: pathname.startsWith('/course/[address]/students/enroll'),
+            },
           ]}
         />
         <NavItemSimple
           key={'karma'}
           icon={FiZap}
           isActive={pathname.startsWith('/course/[address]/karma')}
-          link={{ title: 'Karma', href: `/course/${address}/karma/transfer` }}
+          link={{
+            title: 'Karma',
+            href: `/course/${address}/karma/transfer`,
+          }}
         />
         <NavItemDropdown
           title={'Proposals'}
@@ -103,8 +136,17 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
             {
               title: 'Explore',
               href: `/course/${address}/proposals/explore?active=true`,
+              active: pathname.startsWith(
+                '/course/[address]/proposals/explore?active=true',
+              ),
             },
-            { title: 'Create', href: `/course/${address}/proposals/create` },
+            {
+              title: 'Create',
+              href: `/course/${address}/proposals/create`,
+              active: pathname.startsWith(
+                '/course/[address]/proposals/explore?active=true',
+              ),
+            },
           ]}
         />
       </Accordion>
@@ -180,12 +222,16 @@ export const CourseLayout: FC<Props> = ({ children, heading }) => {
         position={'absolute'}
         top={'80px'}
         width={{ sm: '100%', md: 'calc(100% - 240px)' }}
+        height={'calc(100% - 80px)'}
+        bg={'gray.50'}
         right={0}
         overflow={'auto'}
         p={8}
       >
         <Box display={'flex'} fontSize={'3xl'} fontWeight={'semibold'} mb={8}>
-          <Text as='h2'>{heading}</Text>
+          <Text as='h2' fontSize={'3xl'}>
+            {heading}
+          </Text>
         </Box>
         <Web3SafeContainer>
           <CourseProvider>
