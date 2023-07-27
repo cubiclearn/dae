@@ -98,7 +98,7 @@ export const Header: FC<HeaderProps> = ({ onOpen, ...rest }) => {
       position={'fixed'}
       right={0}
       zIndex={'sticky'}
-      width={{ sm: '100%', md: 'calc(100% - 240px)' }}
+      width={{ md: 'calc(100% - 240px)', base: '100%' }}
       {...rest}
     >
       <IconButton
@@ -148,7 +148,7 @@ export const ProfileLayout: FC<Props> = ({ children, heading }) => {
       <Box
         position={'absolute'}
         top={'80px'}
-        width={{ sm: '100%', md: 'calc(100% - 240px)' }}
+        width={{ md: 'calc(100% - 240px)', base: '100%' }}
         right={0}
         overflow={'auto'}
         p={8}
