@@ -26,11 +26,6 @@ const validationSchema = Yup.object().shape({
   userAddress: Yup.string()
     .matches(ethereumAddressRegex, 'Invalid Ethereum address')
     .required('Ethereum address is required'),
-  userEmail: Yup.string().email('Invalid email'),
-  userDiscordUsername: Yup.string().matches(
-    /^[a-zA-Z0-9_]{1,32}#[0-9]{4}$/,
-    'Invalid Discord username',
-  ),
   tokenURI: Yup.string().required('Credential IPFS CID is required'),
 })
 
@@ -59,18 +54,11 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
     } = useFormik({
       initialValues: {
         userAddress: '',
-        userEmail: '',
-        userDiscordUsername: '',
         tokenURI: '',
       },
       onSubmit: async (values) => {
         try {
-          await transfer(
-            values.userAddress as Address,
-            values.tokenURI,
-            values.userDiscordUsername,
-            values.userEmail,
-          )
+          await transfer(values.userAddress as Address, values.tokenURI, '', '')
         } catch (_e) {}
       },
       validationSchema: validationSchema,
@@ -115,34 +103,6 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
                 placeholder='Etereum Address'
               />
               <FormErrorMessage>{errors.userAddress}</FormErrorMessage>
-            </FormControl>
-            <FormControl isInvalid={!!errors.userEmail && touched.userEmail}>
-              <FormLabel>E-mail</FormLabel>
-              <Input
-                id='userEmail'
-                value={values.userEmail}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                type='text'
-                placeholder='Email'
-              />
-              <FormErrorMessage>{errors.userEmail}</FormErrorMessage>
-            </FormControl>
-            <FormControl
-              isInvalid={
-                !!errors.userDiscordUsername && touched.userDiscordUsername
-              }
-            >
-              <FormLabel>Discord Username</FormLabel>
-              <Input
-                id='userDiscordUsername'
-                value={values.userDiscordUsername}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                type='text'
-                placeholder='Discord username'
-              />
-              <FormErrorMessage>{errors.userDiscordUsername}</FormErrorMessage>
             </FormControl>
             <FormControl
               isRequired
