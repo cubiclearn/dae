@@ -1,91 +1,55 @@
 {
-    "extends": [
-        "//"
-    ],
-    "pipeline": {
-        "build": {
-            "outputs": [
-                "dist/**/*"
-            ],
-            "dependsOn": [
-                "^build",
-                "generate"
-            ],
-            "env": [
-                "DATABASE_URL",
-                "SHADOW_DATABASE_URL",
-                "DIRECT_DATABASE_URL"
-            ],
-            "cache": true
-        },
-        "init": {
-            "outputs": [
-                "prisma/**/*"
-            ],
-            "cache": false
-        },
-        "pull": {
-            "outputs": [
-                "prisma/**/*"
-            ],
-            "dependsOn": [
-                "init"
-            ],
-            "cache": false,
-            "env": [
-                "DATABASE_URL"
-            ]
-        },
-        "db:push": {
-            "dependsOn": [
-                "generate"
-            ],
-            "cache": false
-        },
-        "db:format": {},
-        "generate": {
-            "dependsOn": [],
-            "cache": false
-        },
-        "check": {
-            "dependsOn": [
-                "generate"
-            ],
-            "cache": false
-        },
-        "db:studio": {},
-        "db:migrate:dev": {
-            "dependsOn": [
-                "generate"
-            ]
-        },
-        "db:migrate:diff": {
-            "dependsOn": [
-                "generate"
-            ]
-        },
-        "db:migrate:diff:solve": {
-            "dependsOn": [
-                "generate"
-            ]
-        },
-        "db:migrate:resolve": {
-            "dependsOn": [
-                "generate"
-            ]
-        },
-        "db:migrate:deploy": {
-            "dependsOn": [
-                "generate"
-            ]
-        },
-        "db:migrate:reset": {},
-        "deploy": {
-            "dependsOn": [
-                "build",
-                "db:migrate:deploy"
-            ],
-            "cache": false
-        }
+  "extends": ["//"],
+  "pipeline": {
+    "build": {
+      "outputs": ["dist/**/*"],
+      "dependsOn": ["^build", "generate"],
+      "env": ["DATABASE_URL", "SHADOW_DATABASE_URL", "DIRECT_DATABASE_URL"],
+      "cache": true
+    },
+    "init": {
+      "outputs": ["prisma/**/*"],
+      "cache": false
+    },
+    "pull": {
+      "outputs": ["prisma/**/*"],
+      "dependsOn": ["init"],
+      "cache": false,
+      "env": ["DATABASE_URL"]
+    },
+    "db:push": {
+      "dependsOn": ["generate"],
+      "cache": false
+    },
+    "db:format": {},
+    "generate": {
+      "dependsOn": [],
+      "cache": false
+    },
+    "check": {
+      "dependsOn": ["generate"],
+      "cache": false
+    },
+    "db:studio": {},
+    "db:migrate:dev": {
+      "dependsOn": ["generate"]
+    },
+    "db:migrate:diff": {
+      "dependsOn": ["generate"]
+    },
+    "db:migrate:diff:solve": {
+      "dependsOn": ["generate"]
+    },
+    "db:migrate:resolve": {
+      "dependsOn": ["generate"]
+    },
+    "db:migrate:deploy": {
+      "dependsOn": ["generate"]
+    },
+    "db:migrate:reset": {},
+    "deploy": {
+      "dependsOn": ["build", "db:migrate:deploy"],
+      "cache": false
     }
+  }
 }
