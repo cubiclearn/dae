@@ -59,12 +59,13 @@ export function useTransferCredentials(courseAddress: Address) {
         },
       })
 
-      if (response.ok) {
-        setIsLoading(false)
-        setIsSuccess(true)
-      } else {
-        throw new Error(`HTTP ${response.status} - ${response.statusText}`)
+      if (!response.ok) {
+        const responseJSON = await response.json()
+        throw new Error(responseJSON.error)
       }
+
+      setIsLoading(false)
+      setIsSuccess(true)
     } catch (error: any) {
       setIsLoading(false)
       setIsSigning(false)

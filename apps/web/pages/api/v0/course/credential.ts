@@ -4,6 +4,8 @@ import { IncomingForm, Fields, Files } from 'formidable'
 import { uploadToIPFS } from '../../../../lib/ipfs'
 import { prisma } from '@dae/database'
 import fs from 'fs'
+import { sanitizeAddress } from '../../../../lib/functions'
+import { Address } from 'viem'
 
 // TypeScript enum for request methods
 enum HttpMethod {
@@ -70,7 +72,7 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
         course: {
           connect: {
             address_chain_id: {
-              address: courseAddress[0] as string,
+              address: sanitizeAddress(courseAddress[0] as Address),
               chain_id: parseInt(chainId[0] as string),
             },
           },

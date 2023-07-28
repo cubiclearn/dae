@@ -3,10 +3,11 @@ import { getSession } from 'next-auth/react'
 import { CredentialsBurnableAbi, CredentialsFactoryAbi } from '@dae/abi'
 import { prisma } from '@dae/database'
 import { Address, createPublicClient } from 'viem'
-import { getChainFromId } from '../../../../lib/functions'
+import { sanitizeAddress } from '../../../../lib/functions'
 import { getCourse } from '../../../../lib/api'
 import { config as TransportConfig } from '@dae/viem-config'
 import { decodeEventLog } from 'viem'
+import { ChainKey } from '@dae/chains'
 
 // TypeScript enum for request methods
 enum HttpMethod {
@@ -35,7 +36,7 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     const client = createPublicClient({
-      chain: getChainFromId[chainId],
+      chain: ChainKey[chainId],
       transport: TransportConfig[chainId]?.transport,
     })
 
@@ -122,7 +123,7 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
       async (prisma) => {
         const course = await prisma.course.create({
           data: {
-            address: contractAddress.toLowerCase(),
+            address: sanitizeAddress(contractAddress),
             name: jsonMetadata.name,
             description: jsonMetadata.description,
             media_channel: jsonMetadata.media_channel,
@@ -153,7 +154,7 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
                 course: {
                   connect: {
                     address_chain_id: {
-                      address: course.address,
+                      address: sanitizeAddress(course.address as Address),
                       chain_id: course.chain_id,
                     },
                   },
@@ -173,7 +174,7 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
                 course: {
                   connect: {
                     address_chain_id: {
-                      address: course.address,
+                      address: sanitizeAddress(course.address as Address),
                       chain_id: course.chain_id,
                     },
                   },
@@ -193,7 +194,7 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
                 course: {
                   connect: {
                     address_chain_id: {
-                      address: course.address,
+                      address: sanitizeAddress(course.address as Address),
                       chain_id: course.chain_id,
                     },
                   },
@@ -208,12 +209,12 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
               course: {
                 connect: {
                   address_chain_id: {
-                    address: course.address,
+                    address: sanitizeAddress(course.address as Address),
                     chain_id: course.chain_id,
                   },
                 },
               },
-              user_address: transaction.from,
+              user_address: sanitizeAddress(transaction.from),
               credential: {
                 connect: {
                   id: adminCredential.id,
@@ -228,12 +229,12 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
               course: {
                 connect: {
                   address_chain_id: {
-                    address: course.address,
+                    address: sanitizeAddress(course.address as Address),
                     chain_id: course.chain_id,
                   },
                 },
               },
-              user_address: transaction.from,
+              user_address: sanitizeAddress(transaction.from),
               credential: {
                 connect: {
                   id: magisterCredential.id,

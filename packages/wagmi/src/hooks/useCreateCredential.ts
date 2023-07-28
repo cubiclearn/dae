@@ -19,10 +19,8 @@ export const useCreateCredential = () => {
       })
 
       if (!metadataIPFSResponse.ok) {
-        const jsonResponse = await metadataIPFSResponse.json()
-        throw new Error(
-          `HTTP ${metadataIPFSResponse.status} - ${jsonResponse.message}`,
-        )
+        const responseJSON = await metadataIPFSResponse.json()
+        throw new Error(responseJSON.error)
       }
 
       setIsLoading(false)
@@ -30,7 +28,7 @@ export const useCreateCredential = () => {
     } catch (error: any) {
       setIsLoading(false)
       setIsError(true)
-      setError(error.message || 'An error occurred during IPFS upload.')
+      setError(error.message || 'An error occurred creating this credential.')
       throw error
     }
   }

@@ -9,6 +9,7 @@ import { CredentialsBurnableAbi } from '@dae/abi'
 import { decodeEventLog } from 'viem'
 import { CredentialIssuedLog } from '@dae/types'
 import { prisma } from '@dae/database'
+import { sanitizeAddress } from '../../../../../lib/functions'
 
 // TypeScript enum for request methods
 enum HttpMethod {
@@ -69,11 +70,14 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
       (log: any) => log.eventName === 'Issued',
     ) as [CredentialIssuedLog]
 
+    const tokenId = issuedLog[0].args.tokenId
+    const userAddress = issuedLog[0].args.to
+
     const tokenURI = await client.readContract({
       abi: CredentialsBurnableAbi,
       address: courseAddress,
       functionName: 'tokenURI',
-      args: [issuedLog[0].args.tokenId],
+      args: [tokenId],
     })
 
     const splittedURI = tokenURI.split('/')
@@ -84,17 +88,17 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
         course: {
           connect: {
             address_chain_id: {
-              address: courseAddress,
+              address: sanitizeAddress(courseAddress),
               chain_id: parseInt(chainId),
             },
           },
         },
-        user_address: issuedLog[0].args.to,
+        user_address: sanitizeAddress(userAddress),
         credential: {
           connect: {
             course_address_ipfs_cid: {
               ipfs_cid: ipfsCID,
-              course_address: courseAddress,
+              course_address: sanitizeAddress(courseAddress),
             },
           },
         },
