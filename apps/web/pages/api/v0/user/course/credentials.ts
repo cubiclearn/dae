@@ -102,8 +102,8 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
             },
           },
         },
-        email: discordUsername ? discordUsername : '',
-        discord_handle: userEmail ? userEmail : '',
+        email: userEmail ? userEmail : '',
+        discord_handle: discordUsername ? discordUsername : '',
       },
     })
 

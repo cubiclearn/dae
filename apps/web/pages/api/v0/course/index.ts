@@ -18,7 +18,7 @@ enum HttpMethod {
 const handleGetRequest = async (req: NextApiRequest, res: NextApiResponse) => {
   const { chainId, address } = req.query as {
     chainId: string
-    address: string
+    address: Address
   }
 
   try {

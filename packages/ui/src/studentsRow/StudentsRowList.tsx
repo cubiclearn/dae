@@ -77,7 +77,9 @@ export const StudentsRowList: React.FC<StudentsRowListProps> = ({
           <Thead>
             <Tr>
               <Th>{''}</Th>
-              <Th>Student Address</Th>
+              <Th>Address</Th>
+              <Th>E-mail</Th>
+              <Th>Discord</Th>
               <Th isNumeric>Karma</Th>
             </Tr>
           </Thead>
