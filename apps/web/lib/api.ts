@@ -6,26 +6,27 @@ import type {
   CredentialType,
 } from '@dae/database'
 import { Address } from 'viem'
+import { sanitizeAddress } from './functions'
 
 export const getCourse = (
-  address: string,
+  courseAddress: Address,
   chainId: number,
 ): Promise<Course | null> => {
   return prisma.course.findFirst({
     where: {
-      address: address.toLowerCase(),
+      address: sanitizeAddress(courseAddress),
       chain_id: chainId,
     },
   })
 }
 
 export const getCourseStudents = async (
-  courseAddress: string,
+  courseAddress: Address,
   chainId: number,
 ): Promise<UserCredentials[]> => {
   return prisma.userCredentials.findMany({
     where: {
-      course_address: courseAddress.toLowerCase(),
+      course_address: sanitizeAddress(courseAddress),
       chain_id: chainId,
       credential: {
         type: 'DISCIPULUS',
@@ -35,7 +36,7 @@ export const getCourseStudents = async (
 }
 
 export const getUserCourses = async (
-  userAddress: string,
+  userAddress: Address,
   chainId: number,
   type: CredentialType,
 ): Promise<Course[]> => {
@@ -47,7 +48,7 @@ export const getUserCourses = async (
           type,
           user_credentials: {
             some: {
-              user_address: userAddress.toLowerCase(),
+              user_address: sanitizeAddress(userAddress),
             },
           },
         },
@@ -62,12 +63,12 @@ export const getUserCourses = async (
 }
 
 export const getCourseCredentials = async (
-  courseAddress: string,
+  courseAddress: Address,
   chainId: number,
 ): Promise<Credential[]> => {
   return prisma.credential.findMany({
     where: {
-      course_address: courseAddress.toLowerCase(),
+      course_address: sanitizeAddress(courseAddress),
       course_chain_id: chainId,
     },
     orderBy: [
@@ -85,11 +86,11 @@ export const getUserCourseCredentials = async (
 ): Promise<Credential[]> => {
   return prisma.credential.findMany({
     where: {
-      course_address: courseAddress.toLowerCase(),
+      course_address: sanitizeAddress(courseAddress),
       course_chain_id: chainId,
       user_credentials: {
         some: {
-          user_address: userAddress.toLowerCase(),
+          user_address: sanitizeAddress(userAddress),
         },
       },
     },
@@ -107,7 +108,7 @@ export const createCourseCredentials = async (
   prisma.course.update({
     where: {
       address_chain_id: {
-        address: courseAddress.toLowerCase(),
+        address: sanitizeAddress(courseAddress),
         chain_id: chainId,
       },
     },

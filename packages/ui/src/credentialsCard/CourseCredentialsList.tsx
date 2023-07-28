@@ -55,7 +55,7 @@ export const CourseCredentialsList: React.FC<CourseCardListProps> = ({
         <AlertIcon />
         <Box>
           <AlertTitle>Nothing to show.</AlertTitle>
-          <AlertDescription>There is no course to show</AlertDescription>
+          <AlertDescription>There is no credentials to show</AlertDescription>
         </Box>
       </Alert>
     )

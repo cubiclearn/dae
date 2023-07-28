@@ -1,85 +1,64 @@
 {
-    "extends": [
-        "//"
-    ],
-    "pipeline": {
-        "build": {
-            "outputs": [
-                ".next/**/*",
-                "!.next/cache/**",
-                ".vercel/**/*",
-                "dist/**/*"
-            ],
-            "dependsOn": [
-                "^build"
-            ],
-            "env": [
-                "NEXT_PUBLIC_FOUNDRY_FACTORY_CONTRACT_ADDRESS",
-                "NEXTAUTH_URL",
-                "NEXTAUTH_SECRET",
-                "NEXT_PUBLIC_INFURA_API_KEY",
-                "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID",
-                "DATABASE_URL",
-                "INFURA_IPFS_API_KEY",
-                "INFURA_IPFS_API_SECRET",
-                "INFURA_IPFS_API_ENDPOINT",
-                "NEXT_PUBLIC_IPFS_GATEWAY_URL"
-            ]
-        },
-        "start": {
-            "outputs": [
-                ".next/**/*",
-                "!.next/cache/**",
-                ".vercel/**/*",
-                "dist/**/*"
-            ],
-            "dependsOn": [
-                "^build"
-            ],
-            "env": [
-                "NEXT_PUBLIC_FOUNDRY_FACTORY_CONTRACT_ADDRESS",
-                "NEXTAUTH_URL",
-                "NEXTAUTH_SECRET",
-                "NEXT_PUBLIC_INFURA_API_KEY",
-                "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID",
-                "DATABASE_URL",
-                "INFURA_IPFS_API_KEY",
-                "INFURA_IPFS_API_SECRET",
-                "INFURA_IPFS_API_ENDPOINT",
-                "NEXT_PUBLIC_IPFS_GATEWAY_URL"
-            ],
-            "persistent": true
-        },
-        "dev": {
-            "dependsOn": [
-                "^build",
-                "generate"
-            ],
-            "env": [
-                "NEXT_PUBLIC_FOUNDRY_FACTORY_CONTRACT_ADDRESS",
-                "NEXTAUTH_URL",
-                "NEXTAUTH_SECRET",
-                "NEXT_PUBLIC_INFURA_API_KEY",
-                "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID",
-                "DATABASE_URL",
-                "INFURA_IPFS_API_KEY",
-                "INFURA_IPFS_API_SECRET",
-                "INFURA_IPFS_API_ENDPOINT",
-                "NEXT_PUBLIC_IPFS_GATEWAY_URL"
-            ],
-            "cache": false,
-            "persistent": true
-        },
-        "sitemap": {
-            "outputs": [
-                "public/sitemap.xml",
-                "public/sitemap-*.xml",
-                "public/robots.txt"
-            ],
-            "dependsOn": [
-                "build"
-            ],
-            "cache": true
-        }
+  "extends": ["//"],
+  "pipeline": {
+    "build": {
+      "outputs": [".next/**/*", "!.next/cache/**", ".vercel/**/*", "dist/**/*"],
+      "dependsOn": ["^build"],
+      "env": [
+        "NEXT_PUBLIC_FOUNDRY_FACTORY_CONTRACT_ADDRESS",
+        "NEXTAUTH_URL",
+        "NEXTAUTH_SECRET",
+        "NEXT_PUBLIC_INFURA_API_KEY",
+        "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID",
+        "DATABASE_URL",
+        "INFURA_IPFS_API_KEY",
+        "INFURA_IPFS_API_SECRET",
+        "INFURA_IPFS_API_ENDPOINT",
+        "NEXT_PUBLIC_IPFS_GATEWAY_URL"
+      ]
+    },
+    "start": {
+      "outputs": [".next/**/*", "!.next/cache/**", ".vercel/**/*", "dist/**/*"],
+      "dependsOn": ["^build"],
+      "env": [
+        "NEXT_PUBLIC_FOUNDRY_FACTORY_CONTRACT_ADDRESS",
+        "NEXTAUTH_URL",
+        "NEXTAUTH_SECRET",
+        "NEXT_PUBLIC_INFURA_API_KEY",
+        "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID",
+        "DATABASE_URL",
+        "INFURA_IPFS_API_KEY",
+        "INFURA_IPFS_API_SECRET",
+        "INFURA_IPFS_API_ENDPOINT",
+        "NEXT_PUBLIC_IPFS_GATEWAY_URL"
+      ],
+      "persistent": true
+    },
+    "dev": {
+      "dependsOn": ["^build", "generate"],
+      "env": [
+        "NEXT_PUBLIC_FOUNDRY_FACTORY_CONTRACT_ADDRESS",
+        "NEXTAUTH_URL",
+        "NEXTAUTH_SECRET",
+        "NEXT_PUBLIC_INFURA_API_KEY",
+        "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID",
+        "DATABASE_URL",
+        "INFURA_IPFS_API_KEY",
+        "INFURA_IPFS_API_SECRET",
+        "INFURA_IPFS_API_ENDPOINT",
+        "NEXT_PUBLIC_IPFS_GATEWAY_URL"
+      ],
+      "cache": false,
+      "persistent": true
+    },
+    "sitemap": {
+      "outputs": [
+        "public/sitemap.xml",
+        "public/sitemap-*.xml",
+        "public/robots.txt"
+      ],
+      "dependsOn": ["build"],
+      "cache": true
     }
+  }
 }

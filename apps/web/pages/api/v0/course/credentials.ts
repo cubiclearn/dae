@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
 import { getCourseCredentials } from '../../../../lib/api'
+import { Address } from 'viem'
 
 // TypeScript enum for request methods
 enum HttpMethod {
@@ -8,7 +9,10 @@ enum HttpMethod {
 }
 
 const handleGetRequest = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { chainId, address } = req.query as { chainId: string; address: string }
+  const { chainId, address } = req.query as {
+    chainId: string
+    address: Address
+  }
 
   if (!chainId || !address) {
     return res.status(400).json({ success: false, error: 'Bad request.' })

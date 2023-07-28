@@ -29,6 +29,16 @@ export const StudentsRow: React.FC<StudentsRowProps> = ({ student }) => {
           {student.user_address}
         </Text>
       </Td>
+      <Td>
+        <Text verticalAlign={'center'} fontSize='md'>
+          {student.email}
+        </Text>
+      </Td>
+      <Td>
+        <Text verticalAlign={'center'} fontSize='md'>
+          {student.discord_handle}
+        </Text>
+      </Td>
       <Td isNumeric>{isSuccess ? karmaBalance?.toString() : '--'}</Td>
     </Tr>
   )
