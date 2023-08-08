@@ -7,7 +7,8 @@ import { SessionProvider } from 'next-auth/react'
 import { ChakraProvider } from '@chakra-ui/react'
 import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import { WagmiConfig, createConfig, configureChains } from 'wagmi'
-import { sepolia, foundry } from 'wagmi/chains'
+import { infuraProvider } from 'wagmi/providers/infura'
+import { sepolia, foundry, goerli } from 'wagmi/chains'
 import { publicProvider } from 'wagmi/providers/public'
 import { Session } from 'next-auth'
 import { Layout } from '@dae/ui'
@@ -20,13 +21,18 @@ const supportedChains =
   process.env.NODE_ENV !== 'production' ? [sepolia, foundry] : [sepolia]
 
 export const { chains, publicClient, webSocketPublicClient } = configureChains(
-  supportedChains,
-  [publicProvider()],
+  [...supportedChains, goerli],
+  [
+    infuraProvider({
+      apiKey: process.env.NEXT_PUBLIC_INFURA_API_KEY as string,
+    }),
+    publicProvider(),
+  ],
 )
 
 const { connectors } = getDefaultWallets({
   appName: 'Decentralized Autonomous Education (DAE)',
-  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'projectid',
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string,
   chains,
 })
 
@@ -54,11 +60,13 @@ const MyApp = ({ Component, pageProps }: AppProps<{ session: Session }>) => {
         >
           <RainbowKitProvider
             appInfo={appInfo}
-            chains={chains}
+            chains={supportedChains}
             modalSize='compact'
           >
             <ChakraProvider
-              toastOptions={{ defaultOptions: { position: 'top-right' } }}
+              toastOptions={{
+                defaultOptions: { position: 'top-right' },
+              }}
             >
               <Layout.Base>
                 <Component {...pageProps} />

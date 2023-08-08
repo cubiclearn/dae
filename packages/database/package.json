@@ -3,13 +3,13 @@
     "description": "Decentralized Autonomous Education (DAE) Database",
     "version": "0.0.0",
     "dependencies": {
-        "@prisma/client": "4.14.1"
+        "@prisma/client": "5.0.0"
     },
     "devDependencies": {
         "@dae/typescript-config": "workspace:*",
         "@types/node": "18.11.18",
         "eslint": "8.29.0",
-        "prisma": "4.14.1",
+        "prisma": "5.0.0",
         "tsup": "6.7.0",
         "typescript": "5.0.4"
     },
@@ -29,12 +29,12 @@
         "prebuild": "npm run generate",
         "predev": "npm run generate",
         "publish": "prisma db push",
-        "pull": "prisma db pull",
-        "push": "prisma db push",
-        "studio": "prisma studio",
+        "db:push": "prisma db push --force-reset",
+        "db:format": "prisma format",
         "db:studio": "prisma studio",
-        "db:migrate:dev": "prisma migrate dev",
-        "db:migrate:deploy": "prisma migrate deploy"
+        "db:migrate:dev": "prisma migrate dev --create-only --preview-feature",
+        "db:migrate:deploy": "prisma migrate deploy",
+        "db:migrate:reset": "prisma migrate reset --force"
     },
     "source": "./src/index.ts",
     "types": "./dist/index.d.ts"

@@ -1,12 +1,12 @@
 import React from 'react'
 import { Avatar, Text, Td, Tr } from '@chakra-ui/react'
-import type { CourseStudents } from '@dae/database'
+import type { UserCredentials } from '@dae/database'
 import { useCourseData } from '../CourseProvider'
 import { Address } from 'viem'
 import { useKarmaBalance } from '@dae/wagmi'
 
 export type StudentsRowProps = {
-  student: CourseStudents
+  student: UserCredentials
 }
 
 export const StudentsRow: React.FC<StudentsRowProps> = ({ student }) => {
@@ -16,7 +16,7 @@ export const StudentsRow: React.FC<StudentsRowProps> = ({ student }) => {
     course.data
       ? (course.data.karma_access_control_address as Address)
       : undefined,
-    student.studentAddress as Address,
+    student.user_address as Address,
   )
 
   return (
@@ -26,7 +26,17 @@ export const StudentsRow: React.FC<StudentsRowProps> = ({ student }) => {
       </Td>
       <Td>
         <Text verticalAlign={'center'} fontSize='md'>
-          {student.studentAddress}
+          {student.user_address}
+        </Text>
+      </Td>
+      <Td>
+        <Text verticalAlign={'center'} fontSize='md'>
+          {student.email}
+        </Text>
+      </Td>
+      <Td>
+        <Text verticalAlign={'center'} fontSize='md'>
+          {student.discord_handle}
         </Text>
       </Td>
       <Td isNumeric>{isSuccess ? karmaBalance?.toString() : '--'}</Td>

@@ -1,4 +1,4 @@
-import {mainnet, sepolia, foundry} from 'viem/chains'
+import { mainnet, sepolia, foundry } from 'viem/chains'
 
 export const ChainId = {
   ETHEREUM: 1,
@@ -6,7 +6,7 @@ export const ChainId = {
   SEPOLIA: 11155111,
 } as const
 
-export type ChainId = (typeof ChainId)[keyof typeof ChainId]
+export type ChainId = typeof ChainId[keyof typeof ChainId]
 
 export const ChainKey = {
   [ChainId.ETHEREUM]: mainnet,
@@ -14,6 +14,33 @@ export const ChainKey = {
   [ChainId.FOUNDRY]: foundry,
 } as const
 
-export type ChainKey = (typeof ChainKey)[keyof typeof ChainKey]
+export type ChainKey = typeof ChainKey[keyof typeof ChainKey]
 
 export const DefaultChain = sepolia
+
+export const ChainSnapshotHub = {
+  [ChainId.ETHEREUM]: 'https://hub.snapshot.org',
+  [ChainId.SEPOLIA]: 'https://testnet.snapshot.org',
+  [ChainId.FOUNDRY]: 'https://testnet.snapshot.org',
+} as const
+
+export type ChainSnapshotHub =
+  typeof ChainSnapshotHub[keyof typeof ChainSnapshotHub]
+
+export const ChainSnapshotWebsite = {
+  [ChainId.ETHEREUM]: 'https://snapshot.org',
+  [ChainId.SEPOLIA]: 'https://demo.snapshot.org',
+  [ChainId.FOUNDRY]: 'https://demo.snapshot.org',
+} as const
+
+export type ChainSnapshotWebsite =
+  typeof ChainSnapshotWebsite[keyof typeof ChainSnapshotWebsite]
+
+export const FactoryContractAddress = {
+  [ChainId.ETHEREUM]: '',
+  [ChainId.SEPOLIA]: '0xb2c5d323c04e85dff36d531bd082cfa11846d9cc',
+  [ChainId.FOUNDRY]: process.env.NEXT_PUBLIC_FOUNDRY_FACTORY_CONTRACT_ADDRESS,
+} as const
+
+export type FactoryContractAddress =
+  typeof FactoryContractAddress[keyof typeof FactoryContractAddress]

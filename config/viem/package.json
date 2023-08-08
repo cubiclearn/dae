@@ -9,7 +9,7 @@
         "@dae/typescript-config": "workspace:*",
         "tsup": "6.7.0",
         "typescript": "5.0.4",
-        "viem": "1.0.6"
+        "viem": "1.4.1"
     },
     "files": [
         "/dist"

@@ -10,7 +10,6 @@ import {
   useDisclosure,
 } from '@chakra-ui/react'
 import { Header } from '../app/header'
-import { NavItem } from './DrawerNavItem'
 import { IconType } from 'react-icons'
 
 type NavItemChildProps = {
@@ -59,15 +58,7 @@ export const PageLayout: FC<Props> = ({
           <DrawerCloseButton />
           <DrawerHeader>MENU</DrawerHeader>
           <DrawerBody>
-            {navItems.map((navItem) => (
-              <NavItem
-                key={navItem.name}
-                icon={navItem.icon}
-                href={navItem.href}
-              >
-                {navItem.name}
-              </NavItem>
-            ))}
+            <></>
           </DrawerBody>
         </DrawerContent>
       </Drawer>

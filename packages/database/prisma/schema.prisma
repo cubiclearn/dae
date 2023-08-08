@@ -1,8 +1,8 @@
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
-  directUrl = env("DIRECT_DATABASE_URL")
+  // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  // directUrl = env("DIRECT_DATABASE_URL")
 }
 
 generator client {
@@ -16,31 +16,56 @@ model Account {
 }
 
 model Course {
-  id            Int               @id @default(autoincrement())
-  address        String
-  owner          String
-  name           String           @default("")
-  description    String           @default("")
-  symbol         String           @default("")
-  image_url      String           @default("")
-  website_url    String           @default("")
-  access_url     String           @default("")
-  ipfs_metadata  String           @default("")
-  maxSupply      Int
-  burnable       Boolean
-  timestamp      Int
-  chainId        Int
+  address                      String
+  name                         String            @default("")
+  description                  String            @default("")
+  symbol                       String            @default("")
+  image_url                    String            @default("")
+  website_url                  String            @default("")
+  media_channel                String            @default("")
+  ipfs_metadata                String            @default("")
+  timestamp                    Int
+  chain_id                     Int
   karma_access_control_address String
-  CourseStudents CourseStudents[]
-  @@unique([address, chainId])
+  snapshot_space_ens           String            @default("")
+  user_credentials             UserCredentials[]
+  credentials                  Credential[]
+
+  @@id([address, chain_id])
 }
 
-model CourseStudents {
-  course         Course @relation(fields: [courseAddress, chainId], references: [address, chainId])
-  courseAddress  String
-  studentAddress String
-  chainId        Int
+enum CredentialType {
+  ADMIN
+  DISCIPULUS
+  MAGISTER
+  OTHER
+}
 
-  @@id([courseAddress, studentAddress])
-  @@unique([courseAddress, studentAddress])
+model Credential {
+  id               Int               @id @default(autoincrement())
+  name             String
+  description      String
+  image_url        String
+  ipfs_url         String
+  ipfs_cid         String
+  type             CredentialType
+  user_credentials UserCredentials[]
+  course           Course            @relation(fields: [course_address, course_chain_id], references: [address, chain_id])
+  course_address   String
+  course_chain_id  Int
+
+  @@unique([course_address, ipfs_cid])
+}
+
+model UserCredentials {
+  course         Course     @relation(fields: [course_address, chain_id], references: [address, chain_id])
+  course_address String
+  chain_id       Int
+  user_address   String
+  credential     Credential @relation(fields: [credential_id], references: [id])
+  credential_id  Int
+  email          String     @default("")
+  discord_handle String     @default("")
+
+  @@id([course_address, user_address, credential_id])
 }

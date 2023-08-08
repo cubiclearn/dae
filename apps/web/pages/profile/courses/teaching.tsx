@@ -1,14 +1,9 @@
 import Head from 'next/head'
 import { Layout } from '@dae/ui'
-import { CustomLink } from '@dae/ui'
-import { Stack, Tabs, TabList, Tab } from '@chakra-ui/react'
+import { Stack } from '@chakra-ui/react'
 import { CourseCardList } from '@dae/ui'
-import { DefaultChain } from '@dae/chains'
-import { useNetwork, useAccount } from 'wagmi'
 
 export default function Teaching() {
-  const { chain } = useNetwork()
-  const { address } = useAccount()
   return (
     <>
       <Head>
@@ -19,22 +14,7 @@ export default function Teaching() {
       </Head>
       <Layout.Profile heading='Teaching'>
         <Stack spacing={8}>
-          <Tabs defaultIndex={0}>
-            <TabList>
-              <Tab>Teaching</Tab>
-              <CustomLink href='/profile/courses/partecipating'>
-                <Tab>Partecipating</Tab>
-              </CustomLink>
-              <CustomLink href='/profile/courses/create'>
-                <Tab>Create</Tab>
-              </CustomLink>
-            </TabList>
-          </Tabs>
-          <CourseCardList
-            api_url={`/api/v0/teacher/courses?ownerAddress=${address}&chainId=${
-              chain?.id ? chain.id : DefaultChain.id
-            }`}
-          />
+          <CourseCardList role='MAGISTER' />
         </Stack>
       </Layout.Profile>
     </>

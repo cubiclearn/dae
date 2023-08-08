@@ -1,7 +1,5 @@
 import React from 'react'
 import { CourseCard } from './CourseCard'
-import useSWR, { SWRResponse } from 'swr'
-import type { Course } from '@dae/database'
 import { SimpleGrid } from '@chakra-ui/react'
 import {
   Alert,
@@ -12,17 +10,41 @@ import {
   Center,
   Spinner,
 } from '@chakra-ui/react'
+import { useUserCourses } from '@dae/wagmi'
+import { Address, useAccount, useNetwork } from 'wagmi'
 
 interface CourseCardListProps {
-  api_url: string
+  role: 'MAGISTER' | 'DISCIPULUS'
 }
 
-const fetcher = (url: string): Promise<Course[]> =>
-  fetch(url).then((r) => r.json())
+export const CourseCardList: React.FC<CourseCardListProps> = ({ role }) => {
+  const { chain } = useNetwork()
+  const { address } = useAccount()
 
-export const CourseCardList: React.FC<CourseCardListProps> = ({ api_url }) => {
-  const { data, error, isLoading }: SWRResponse<Course[], any, boolean> =
-    useSWR(api_url, fetcher)
+  const {
+    data: response,
+    error,
+    isLoading,
+  } = useUserCourses(
+    address ? (address as Address) : undefined,
+    chain ? chain.id : undefined,
+    role,
+  )
+
+  if (!chain || !chain.id || !address) {
+    return (
+      <Alert status='error'>
+        <AlertIcon />
+        <Box>
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>
+            You are not connected to Web3. Please connect your wallet before
+            proceeding.
+          </AlertDescription>
+        </Box>
+      </Alert>
+    )
+  }
 
   if (isLoading) {
     return (
@@ -46,7 +68,7 @@ export const CourseCardList: React.FC<CourseCardListProps> = ({ api_url }) => {
     )
   }
 
-  if (!data || data.length === 0) {
+  if (!response || response.data.courses.length === 0) {
     return (
       <Alert status='info'>
         <AlertIcon />
@@ -63,8 +85,8 @@ export const CourseCardList: React.FC<CourseCardListProps> = ({ api_url }) => {
       columns={{ sm: 1, md: 2, lg: 3, xl: 5 }}
       spacing={{ sm: 0, md: 8 }}
     >
-      {data.map((course) => (
-        <CourseCard key={course.id} data={course} />
+      {response.data.courses.map((course) => (
+        <CourseCard key={course.address} data={course} />
       ))}
     </SimpleGrid>
   )

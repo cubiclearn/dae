@@ -1,28 +1,34 @@
-import { useCourse } from '@dae/hooks'
+import { useCourse } from '@dae/wagmi'
 import { createContext, FC, useContext, ReactNode, useMemo } from 'react'
 import { Address } from 'viem'
 import type { Course } from '@dae/database'
+import { useNetwork } from 'wagmi'
+import { useRouter } from 'next/router'
 
 const Context = createContext<
   | {
-      data: Course
+      data: Course | null
       isLoading: boolean
-      error: Error | undefined
+      error: Error | null
     }
   | undefined
 >(undefined)
 
 export const CourseProvider: FC<{
-  address: Address
-  chainId: number
   children: ReactNode
-}> = ({ address, chainId, children }) => {
-  const { data, isLoading, error } = useCourse(address, chainId)
+}> = ({ children }) => {
+  const { chain } = useNetwork()
+  const router = useRouter()
+  const { data, isLoading, error } = useCourse(
+    router.query.address as Address,
+    chain?.id,
+  )
+
   return (
     <Context.Provider
       value={useMemo(
         () => ({
-          data,
+          data: data,
           isLoading,
           error,
         }),

@@ -1,114 +1,301 @@
-import type {NextApiRequest, NextApiResponse} from 'next'
-import {getSession} from 'next-auth/react'
-import {CredentialsAbi, CredentialsFactoryAbi} from '@dae/abi'
-import {prisma} from '@dae/database'
-import {createPublicClient} from 'viem'
-import {getChainFromId} from '../../../../lib/functions'
-import {getCourse} from '../../../../lib/api'
-import {config as TransportConfig} from '@dae/viem-config'
-import {decodeEventLog} from 'viem'
+import type { NextApiRequest, NextApiResponse } from 'next'
+import { getSession } from 'next-auth/react'
+import { CredentialsBurnableAbi, CredentialsFactoryAbi } from '@dae/abi'
+import { prisma } from '@dae/database'
+import { Address, createPublicClient } from 'viem'
+import { sanitizeAddress } from '../../../../lib/functions'
+import { getCourse } from '../../../../lib/api'
+import { config as TransportConfig } from '@dae/viem-config'
+import { decodeEventLog } from 'viem'
+import { ChainKey } from '@dae/chains'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const session = await getSession({req})
-  if (!session) {
-    res.status(401).json({message: 'You are unauthorized'})
-    return
+// TypeScript enum for request methods
+enum HttpMethod {
+  GET = 'GET',
+  POST = 'POST',
+}
+
+const handleGetRequest = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { chainId, address } = req.query as {
+    chainId: string
+    address: Address
   }
 
-  if (req.method === 'GET') {
-    const {chainId, address} = req.query as {
-      chainId: string
-      address: string
-    }
+  try {
+    const course = await getCourse(address, parseInt(chainId))
+    res.status(200).json({ success: true, data: { course: course } })
+  } catch (e) {
+    res
+      .status(500)
+      .json({ success: false, error: e.message || 'Internal Server Error' })
+  }
+}
 
-    try {
-      const data = await getCourse(address, parseInt(chainId))
-      res.status(200).json(data)
-    } catch (e) {
-      res.status(500).json({message: e.message || 'Internal Server Error'})
-    }
-  } else if (req.method === 'POST') {
-    const {txHash, chainId} = req.body
+const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { txHash, chainId } = req.body
 
+  try {
     const client = createPublicClient({
-      chain: getChainFromId[chainId],
+      chain: ChainKey[chainId],
       transport: TransportConfig[chainId]?.transport,
     })
 
-    try {
-      const transaction = await client.waitForTransactionReceipt({hash: txHash})
+    const transaction = await client.waitForTransactionReceipt({
+      hash: txHash,
+    })
 
-      const txLogs = await client.getTransactionReceipt({hash: txHash})
+    const txRecept = await client.getTransactionReceipt({ hash: txHash })
 
-      const txKarmaControlLog = txLogs.logs.find(
-        (log) => log.address === process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS
-      )
-
-      if (!txKarmaControlLog) {
-        throw new Error('Transaction log not found')
-      }
-
-      const txLogsDecoded = decodeEventLog({
-        abi: CredentialsFactoryAbi,
-        data: txKarmaControlLog.data,
-        topics: txKarmaControlLog.topics,
+    const txFactoryLogsDecoded: any = txRecept.logs
+      .map((log) => {
+        try {
+          return {
+            address: log.address,
+            ...decodeEventLog({
+              abi: CredentialsFactoryAbi,
+              data: log.data,
+              topics: log.topics,
+            }),
+          }
+        } catch (_e) {}
       })
+      .filter((decodedLog) => decodedLog !== undefined)
 
-      const contractAddress = txLogs.logs[0].address
-
-      const [owner, symbol, maxSupply, baseURI] = await Promise.all([
-        client.readContract({address: contractAddress, abi: CredentialsAbi, functionName: 'owner'}),
-        client.readContract({address: contractAddress, abi: CredentialsAbi, functionName: 'symbol'}),
-        client.readContract({address: contractAddress, abi: CredentialsAbi, functionName: 'MAX_SUPPLY'}),
-        client.readContract({address: contractAddress, abi: CredentialsAbi, functionName: 'baseURI'}),
-      ])
-
-      const timestamp = (await client.getBlock({blockNumber: transaction.blockNumber!})).timestamp
-
-      const metadataResponse = await fetch(baseURI)
-
-      if (!metadataResponse.ok) {
-        throw new Error(metadataResponse.statusText)
-      }
-
-      const jsonMetadata = await metadataResponse.json()
-
-      if (
-        !jsonMetadata ||
-        !jsonMetadata.name ||
-        !jsonMetadata.description ||
-        !jsonMetadata.access_url ||
-        !jsonMetadata.image ||
-        !jsonMetadata.website
-      ) {
-        throw new Error('Wrong metadata structure')
-      }
-
-      await prisma.course.create({
-        data: {
-          address: contractAddress.toLowerCase(),
-          owner: owner.toLowerCase(),
-          name: jsonMetadata.name,
-          description: jsonMetadata.description,
-          access_url: jsonMetadata.access_url,
-          image_url: jsonMetadata.image,
-          website_url: jsonMetadata.website,
-          symbol: symbol,
-          ipfs_metadata: baseURI,
-          maxSupply: Number(maxSupply),
-          burnable: false,
-          timestamp: Number(timestamp),
-          chainId: chainId,
-          karma_access_control_address: txLogsDecoded.args.karmaAccessControl.toLowerCase(),
-        },
+    const txCredentialLogsDecoded: any = txRecept.logs
+      .map((log) => {
+        try {
+          return {
+            address: log.address,
+            ...decodeEventLog({
+              abi: CredentialsBurnableAbi,
+              data: log.data,
+              topics: log.topics,
+            }),
+          }
+        } catch (_e) {}
       })
+      .filter((decodedLog) => decodedLog !== undefined)
 
-      res.status(200).json({message: 'OK!'})
-    } catch (e) {
-      console.error(e)
-      res.status(500).json({message: e.message || 'Internal Server Error'})
+    const karmaAccessControlCreatedLog = txFactoryLogsDecoded.filter(
+      (log: any) => log.eventName === 'KarmaAccessControlCreated',
+    )[0]
+
+    const contractAddress: Address = txCredentialLogsDecoded[0].address
+    const karmaAccessControlAddress: Address =
+      karmaAccessControlCreatedLog.args.karmaAccessControl
+
+    const [symbol, baseURI] = await Promise.all([
+      client.readContract({
+        address: contractAddress,
+        abi: CredentialsBurnableAbi,
+        functionName: 'symbol',
+      }),
+      client.readContract({
+        address: contractAddress,
+        abi: CredentialsBurnableAbi,
+        functionName: 'baseURI',
+      }),
+    ])
+
+    const timestamp = (
+      await client.getBlock({ blockNumber: transaction.blockNumber! })
+    ).timestamp
+
+    const metadataResponse = await fetch(baseURI)
+
+    if (!metadataResponse.ok) {
+      throw new Error('The metadata url is incorrect')
     }
-  } else {
-    res.status(400).json({message: 'Invalid HTTP method'})
+
+    const jsonMetadata = await metadataResponse.json()
+
+    if (
+      !jsonMetadata ||
+      !jsonMetadata.name ||
+      !jsonMetadata.description ||
+      !jsonMetadata.image ||
+      !jsonMetadata['snapshot-ens']
+    ) {
+      throw new Error('Wrong metadata structure')
+    }
+
+    const courseData = await prisma.$transaction(
+      async (prisma) => {
+        const course = await prisma.course.create({
+          data: {
+            address: sanitizeAddress(contractAddress),
+            name: jsonMetadata.name,
+            description: jsonMetadata.description,
+            media_channel: jsonMetadata.media_channel,
+            image_url: jsonMetadata.image,
+            website_url: jsonMetadata.website,
+            symbol: symbol,
+            ipfs_metadata: baseURI,
+            timestamp: Number(timestamp),
+            chain_id: Number(chainId),
+            karma_access_control_address:
+              karmaAccessControlAddress.toLowerCase(),
+            snapshot_space_ens: jsonMetadata['snapshot-ens'],
+          },
+        })
+
+        const [adminCredential, magisterCredential, _discipulusCredential] =
+          await Promise.all([
+            prisma.credential.create({
+              data: {
+                name: 'Admin',
+                description: 'The course Admin credential',
+                image_url:
+                  'https://dae-demo.infura-ipfs.io/ipfs/QmXibYJSXskaqS7WyXLGwy16vGASqhN75yNUp2UfMRiLkF',
+                ipfs_url:
+                  'https://dae-demo.infura-ipfs.io/ipfs/QmWNqAC88Sbti885sSbax9RK1Sfbo3akVeue5SMEhXWbjN',
+                ipfs_cid: 'QmWNqAC88Sbti885sSbax9RK1Sfbo3akVeue5SMEhXWbjN',
+                type: 'ADMIN',
+                course: {
+                  connect: {
+                    address_chain_id: {
+                      address: sanitizeAddress(course.address as Address),
+                      chain_id: course.chain_id,
+                    },
+                  },
+                },
+              },
+            }),
+            prisma.credential.create({
+              data: {
+                name: 'Magister',
+                description: 'The course Magister credential',
+                image_url:
+                  'https://dae-demo.infura-ipfs.io/ipfs/QmTFVE4FoPJm2vazgVtKajbw2XSNtM2wTDrkUinxMcLbBg',
+                ipfs_url:
+                  'https://dae-demo.infura-ipfs.io/ipfs/QmXRAu1zZ7igsNWo8egMDH3g77vFQgZHfcE2k6hoJp4JwT',
+                ipfs_cid: 'QmXRAu1zZ7igsNWo8egMDH3g77vFQgZHfcE2k6hoJp4JwT',
+                type: 'MAGISTER',
+                course: {
+                  connect: {
+                    address_chain_id: {
+                      address: sanitizeAddress(course.address as Address),
+                      chain_id: course.chain_id,
+                    },
+                  },
+                },
+              },
+            }),
+            prisma.credential.create({
+              data: {
+                name: 'Discipulus',
+                description: 'The course Discipulus credential',
+                image_url:
+                  'https://dae-demo.infura-ipfs.io/ipfs/QmUEC1WiGo9Vr3WER68u3T6mSwLexyDXj5G6WUgpVECmBY',
+                ipfs_url:
+                  'https://dae-demo.infura-ipfs.io/ipfs/QmPfKCv7ZAz8294ShRTcHft5LSM9YaDJ4NTjZisCkhFxW8',
+                ipfs_cid: 'QmPfKCv7ZAz8294ShRTcHft5LSM9YaDJ4NTjZisCkhFxW8',
+                type: 'DISCIPULUS',
+                course: {
+                  connect: {
+                    address_chain_id: {
+                      address: sanitizeAddress(course.address as Address),
+                      chain_id: course.chain_id,
+                    },
+                  },
+                },
+              },
+            }),
+          ])
+
+        await Promise.all([
+          prisma.userCredentials.create({
+            data: {
+              course: {
+                connect: {
+                  address_chain_id: {
+                    address: sanitizeAddress(course.address as Address),
+                    chain_id: course.chain_id,
+                  },
+                },
+              },
+              user_address: sanitizeAddress(transaction.from),
+              credential: {
+                connect: {
+                  id: adminCredential.id,
+                },
+              },
+              email: '',
+              discord_handle: '',
+            },
+          }),
+          await prisma.userCredentials.create({
+            data: {
+              course: {
+                connect: {
+                  address_chain_id: {
+                    address: sanitizeAddress(course.address as Address),
+                    chain_id: course.chain_id,
+                  },
+                },
+              },
+              user_address: sanitizeAddress(transaction.from),
+              credential: {
+                connect: {
+                  id: magisterCredential.id,
+                },
+              },
+              email: '',
+              discord_handle: '',
+            },
+          }),
+        ])
+
+        return course
+      },
+      {
+        maxWait: 5000, // default: 2000
+        timeout: 7000, // default: 5000
+      },
+    )
+
+    res.status(200).json({ success: true, data: { course: courseData } })
+  } catch (e) {
+    console.error(e)
+    res
+      .status(500)
+      .json({ success: false, error: e.message || 'Internal Server Error' })
+  }
+}
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  // Check if req.method is defined
+  if (req.method === undefined) {
+    return res
+      .status(400)
+      .json({ success: false, error: 'Request method is undefined' })
+  }
+
+  // Guard clause for unsupported request methods
+  if (!(req.method in HttpMethod)) {
+    return res
+      .status(400)
+      .json({ success: false, error: 'This method is not supported' })
+  }
+
+  // Guard clause for unauthenticated requests
+  const session = await getSession({ req })
+  if (!session) {
+    return res.status(401).json({ success: false, error: 'Unauthenticated' })
+  }
+
+  // Handle the respective request method
+  switch (req.method) {
+    case HttpMethod.GET:
+      return handleGetRequest(req, res)
+    case HttpMethod.POST:
+      return handlePostRequest(req, res)
+    default:
+      return res
+        .status(400)
+        .json({ success: false, error: 'This method is not supported' })
   }
 }

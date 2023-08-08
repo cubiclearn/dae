@@ -1,29 +1,58 @@
-import {prisma} from '@dae/database'
-import type {Course, CourseStudents} from '@dae/database'
+import { prisma } from '@dae/database'
+import type {
+  Course,
+  UserCredentials,
+  Credential,
+  CredentialType,
+} from '@dae/database'
+import { Address } from 'viem'
+import { sanitizeAddress } from './functions'
 
-export const getCourse = (address: string, chainId: number): Promise<Course | null> => {
+export const getCourse = (
+  courseAddress: Address,
+  chainId: number,
+): Promise<Course | null> => {
   return prisma.course.findFirst({
     where: {
-      address: address.toLowerCase(),
-      chainId: chainId,
+      address: sanitizeAddress(courseAddress),
+      chain_id: chainId,
     },
   })
 }
 
-export const getCourseStudents = async (address: string, chainId: number): Promise<CourseStudents[]> => {
-  return prisma.courseStudents.findMany({
+export const getCourseStudents = async (
+  courseAddress: Address,
+  chainId: number,
+): Promise<UserCredentials[]> => {
+  return prisma.userCredentials.findMany({
     where: {
-      courseAddress: address.toLowerCase(),
-      chainId: chainId,
+      course_address: sanitizeAddress(courseAddress),
+      chain_id: chainId,
+      credential: {
+        type: 'DISCIPULUS',
+      },
     },
   })
 }
 
-export const getTeacherCourses = async (teacherAddress: string, chainId: number): Promise<Course[]> => {
+export const getUserCourses = async (
+  userAddress: Address,
+  chainId: number,
+  type: CredentialType,
+): Promise<Course[]> => {
   return prisma.course.findMany({
     where: {
-      chainId: chainId,
-      owner: teacherAddress.toLowerCase(),
+      chain_id: chainId,
+      credentials: {
+        some: {
+          type,
+          user_credentials: {
+            some: {
+              user_address: sanitizeAddress(userAddress),
+            },
+          },
+        },
+      },
     },
     orderBy: [
       {
@@ -33,24 +62,68 @@ export const getTeacherCourses = async (teacherAddress: string, chainId: number)
   })
 }
 
-export const getStudentCourses = async (studentAddress: string, chainId: number) => {
-  const data = await prisma.courseStudents.findMany({
+export const getCourseCredentials = async (
+  courseAddress: Address,
+  chainId: number,
+): Promise<Credential[]> => {
+  return prisma.credential.findMany({
     where: {
-      chainId: chainId,
-      studentAddress: studentAddress.toLowerCase(),
+      course_address: sanitizeAddress(courseAddress),
+      course_chain_id: chainId,
+    },
+    orderBy: [
+      {
+        name: 'asc',
+      },
+    ],
+  })
+}
+
+export const getUserCourseCredentials = async (
+  userAddress: Address,
+  courseAddress: Address,
+  chainId: number,
+): Promise<Credential[]> => {
+  return prisma.credential.findMany({
+    where: {
+      course_address: sanitizeAddress(courseAddress),
+      course_chain_id: chainId,
+      user_credentials: {
+        some: {
+          user_address: sanitizeAddress(userAddress),
+        },
+      },
+    },
+    orderBy: {
+      name: 'asc',
+    },
+  })
+}
+
+export const createCourseCredentials = async (
+  courseAddress: Address,
+  chainId: number,
+  credentialData: Credential,
+) => {
+  prisma.course.update({
+    where: {
+      address_chain_id: {
+        address: sanitizeAddress(courseAddress),
+        chain_id: chainId,
+      },
+    },
+    data: {
+      credentials: {
+        connectOrCreate: {
+          where: { id: credentialData.id },
+          create: {
+            ...credentialData,
+          },
+        },
+      },
     },
     include: {
-      course: true,
+      credentials: true,
     },
   })
-
-  if (data === null) {
-    throw Error('Course does not exist or you have passed the wrong chain')
-  }
-
-  const cleanData = data.map((courseStudentsData) => {
-    return courseStudentsData.course
-  })
-
-  return cleanData
 }

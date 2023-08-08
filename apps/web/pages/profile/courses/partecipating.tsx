@@ -1,14 +1,9 @@
 import Head from 'next/head'
 import { Layout } from '@dae/ui'
-import { Stack, Tabs, TabList, Tab } from '@chakra-ui/react'
-import { CustomLink } from '@dae/ui'
+import { Stack } from '@chakra-ui/react'
 import { CourseCardList } from '@dae/ui'
-import { DefaultChain } from '@dae/chains'
-import { useNetwork, useAccount } from 'wagmi'
 
 export default function Partecipating() {
-  const { chain } = useNetwork()
-  const { address } = useAccount()
   return (
     <>
       <Head>
@@ -19,22 +14,7 @@ export default function Partecipating() {
       </Head>
       <Layout.Profile heading='Partecipating'>
         <Stack spacing={8}>
-          <Tabs defaultIndex={1}>
-            <TabList>
-              <CustomLink href='/profile/courses/teaching'>
-                <Tab>Teaching</Tab>
-              </CustomLink>
-              <Tab>Partecipating</Tab>
-              <CustomLink href='/profile/courses/create'>
-                <Tab>Create</Tab>
-              </CustomLink>
-            </TabList>
-          </Tabs>
-          <CourseCardList
-            api_url={`/api/v0/student/courses?studentAddress=${address}&chainId=${
-              chain?.id ? chain.id : DefaultChain.id
-            }`}
-          />
+          <CourseCardList role='DISCIPULUS' />
         </Stack>
       </Layout.Profile>
     </>

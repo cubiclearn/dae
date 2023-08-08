@@ -1,86 +1,59 @@
-import type {NextApiRequest, NextApiResponse} from 'next'
-import {getSession} from 'next-auth/react'
-import {CredentialsAbi} from '@dae/abi'
-import {prisma} from '@dae/database'
-import {createPublicClient} from 'viem'
-import {getChainFromId} from '../../../../lib/functions'
-import {getCourseStudents} from '../../../../lib/api'
-import {config as TransportConfig} from '@dae/viem-config'
-import {decodeEventLog} from 'viem'
-import {CredentialTransferLog} from '@dae/types'
+import type { NextApiRequest, NextApiResponse } from 'next'
+import { getSession } from 'next-auth/react'
+import { getCourseStudents } from '../../../../lib/api'
+import { Address } from 'viem'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const session = await getSession({req})
+// TypeScript enum for request methods
+enum HttpMethod {
+  GET = 'GET',
+}
 
-  if (!session) {
-    res.status(401).json({message: 'Unauthenticated'})
+const handleGetRequest = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { chainId, courseAddress } = req.query as {
+    courseAddress: Address
+    chainId: string
+  }
+
+  if (!chainId || !courseAddress) {
+    res.status(401).json({ success: false, error: 'Bad request' })
     return
   }
 
-  if (req.method === 'GET') {
-    const {chainId, studentAddress} = req.query as {
-      chainId: string
-      studentAddress: string
-    }
+  const students = await getCourseStudents(courseAddress, parseInt(chainId))
 
-    try {
-      const data = await getCourseStudents(studentAddress, parseInt(chainId))
-      res.status(200).json(data)
-      return
-    } catch (_e) {
-      res.status(500).json({message: _e.message})
-      return
-    }
-  } else if (req.method === 'POST') {
-    const {chainId, txHash} = req.body as {
-      chainId: string
-      txHash: `0x${string}`
-    }
+  res.status(200).json({ success: true, data: { students: students } })
+}
 
-    if (!chainId || !txHash) {
-      res.status(400)
-      return
-    }
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  // Check if req.method is defined
+  if (req.method === undefined) {
+    return res
+      .status(400)
+      .json({ success: false, error: 'Request method is undefined' })
+  }
 
-    try {
-      const client = createPublicClient({
-        chain: getChainFromId[chainId],
-        transport: TransportConfig[chainId].transport,
-      })
+  // Guard clause for unsupported request methods
+  if (!(req.method in HttpMethod)) {
+    return res
+      .status(400)
+      .json({ success: false, error: 'This method is not supported' })
+  }
+  // Guard clause for unauthenticated requests
+  const session = await getSession({ req })
+  if (!session) {
+    return res.status(401).json({ success: false, error: 'Unauthenticated' })
+  }
 
-      const txRecept = await client.getTransactionReceipt({
-        hash: txHash,
-      })
-
-      const txLogsDecoded = txRecept.logs.map((log) => {
-        return decodeEventLog({
-          abi: CredentialsAbi,
-          data: log.data,
-          topics: log.topics,
-        })
-      })
-
-      const transferLogs = txLogsDecoded.filter((log) => log.eventName === 'Transfer') as [CredentialTransferLog]
-
-      const createData = transferLogs.map((log) => {
-        return {
-          courseAddress: txRecept.to as `0x${string}`,
-          studentAddress: log.args.to.toLowerCase(),
-          chainId: parseInt(chainId),
-        }
-      })
-
-      await prisma.courseStudents.createMany({
-        data: createData,
-      })
-    } catch (_e) {
-      console.error(_e)
-      res.status(500).json({message: _e})
-      return
-    }
-
-    res.status(200).json({message: 'OK'})
-  } else {
-    res.status(400).json({message: 'HTTP method not supported'})
+  // Handle the respective request method
+  switch (req.method) {
+    case HttpMethod.GET:
+      return handleGetRequest(req, res)
+    default:
+      return res
+        .status(400)
+        .json({ success: false, error: 'This method is not supported' })
   }
 }

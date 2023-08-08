@@ -5,20 +5,25 @@
     "dependencies": {
         "@chakra-ui/icons": "2.0.19",
         "@chakra-ui/system": "2.5.7",
-        "@rainbow-me/rainbowkit": "1.0.2",
+        "@rainbow-me/rainbowkit": "1.0.7",
+        "formik": "2.4.2",
         "react-icons": "4.8.0",
-        "swr": "2.1.5"
+        "react-markdown": "8.0.7",
+        "swr": "2.1.5",
+        "yup": "1.2.0"
     },
     "devDependencies": {
         "@chakra-ui/react": "2.6.1",
         "@dae/abi": "workspace:*",
-        "@dae/database": "workspace:*",
         "@dae/chains": "workspace:*",
+        "@dae/database": "workspace:*",
         "@dae/hooks": "workspace:*",
+        "@dae/snapshot": "workspace:*",
         "@dae/typescript-config": "workspace:*",
         "@dae/wagmi": "workspace:*",
         "@emotion/react": "11.11.0",
         "@emotion/styled": "11.11.0",
+        "@snapshot-labs/snapshot.js": "0.4.100",
         "@types/react": "18.0.22",
         "@types/react-dom": "18.0.7",
         "eslint": "8.29.0",
@@ -29,8 +34,8 @@
         "react-dom": "18.2.0",
         "react-toastify": "9.1.2",
         "typescript": "5.0.4",
-        "viem": "1.0.6",
-        "wagmi": "1.2.0"
+        "viem": "1.4.1",
+        "wagmi": "1.3.9"
     },
     "license": "MIT",
     "main": "./src/index.ts",

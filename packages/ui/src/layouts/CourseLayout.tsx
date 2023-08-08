@@ -14,17 +14,34 @@ import {
   useDisclosure,
   BoxProps,
   FlexProps,
+  Accordion,
+  Stack,
+  Link,
 } from '@chakra-ui/react'
-import { FiMenu, FiHome, FiUsers, FiZap, FiBookOpen } from 'react-icons/fi'
+import { FiMenu, FiUsers, FiZap, FiBookOpen, FiShield } from 'react-icons/fi'
+import { MdOutlinePoll } from 'react-icons/md'
 import { useRouter } from 'next/router'
-import { NavItem } from './DrawerNavItem'
+import { NavItemSimple, NavItemDropdown } from './DrawerNavItem'
 import { Address } from 'viem'
 import { CourseProvider } from '../CourseProvider'
-import { useNetwork } from 'wagmi'
 import { Logo } from './Logo'
+import { Web3SafeContainer } from '../Web3SafeContainer'
+import NextLink from 'next/link'
 
 interface SidebarProps extends BoxProps {
   onClose: () => void
+}
+
+const openedAccorditionIndex = (pathname: string) => {
+  if (pathname.startsWith('/course/[address]/credentials')) {
+    return 0
+  } else if (pathname.startsWith('/course/[address]/students')) {
+    return 1
+  } else if (pathname.startsWith('/course/[address]/proposals')) {
+    return 2
+  } else {
+    return undefined
+  }
 }
 
 const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
@@ -45,44 +62,95 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
         <Logo />
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
-      <NavItem
-        key={'home'}
-        icon={FiHome}
-        href={'/'}
-        display={{ md: 'none', sm: 'block' }}
-      >
-        Home
-      </NavItem>
-      <NavItem
-        key={'info'}
-        icon={FiBookOpen}
-        href={`/course/${address}/info`}
-        isActive={pathname === '/course/[address]/info'}
-      >
-        Info
-      </NavItem>
-      {/* <NavItem key={'dashboard'} icon={FiHome} href={`#`}>
-        Dashboard
-      </NavItem> */}
-      <NavItem
-        key={'students'}
-        icon={FiUsers}
-        href={`/course/${address}/students/list`}
-        isActive={pathname.startsWith('/course/[address]/students')}
-      >
-        Students
-      </NavItem>
-      <NavItem
-        key={'karma'}
-        icon={FiZap}
-        href={`/course/${address}/karma/transfer`}
-        isActive={pathname.startsWith('/course/[address]/karma')}
-      >
-        Karma
-      </NavItem>
-      {/* <NavItem key={'vote'} icon={FiHome} href={`#`}>
-        Vote
-      </NavItem> */}
+      <Accordion allowToggle defaultIndex={openedAccorditionIndex(pathname)}>
+        <NavItemSimple
+          key={'info'}
+          icon={FiBookOpen}
+          isActive={pathname === '/course/[address]/info'}
+          link={{ title: 'Info', href: `/course/${address}/info` }}
+        />
+        <NavItemDropdown
+          title={'Credentials'}
+          key={'credentials'}
+          icon={FiShield}
+          isActive={pathname.startsWith('/course/[address]/credentials')}
+          links={[
+            {
+              title: 'Course Credentials',
+              href: `/course/${address}/credentials/list`,
+              active: pathname.startsWith('/course/[address]/credentials/list'),
+            },
+            {
+              title: 'My Credentials',
+              href: `/course/${address}/credentials/granted`,
+              active: pathname.startsWith(
+                '/course/[address]/credentials/granted',
+              ),
+            },
+            {
+              title: 'Create',
+              href: `/course/${address}/credentials/create`,
+              active: pathname.startsWith(
+                '/course/[address]/credentials/create',
+              ),
+            },
+            {
+              title: 'Transfer',
+              href: `/course/${address}/credentials/transfer`,
+              active: pathname.startsWith(
+                '/course/[address]/credentials/transfer',
+              ),
+            },
+          ]}
+        />
+        <NavItemDropdown
+          title={'Students'}
+          key={'students'}
+          icon={FiUsers}
+          isActive={pathname.startsWith('/course/[address]/students')}
+          links={[
+            {
+              title: 'List',
+              href: `/course/${address}/students/list`,
+              active: pathname.startsWith('/course/[address]/students/list'),
+            },
+            {
+              title: 'Enroll',
+              href: `/course/${address}/students/enroll`,
+              active: pathname.startsWith('/course/[address]/students/enroll'),
+            },
+          ]}
+        />
+        <NavItemSimple
+          key={'karma'}
+          icon={FiZap}
+          isActive={pathname.startsWith('/course/[address]/karma')}
+          link={{
+            title: 'Karma',
+            href: `/course/${address}/karma/transfer`,
+          }}
+        />
+        <NavItemDropdown
+          title={'Proposals'}
+          key={'proposals'}
+          icon={MdOutlinePoll}
+          isActive={pathname.startsWith('/course/[address]/proposals')}
+          links={[
+            {
+              title: 'Create',
+              href: `/course/${address}/proposals/create`,
+              active: pathname.startsWith('/course/[address]/proposals/create'),
+            },
+            {
+              title: 'Explore',
+              href: `/course/${address}/proposals/explore?active=true`,
+              active: pathname.startsWith(
+                '/course/[address]/proposals/explore',
+              ),
+            },
+          ]}
+        />
+      </Accordion>
     </Box>
   )
 }
@@ -104,7 +172,7 @@ export const Header: FC<HeaderProps> = ({ onOpen, ...rest }) => {
       position={'fixed'}
       right={0}
       zIndex={'sticky'}
-      width={{ sm: '100%', md: 'calc(100% - 240px)' }}
+      width={{ md: 'calc(100% - 240px)', base: '100%' }}
       {...rest}
     >
       <IconButton
@@ -131,7 +199,6 @@ type Props = {
 export const CourseLayout: FC<Props> = ({ children, heading }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { query } = useRouter()
-  const { chain } = useNetwork()
 
   return (
     <Box minH='100vh'>
@@ -156,17 +223,39 @@ export const CourseLayout: FC<Props> = ({ children, heading }) => {
       <Box
         position={'absolute'}
         top={'80px'}
-        width={{ sm: '100%', md: 'calc(100% - 240px)' }}
+        width={{ md: 'calc(100% - 240px)', base: '100%' }}
+        height={'calc(100% - 80px)'}
+        bg={'gray.50'}
         right={0}
         overflow={'auto'}
         p={8}
       >
-        <Box display={'flex'} fontSize={'3xl'} fontWeight={'semibold'} mb={8}>
-          <Text as='h2'>{heading}</Text>
-        </Box>
-        <CourseProvider chainId={chain!.id} address={query.address as Address}>
-          <Box>{children}</Box>
-        </CourseProvider>
+        <Stack direction='column' mb={8}>
+          <Text
+            as='h2'
+            fontSize={'3xl'}
+            fontWeight={'semibold'}
+            textTransform={'capitalize'}
+          >
+            {heading}
+          </Text>
+          <Text>
+            Course:{' '}
+            <Link
+              as={NextLink}
+              href={`https://etherscan.io/address/${query.address}`}
+              textDecoration={'none'}
+              target='_blank'
+            >
+              {query.address}
+            </Link>
+          </Text>
+        </Stack>
+        <Web3SafeContainer>
+          <CourseProvider>
+            <Box>{children}</Box>
+          </CourseProvider>
+        </Web3SafeContainer>
       </Box>
     </Box>
   )
