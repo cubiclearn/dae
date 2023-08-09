@@ -35,12 +35,12 @@ type TransferCredentialsFormProps = {
   courseAddress: string
 }
 
-export const EnrollStudentsForm: React.FC<TransferCredentialsFormProps> = ({
+export const EnrollTeachersForm: React.FC<TransferCredentialsFormProps> = ({
   courseAddress,
 }) => {
   const router = useRouter()
   const { transfer, isLoading, isError, isSuccess, error, isSigning } =
-    useTransferCredentials(courseAddress as Address, 'DISCIPULUS')
+    useTransferCredentials(courseAddress as Address, 'MAGISTER')
 
   const toast = useToast()
 
@@ -55,11 +55,11 @@ export const EnrollStudentsForm: React.FC<TransferCredentialsFormProps> = ({
         try {
           await transfer(
             values.userAddress as Address,
-            'https://dae-demo.infura-ipfs.io/ipfs/QmPfKCv7ZAz8294ShRTcHft5LSM9YaDJ4NTjZisCkhFxW8',
+            'https://dae-demo.infura-ipfs.io/ipfs/QmXRAu1zZ7igsNWo8egMDH3g77vFQgZHfcE2k6hoJp4JwT',
             values.userDiscordUsername,
             values.userEmail,
           )
-          router.push(`/course/${courseAddress}/students/list`)
+          router.push(`/course/${courseAddress}/teachers/list`)
         } catch (_e) {}
       },
       validationSchema: validationSchema,

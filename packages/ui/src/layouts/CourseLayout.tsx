@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import React from 'react'
 import { Box, Text, useDisclosure, Stack, Link } from '@chakra-ui/react'
-import { FiUsers, FiZap, FiBookOpen, FiShield } from 'react-icons/fi'
+import { FiUsers, FiZap, FiBookOpen, FiShield, FiCompass } from 'react-icons/fi'
 import { MdOutlinePoll } from 'react-icons/md'
 import { useRouter } from 'next/router'
 import { Address } from 'viem'
@@ -18,10 +18,12 @@ import { useNetwork } from 'wagmi'
 const openedAccorditionIndex = (pathname: string) => {
   if (pathname.startsWith('/course/[address]/credentials')) {
     return 0
-  } else if (pathname.startsWith('/course/[address]/students')) {
+  } else if (pathname.startsWith('/course/[address]/teachers')) {
     return 1
-  } else if (pathname.startsWith('/course/[address]/proposals')) {
+  } else if (pathname.startsWith('/course/[address]/students')) {
     return 2
+  } else if (pathname.startsWith('/course/[address]/proposals')) {
+    return 3
   } else {
     return undefined
   }
@@ -69,6 +71,24 @@ const CourseNavigationMenu: React.FC = () => {
             active: pathname.startsWith(
               '/course/[address]/credentials/transfer',
             ),
+          },
+        ]}
+      />
+      <NavigationMenuItem
+        title={'Teachers'}
+        key={'teachers'}
+        icon={FiCompass}
+        isActive={pathname.startsWith('/course/[address]/teachers')}
+        links={[
+          {
+            title: 'List',
+            href: `/course/${courseAddress}/teachers/list`,
+            active: pathname.startsWith('/course/[address]/teachers/list'),
+          },
+          {
+            title: 'Enroll',
+            href: `/course/${courseAddress}/teachers/enroll`,
+            active: pathname.startsWith('/course/[address]/teachers/enroll'),
           },
         ]}
       />

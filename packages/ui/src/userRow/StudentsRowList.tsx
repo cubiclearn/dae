@@ -1,6 +1,6 @@
 import React from 'react'
 import { Table, TableContainer, Tbody, Th, Thead, Tr } from '@chakra-ui/react'
-import { StudentsRow } from './StudentsRow'
+import { UserRow } from './UserRow'
 import {
   Alert,
   AlertIcon,
@@ -85,7 +85,7 @@ export const StudentsRowList: React.FC<StudentsRowListProps> = ({
           </Thead>
           <Tbody>
             {response.data.students.map((student) => (
-              <StudentsRow key={student.user_address} student={student} />
+              <UserRow key={student.user_address} user={student} />
             ))}
           </Tbody>
         </Table>

@@ -39,7 +39,7 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
     const { data } = useCourseCredentials(courseAddress as Address, chain?.id)
 
     const { transfer, isLoading, isError, isSuccess, error, isSigning } =
-      useTransferCredentials(courseAddress as Address)
+      useTransferCredentials(courseAddress as Address, 'OTHER')
 
     const toast = useToast()
 

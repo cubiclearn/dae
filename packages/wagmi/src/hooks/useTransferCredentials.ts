@@ -2,8 +2,12 @@ import { useState } from 'react'
 import { useContractWrite, usePublicClient } from 'wagmi'
 import { Address } from 'viem'
 import { CredentialsBurnableAbi } from '@dae/abi'
+import { CredentialType } from '@dae/database'
 
-export function useTransferCredentials(courseAddress: Address) {
+export function useTransferCredentials(
+  courseAddress: Address,
+  credentialType: CredentialType,
+) {
   const [error, setError] = useState<string | null>(null)
   const [isError, setIsError] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
@@ -15,7 +19,7 @@ export function useTransferCredentials(courseAddress: Address) {
   const { writeAsync } = useContractWrite({
     abi: CredentialsBurnableAbi,
     address: courseAddress,
-    functionName: 'mint',
+    functionName: credentialType === 'MAGISTER' ? 'mintMagister' : 'mint',
   })
 
   const transfer = async (

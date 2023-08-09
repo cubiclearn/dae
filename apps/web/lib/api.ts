@@ -35,6 +35,21 @@ export const getCourseStudents = async (
   })
 }
 
+export const getCourseTeachers = async (
+  courseAddress: Address,
+  chainId: number,
+): Promise<UserCredentials[]> => {
+  return prisma.userCredentials.findMany({
+    where: {
+      course_address: sanitizeAddress(courseAddress),
+      chain_id: chainId,
+      credential: {
+        type: 'MAGISTER',
+      },
+    },
+  })
+}
+
 export const getUserCourses = async (
   userAddress: Address,
   chainId: number,
