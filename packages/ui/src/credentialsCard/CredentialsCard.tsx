@@ -19,7 +19,13 @@ export const CredentialsCard: FC<CredentialsCardProps> = ({ data }) => {
   return (
     <Card maxW='sm'>
       <CardBody>
-        <Image src={data.image_url} alt='' borderRadius='lg' aspectRatio={1} />
+        <Image
+          src={data.image_url}
+          alt=''
+          borderRadius='lg'
+          aspectRatio={1}
+          w={'100%'}
+        />
         <Stack mt='6' spacing='3'>
           <Heading size='md'>{data.name}</Heading>
           <Text>{data.description}</Text>
