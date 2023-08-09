@@ -139,7 +139,7 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
           },
         })
 
-        const [adminCredential, magisterCredential, _discipulusCredential] =
+        const [adminCredential, _magisterCredential, _discipulusCredential] =
           await Promise.all([
             prisma.credential.create({
               data: {
@@ -224,26 +224,26 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
               discord_handle: '',
             },
           }),
-          await prisma.userCredentials.create({
-            data: {
-              course: {
-                connect: {
-                  address_chain_id: {
-                    address: sanitizeAddress(course.address as Address),
-                    chain_id: course.chain_id,
-                  },
-                },
-              },
-              user_address: sanitizeAddress(transaction.from),
-              credential: {
-                connect: {
-                  id: magisterCredential.id,
-                },
-              },
-              email: '',
-              discord_handle: '',
-            },
-          }),
+          // await prisma.userCredentials.create({
+          //   data: {
+          //     course: {
+          //       connect: {
+          //         address_chain_id: {
+          //           address: sanitizeAddress(course.address as Address),
+          //           chain_id: course.chain_id,
+          //         },
+          //       },
+          //     },
+          //     user_address: sanitizeAddress(transaction.from),
+          //     credential: {
+          //       connect: {
+          //         id: magisterCredential.id,
+          //       },
+          //     },
+          //     email: '',
+          //     discord_handle: '',
+          //   },
+          // }),
         ])
 
         return course

@@ -14,7 +14,7 @@ export default function Teaching() {
       </Head>
       <Layout.Profile heading='Teaching'>
         <Stack spacing={8}>
-          <CourseCardList role='MAGISTER' />
+          <CourseCardList role='EDUCATOR' />
         </Stack>
       </Layout.Profile>
     </>
