@@ -1,19 +1,7 @@
 import { FC } from 'react'
 import React from 'react'
-import { ConnectButton } from '../app/header/ConnectButton'
-import {
-  IconButton,
-  Box,
-  Flex,
-  HStack,
-  useColorModeValue,
-  Text,
-  useDisclosure,
-  FlexProps,
-  Stack,
-  Link,
-} from '@chakra-ui/react'
-import { FiMenu, FiUsers, FiZap, FiBookOpen, FiShield } from 'react-icons/fi'
+import { Box, Text, useDisclosure, Stack, Link } from '@chakra-ui/react'
+import { FiUsers, FiZap, FiBookOpen, FiShield } from 'react-icons/fi'
 import { MdOutlinePoll } from 'react-icons/md'
 import { useRouter } from 'next/router'
 import { Address } from 'viem'
@@ -23,6 +11,7 @@ import NextLink from 'next/link'
 import { NavigationMenu, NavigationMenuItem } from './NavigationMenu'
 import { Sidebar } from './SideBar'
 import { BaseDrawer } from './Drawer'
+import { Header } from './Header'
 
 const openedAccorditionIndex = (pathname: string) => {
   if (pathname.startsWith('/course/[address]/credentials')) {
@@ -34,47 +23,6 @@ const openedAccorditionIndex = (pathname: string) => {
   } else {
     return undefined
   }
-}
-
-interface HeaderProps extends FlexProps {
-  onOpen: () => void
-}
-export const Header: FC<HeaderProps> = ({ onOpen, ...rest }) => {
-  return (
-    <Flex
-      px={{ base: 4, md: 8 }}
-      height='20'
-      alignItems='center'
-      bg={useColorModeValue('white', 'gray.900')}
-      borderBottomWidth='1px'
-      borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
-      justifyContent={{ base: 'space-between', md: 'flex-end' }}
-      as='header'
-      position={'fixed'}
-      right={0}
-      zIndex={'sticky'}
-      width={{ md: 'calc(100% - 240px)', base: '100%' }}
-      {...rest}
-    >
-      <IconButton
-        display={{ base: 'flex', md: 'none' }}
-        onClick={onOpen}
-        variant='outline'
-        aria-label='open menu'
-        icon={<FiMenu />}
-      />
-      <HStack spacing={{ base: '0', md: '6' }}>
-        <Flex alignItems={'center'}>
-          <ConnectButton />
-        </Flex>
-      </HStack>
-    </Flex>
-  )
-}
-
-type Props = {
-  children?: React.ReactNode
-  heading: string
 }
 
 const CourseNavigationMenu: React.FC = () => {
@@ -174,6 +122,11 @@ const CourseNavigationMenu: React.FC = () => {
   )
 }
 
+type Props = {
+  children?: React.ReactNode
+  heading: string
+}
+
 export const CourseLayout: FC<Props> = ({ children, heading }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { query } = useRouter()
@@ -186,7 +139,7 @@ export const CourseLayout: FC<Props> = ({ children, heading }) => {
       <BaseDrawer isOpen={isOpen} onClose={onClose}>
         <CourseNavigationMenu />
       </BaseDrawer>
-      <Header onOpen={onOpen} as='header' />
+      <Header onOpen={onOpen} showDrawerButton={true} />
       <Box
         position={'absolute'}
         top={'80px'}

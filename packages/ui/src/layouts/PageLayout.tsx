@@ -1,15 +1,6 @@
 import { FC } from 'react'
-import {
-  Box,
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerHeader,
-  DrawerOverlay,
-  useDisclosure,
-} from '@chakra-ui/react'
-import { Header } from '../app/header'
+import { Box, Drawer, DrawerContent, useDisclosure } from '@chakra-ui/react'
+import { Header } from './Header'
 import { IconType } from 'react-icons'
 
 type NavItemChildProps = {
@@ -52,14 +43,8 @@ export const PageLayout: FC<Props> = ({
         onOverlayClick={onClose}
         size='xs'
       >
-        <DrawerOverlay />
         <DrawerContent>
-          {/* <SidebarContent onClose={onClose} /> */}
-          <DrawerCloseButton />
-          <DrawerHeader>MENU</DrawerHeader>
-          <DrawerBody>
-            <></>
-          </DrawerBody>
+          <></>
         </DrawerContent>
       </Drawer>
 
