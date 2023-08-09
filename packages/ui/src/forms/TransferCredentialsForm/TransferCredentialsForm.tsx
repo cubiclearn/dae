@@ -116,16 +116,18 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
                 }}
               >
                 {data ? (
-                  data.map((credential) => {
-                    return (
-                      <option
-                        key={credential.ipfs_cid}
-                        value={credential.ipfs_url}
-                      >
-                        {credential.name}
-                      </option>
-                    )
-                  })
+                  data
+                    .filter((credential) => credential.type === 'OTHER')
+                    .map((credential) => {
+                      return (
+                        <option
+                          key={credential.ipfs_cid}
+                          value={credential.ipfs_url}
+                        >
+                          {credential.name}
+                        </option>
+                      )
+                    })
                 ) : (
                   <></>
                 )}

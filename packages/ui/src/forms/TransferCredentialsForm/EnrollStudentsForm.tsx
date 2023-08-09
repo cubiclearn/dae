@@ -25,10 +25,7 @@ const validationSchema = Yup.object().shape({
     .matches(ethereumAddressRegex, 'Invalid Ethereum address')
     .required('Ethereum address is required'),
   userEmail: Yup.string().email('Invalid email'),
-  userDiscordUsername: Yup.string().matches(
-    /^[a-zA-Z0-9_]{1,32}#[0-9]{4}$/,
-    'Invalid Discord username',
-  ),
+  userDiscordUsername: Yup.string(),
 })
 
 type TransferCredentialsFormProps = {
