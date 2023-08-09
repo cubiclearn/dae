@@ -12,6 +12,8 @@ import { NavigationMenu, NavigationMenuItem } from './NavigationMenu'
 import { Sidebar } from './SideBar'
 import { BaseDrawer } from './Drawer'
 import { Header } from './Header'
+import { ChainBlockExplorer } from '@dae/chains'
+import { useNetwork } from 'wagmi'
 
 const openedAccorditionIndex = (pathname: string) => {
   if (pathname.startsWith('/course/[address]/credentials')) {
@@ -130,6 +132,7 @@ type Props = {
 export const CourseLayout: FC<Props> = ({ children, heading }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { query } = useRouter()
+  const { chain } = useNetwork()
 
   return (
     <Box minH='100vh'>
@@ -163,7 +166,9 @@ export const CourseLayout: FC<Props> = ({ children, heading }) => {
             Course:{' '}
             <Link
               as={NextLink}
-              href={`https://etherscan.io/address/${query.address}`}
+              href={`${
+                ChainBlockExplorer[chain?.id as keyof ChainBlockExplorer]
+              }/address/${query.address}`}
               textDecoration={'none'}
               target='_blank'
             >
