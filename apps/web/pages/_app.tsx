@@ -17,6 +17,8 @@ import {
   GetSiweMessageOptions,
 } from '@rainbow-me/rainbowkit-siwe-next-auth'
 
+import theme from './theme'
+
 const supportedChains =
   process.env.NODE_ENV !== 'production' ? [sepolia, foundry] : [sepolia]
 
@@ -67,6 +69,7 @@ const MyApp = ({ Component, pageProps }: AppProps<{ session: Session }>) => {
               toastOptions={{
                 defaultOptions: { position: 'top-right' },
               }}
+              theme={theme}
             >
               <Layout.Base>
                 <Component {...pageProps} />
