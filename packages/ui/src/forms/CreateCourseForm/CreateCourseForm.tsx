@@ -245,10 +245,15 @@ export const CreateCourseForm = () => {
               <NumberInput
                 allowMouseWheel
                 defaultValue={0}
+                min={0}
                 id='magisterBaseKarma'
-                onChange={(_valueAsString, valueAsNumber) =>
-                  setFieldValue('magisterBaseKarma', valueAsNumber)
-                }
+                onChange={(_valueAsString, valueAsNumber) => {
+                  if (isNaN(valueAsNumber)) {
+                    setFieldValue('magisterBaseKarma', 0) // Set to a default value or any other appropriate value
+                  } else {
+                    setFieldValue('magisterBaseKarma', valueAsNumber)
+                  }
+                }}
                 value={values.magisterBaseKarma}
                 onBlur={handleBlur}
               >
@@ -271,10 +276,15 @@ export const CreateCourseForm = () => {
             <NumberInput
               allowMouseWheel
               defaultValue={0}
+              min={0}
               id='discipulusBaseKarma'
-              onChange={(_valueAsString, valueAsNumber) =>
-                setFieldValue('discipulusBaseKarma', valueAsNumber)
-              }
+              onChange={(_valueAsString, valueAsNumber) => {
+                if (isNaN(valueAsNumber)) {
+                  setFieldValue('discipulusBaseKarma', 0) // Set to a default value or any other appropriate value
+                } else {
+                  setFieldValue('discipulusBaseKarma', valueAsNumber)
+                }
+              }}
               value={values.discipulusBaseKarma}
               onBlur={handleBlur}
             >

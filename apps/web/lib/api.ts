@@ -79,7 +79,7 @@ export const getUserCourses = async (
           some: {
             OR: [
               {
-                type: 'MAGISTER', // Change this to your role enum value
+                type: 'MAGISTER',
                 user_credentials: {
                   some: {
                     user_address: sanitizeAddress(userAddress),
@@ -87,7 +87,7 @@ export const getUserCourses = async (
                 },
               },
               {
-                type: 'ADMIN', // Change this to your role enum value
+                type: 'ADMIN',
                 user_credentials: {
                   some: {
                     user_address: sanitizeAddress(userAddress),

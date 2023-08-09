@@ -122,9 +122,13 @@ export const TransferKarmaForm: React.FC<any> = () => {
                   defaultValue={0}
                   min={karmaBalance ? -Number(karmaBalance) : 0}
                   id='karmaIncrement'
-                  onChange={(_valueAsString, valueAsNumber) =>
-                    setFieldValue('karmaIncrement', valueAsNumber)
-                  }
+                  onChange={(_valueAsString, valueAsNumber) => {
+                    if (isNaN(valueAsNumber)) {
+                      setFieldValue('karmaIncrement', 0) // Set to a default value or any other appropriate value
+                    } else {
+                      setFieldValue('karmaIncrement', valueAsNumber)
+                    }
+                  }}
                   value={values.karmaIncrement}
                   onBlur={handleBlur}
                 >
