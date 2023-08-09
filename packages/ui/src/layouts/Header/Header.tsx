@@ -1,11 +1,11 @@
-import { Flex, IconButton, HStack } from '@chakra-ui/react'
+import { Flex, IconButton, HStack, FlexProps } from '@chakra-ui/react'
 import { useColorModeValue } from '@chakra-ui/system'
 import { ConnectButton } from './ConnectButton'
 import { FC } from 'react'
 import { FiMenu } from 'react-icons/fi'
 import { Logo } from '../Logo'
 
-type HeaderProps = {
+interface HeaderProps extends FlexProps {
   onOpen: () => void
   showDrawerButton: boolean
 }
@@ -23,12 +23,10 @@ export const Header: FC<HeaderProps> = ({
       bg={useColorModeValue('white', 'gray.900')}
       borderBottomWidth='1px'
       borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
-      justifyContent={{ base: 'space-between', md: 'flex-end' }}
       as='header'
       position={'fixed'}
       right={0}
       zIndex={'sticky'}
-      width={{ md: 'calc(100% - 240px)', base: '100%' }}
       {...rest}
     >
       {showDrawerButton ? (

@@ -142,7 +142,12 @@ export const CourseLayout: FC<Props> = ({ children, heading }) => {
       <BaseDrawer isOpen={isOpen} onClose={onClose}>
         <CourseNavigationMenu />
       </BaseDrawer>
-      <Header onOpen={onOpen} showDrawerButton={true} />
+      <Header
+        onOpen={onOpen}
+        showDrawerButton={true}
+        width={{ md: 'calc(100% - 240px)', base: '100%' }}
+        justifyContent={{ base: 'space-between', md: 'flex-end' }}
+      />
       <Box
         position={'absolute'}
         top={'80px'}
