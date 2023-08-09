@@ -17,7 +17,7 @@ import {
   GetSiweMessageOptions,
 } from '@rainbow-me/rainbowkit-siwe-next-auth'
 
-import theme from './theme'
+import theme from '../lib/theme'
 
 const supportedChains =
   process.env.NODE_ENV !== 'production' ? [sepolia, foundry] : [sepolia]
