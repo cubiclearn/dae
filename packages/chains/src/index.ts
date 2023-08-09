@@ -44,3 +44,12 @@ export const FactoryContractAddress = {
 
 export type FactoryContractAddress =
   typeof FactoryContractAddress[keyof typeof FactoryContractAddress]
+
+export const ChainBlockExplorer = {
+  [ChainId.ETHEREUM]: 'https://etherscan.io',
+  [ChainId.SEPOLIA]: 'https://sepolia.etherscan.io',
+  [ChainId.FOUNDRY]: process.env.NEXT_PUBLIC_FOUNDRY_BLOCK_EXPLORER_URL,
+} as const
+
+export type ChainBlockExplorer =
+  typeof ChainBlockExplorer[keyof typeof ChainBlockExplorer]
