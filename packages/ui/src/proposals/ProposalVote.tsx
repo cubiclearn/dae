@@ -1,36 +1,64 @@
-import React, { ChangeEvent, useCallback, useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import {
   Button,
-  VStack,
   Select,
   Text,
-  HStack,
   useToast,
   Alert,
   AlertDescription,
   AlertIcon,
   AlertTitle,
   Box,
+  FormControl,
+  FormErrorMessage,
+  Stack,
+  FormLabel,
+  Textarea,
 } from '@chakra-ui/react'
 import { Proposal, useVotePropsal } from '@dae/snapshot'
 import { ChainSnapshotHub } from '@dae/chains'
+import { useFormik } from 'formik'
+import * as Yup from 'yup'
+
+const validationSchema = Yup.object().shape({
+  vote: Yup.string().required('Vote is required'),
+  reason: Yup.string(),
+})
 
 type ProposalVoteProps = {
   proposal: Proposal
 }
 
 export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
-  const [choice, setChoice] = useState<number>(1)
+  const toast = useToast()
 
   const { vote, isError, isLoading, isSuccess, error } = useVotePropsal(
     proposal.space.id,
     parseInt(proposal.network) as keyof typeof ChainSnapshotHub,
     proposal.id,
     proposal.type,
-    choice,
   )
 
-  const toast = useToast()
+  const {
+    values,
+    errors,
+    touched,
+    handleBlur,
+    handleSubmit,
+    setFieldValue,
+    handleChange,
+  } = useFormik({
+    initialValues: {
+      vote: 1,
+      reason: '',
+    },
+    onSubmit: async (values) => {
+      try {
+        vote(values.vote, values.reason)
+      } catch (_e) {}
+    },
+    validationSchema: validationSchema,
+  })
 
   useEffect(() => {
     if (isError) {
@@ -53,30 +81,21 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
     }
   }, [isLoading, isError, isSuccess])
 
-  const onVoteChoiceChange = useCallback(
-    (event: ChangeEvent<HTMLSelectElement>) => {
-      const targetValue = parseInt(event.target.value)
-      setChoice(targetValue)
-    },
-    [],
-  )
-
-  const onVote = async () => {
-    try {
-      await vote()
-    } catch (_e) {}
-  }
-
   return (
-    <VStack spacing={4} alignItems={'flex-start'}>
-      <Text fontSize={'lg'} fontWeight={'bold'}>
-        Cast a vote
-      </Text>
-      <VStack spacing={4} alignItems={'flex-start'}>
-        <HStack spacing={4} alignItems={'flex-start'}>
+    <form onSubmit={handleSubmit}>
+      <Stack spacing={4}>
+        <Text fontSize={'lg'} fontWeight={'bold'}>
+          Cast a vote
+        </Text>
+        <FormControl isRequired isInvalid={!!errors.vote && touched.vote}>
+          <FormLabel>Vote</FormLabel>
           <Select
-            onChange={onVoteChoiceChange}
-            defaultValue={proposal.choices[0]}
+            onChange={(event: any) => {
+              const targetValue = parseInt(event.target.value)
+              setFieldValue('vote', targetValue)
+            }}
+            onBlur={handleBlur}
+            value={values.vote}
           >
             {proposal.choices.map((choice, index) => {
               return (
@@ -86,20 +105,39 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
               )
             })}
           </Select>
-          <Button onClick={onVote}>Vote</Button>
-        </HStack>
+          <FormErrorMessage>{errors.vote}</FormErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={!!errors.reason && touched.reason}>
+          <FormLabel>Reason</FormLabel>
+          <Textarea
+            id="motivation"
+            value={values.reason}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            placeholder="Motivation..."
+          />
+          <FormErrorMessage>{errors.reason}</FormErrorMessage>
+        </FormControl>
+        <Button
+          colorScheme="blue"
+          type="submit"
+          isLoading={isLoading}
+          loadingText="Submitting"
+        >
+          Vote
+        </Button>
         {isError ? (
-          <Alert status='error'>
+          <Alert status="error">
             <AlertIcon />
             <Box>
-              <AlertTitle>Error.</AlertTitle>
+              <AlertTitle>Error</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
             </Box>
           </Alert>
         ) : (
           <></>
         )}
-      </VStack>
-    </VStack>
+      </Stack>
+    </form>
   )
 }

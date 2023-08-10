@@ -10,7 +10,6 @@ export const useVotePropsal = (
   spaceNetwork: keyof typeof ChainSnapshotHub,
   proposalId: string,
   type: ProposalType,
-  choice: number,
 ) => {
   const { address } = useAccount()
   const [error, setError] = useState<string | null>(null)
@@ -22,7 +21,7 @@ export const useVotePropsal = (
   const snapshotClient = new snapshot.Client712(hub)
   const signer = useEthersSigner()
 
-  const vote = async () => {
+  const vote = async (choice: number, reason: string) => {
     try {
       setIsSuccess(false)
       setIsError(false)
@@ -32,6 +31,7 @@ export const useVotePropsal = (
         proposal: proposalId,
         type: type,
         choice: choice,
+        reason: reason,
       })
       setIsLoading(false)
       setIsSuccess(true)
