@@ -36,11 +36,7 @@ const validationSchema = Yup.object().shape({
     .min(1, 'At least one choice is required'),
 })
 
-type CreateCredentialsFormProps = {
-  courseAddress: string
-}
-
-export const CreateProposalForm: React.FC<CreateCredentialsFormProps> = () => {
+export const CreateProposalForm: React.FC = () => {
   const { data } = useCourseData()
   const toast = useToast()
   const { create, isLoading, isError, isSuccess, error } = useCreateProposal(
