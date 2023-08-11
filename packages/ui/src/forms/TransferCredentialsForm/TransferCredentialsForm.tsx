@@ -51,6 +51,7 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
       handleChange,
       handleSubmit,
       setFieldValue,
+      resetForm,
     } = useFormik({
       initialValues: {
         userAddress: '',
@@ -59,6 +60,7 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
       onSubmit: async (values) => {
         try {
           await transfer(values.userAddress as Address, values.tokenURI, '', '')
+          resetForm()
         } catch (_e) {}
       },
       validationSchema: validationSchema,
@@ -86,7 +88,7 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
     }, [isLoading, isError, isSuccess])
 
     return (
-      <Box padding={8} borderRadius='xl' bg={'white'} boxShadow={'base'}>
+      <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
         <form onSubmit={handleSubmit}>
           <Stack spacing={4}>
             <FormControl
@@ -95,12 +97,12 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
             >
               <FormLabel>Ethereum Address</FormLabel>
               <Input
-                id='userAddress'
+                id="userAddress"
                 value={values.userAddress}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                type='text'
-                placeholder='Etereum Address'
+                type="text"
+                placeholder="Etereum Address"
               />
               <FormErrorMessage>{errors.userAddress}</FormErrorMessage>
             </FormControl>
@@ -110,7 +112,7 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
             >
               <FormLabel>Credential</FormLabel>
               <Select
-                placeholder='Select option'
+                placeholder="Select option"
                 onChange={(event: ChangeEvent<HTMLSelectElement>) => {
                   setFieldValue('tokenURI', event.target.value)
                 }}
@@ -135,15 +137,15 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
               <FormErrorMessage>{errors.tokenURI}</FormErrorMessage>
             </FormControl>
             <Button
-              colorScheme='blue'
-              type='submit'
+              colorScheme="blue"
+              type="submit"
               isLoading={isLoading || isSigning}
-              loadingText='Submitting'
+              loadingText="Submitting"
             >
               Assign Credential
             </Button>
             {isError ? (
-              <Alert status='error'>
+              <Alert status="error">
                 <AlertIcon />
                 <Box>
                   <AlertTitle>Error</AlertTitle>
