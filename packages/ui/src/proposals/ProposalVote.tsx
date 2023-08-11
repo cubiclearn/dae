@@ -64,7 +64,8 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
     },
     onSubmit: async (values) => {
       try {
-        vote(values.vote, values.reason)
+        await vote(values.vote, values.reason)
+        window.location.reload()
       } catch (_e) {}
     },
     validationSchema: validationSchema,
