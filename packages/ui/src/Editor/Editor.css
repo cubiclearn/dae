@@ -1,0 +1,21 @@
+.quill {
+    border-radius: 0.375rem;
+    border-color: #e2e8f0;
+}
+
+.quill>.ql-toolbar {
+    border-color: #e2e8f0;
+    border-top-left-radius: 0.375rem;
+    border-top-right-radius: 0.375rem;
+}
+
+.quill>.ql-container {
+    border-color: #e2e8f0;
+    border-bottom-left-radius: 0.375rem;
+    border-bottom-right-radius: 0.375rem;
+}
+
+.quill>.ql-container>.ql-editor.ql-blank {
+    font-size: 1rem;
+    font-style: normal;
+}

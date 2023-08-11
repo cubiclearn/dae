@@ -15,7 +15,6 @@ import {
   InputLeftAddon,
   InputRightElement,
   Stack,
-  Textarea,
   useToast,
 } from '@chakra-ui/react'
 import { useCreateProposal } from '@dae/snapshot'
@@ -25,6 +24,7 @@ import * as Yup from 'yup'
 import { useCourseData } from '../../CourseProvider'
 import { useRouter } from 'next/router'
 import { Address } from 'viem'
+import Editor, { EditorContentChanged } from '../../Editor/Editor'
 
 const validationSchema = Yup.object().shape({
   title: Yup.string().required('Name is required'),
@@ -123,11 +123,12 @@ export const CreateProposalForm: React.FC = () => {
             isInvalid={!!errors.description && touched.description}
           >
             <FormLabel>Description</FormLabel>
-            <Textarea
+            <Editor
               id="description"
               value={values.description}
-              onChange={handleChange}
-              onBlur={handleBlur}
+              onChange={(content: EditorContentChanged) => {
+                setFieldValue('description', content.markdown)
+              }}
               placeholder="Description"
             />
             <FormErrorMessage>{errors.description}</FormErrorMessage>
