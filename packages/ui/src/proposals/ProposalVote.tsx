@@ -117,7 +117,7 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
         <AlertIcon />
         <Box>
           <AlertTitle>You have already voted!</AlertTitle>
-          <AlertDescription>{`You have voted: ${
+          <AlertDescription>{`Your vote: ${
             proposal.choices[userVote.votes[0].choice - 1]
           }`}</AlertDescription>
         </Box>

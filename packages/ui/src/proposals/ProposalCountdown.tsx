@@ -79,7 +79,7 @@ export const ProposalCountdownTimer: React.FC<ProposalCountdownTimerProps> = ({
   return (
     <Stack spacing={4}>
       <Text fontSize={'xl'} fontWeight={'semibold'}>
-        Voting end in:
+        Voting ends in:
       </Text>
       <Stack direction="row" spacing={4}>
         <Stack width={'25%'}>

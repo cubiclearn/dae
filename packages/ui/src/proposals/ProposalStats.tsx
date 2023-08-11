@@ -26,7 +26,7 @@ export const ProposalStats: React.FC<ProposalStatsProps> = ({
       <Text fontSize={'lg'} fontWeight={'bold'}>
         Votes
       </Text>
-      <Stack spacing={4}>
+      <Stack spacing={6} pt={2}>
         {sortedChoices.map(({ choice, score }) => {
           return (
             <Stack spacing={2} key={choice}>
@@ -40,6 +40,7 @@ export const ProposalStats: React.FC<ProposalStatsProps> = ({
                 size="lg"
                 value={score ? (score / total_score) * 100 : 0}
                 width={'100%'}
+                borderRadius={'md'}
               />
             </Stack>
           )
