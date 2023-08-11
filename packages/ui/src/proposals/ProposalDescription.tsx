@@ -1,11 +1,11 @@
 import React from 'react'
 import {
-  VStack,
   Text,
   Heading,
   List,
   ListItem,
   UnorderedList,
+  Stack,
 } from '@chakra-ui/react'
 import { Proposal } from '@dae/snapshot'
 import ReactMarkdown from 'react-markdown'
@@ -18,24 +18,24 @@ export const ProposalDescription: React.FC<ProposalDescriptionProps> = ({
   proposal,
 }) => {
   return (
-    <VStack spacing={4} alignItems={'flex-start'}>
+    <Stack spacing={4}>
       <Text fontSize={'lg'} fontWeight={'bold'}>
         Description
       </Text>
       <ReactMarkdown
         components={{
           h1: ({ children }) => (
-            <Heading as='h3' fontSize={'2xl'} fontWeight={'normal'} mt='4'>
+            <Heading as="h3" fontSize={'2xl'} fontWeight={'normal'} mt="4">
               {children}
             </Heading>
           ),
           h2: ({ children }) => (
-            <Heading as='h4' fontSize={'xl'} fontWeight={'normal'} mt='4'>
+            <Heading as="h4" fontSize={'xl'} fontWeight={'normal'} mt="4">
               {children}
             </Heading>
           ),
           h3: ({ children }) => (
-            <Heading as='h5' fontSize={'lg'} fontWeight={'normal'} mt='4'>
+            <Heading as="h5" fontSize={'lg'} fontWeight={'normal'} mt="4">
               {children}
             </Heading>
           ),
@@ -47,6 +47,6 @@ export const ProposalDescription: React.FC<ProposalDescriptionProps> = ({
       >
         {proposal.body}
       </ReactMarkdown>
-    </VStack>
+    </Stack>
   )
 }

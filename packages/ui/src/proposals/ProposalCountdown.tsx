@@ -1,4 +1,4 @@
-import { HStack, VStack, Text } from '@chakra-ui/react'
+import { Text, Stack } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 
 type TimeLeft = {
@@ -67,38 +67,38 @@ export const ProposalCountdownTimer: React.FC<ProposalCountdownTimerProps> = ({
 
   if (Date.now() / 1000 > timestamp) {
     return (
-      <VStack spacing={2}>
+      <Stack spacing={2}>
         <Text fontSize={'xl'} fontWeight={'semibold'}>
           Ended on:
         </Text>
         <Text fontSize={'lg'}>{timestampToDate(timestamp)}</Text>
-      </VStack>
+      </Stack>
     )
   }
 
   return (
-    <VStack spacing={4}>
+    <Stack spacing={4}>
       <Text fontSize={'xl'} fontWeight={'semibold'}>
-        VOTING ENDS IN:
+        Voting end in:
       </Text>
-      <HStack alignContent={'flex-start'} spacing={4}>
-        <VStack width={'25%'}>
+      <Stack direction="row" spacing={4}>
+        <Stack width={'25%'}>
           <Text fontSize={'lg'}>{timeLeft.days}</Text>
           <Text>Days</Text>
-        </VStack>
-        <VStack width={'25%'}>
+        </Stack>
+        <Stack width={'25%'}>
           <Text fontSize={'lg'}>{timeLeft.hours}</Text>
           <Text>Hours</Text>
-        </VStack>
-        <VStack width={'25%'}>
+        </Stack>
+        <Stack width={'25%'}>
           <Text fontSize={'lg'}>{timeLeft.minutes}</Text>
           <Text>Minutes</Text>
-        </VStack>
-        <VStack width={'25%'}>
+        </Stack>
+        <Stack width={'25%'}>
           <Text fontSize={'lg'}>{timeLeft.seconds}</Text>
           <Text>Seconds</Text>
-        </VStack>
-      </HStack>
-    </VStack>
+        </Stack>
+      </Stack>
+    </Stack>
   )
 }
