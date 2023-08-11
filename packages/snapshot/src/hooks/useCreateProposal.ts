@@ -5,6 +5,15 @@ import { ChainSnapshotHub } from '@dae/chains'
 import { useState } from 'react'
 import { Proposal } from '@snapshot-labs/snapshot.js/dist/sign/types'
 
+type ProposalCreationResult = {
+  id: string
+  ipfs: string
+  relayer: {
+    address: string
+    receipt: string
+  }
+}
+
 export const useCreateProposal = (snapshotSpaceENS: string | undefined) => {
   const { address } = useAccount()
   const { chain } = useNetwork()
@@ -49,7 +58,7 @@ export const useCreateProposal = (snapshotSpaceENS: string | undefined) => {
         throw new Error('The end date cannot be in the past.')
       }
 
-      await snapshotClient.proposal(
+      const result: ProposalCreationResult = (await snapshotClient.proposal(
         signer as any,
         address as string,
         {
@@ -64,15 +73,15 @@ export const useCreateProposal = (snapshotSpaceENS: string | undefined) => {
           discussion: discussion,
           plugins: JSON.stringify({}),
         } as Proposal,
-      )
+      )) as ProposalCreationResult
 
       setIsLoading(false)
       setIsSuccess(true)
+      return result
     } catch (error: any) {
       setIsLoading(false)
       setIsError(true)
       setError(error.message)
-      console.log(error)
       throw error
     }
   }

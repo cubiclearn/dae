@@ -106,3 +106,20 @@ export const PROPOSAL_VOTES_QUERY = gql`
     }
   }
 `
+export const USER_VOTE_QUERY = gql`
+  query Votes($proposalId: String!, $userAddress:String!) {
+    votes (
+      first: 1
+      where: {
+        proposal: $proposalId
+        voter: $userAddress
+      }
+    ) {
+      id
+      choice
+      proposal {
+        id
+      }
+    }
+  }
+`

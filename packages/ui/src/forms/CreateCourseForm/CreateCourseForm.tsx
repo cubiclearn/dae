@@ -15,6 +15,7 @@ import {
   NumberInputField,
   NumberInputStepper,
   Stack,
+  useSteps,
   useToast,
 } from '@chakra-ui/react'
 import { useCreateCourse, useIsENSOwner } from '@dae/wagmi'
@@ -23,6 +24,7 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { useAccount, useNetwork } from 'wagmi'
 import * as Yup from 'yup'
+import { ProgressStepper } from '../../stepper'
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
@@ -66,10 +68,34 @@ export const CreateCourseForm = () => {
     )
   }
 
-  const { create, isLoading, isError, error, isSuccess, status } =
+  const { create, isLoading, isError, error, isSuccess, step } =
     useCreateCourse(chain, address)
   const toast = useToast()
   const router = useRouter()
+
+  const steps = [
+    {
+      title: 'Uploading',
+      description: 'Uploading files',
+    },
+    {
+      title: 'Sign',
+      description: 'Sign transaction',
+    },
+    {
+      title: 'Process',
+      description: 'Process transaction',
+    },
+    {
+      title: 'Snapshot',
+      description: 'Register snapshot space',
+    },
+  ]
+
+  const { activeStep, setActiveStep } = useSteps({
+    index: 0,
+    count: steps.length,
+  })
 
   const {
     values,
@@ -125,16 +151,19 @@ export const CreateCourseForm = () => {
         status: 'success',
       })
     }
-    if (isLoading && status) {
-      toast({
-        title: status,
-        status: 'info',
-      })
+    if (isLoading && step) {
+      setActiveStep(step)
     }
-  }, [isLoading, isError, isSuccess, status])
+  }, [isLoading, isError, isSuccess, step])
 
   return (
-    <Box padding={8} borderRadius='xl' bg={'white'} boxShadow={'base'}>
+    <Stack
+      spacing={8}
+      padding={8}
+      borderRadius='xl'
+      bg={'white'}
+      boxShadow={'base'}
+    >
       <form onSubmit={handleSubmit}>
         <Stack spacing={4}>
           <FormControl isRequired isInvalid={!!errors.name && touched.name}>
@@ -216,10 +245,15 @@ export const CreateCourseForm = () => {
               <NumberInput
                 allowMouseWheel
                 defaultValue={0}
+                min={0}
                 id='magisterBaseKarma'
-                onChange={(_valueAsString, valueAsNumber) =>
-                  setFieldValue('magisterBaseKarma', valueAsNumber)
-                }
+                onChange={(_valueAsString, valueAsNumber) => {
+                  if (isNaN(valueAsNumber)) {
+                    setFieldValue('magisterBaseKarma', 0) // Set to a default value or any other appropriate value
+                  } else {
+                    setFieldValue('magisterBaseKarma', valueAsNumber)
+                  }
+                }}
                 value={values.magisterBaseKarma}
                 onBlur={handleBlur}
               >
@@ -242,10 +276,15 @@ export const CreateCourseForm = () => {
             <NumberInput
               allowMouseWheel
               defaultValue={0}
+              min={0}
               id='discipulusBaseKarma'
-              onChange={(_valueAsString, valueAsNumber) =>
-                setFieldValue('discipulusBaseKarma', valueAsNumber)
-              }
+              onChange={(_valueAsString, valueAsNumber) => {
+                if (isNaN(valueAsNumber)) {
+                  setFieldValue('discipulusBaseKarma', 0) // Set to a default value or any other appropriate value
+                } else {
+                  setFieldValue('discipulusBaseKarma', valueAsNumber)
+                }
+              }}
               value={values.discipulusBaseKarma}
               onBlur={handleBlur}
             >
@@ -299,6 +338,13 @@ export const CreateCourseForm = () => {
           )}
         </Stack>
       </form>
-    </Box>
+      {isLoading ? (
+        <Box>
+          <ProgressStepper steps={steps} activeStep={activeStep} />
+        </Box>
+      ) : (
+        <></>
+      )}
+    </Stack>
   )
 }

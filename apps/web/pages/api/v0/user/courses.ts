@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
 import { getUserCourses } from '../../../../lib/api'
 import { Address } from 'viem'
+import { Course } from '@dae/database'
 
 // TypeScript enum for request methods
 enum HttpMethod {
@@ -12,7 +13,7 @@ const handleGetRequest = async (req: NextApiRequest, res: NextApiResponse) => {
   const { chainId, userAddress, role } = req.query as {
     chainId: string
     userAddress: Address
-    role: 'MAGISTER' | 'DISCIPULUS'
+    role: 'EDUCATOR' | 'DISCIPULUS'
   }
 
   if (!chainId || !userAddress || !role) {
@@ -20,7 +21,16 @@ const handleGetRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     return
   }
 
-  const courses = await getUserCourses(userAddress, parseInt(chainId), role)
+  let courses: Course[]
+
+  if (role === 'DISCIPULUS') {
+    courses = await getUserCourses(userAddress, parseInt(chainId), 'DISCIPULUS')
+  } else if (role === 'EDUCATOR') {
+    courses = await getUserCourses(userAddress, parseInt(chainId), 'EDUCATOR')
+  } else {
+    res.status(401).json({ success: false, error: 'Bad request' })
+    return
+  }
 
   res.status(200).json({ success: true, data: { courses: courses } })
 }

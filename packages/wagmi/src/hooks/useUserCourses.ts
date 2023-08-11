@@ -20,7 +20,7 @@ const fetcher = async (url: string) => {
 export const useUserCourses = (
   address: Address | undefined,
   chainId: number | undefined,
-  role: 'MAGISTER' | 'DISCIPULUS',
+  role: 'EDUCATOR' | 'DISCIPULUS',
 ) => {
   const url = `/api/v0/user/courses?userAddress=${address}&chainId=${chainId}&role=${role}`
 

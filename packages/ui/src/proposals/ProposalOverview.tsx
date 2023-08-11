@@ -7,9 +7,8 @@ import {
   Box,
   Center,
   Spinner,
-  VStack,
   Text,
-  HStack,
+  Stack,
 } from '@chakra-ui/react'
 import { useSpaceProposal } from '@dae/snapshot'
 import { ProposalCountdownTimer } from './ProposalCountdown'
@@ -36,7 +35,7 @@ export const ProposalOverview: React.FC<ProposalOverviewProps> = ({
 
   if (error) {
     return (
-      <Alert status='error'>
+      <Alert status="error">
         <AlertIcon />
         <Box>
           <AlertTitle>Error</AlertTitle>
@@ -50,7 +49,7 @@ export const ProposalOverview: React.FC<ProposalOverviewProps> = ({
 
   if (!data) {
     return (
-      <Alert status='info'>
+      <Alert status="info">
         <AlertIcon />
         <Box>
           <AlertTitle>Nothing to show.</AlertTitle>
@@ -61,32 +60,31 @@ export const ProposalOverview: React.FC<ProposalOverviewProps> = ({
   }
 
   return (
-    <VStack
-      alignItems={'flex-start'}
-      width={'100%'}
+    <Stack
       padding={8}
-      borderRadius='xl'
+      borderRadius="xl"
       bg={'white'}
       boxShadow={'base'}
+      spacing={8}
     >
-      <HStack alignItems={'flex-start'} width={'100%'} py={6}>
-        <Box width={'60%'}>
-          <VStack width={'100%'} alignItems={'flex-start'}>
-            <Text fontSize={'xl'} fontWeight={'bold'}>
+      <Stack direction={{ base: 'column', lg: 'row' }} spacing={4}>
+        <Box width={{ base: '100%', lg: '70%' }}>
+          <Stack>
+            <Text fontSize={'xl'} fontWeight={'semibold'}>
               {data.proposal.title}
             </Text>
             <Text color={'blackAlpha.700'}>
               Proposed by: {data.proposal.author}
             </Text>
-          </VStack>
+          </Stack>
         </Box>
-        <Box width={'40%'}>
+        <Box width={{ base: '100%', lg: '30%' }}>
           <ProposalCountdownTimer timestamp={data.proposal.end} />
         </Box>
-      </HStack>
+      </Stack>
       <Box
         width={'100%'}
-        py={6}
+        pt={6}
         borderTop={'1px solid'}
         borderColor={'gray.200'}
       >
@@ -98,7 +96,7 @@ export const ProposalOverview: React.FC<ProposalOverviewProps> = ({
       </Box>
       <Box
         width={'100%'}
-        py={6}
+        pt={6}
         borderTop={'1px solid'}
         borderColor={'gray.200'}
       >
@@ -106,7 +104,7 @@ export const ProposalOverview: React.FC<ProposalOverviewProps> = ({
       </Box>
       {data.proposal.state === 'active' ? (
         <Box
-          py={6}
+          pt={6}
           borderTop={'1px solid'}
           borderColor={'gray.200'}
           width={'100%'}
@@ -117,6 +115,6 @@ export const ProposalOverview: React.FC<ProposalOverviewProps> = ({
       ) : (
         <></>
       )}
-    </VStack>
+    </Stack>
   )
 }

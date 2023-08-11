@@ -14,7 +14,7 @@ import { useUserCourses } from '@dae/wagmi'
 import { Address, useAccount, useNetwork } from 'wagmi'
 
 interface CourseCardListProps {
-  role: 'MAGISTER' | 'DISCIPULUS'
+  role: 'EDUCATOR' | 'DISCIPULUS'
 }
 
 export const CourseCardList: React.FC<CourseCardListProps> = ({ role }) => {

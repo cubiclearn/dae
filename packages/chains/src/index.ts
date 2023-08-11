@@ -38,9 +38,18 @@ export type ChainSnapshotWebsite =
 
 export const FactoryContractAddress = {
   [ChainId.ETHEREUM]: '',
-  [ChainId.SEPOLIA]: '0xb2c5d323c04e85dff36d531bd082cfa11846d9cc',
+  [ChainId.SEPOLIA]: '0x2b3176a1534ee38e2bc0402cd6941e16b037024b',
   [ChainId.FOUNDRY]: process.env.NEXT_PUBLIC_FOUNDRY_FACTORY_CONTRACT_ADDRESS,
 } as const
 
 export type FactoryContractAddress =
   typeof FactoryContractAddress[keyof typeof FactoryContractAddress]
+
+export const ChainBlockExplorer = {
+  [ChainId.ETHEREUM]: 'https://etherscan.io',
+  [ChainId.SEPOLIA]: 'https://sepolia.etherscan.io',
+  [ChainId.FOUNDRY]: process.env.NEXT_PUBLIC_FOUNDRY_BLOCK_EXPLORER_URL,
+} as const
+
+export type ChainBlockExplorer =
+  typeof ChainBlockExplorer[keyof typeof ChainBlockExplorer]

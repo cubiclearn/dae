@@ -33,5 +33,25 @@
         "packages/*/package.json",
         "config/*/package.json"
     ],
-    "versionGroups": []
+    "versionGroups": [{
+        "packages": [
+            "**"
+        ],
+        "dependencies": [
+            "@dae/abi",
+            "@dae/chains",
+            "@dae/database",
+            "@dae/hooks",
+            "@dae/snapshot",
+            "@dae/types",
+            "@dae/ui",
+            "@dae/wagmi",
+            "@dae/typescript-config",
+            "@dae/viem-config"
+        ],
+        "dependencyTypes": [
+            "dev"
+        ],
+        "pinVersion": "workspace:*"
+    }]
 }

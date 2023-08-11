@@ -1,10 +1,5 @@
 import { prisma } from '@dae/database'
-import type {
-  Course,
-  UserCredentials,
-  Credential,
-  CredentialType,
-} from '@dae/database'
+import type { Course, UserCredentials, Credential } from '@dae/database'
 import { Address } from 'viem'
 import { sanitizeAddress } from './functions'
 
@@ -35,31 +30,81 @@ export const getCourseStudents = async (
   })
 }
 
+export const getCourseTeachers = async (
+  courseAddress: Address,
+  chainId: number,
+): Promise<UserCredentials[]> => {
+  return prisma.userCredentials.findMany({
+    where: {
+      course_address: sanitizeAddress(courseAddress),
+      chain_id: chainId,
+      credential: {
+        type: 'MAGISTER',
+      },
+    },
+  })
+}
+
 export const getUserCourses = async (
   userAddress: Address,
   chainId: number,
-  type: CredentialType,
+  type: 'EDUCATOR' | 'DISCIPULUS',
 ): Promise<Course[]> => {
-  return prisma.course.findMany({
-    where: {
-      chain_id: chainId,
-      credentials: {
-        some: {
-          type,
-          user_credentials: {
-            some: {
-              user_address: sanitizeAddress(userAddress),
+  if (type === 'DISCIPULUS') {
+    return prisma.course.findMany({
+      where: {
+        chain_id: chainId,
+        credentials: {
+          some: {
+            type,
+            user_credentials: {
+              some: {
+                user_address: sanitizeAddress(userAddress),
+              },
             },
           },
         },
       },
-    },
-    orderBy: [
-      {
-        timestamp: 'desc',
+      orderBy: [
+        {
+          timestamp: 'desc',
+        },
+      ],
+    })
+  } else {
+    return prisma.course.findMany({
+      where: {
+        chain_id: chainId,
+        credentials: {
+          some: {
+            OR: [
+              {
+                type: 'MAGISTER',
+                user_credentials: {
+                  some: {
+                    user_address: sanitizeAddress(userAddress),
+                  },
+                },
+              },
+              {
+                type: 'ADMIN',
+                user_credentials: {
+                  some: {
+                    user_address: sanitizeAddress(userAddress),
+                  },
+                },
+              },
+            ],
+          },
+        },
       },
-    ],
-  })
+      orderBy: [
+        {
+          timestamp: 'desc',
+        },
+      ],
+    })
+  }
 }
 
 export const getCourseCredentials = async (

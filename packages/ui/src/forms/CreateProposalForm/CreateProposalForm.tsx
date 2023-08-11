@@ -1,38 +1,90 @@
+import { MinusIcon, AddIcon } from '@chakra-ui/icons'
 import {
-  Box,
-  Button,
-  FormControl,
-  FormLabel,
-  IconButton,
-  Input,
-  InputGroup,
-  InputRightElement,
-  Stack,
-  VStack,
-  InputLeftAddon,
-  useToast,
   Alert,
   AlertDescription,
   AlertIcon,
   AlertTitle,
-  Textarea,
+  Box,
+  Button,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  IconButton,
+  Input,
+  InputGroup,
+  InputLeftAddon,
+  InputRightElement,
+  Stack,
+  useToast,
 } from '@chakra-ui/react'
 import { useCreateProposal } from '@dae/snapshot'
-import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from 'react'
+import { useFormik } from 'formik'
+import React, { ChangeEvent, useEffect } from 'react'
+import * as Yup from 'yup'
 import { useCourseData } from '../../CourseProvider'
-import { AddIcon, MinusIcon } from '@chakra-ui/icons'
+import { useRouter } from 'next/router'
+import { Address } from 'viem'
+import Editor, { EditorContentChanged } from '../../Editor/Editor'
 
-export const CreateProposalForm = () => {
+const validationSchema = Yup.object().shape({
+  title: Yup.string().required('Name is required'),
+  description: Yup.string().required('Description is required'),
+  discussionLink: Yup.string().url('Invalid URL format'),
+  endDate: Yup.date().required('End Date is required'),
+  choices: Yup.array()
+    .of(Yup.string().required('Choice is required'))
+    .min(1, 'At least one choice is required'),
+})
+
+export const CreateProposalForm: React.FC = () => {
   const { data } = useCourseData()
   const toast = useToast()
   const { create, isLoading, isError, isSuccess, error } = useCreateProposal(
     data ? data.snapshot_space_ens : undefined,
   )
+  const router = useRouter()
+
+  const {
+    values,
+    errors,
+    touched,
+    handleBlur,
+    handleChange,
+    handleSubmit,
+    setFieldValue,
+  } = useFormik({
+    initialValues: {
+      title: '',
+      description: '',
+      discussionLink: '',
+      choices: [''],
+      endDate: undefined,
+    },
+    onSubmit: async (values) => {
+      try {
+        if (!values.endDate) {
+          throw new Error('End date is unset.')
+        }
+        const result = await create(
+          values.title,
+          values.description,
+          values.choices,
+          (values.endDate as Date).getTime() / 1000,
+          values.discussionLink,
+        )
+
+        router.push(
+          `/course/${router.query.address as Address}/proposals/${result.id}`,
+        )
+      } catch (_e) {}
+    },
+    validationSchema: validationSchema,
+  })
 
   useEffect(() => {
     if (isError) {
       toast({
-        title: 'Error creating proposal.',
+        title: 'Error creating credential.',
         status: 'error',
       })
     }
@@ -44,171 +96,137 @@ export const CreateProposalForm = () => {
     }
     if (isLoading) {
       toast({
-        title: 'Creating proposal...',
+        title: 'Creating new proposal...',
         status: 'info',
       })
     }
   }, [isLoading, isError, isSuccess])
 
-  const [proposalTitle, setProposalTitle] = useState<string>('')
-  const [proposalDescription, setProposalDescription] = useState<string>('')
-  const [proposalDiscussionLink, setProposalDiscussionLink] =
-    useState<string>('')
-  const [proposalChoices, setProposalChoices] = useState<string[]>([''])
-  const [proposalEndDate, setProposalEndDate] = useState(new Date())
-
-  const handleProposalTitleChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const input = event.target.value
-      setProposalTitle(input)
-    },
-    [],
-  )
-
-  const handleProposalDescriptionChange = useCallback(
-    (event: ChangeEvent<HTMLTextAreaElement>) => {
-      const input = event.target.value
-      setProposalDescription(input)
-    },
-    [],
-  )
-
-  const handleProposalDiscussionLinkChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const input = event.target.value
-      setProposalDiscussionLink(input)
-    },
-    [],
-  )
-
-  const handleProposalEndDate = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      // Create a Date object from the datetime-local value
-      const date = new Date(event.target.value)
-      setProposalEndDate(date)
-    },
-    [],
-  )
-
-  const handleChoiceChange = (
-    index: number,
-    event: ChangeEvent<HTMLInputElement>,
-  ) => {
-    const updatedChoices = [...proposalChoices]
-    updatedChoices[index] = event.target.value
-    setProposalChoices(updatedChoices)
-  }
-
-  const addChoice = () => {
-    if (proposalChoices.length < 10) {
-      setProposalChoices([...proposalChoices, ''])
-    }
-  }
-
-  const removeChoice = (index: number) => {
-    const updatedChoices = [...proposalChoices]
-    updatedChoices.splice(index, 1)
-    setProposalChoices(updatedChoices)
-  }
-
-  const clearInputFields = () => {
-    setProposalTitle('')
-    setProposalDescription('')
-    setProposalDiscussionLink('')
-    setProposalChoices([''])
-  }
-
-  const handleCreateProposal = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    try {
-      if (!data) {
-        throw new Error("You're not connected to Web3")
-      }
-      await create(
-        proposalTitle,
-        proposalDescription,
-        proposalChoices,
-        proposalEndDate.getTime() / 1000,
-        proposalDiscussionLink,
-      )
-      clearInputFields()
-    } catch (_e) {}
-  }
   return (
-    <Box padding={8} borderRadius='xl' bg={'white'} boxShadow={'base'}>
-      <form onSubmit={handleCreateProposal}>
-        <VStack spacing={4} alignItems={'flex-start'}>
-          <FormControl>
-            <FormLabel>Title:</FormLabel>
+    <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
+      <form onSubmit={handleSubmit}>
+        <Stack spacing={4}>
+          <FormControl isRequired isInvalid={!!errors.title && touched.title}>
+            <FormLabel>Title</FormLabel>
             <Input
-              onChange={handleProposalTitleChange}
-              value={proposalTitle}
-              type='text'
+              id="title"
+              value={values.title}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              type="text"
+              placeholder="Title"
             />
+            <FormErrorMessage>{errors.title}</FormErrorMessage>
           </FormControl>
-          <FormControl>
-            <FormLabel>Description:</FormLabel>
-            <Textarea
-              onChange={handleProposalDescriptionChange}
-              value={proposalDescription}
+          <FormControl
+            isRequired
+            isInvalid={!!errors.description && touched.description}
+          >
+            <FormLabel>Description</FormLabel>
+            <Editor
+              id="description"
+              value={values.description}
+              onChange={(content: EditorContentChanged) => {
+                setFieldValue('description', content.markdown)
+              }}
+              placeholder="Description"
             />
+            <FormErrorMessage>{errors.description}</FormErrorMessage>
           </FormControl>
-          <FormControl>
+          <FormControl
+            isRequired
+            isInvalid={!!errors.endDate && touched.endDate}
+          >
             <FormLabel>Voting ends on</FormLabel>
             <Input
-              placeholder='Select Date and Time'
-              size='md'
-              type='datetime-local'
-              onChange={handleProposalEndDate}
+              placeholder="Select Date and Time"
+              size="md"
+              type="datetime-local"
+              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                const date = new Date(event.target.value)
+                setFieldValue('endDate', date)
+              }}
             />
+            <FormErrorMessage>{errors.endDate}</FormErrorMessage>
           </FormControl>
-          <FormLabel>Choices</FormLabel>
-          <Stack spacing={4}>
-            {proposalChoices.map((choice, index) => (
-              <InputGroup key={index}>
-                <InputLeftAddon>{index + 1}.</InputLeftAddon>
-                <Input
-                  value={choice}
-                  onChange={(event) => handleChoiceChange(index, event)}
-                  placeholder={`Choice ${index + 1}`}
-                />
-                {index !== 0 && (
-                  <InputRightElement width='4.5rem'>
-                    <IconButton
-                      size='sm'
-                      onClick={() => removeChoice(index)}
-                      aria-label='Remove choice'
-                      icon={<MinusIcon />}
-                      variant='ghost'
-                    />
-                  </InputRightElement>
-                )}
-              </InputGroup>
-            ))}
-            {proposalChoices.length < 10 && (
-              <Box>
-                <Button
-                  size='sm'
-                  onClick={addChoice}
-                  leftIcon={<AddIcon />}
-                  variant='ghost'
-                >
-                  Add Choice
-                </Button>
-              </Box>
-            )}
-          </Stack>
-          <FormControl>
-            <FormLabel>Discussion link:</FormLabel>
+          <FormControl
+            isRequired
+            isInvalid={!!errors.choices && touched.choices}
+          >
+            <FormLabel>Choices</FormLabel>
+            <Stack spacing={4}>
+              {values.choices.map((choice, index) => (
+                <InputGroup key={index}>
+                  <InputLeftAddon>{index + 1}.</InputLeftAddon>
+                  <Input
+                    value={choice}
+                    onChange={(event) => {
+                      const newChoices: string[] = [...values.choices]
+                      newChoices[index] = event.target.value
+                      setFieldValue('choices', newChoices)
+                    }}
+                    placeholder={`Choice ${index + 1}`}
+                  />
+                  {index !== 0 && (
+                    <InputRightElement width="4.5rem">
+                      <IconButton
+                        size="sm"
+                        onClick={() => {
+                          const updatedChoices = [...values.choices]
+                          updatedChoices.splice(index, 1)
+                          setFieldValue('choices', updatedChoices)
+                        }}
+                        aria-label="Remove choice"
+                        icon={<MinusIcon />}
+                        variant="ghost"
+                      />
+                    </InputRightElement>
+                  )}
+                </InputGroup>
+              ))}
+              {values.choices.length < 10 && (
+                <Box>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      if (values.choices.length < 10) {
+                        setFieldValue('choices', [...values.choices, ''])
+                      }
+                    }}
+                    leftIcon={<AddIcon />}
+                    variant="ghost"
+                  >
+                    Add Choice
+                  </Button>
+                </Box>
+              )}
+            </Stack>
+            <FormErrorMessage>{errors.choices}</FormErrorMessage>
+          </FormControl>
+          <FormControl
+            isInvalid={!!errors.discussionLink && touched.discussionLink}
+          >
+            <FormLabel>Discussion Link</FormLabel>
             <Input
-              onChange={handleProposalDiscussionLinkChange}
-              value={proposalDiscussionLink}
-              type='text'
+              id="discussionLink"
+              value={values.discussionLink}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              type="text"
+              placeholder="https://www.proposalforum.com"
             />
+            <FormErrorMessage>{errors.description}</FormErrorMessage>
           </FormControl>
-          <Button type='submit'>Create proposal</Button>
+          <Button
+            colorScheme="blue"
+            type="submit"
+            isLoading={isLoading}
+            loadingText="Submitting"
+          >
+            Create proposal
+          </Button>
           {isError ? (
-            <Alert status='error'>
+            <Alert status="error">
               <AlertIcon />
               <Box>
                 <AlertTitle>Error</AlertTitle>
@@ -218,7 +236,7 @@ export const CreateProposalForm = () => {
           ) : (
             <></>
           )}
-        </VStack>
+        </Stack>
       </form>
     </Box>
   )

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Progress, Text, VStack } from '@chakra-ui/react'
+import { Progress, Stack, Text } from '@chakra-ui/react'
 
 type ProposalStatsProps = {
   choices: string[]
@@ -22,34 +22,30 @@ export const ProposalStats: React.FC<ProposalStatsProps> = ({
     .sort((a, b) => b.score - a.score)
 
   return (
-    <VStack alignItems={'flex-start'} width={'100%'}>
+    <Stack>
       <Text fontSize={'lg'} fontWeight={'bold'}>
         Votes
       </Text>
-      <VStack width={'100%'} spacing={4}>
+      <Stack spacing={6} pt={2}>
         {sortedChoices.map(({ choice, score }) => {
           return (
-            <VStack
-              spacing={2}
-              alignItems={'flex-start'}
-              width={'100%'}
-              key={choice}
-            >
+            <Stack spacing={2} key={choice}>
               <Text fontSize={'md'} fontWeight={'semibold'}>
                 {choice}
               </Text>
               <Text fontSize={'xs'} fontWeight={'semibold'}>
-                {score}
+                {score ?? 0}
               </Text>
               <Progress
-                size='lg'
-                value={(score / total_score) * 100}
+                size="lg"
+                value={score ? (score / total_score) * 100 : 0}
                 width={'100%'}
+                borderRadius={'md'}
               />
-            </VStack>
+            </Stack>
           )
         })}
-      </VStack>
-    </VStack>
+      </Stack>
+    </Stack>
   )
 }

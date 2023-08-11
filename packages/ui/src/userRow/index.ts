@@ -1,2 +1,2 @@
-export * from './StudentsRow'
 export * from './StudentsRowList'
+export * from './TeachersRowList'

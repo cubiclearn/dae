@@ -7,7 +7,7 @@ import {
   Box,
   Center,
   Spinner,
-  VStack,
+  Stack,
 } from '@chakra-ui/react'
 import { useSpaceProposals } from '@dae/snapshot'
 import { ProposalRow } from './ProposalRow'
@@ -34,7 +34,7 @@ export const ProposalRowList: React.FC<ProposalRowListProps> = ({ state }) => {
 
   if (error) {
     return (
-      <Alert status='error'>
+      <Alert status="error">
         <AlertIcon />
         <Box>
           <AlertTitle>Error</AlertTitle>
@@ -48,7 +48,7 @@ export const ProposalRowList: React.FC<ProposalRowListProps> = ({ state }) => {
 
   if (!data || data.proposals!.length === 0) {
     return (
-      <Alert status='info'>
+      <Alert status="info">
         <AlertIcon />
         <Box>
           <AlertTitle>Nothing to show.</AlertTitle>
@@ -59,10 +59,10 @@ export const ProposalRowList: React.FC<ProposalRowListProps> = ({ state }) => {
   }
 
   return (
-    <VStack spacing={6}>
+    <Stack spacing={6}>
       {data.proposals!.map((proposal) => {
         return <ProposalRow key={proposal.id} proposal={proposal} />
       })}
-    </VStack>
+    </Stack>
   )
 }

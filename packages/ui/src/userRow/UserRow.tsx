@@ -5,18 +5,18 @@ import { useCourseData } from '../CourseProvider'
 import { Address } from 'viem'
 import { useKarmaBalance } from '@dae/wagmi'
 
-export type StudentsRowProps = {
-  student: UserCredentials
+export type UserRowProps = {
+  user: UserCredentials
 }
 
-export const StudentsRow: React.FC<StudentsRowProps> = ({ student }) => {
+export const UserRow: React.FC<UserRowProps> = ({ user }) => {
   const course = useCourseData()
 
   const { data: karmaBalance, isSuccess } = useKarmaBalance(
     course.data
       ? (course.data.karma_access_control_address as Address)
       : undefined,
-    student.user_address as Address,
+    user.user_address as Address,
   )
 
   return (
@@ -26,17 +26,17 @@ export const StudentsRow: React.FC<StudentsRowProps> = ({ student }) => {
       </Td>
       <Td>
         <Text verticalAlign={'center'} fontSize='md'>
-          {student.user_address}
+          {user.user_address}
         </Text>
       </Td>
       <Td>
         <Text verticalAlign={'center'} fontSize='md'>
-          {student.email}
+          {user.email}
         </Text>
       </Td>
       <Td>
         <Text verticalAlign={'center'} fontSize='md'>
-          {student.discord_handle}
+          {user.discord_handle}
         </Text>
       </Td>
       <Td isNumeric>{isSuccess ? karmaBalance?.toString() : '--'}</Td>

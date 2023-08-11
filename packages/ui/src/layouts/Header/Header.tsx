@@ -1,10 +1,11 @@
-import { Flex, useColorModeValue, HStack, IconButton } from '@chakra-ui/react'
+import { Flex, IconButton, HStack, FlexProps } from '@chakra-ui/react'
+import { useColorModeValue } from '@chakra-ui/system'
 import { ConnectButton } from './ConnectButton'
 import { FC } from 'react'
 import { FiMenu } from 'react-icons/fi'
-import { Logo } from '../../layouts'
+import { Logo } from '../Logo'
 
-type HeaderProps = {
+interface HeaderProps extends FlexProps {
   onOpen: () => void
   showDrawerButton: boolean
 }
@@ -12,7 +13,8 @@ type HeaderProps = {
 export const Header: FC<HeaderProps> = ({
   onOpen,
   showDrawerButton,
-}): JSX.Element => {
+  ...rest
+}) => {
   return (
     <Flex
       px={{ base: 4, md: 8 }}
@@ -21,30 +23,23 @@ export const Header: FC<HeaderProps> = ({
       bg={useColorModeValue('white', 'gray.900')}
       borderBottomWidth='1px'
       borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
-      justifyContent={'space-between'}
       as='header'
       position={'fixed'}
       right={0}
       zIndex={'sticky'}
-      width={'100%'}
-      top={'0'}
+      {...rest}
     >
       {showDrawerButton ? (
         <IconButton
-          display={'block'}
-          alignSelf={'flex-end'}
+          display={{ base: 'flex', md: 'none' }}
           onClick={onOpen}
           variant='outline'
           aria-label='open menu'
           icon={<FiMenu />}
         />
       ) : (
-        <></>
+        <Logo />
       )}
-      <Logo />
-
-      {/* <SearchBar /> */}
-
       <HStack spacing={{ base: '0', md: '6' }}>
         <Flex alignItems={'center'}>
           <ConnectButton />

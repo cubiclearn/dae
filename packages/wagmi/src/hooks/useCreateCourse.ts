@@ -15,7 +15,7 @@ export function useCreateCourse(chain: Chain, address: Address) {
   const [isSuccess, setIsSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isSigning, setIsSigning] = useState(false)
-  const [status, setStatus] = useState('')
+  const [step, setStep] = useState<null | number>(null)
 
   const { create: createSnapshotSpace } = useCreateSnapshotSpace()
 
@@ -56,7 +56,7 @@ export function useCreateCourse(chain: Chain, address: Address) {
     setIsLoading(true)
 
     try {
-      setStatus('Resolving ENS ownership...')
+      setStep(0)
 
       const resolverAddress = await ensCheckerPublicClient.getEnsAddress({
         name: normalize(snapshotSpaceENS),
@@ -65,8 +65,6 @@ export function useCreateCourse(chain: Chain, address: Address) {
       if (resolverAddress !== address) {
         throw new Error('You are not the owner of this ENS address.')
       }
-
-      setStatus('Uploading metadata to IPFS...')
 
       const formData = new FormData()
 
@@ -87,6 +85,8 @@ export function useCreateCourse(chain: Chain, address: Address) {
         throw new Error('Error uploading course metadata to IPFS')
       }
 
+      setStep(1)
+
       const { Hash: metadataIPFSHash } = await uploadMetadataResponse.json()
 
       if (writeAsync === undefined) {
@@ -106,10 +106,8 @@ export function useCreateCourse(chain: Chain, address: Address) {
         ],
       })
 
-      setStatus('Sending transaction to the network...')
-
       setIsSigning(false)
-      setStatus('Waiting for transaction to be completed...')
+      setStep(2)
 
       const txReceipt = await publicClient.waitForTransactionReceipt({
         hash: writeResult.hash,
@@ -136,7 +134,7 @@ export function useCreateCourse(chain: Chain, address: Address) {
         data: { course: Course }
       }
 
-      setStatus('Waiting to connect the snapshot space...')
+      setStep(3)
 
       await createSnapshotSpace(
         snapshotSpaceENS,
@@ -145,6 +143,8 @@ export function useCreateCourse(chain: Chain, address: Address) {
         responseData.data.course.description,
         responseData.data.course.karma_access_control_address,
       )
+
+      setStep(4)
 
       setIsLoading(false)
       setIsSuccess(true)
@@ -164,6 +164,6 @@ export function useCreateCourse(chain: Chain, address: Address) {
     isSuccess,
     error,
     isSigning,
-    status,
+    step,
   }
 }

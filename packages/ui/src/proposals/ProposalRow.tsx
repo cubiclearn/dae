@@ -1,4 +1,4 @@
-import { Box, Text, VStack, HStack, Link } from '@chakra-ui/react'
+import { Box, Text, Link, Stack } from '@chakra-ui/react'
 import { Proposal } from '@dae/snapshot'
 import { ProposalCountdownTimer } from './ProposalCountdown'
 import NextLink from 'next/link'
@@ -19,26 +19,26 @@ export const ProposalRow: React.FC<ProposalRowProps> = ({ proposal }) => {
       href={`/course/${courseAddress}/proposals/${proposal.id}`}
       _hover={{ textDecoration: 'none' }}
     >
-      <HStack
-        alignItems={'flex-start'}
-        width={'100%'}
+      <Stack
+        direction={{ base: 'column', lg: 'row' }}
         borderRadius={'xl'}
         padding={8}
         bg={'white'}
         boxShadow={'base'}
+        spacing={4}
       >
-        <Box width={'60%'}>
-          <VStack width={'100%'} alignItems={'flex-start'}>
+        <Box width={{ base: '100%', lg: '70%' }}>
+          <Stack>
             <Text fontSize={'xl'} fontWeight={'semibold'}>
               {proposal.title}
             </Text>
             <Text color={'blackAlpha.700'}>Proposed by: {proposal.author}</Text>
-          </VStack>
+          </Stack>
         </Box>
-        <Box width={'40%'}>
+        <Box width={{ base: '100%', lg: '30%' }}>
           <ProposalCountdownTimer timestamp={proposal.end} />
         </Box>
-      </HStack>
+      </Stack>
     </Link>
   )
 }

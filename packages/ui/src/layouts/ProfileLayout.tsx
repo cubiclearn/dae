@@ -1,31 +1,24 @@
 import { FC } from 'react'
 import React from 'react'
-import { ConnectButton } from '../app/header/ConnectButton'
 import {
-  IconButton,
   Box,
   CloseButton,
   Flex,
-  HStack,
   useColorModeValue,
   Drawer,
   DrawerContent,
   Text,
   useDisclosure,
   BoxProps,
-  FlexProps,
   Accordion,
   Stack,
 } from '@chakra-ui/react'
-import { FiBook, FiMenu } from 'react-icons/fi'
+import { FiBook } from 'react-icons/fi'
 import { NavItemDropdown } from './DrawerNavItem'
 import { useRouter } from 'next/router'
 import { Logo } from './Logo'
 import { Web3SafeContainer } from '../Web3SafeContainer'
-
-interface SidebarProps extends BoxProps {
-  onClose: () => void
-}
+import { Header } from './Header'
 
 const openedAccorditionIndex = (pathname: string) => {
   if (pathname.startsWith('/profile/courses')) {
@@ -33,6 +26,10 @@ const openedAccorditionIndex = (pathname: string) => {
   } else {
     return undefined
   }
+}
+
+interface SidebarProps extends BoxProps {
+  onClose: () => void
 }
 
 const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
@@ -81,42 +78,6 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
   )
 }
 
-interface HeaderProps extends FlexProps {
-  onOpen: () => void
-}
-export const Header: FC<HeaderProps> = ({ onOpen, ...rest }) => {
-  return (
-    <Flex
-      px={{ base: 4, md: 8 }}
-      height='20'
-      alignItems='center'
-      bg={useColorModeValue('white', 'gray.900')}
-      borderBottomWidth='1px'
-      borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
-      justifyContent={{ base: 'space-between', md: 'flex-end' }}
-      as='header'
-      position={'fixed'}
-      right={0}
-      zIndex={'sticky'}
-      width={{ md: 'calc(100% - 240px)', base: '100%' }}
-      {...rest}
-    >
-      <IconButton
-        display={{ base: 'flex', md: 'none' }}
-        onClick={onOpen}
-        variant='outline'
-        aria-label='open menu'
-        icon={<FiMenu />}
-      />
-      <HStack spacing={{ base: '0', md: '6' }}>
-        <Flex alignItems={'center'}>
-          <ConnectButton />
-        </Flex>
-      </HStack>
-    </Flex>
-  )
-}
-
 type Props = {
   children?: React.ReactNode
   heading: string
@@ -144,7 +105,12 @@ export const ProfileLayout: FC<Props> = ({ children, heading }) => {
           <SidebarContent onClose={onClose} />
         </DrawerContent>
       </Drawer>
-      <Header onOpen={onOpen} as='header' />
+      <Header
+        onOpen={onOpen}
+        showDrawerButton={true}
+        width={{ md: 'calc(100% - 240px)', base: '100%' }}
+        justifyContent={{ base: 'space-between', md: 'flex-end' }}
+      />
       <Box
         position={'absolute'}
         top={'80px'}

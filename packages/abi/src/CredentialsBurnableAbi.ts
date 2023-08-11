@@ -539,6 +539,29 @@ export const CredentialsBurnableAbi = [
   {
     inputs: [
       {
+        internalType: 'address',
+        name: 'to',
+        type: 'address',
+      },
+      {
+        internalType: 'string',
+        name: 'uri',
+        type: 'string',
+      },
+      {
+        internalType: 'enum IERC5484.BurnAuth',
+        name: 'bAuth',
+        type: 'uint8',
+      },
+    ],
+    name: 'mintMagister',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
         internalType: 'address[]',
         name: 'to',
         type: 'address[]',
