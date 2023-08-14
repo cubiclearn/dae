@@ -1,6 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
-import { CredentialsBurnableAbi, CredentialsFactoryAbi } from '@dae/abi'
+import {
+  CredentialsBurnableAbi,
+  CredentialsFactoryAbi,
+  KarmaAccessControlAbiUint64,
+} from '@dae/abi'
 import { prisma } from '@dae/database'
 import { Address, createPublicClient } from 'viem'
 import { sanitizeAddress } from '../../../../lib/functions'
@@ -84,18 +88,29 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     const karmaAccessControlAddress: Address =
       karmaAccessControlCreatedLog.args.karmaAccessControl
 
-    const [symbol, baseURI] = await Promise.all([
-      client.readContract({
-        address: contractAddress,
-        abi: CredentialsBurnableAbi,
-        functionName: 'symbol',
-      }),
-      client.readContract({
-        address: contractAddress,
-        abi: CredentialsBurnableAbi,
-        functionName: 'baseURI',
-      }),
-    ])
+    const [symbol, baseURI, baseMagisterKarma, baseDiscipulusKarma] =
+      await Promise.all([
+        client.readContract({
+          address: contractAddress,
+          abi: CredentialsBurnableAbi,
+          functionName: 'symbol',
+        }),
+        client.readContract({
+          address: contractAddress,
+          abi: CredentialsBurnableAbi,
+          functionName: 'baseURI',
+        }),
+        client.readContract({
+          address: karmaAccessControlAddress,
+          abi: KarmaAccessControlAbiUint64,
+          functionName: 'BASE_MAGISTER_KARMA',
+        }),
+        client.readContract({
+          address: karmaAccessControlAddress,
+          abi: KarmaAccessControlAbiUint64,
+          functionName: 'BASE_DISCIPULUS_KARMA',
+        }),
+      ])
 
     const timestamp = (
       await client.getBlock({ blockNumber: transaction.blockNumber! })
@@ -136,6 +151,8 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
             karma_access_control_address:
               karmaAccessControlAddress.toLowerCase(),
             snapshot_space_ens: jsonMetadata['snapshot-ens'],
+            magister_base_karma: Number(baseMagisterKarma),
+            discipulus_base_karma: Number(baseDiscipulusKarma),
           },
         })
 
