@@ -138,8 +138,8 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
           Participants
         </Text>
         <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 5 }} spacing={4}>
-          <DashboardBlock title="Total students" value={studentsLength} isInt />
           <DashboardBlock title="Total teachers" value={teachersLength} isInt />
+          <DashboardBlock title="Total students" value={studentsLength} isInt />
         </SimpleGrid>
       </Stack>
       <Stack spacing={4}>
