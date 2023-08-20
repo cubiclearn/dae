@@ -94,6 +94,7 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
           },
         },
         user_address: sanitizeAddress(userAddress),
+        token_id: Number(tokenId),
         credential: {
           connect: {
             course_address_ipfs_cid: {

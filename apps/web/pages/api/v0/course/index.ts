@@ -1,6 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
-import { CredentialsBurnableAbi, CredentialsFactoryAbi } from '@dae/abi'
+import {
+  CredentialsBurnableAbi,
+  CredentialsFactoryAbi,
+  KarmaAccessControlAbiUint64,
+} from '@dae/abi'
 import { prisma } from '@dae/database'
 import { Address, createPublicClient } from 'viem'
 import { sanitizeAddress } from '../../../../lib/functions'
@@ -84,7 +88,13 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     const karmaAccessControlAddress: Address =
       karmaAccessControlCreatedLog.args.karmaAccessControl
 
-    const [symbol, baseURI] = await Promise.all([
+    const [
+      symbol,
+      baseURI,
+      baseMagisterKarma,
+      baseDiscipulusKarma,
+      MAX_SUPPLY,
+    ] = await Promise.all([
       client.readContract({
         address: contractAddress,
         abi: CredentialsBurnableAbi,
@@ -94,6 +104,21 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
         address: contractAddress,
         abi: CredentialsBurnableAbi,
         functionName: 'baseURI',
+      }),
+      client.readContract({
+        address: karmaAccessControlAddress,
+        abi: KarmaAccessControlAbiUint64,
+        functionName: 'BASE_MAGISTER_KARMA',
+      }),
+      client.readContract({
+        address: karmaAccessControlAddress,
+        abi: KarmaAccessControlAbiUint64,
+        functionName: 'BASE_DISCIPULUS_KARMA',
+      }),
+      client.readContract({
+        address: contractAddress,
+        abi: CredentialsBurnableAbi,
+        functionName: 'MAX_SUPPLY',
       }),
     ])
 
@@ -136,6 +161,8 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
             karma_access_control_address:
               karmaAccessControlAddress.toLowerCase(),
             snapshot_space_ens: jsonMetadata['snapshot-ens'],
+            magister_base_karma: Number(baseMagisterKarma),
+            discipulus_base_karma: Number(baseDiscipulusKarma),
           },
         })
 
@@ -215,6 +242,7 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
                 },
               },
               user_address: sanitizeAddress(transaction.from),
+              token_id: Number(MAX_SUPPLY),
               credential: {
                 connect: {
                   id: adminCredential.id,
@@ -224,26 +252,6 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
               discord_handle: '',
             },
           }),
-          // await prisma.userCredentials.create({
-          //   data: {
-          //     course: {
-          //       connect: {
-          //         address_chain_id: {
-          //           address: sanitizeAddress(course.address as Address),
-          //           chain_id: course.chain_id,
-          //         },
-          //       },
-          //     },
-          //     user_address: sanitizeAddress(transaction.from),
-          //     credential: {
-          //       connect: {
-          //         id: magisterCredential.id,
-          //       },
-          //     },
-          //     email: '',
-          //     discord_handle: '',
-          //   },
-          // }),
         ])
 
         return course

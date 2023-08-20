@@ -52,6 +52,7 @@ export const TransferKarmaForm: React.FC<any> = () => {
     handleChange,
     handleSubmit,
     setFieldValue,
+    resetForm,
   } = useFormik({
     initialValues: {
       userAddress: '',
@@ -60,6 +61,7 @@ export const TransferKarmaForm: React.FC<any> = () => {
     onSubmit: async (values) => {
       try {
         await transfer(values.userAddress as Address, values.karmaIncrement)
+        resetForm()
       } catch (_e) {}
     },
     validationSchema: validationSchema,
@@ -92,7 +94,7 @@ export const TransferKarmaForm: React.FC<any> = () => {
   }, [isLoading, isError, isSuccess])
 
   return (
-    <Box padding={8} borderRadius='xl' bg={'white'} boxShadow={'base'}>
+    <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
       <form onSubmit={handleSubmit}>
         <Stack spacing={4}>
           <Stack direction={'row'} spacing={'30px'}>
@@ -103,12 +105,12 @@ export const TransferKarmaForm: React.FC<any> = () => {
               >
                 <FormLabel>Ethereum Address</FormLabel>
                 <Input
-                  id='userAddress'
+                  id="userAddress"
                   value={values.userAddress}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  type='text'
-                  placeholder='Etereum Address'
+                  type="text"
+                  placeholder="Etereum Address"
                 />
                 <FormErrorMessage>{errors.userAddress}</FormErrorMessage>
               </FormControl>
@@ -121,7 +123,7 @@ export const TransferKarmaForm: React.FC<any> = () => {
                   allowMouseWheel
                   defaultValue={0}
                   min={karmaBalance ? -Number(karmaBalance) : 0}
-                  id='karmaIncrement'
+                  id="karmaIncrement"
                   onChange={(_valueAsString, valueAsNumber) => {
                     if (isNaN(valueAsNumber)) {
                       setFieldValue('karmaIncrement', 0) // Set to a default value or any other appropriate value
@@ -147,15 +149,15 @@ export const TransferKarmaForm: React.FC<any> = () => {
           </Stack>
 
           <Button
-            colorScheme='blue'
-            type='submit'
+            colorScheme="blue"
+            type="submit"
             isLoading={isLoading || isSigning}
-            loadingText='Submitting'
+            loadingText="Submitting"
           >
             Transfer karma
           </Button>
           {isError ? (
-            <Alert status='error'>
+            <Alert status="error">
               <AlertIcon />
               <Box>
                 <AlertTitle>Error</AlertTitle>

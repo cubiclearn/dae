@@ -112,6 +112,25 @@ export const KarmaAccessControlAbiUint64 = [
         type: 'address',
       },
     ],
+    name: 'getBaseKarma',
+    outputs: [
+      {
+        internalType: 'uint64',
+        name: '',
+        type: 'uint64',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_user',
+        type: 'address',
+      },
+    ],
     name: 'hasAccess',
     outputs: [
       {

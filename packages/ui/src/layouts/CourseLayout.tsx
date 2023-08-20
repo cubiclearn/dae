@@ -1,7 +1,14 @@
 import { FC } from 'react'
 import React from 'react'
 import { Box, Text, useDisclosure, Stack, Link } from '@chakra-ui/react'
-import { FiUsers, FiZap, FiBookOpen, FiShield, FiCompass } from 'react-icons/fi'
+import {
+  FiUsers,
+  FiZap,
+  FiBookOpen,
+  FiShield,
+  FiCompass,
+  FiTrendingUp,
+} from 'react-icons/fi'
 import { MdOutlinePoll } from 'react-icons/md'
 import { useRouter } from 'next/router'
 import { Address } from 'viem'
@@ -40,7 +47,16 @@ const CourseNavigationMenu: React.FC = () => {
         icon={FiBookOpen}
         isActive={pathname === '/course/[address]/info'}
         links={[{ title: 'Info', href: `/course/${courseAddress}/info` }]}
-        title='Info'
+        title="Info"
+      />
+      <NavigationMenuItem
+        key={'dashboard'}
+        icon={FiTrendingUp}
+        isActive={pathname === '/course/[address]/dashboard'}
+        links={[
+          { title: 'Dashboard', href: `/course/${courseAddress}/dashboard` },
+        ]}
+        title="Dashboard"
       />
       <NavigationMenuItem
         title={'Credentials'}
@@ -120,7 +136,7 @@ const CourseNavigationMenu: React.FC = () => {
             href: `/course/${courseAddress}/karma/transfer`,
           },
         ]}
-        title='Karma'
+        title="Karma"
       />
       <NavigationMenuItem
         title={'Proposals'}
@@ -155,7 +171,7 @@ export const CourseLayout: FC<Props> = ({ children, heading }) => {
   const { chain } = useNetwork()
 
   return (
-    <Box minH='100vh'>
+    <Box minH="100vh">
       <Sidebar onClose={onClose}>
         <CourseNavigationMenu />
       </Sidebar>
@@ -178,9 +194,9 @@ export const CourseLayout: FC<Props> = ({ children, heading }) => {
         overflow={'auto'}
         p={8}
       >
-        <Stack direction='column' mb={8}>
+        <Stack direction="column" mb={8}>
           <Text
-            as='h2'
+            as="h2"
             fontSize={'3xl'}
             fontWeight={'semibold'}
             textTransform={'capitalize'}
@@ -195,7 +211,7 @@ export const CourseLayout: FC<Props> = ({ children, heading }) => {
                 ChainBlockExplorer[chain?.id as keyof ChainBlockExplorer]
               }/address/${query.address}`}
               textDecoration={'none'}
-              target='_blank'
+              target="_blank"
             >
               {query.address}
             </Link>
