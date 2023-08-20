@@ -63,6 +63,7 @@ model UserCredentials {
   course         Course     @relation(fields: [course_address, chain_id], references: [address, chain_id])
   course_address String
   chain_id       Int
+  token_id       Int
   user_address   String
   credential     Credential @relation(fields: [credential_id], references: [id])
   credential_id  Int
@@ -70,4 +71,5 @@ model UserCredentials {
   discord_handle String     @default("")
 
   @@id([course_address, user_address, credential_id])
+  @@unique([course_address, token_id])
 }

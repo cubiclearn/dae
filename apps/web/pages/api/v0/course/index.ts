@@ -88,29 +88,39 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     const karmaAccessControlAddress: Address =
       karmaAccessControlCreatedLog.args.karmaAccessControl
 
-    const [symbol, baseURI, baseMagisterKarma, baseDiscipulusKarma] =
-      await Promise.all([
-        client.readContract({
-          address: contractAddress,
-          abi: CredentialsBurnableAbi,
-          functionName: 'symbol',
-        }),
-        client.readContract({
-          address: contractAddress,
-          abi: CredentialsBurnableAbi,
-          functionName: 'baseURI',
-        }),
-        client.readContract({
-          address: karmaAccessControlAddress,
-          abi: KarmaAccessControlAbiUint64,
-          functionName: 'BASE_MAGISTER_KARMA',
-        }),
-        client.readContract({
-          address: karmaAccessControlAddress,
-          abi: KarmaAccessControlAbiUint64,
-          functionName: 'BASE_DISCIPULUS_KARMA',
-        }),
-      ])
+    const [
+      symbol,
+      baseURI,
+      baseMagisterKarma,
+      baseDiscipulusKarma,
+      MAX_SUPPLY,
+    ] = await Promise.all([
+      client.readContract({
+        address: contractAddress,
+        abi: CredentialsBurnableAbi,
+        functionName: 'symbol',
+      }),
+      client.readContract({
+        address: contractAddress,
+        abi: CredentialsBurnableAbi,
+        functionName: 'baseURI',
+      }),
+      client.readContract({
+        address: karmaAccessControlAddress,
+        abi: KarmaAccessControlAbiUint64,
+        functionName: 'BASE_MAGISTER_KARMA',
+      }),
+      client.readContract({
+        address: karmaAccessControlAddress,
+        abi: KarmaAccessControlAbiUint64,
+        functionName: 'BASE_DISCIPULUS_KARMA',
+      }),
+      client.readContract({
+        address: contractAddress,
+        abi: CredentialsBurnableAbi,
+        functionName: 'MAX_SUPPLY',
+      }),
+    ])
 
     const timestamp = (
       await client.getBlock({ blockNumber: transaction.blockNumber! })
@@ -232,6 +242,7 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
                 },
               },
               user_address: sanitizeAddress(transaction.from),
+              token_id: Number(MAX_SUPPLY),
               credential: {
                 connect: {
                   id: adminCredential.id,
@@ -241,26 +252,6 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
               discord_handle: '',
             },
           }),
-          // await prisma.userCredentials.create({
-          //   data: {
-          //     course: {
-          //       connect: {
-          //         address_chain_id: {
-          //           address: sanitizeAddress(course.address as Address),
-          //           chain_id: course.chain_id,
-          //         },
-          //       },
-          //     },
-          //     user_address: sanitizeAddress(transaction.from),
-          //     credential: {
-          //       connect: {
-          //         id: magisterCredential.id,
-          //       },
-          //     },
-          //     email: '',
-          //     discord_handle: '',
-          //   },
-          // }),
         ])
 
         return course
