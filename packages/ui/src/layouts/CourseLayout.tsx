@@ -38,8 +38,10 @@ const openedAccorditionIndex = (pathname: string) => {
     return 1
   } else if (pathname.startsWith('/course/[address]/students')) {
     return 2
-  } else if (pathname.startsWith('/course/[address]/proposals')) {
+  } else if (pathname.startsWith('/course/[address]/karma')) {
     return 3
+  } else if (pathname.startsWith('/course/[address]/proposals')) {
+    return 4
   } else {
     return undefined
   }
@@ -182,12 +184,19 @@ const CourseNavigationMenu: React.FC = () => {
         key={'karma'}
         icon={FiZap}
         isActive={pathname.startsWith('/course/[address]/karma')}
-        visible={isAdminOrMagister}
+        visible={true}
         links={[
           {
-            title: 'Karma',
+            title: 'Transfer',
             href: `/course/${courseAddress}/karma/transfer`,
+            active: pathname.startsWith('/course/[address]/karma/transfer'),
             visible: isAdminOrMagister,
+          },
+          {
+            title: 'My Karma',
+            href: `/course/${courseAddress}/karma/rating`,
+            active: pathname.startsWith('/course/[address]/karma/rating'),
+            visible: true,
           },
         ]}
         title="Karma"

@@ -24,6 +24,18 @@ export const useKarmaBalance = (
     enabled: !!shouldFetch,
   })
 
+  if (hasAccess === false) {
+    return {
+      data: undefined,
+      error: new Error(
+        "Unable to calculate your karma rating. You don't have a MAGISTER or DISCIPULUS credential for this course.",
+      ),
+      isLoading: false,
+      isError: true,
+      isSuccess: false,
+    }
+  }
+
   return shouldFetch
     ? { data, isLoading, error, isError, isSuccess }
     : {
