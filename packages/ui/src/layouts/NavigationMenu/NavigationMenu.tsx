@@ -35,8 +35,9 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
 type NavigationMenuItemProps = {
   icon: IconType
   isActive?: boolean
-  links: { title: string; href: string; active?: boolean }[]
+  links: { title: string; href: string; active?: boolean; visible: boolean }[]
   title: string
+  visible: boolean
 }
 
 export const NavigationMenuItem: React.FC<NavigationMenuItemProps> = ({
@@ -44,7 +45,12 @@ export const NavigationMenuItem: React.FC<NavigationMenuItemProps> = ({
   isActive,
   links,
   title,
+  visible,
 }) => {
+  if (!visible) {
+    return <></>
+  }
+
   if (links.length === 1) {
     return (
       <Link
@@ -54,11 +60,11 @@ export const NavigationMenuItem: React.FC<NavigationMenuItemProps> = ({
         as={NextLink}
       >
         <Box
-          p='4'
-          my='2'
-          borderRadius='lg'
-          role='group'
-          cursor='pointer'
+          p="4"
+          my="2"
+          borderRadius="lg"
+          role="group"
+          cursor="pointer"
           width={'100%'}
           _hover={{ ...(!isActive && { bg: 'blackAlpha.50' }) }}
           {...(isActive && {
@@ -67,8 +73,8 @@ export const NavigationMenuItem: React.FC<NavigationMenuItemProps> = ({
           })}
         >
           <Icon
-            mr='4'
-            fontSize='16'
+            mr="4"
+            fontSize="16"
             {...(isActive && {
               color: 'white',
             })}
@@ -85,11 +91,11 @@ export const NavigationMenuItem: React.FC<NavigationMenuItemProps> = ({
         display={'flex'}
         justifyContent={'space-between'}
         width={'100%'}
-        p='4'
-        my='2'
-        borderRadius='lg'
-        role='group'
-        cursor='pointer'
+        p="4"
+        my="2"
+        borderRadius="lg"
+        role="group"
+        cursor="pointer"
         _hover={{ ...(!isActive && { bg: 'blackAlpha.50' }) }}
         {...(isActive && {
           bg: 'blue.500',
@@ -98,8 +104,8 @@ export const NavigationMenuItem: React.FC<NavigationMenuItemProps> = ({
       >
         <Box>
           <Icon
-            mr='4'
-            fontSize='16'
+            mr="4"
+            fontSize="16"
             {...(isActive && {
               color: 'white',
             })}
@@ -109,21 +115,23 @@ export const NavigationMenuItem: React.FC<NavigationMenuItemProps> = ({
         </Box>
         <AccordionIcon />
       </AccordionButton>
-      <AccordionPanel p={0} px='4' mx='6' my='1'>
+      <AccordionPanel p={0} px="4" mx="6" my="1">
         <UnorderedList spacing={3}>
           {links.map((link) => {
-            return (
-              <ListItem px={2} key={link.title}>
-                <Link
-                  as={NextLink}
-                  href={link.href}
-                  _hover={{ textDecoration: 'none' }}
-                  fontWeight={link.active ? 'bold' : 'normal'}
-                >
-                  {link.title}
-                </Link>
-              </ListItem>
-            )
+            if (link.visible !== false) {
+              return (
+                <ListItem px={2} key={link.title}>
+                  <Link
+                    as={NextLink}
+                    href={link.href}
+                    _hover={{ textDecoration: 'none' }}
+                    fontWeight={link.active ? 'bold' : 'normal'}
+                  >
+                    {link.title}
+                  </Link>
+                </ListItem>
+              )
+            }
           })}
         </UnorderedList>
       </AccordionPanel>
