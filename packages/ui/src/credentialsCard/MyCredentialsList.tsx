@@ -37,7 +37,7 @@ export const MyCredentialsList: React.FC<CourseCardListProps> = ({
 
   if (error) {
     return (
-      <Alert status='error'>
+      <Alert status="error">
         <AlertIcon />
         <Box>
           <AlertTitle>Error</AlertTitle>
@@ -51,11 +51,11 @@ export const MyCredentialsList: React.FC<CourseCardListProps> = ({
 
   if (!data || data.length === 0) {
     return (
-      <Alert status='info'>
+      <Alert status="info">
         <AlertIcon />
         <Box>
           <AlertTitle>Nothing to show.</AlertTitle>
-          <AlertDescription>There is no course to show</AlertDescription>
+          <AlertDescription>There is no credential to show.</AlertDescription>
         </Box>
       </Alert>
     )
