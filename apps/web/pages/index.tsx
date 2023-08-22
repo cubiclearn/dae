@@ -64,7 +64,7 @@ const Home: FC = () => {
                       window.open('https://cubiclearn.gitbook.io/', '_blank')
                     }
                   >
-                    Github
+                    GitBook
                   </Button>
                 </Box>
               </Stack>
