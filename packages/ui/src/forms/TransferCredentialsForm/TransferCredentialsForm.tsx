@@ -59,7 +59,14 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
       },
       onSubmit: async (values) => {
         try {
-          await transfer(values.userAddress as Address, values.tokenURI, '', '')
+          await transfer(
+            {
+              address: values.userAddress as Address,
+              email: '',
+              discord: '',
+            },
+            values.tokenURI,
+          )
           resetForm()
         } catch (_e) {}
       },

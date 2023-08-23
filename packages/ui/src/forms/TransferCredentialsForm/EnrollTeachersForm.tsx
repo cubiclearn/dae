@@ -51,10 +51,12 @@ export const EnrollTeachersForm: React.FC<TransferCredentialsFormProps> = ({
       onSubmit: async (values) => {
         try {
           await transfer(
-            values.userAddress as Address,
+            {
+              address: values.userAddress as Address,
+              email: values.userEmail,
+              discord: values.userDiscordUsername,
+            },
             'https://dae-demo.infura-ipfs.io/ipfs/QmXRAu1zZ7igsNWo8egMDH3g77vFQgZHfcE2k6hoJp4JwT',
-            values.userDiscordUsername,
-            values.userEmail,
           )
           router.push(`/course/${courseAddress}/teachers/list`)
         } catch (_e) {}
@@ -84,7 +86,7 @@ export const EnrollTeachersForm: React.FC<TransferCredentialsFormProps> = ({
   }, [isLoading, isError, isSuccess])
 
   return (
-    <Box padding={8} borderRadius='xl' bg={'white'} boxShadow={'base'}>
+    <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
       <form onSubmit={handleSubmit}>
         <Stack spacing={4}>
           <FormControl
@@ -93,24 +95,24 @@ export const EnrollTeachersForm: React.FC<TransferCredentialsFormProps> = ({
           >
             <FormLabel>Ethereum Address</FormLabel>
             <Input
-              id='userAddress'
+              id="userAddress"
               value={values.userAddress}
               onChange={handleChange}
               onBlur={handleBlur}
-              type='text'
-              placeholder='Etereum Address'
+              type="text"
+              placeholder="Etereum Address"
             />
             <FormErrorMessage>{errors.userAddress}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={!!errors.userEmail && touched.userEmail}>
             <FormLabel>E-mail</FormLabel>
             <Input
-              id='userEmail'
+              id="userEmail"
               value={values.userEmail}
               onChange={handleChange}
               onBlur={handleBlur}
-              type='text'
-              placeholder='Email'
+              type="text"
+              placeholder="Email"
             />
             <FormErrorMessage>{errors.userEmail}</FormErrorMessage>
           </FormControl>
@@ -121,25 +123,25 @@ export const EnrollTeachersForm: React.FC<TransferCredentialsFormProps> = ({
           >
             <FormLabel>Discord Username</FormLabel>
             <Input
-              id='userDiscordUsername'
+              id="userDiscordUsername"
               value={values.userDiscordUsername}
               onChange={handleChange}
               onBlur={handleBlur}
-              type='text'
-              placeholder='Discord username'
+              type="text"
+              placeholder="Discord username"
             />
             <FormErrorMessage>{errors.userDiscordUsername}</FormErrorMessage>
           </FormControl>
           <Button
-            colorScheme='blue'
-            type='submit'
+            colorScheme="blue"
+            type="submit"
             isLoading={isLoading || isSigning}
-            loadingText='Submitting'
+            loadingText="Submitting"
           >
             Enroll teacher
           </Button>
           {isError ? (
-            <Alert status='error'>
+            <Alert status="error">
               <AlertIcon />
               <Box>
                 <AlertTitle>Error</AlertTitle>

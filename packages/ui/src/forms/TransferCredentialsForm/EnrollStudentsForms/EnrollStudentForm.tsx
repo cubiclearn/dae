@@ -51,10 +51,12 @@ export const EnrollStudentForm: React.FC<TransferCredentialsFormProps> = ({
       onSubmit: async (values) => {
         try {
           await transfer(
-            values.userAddress as Address,
+            {
+              address: values.userAddress as Address,
+              email: values.userEmail,
+              discord: values.userDiscordUsername,
+            },
             'https://dae-demo.infura-ipfs.io/ipfs/QmPfKCv7ZAz8294ShRTcHft5LSM9YaDJ4NTjZisCkhFxW8',
-            values.userDiscordUsername,
-            values.userEmail,
           )
           router.push(`/course/${courseAddress}/students/list`)
         } catch (_e) {}

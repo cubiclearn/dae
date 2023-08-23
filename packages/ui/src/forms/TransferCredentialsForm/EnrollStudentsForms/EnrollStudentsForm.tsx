@@ -26,6 +26,7 @@ import { Address } from 'wagmi'
 import * as Yup from 'yup'
 import { useTransferCredentials, EnrollUserData } from '@dae/wagmi'
 import { useRouter } from 'next/router'
+import Papa from 'papaparse'
 
 const validationSchema = Yup.object().shape({
   CSVFile: Yup.mixed().required('CSV file is required'),
@@ -84,39 +85,27 @@ export const EnrollStudentsForm: React.FC<EnrollStudentsCSVFormProps> = ({
     }
   }, [isLoading, isError, isSuccess])
 
-  const handleCSVFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCSVFileChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = e.target.files?.[0]
 
     if (!file) {
       return
     }
-    const reader = new FileReader()
 
-    reader.onload = async (event) => {
-      if (event.target) {
-        const contentArrayBuffer = event.target.result
-        if (contentArrayBuffer instanceof ArrayBuffer) {
-          const textDecoder = new TextDecoder()
-          const content = textDecoder.decode(contentArrayBuffer)
+    const text = await file.text()
 
-          const rows = content.split('\n')
-          const parsedData = rows
-            .filter((row) => row.split(',').length === 3)
-            .map((row) => {
-              const columns = row.split(',')
-              return {
-                address: columns[0].trim(),
-                email: columns[1].trim(),
-                discord: columns[2].trim(),
-              } as EnrollUserData
-            })
-          setFieldValue('CSVFile', file)
-          setCsvData(parsedData)
-        }
-      }
-    }
-
-    reader.readAsArrayBuffer(file)
+    // Use PapaParse for CSV parsing
+    Papa.parse<EnrollUserData>(text, {
+      header: true,
+      skipEmptyLines: true,
+      dynamicTyping: true,
+      complete: (results) => {
+        setFieldValue('CSVFile', file)
+        setCsvData(results.data)
+      },
+    })
   }
 
   return (

@@ -35,20 +35,14 @@ export function useTransferCredentials(
   })
 
   const transfer = async (
-    address: Address,
+    userData: EnrollUserData,
     tokenURI: string,
-    discordUsername: string,
-    userEmail: string,
   ): Promise<void> => {
     setIsSuccess(false)
     setIsError(false)
     setIsSigning(true)
 
     try {
-      if (credentialType !== 'DISCIPULUS') {
-        throw new Error('Multi mint is not supported for this credential type.')
-      }
-
       if (mint === undefined) {
         throw new Error(
           'The data provided is incorrect. Please ensure that you have entered the correct information.',
@@ -56,7 +50,7 @@ export function useTransferCredentials(
       }
 
       const writeResult = await mint({
-        args: [address, tokenURI, 2],
+        args: [userData.address, tokenURI, 2],
       })
 
       setIsLoading(true)
@@ -72,9 +66,9 @@ export function useTransferCredentials(
           txHash: txReceipt.transactionHash,
           usersData: [
             {
-              discord: discordUsername,
-              email: userEmail,
-              address,
+              discord: userData.discord,
+              email: userData.email,
+              address: userData.address,
             },
           ],
           chainId: publicClient.chain.id,
@@ -109,6 +103,10 @@ export function useTransferCredentials(
     setIsSigning(true)
 
     try {
+      if (credentialType !== 'DISCIPULUS') {
+        throw new Error('Multi mint is not supported for this credential type.')
+      }
+
       if (multiMint === undefined) {
         throw new Error(
           'The data provided is incorrect. Please ensure that you have entered the correct information.',
