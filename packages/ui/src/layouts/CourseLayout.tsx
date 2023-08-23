@@ -6,8 +6,7 @@ import {
   useDisclosure,
   Stack,
   Link,
-  Center,
-  Spinner,
+  Skeleton,
 } from '@chakra-ui/react'
 import {
   FiUsers,
@@ -63,165 +62,175 @@ const CourseNavigationMenu: React.FC = () => {
     [data],
   )
 
-  if (isLoading || !data) {
-    return (
-      <Center>
-        <Spinner />
-      </Center>
-    )
-  }
-
   return (
     <NavigationMenu getOpenedAccorditionIndex={openedAccorditionIndex}>
-      <NavigationMenuItem
-        key={'info'}
-        icon={FiBookOpen}
-        isActive={pathname === '/course/[address]/info'}
-        links={[
-          {
-            title: 'Info',
-            href: `/course/${courseAddress}/info`,
-            visible: true,
-          },
-        ]}
-        title="Info"
-        visible={true}
-      />
-      <NavigationMenuItem
-        key={'dashboard'}
-        icon={FiTrendingUp}
-        isActive={pathname === '/course/[address]/dashboard'}
-        links={[
-          {
-            title: 'Dashboard',
-            href: `/course/${courseAddress}/dashboard`,
-            visible: isAdminOrMagister,
-          },
-        ]}
-        title="Dashboard"
-        visible={isAdminOrMagister}
-      />
-      <NavigationMenuItem
-        title={'Credentials'}
-        key={'credentials'}
-        icon={FiShield}
-        isActive={pathname.startsWith('/course/[address]/credentials')}
-        visible={true}
-        links={[
-          {
-            title: 'Course Credentials',
-            href: `/course/${courseAddress}/credentials/list`,
-            active: pathname.startsWith('/course/[address]/credentials/list'),
-            visible: isAdminOrMagister,
-          },
-          {
-            title: 'My Credentials',
-            href: `/course/${courseAddress}/credentials/granted`,
-            active: pathname.startsWith(
-              '/course/[address]/credentials/granted',
-            ),
-            visible: true,
-          },
-          {
-            title: 'Create',
-            href: `/course/${courseAddress}/credentials/create`,
-            active: pathname.startsWith('/course/[address]/credentials/create'),
-            visible: isAdminOrMagister,
-          },
-          {
-            title: 'Transfer',
-            href: `/course/${courseAddress}/credentials/transfer`,
-            active: pathname.startsWith(
-              '/course/[address]/credentials/transfer',
-            ),
-            visible: isAdminOrMagister,
-          },
-        ]}
-      />
-      <NavigationMenuItem
-        title={'Teachers'}
-        key={'teachers'}
-        icon={FiCompass}
-        isActive={pathname.startsWith('/course/[address]/teachers')}
-        visible={isAdminOrMagister}
-        links={[
-          {
-            title: 'List',
-            href: `/course/${courseAddress}/teachers/list`,
-            active: pathname.startsWith('/course/[address]/teachers/list'),
-            visible: isAdminOrMagister,
-          },
-          {
-            title: 'Enroll',
-            href: `/course/${courseAddress}/teachers/enroll`,
-            active: pathname.startsWith('/course/[address]/teachers/enroll'),
-            visible: isAdminOrMagister,
-          },
-        ]}
-      />
-      <NavigationMenuItem
-        title={'Students'}
-        key={'students'}
-        icon={FiUsers}
-        isActive={pathname.startsWith('/course/[address]/students')}
-        visible={isAdminOrMagister}
-        links={[
-          {
-            title: 'List',
-            href: `/course/${courseAddress}/students/list`,
-            active: pathname.startsWith('/course/[address]/students/list'),
-            visible: isAdminOrMagister,
-          },
-          {
-            title: 'Enroll',
-            href: `/course/${courseAddress}/students/enroll`,
-            active: pathname.startsWith('/course/[address]/students/enroll'),
-            visible: isAdminOrMagister,
-          },
-        ]}
-      />
-      <NavigationMenuItem
-        key={'karma'}
-        icon={FiZap}
-        isActive={pathname.startsWith('/course/[address]/karma')}
-        visible={true}
-        links={[
-          {
-            title: 'Transfer',
-            href: `/course/${courseAddress}/karma/transfer`,
-            active: pathname.startsWith('/course/[address]/karma/transfer'),
-            visible: isAdminOrMagister,
-          },
-          {
-            title: 'My Karma',
-            href: `/course/${courseAddress}/karma/rating`,
-            active: pathname.startsWith('/course/[address]/karma/rating'),
-            visible: true,
-          },
-        ]}
-        title="Karma"
-      />
-      <NavigationMenuItem
-        title={'Proposals'}
-        key={'proposals'}
-        icon={MdOutlinePoll}
-        isActive={pathname.startsWith('/course/[address]/proposals')}
-        visible={true}
-        links={[
-          {
-            title: 'Create',
-            href: `/course/${courseAddress}/proposals/create`,
-            active: pathname.startsWith('/course/[address]/proposals/create'),
-            visible: isAdminOrMagister,
-          },
-          {
-            title: 'Explore',
-            href: `/course/${courseAddress}/proposals/explore?active=true`,
-            active: pathname.startsWith('/course/[address]/proposals/explore'),
-            visible: true,
-          },
-        ]}
-      />
+      <Skeleton isLoaded={!isLoading} rounded={'lg'}>
+        <NavigationMenuItem
+          key={'info'}
+          icon={FiBookOpen}
+          isActive={pathname === '/course/[address]/info'}
+          links={[
+            {
+              title: 'Info',
+              href: `/course/${courseAddress}/info`,
+              visible: true,
+            },
+          ]}
+          title="Info"
+          visible={true}
+        />
+      </Skeleton>
+      <Skeleton isLoaded={!isLoading} rounded={'lg'}>
+        <NavigationMenuItem
+          key={'dashboard'}
+          icon={FiTrendingUp}
+          isActive={pathname === '/course/[address]/dashboard'}
+          links={[
+            {
+              title: 'Dashboard',
+              href: `/course/${courseAddress}/dashboard`,
+              visible: isAdminOrMagister,
+            },
+          ]}
+          title="Dashboard"
+          visible={isAdminOrMagister}
+        />
+      </Skeleton>
+      <Skeleton isLoaded={!isLoading} rounded={'lg'}>
+        <NavigationMenuItem
+          title={'Credentials'}
+          key={'credentials'}
+          icon={FiShield}
+          isActive={pathname.startsWith('/course/[address]/credentials')}
+          visible={true}
+          links={[
+            {
+              title: 'Course Credentials',
+              href: `/course/${courseAddress}/credentials/list`,
+              active: pathname.startsWith('/course/[address]/credentials/list'),
+              visible: isAdminOrMagister,
+            },
+            {
+              title: 'My Credentials',
+              href: `/course/${courseAddress}/credentials/granted`,
+              active: pathname.startsWith(
+                '/course/[address]/credentials/granted',
+              ),
+              visible: true,
+            },
+            {
+              title: 'Create',
+              href: `/course/${courseAddress}/credentials/create`,
+              active: pathname.startsWith(
+                '/course/[address]/credentials/create',
+              ),
+              visible: isAdminOrMagister,
+            },
+            {
+              title: 'Transfer',
+              href: `/course/${courseAddress}/credentials/transfer`,
+              active: pathname.startsWith(
+                '/course/[address]/credentials/transfer',
+              ),
+              visible: isAdminOrMagister,
+            },
+          ]}
+        />
+      </Skeleton>
+      <Skeleton isLoaded={!isLoading} rounded={'lg'}>
+        <NavigationMenuItem
+          title={'Teachers'}
+          key={'teachers'}
+          icon={FiCompass}
+          isActive={pathname.startsWith('/course/[address]/teachers')}
+          visible={isAdminOrMagister}
+          links={[
+            {
+              title: 'List',
+              href: `/course/${courseAddress}/teachers/list`,
+              active: pathname.startsWith('/course/[address]/teachers/list'),
+              visible: isAdminOrMagister,
+            },
+            {
+              title: 'Enroll',
+              href: `/course/${courseAddress}/teachers/enroll`,
+              active: pathname.startsWith('/course/[address]/teachers/enroll'),
+              visible: isAdminOrMagister,
+            },
+          ]}
+        />
+      </Skeleton>
+      <Skeleton isLoaded={!isLoading} rounded={'lg'}>
+        <NavigationMenuItem
+          title={'Students'}
+          key={'students'}
+          icon={FiUsers}
+          isActive={pathname.startsWith('/course/[address]/students')}
+          visible={isAdminOrMagister}
+          links={[
+            {
+              title: 'List',
+              href: `/course/${courseAddress}/students/list`,
+              active: pathname.startsWith('/course/[address]/students/list'),
+              visible: isAdminOrMagister,
+            },
+            {
+              title: 'Enroll',
+              href: `/course/${courseAddress}/students/enroll`,
+              active: pathname.startsWith('/course/[address]/students/enroll'),
+              visible: isAdminOrMagister,
+            },
+          ]}
+        />
+      </Skeleton>
+      <Skeleton isLoaded={!isLoading} rounded={'lg'}>
+        <NavigationMenuItem
+          key={'karma'}
+          icon={FiZap}
+          isActive={pathname.startsWith('/course/[address]/karma')}
+          visible={true}
+          links={[
+            {
+              title: 'Transfer',
+              href: `/course/${courseAddress}/karma/transfer`,
+              active: pathname.startsWith('/course/[address]/karma/transfer'),
+              visible: isAdminOrMagister,
+            },
+            {
+              title: 'My Karma',
+              href: `/course/${courseAddress}/karma/rating`,
+              active: pathname.startsWith('/course/[address]/karma/rating'),
+              visible: true,
+            },
+          ]}
+          title="Karma"
+        />
+      </Skeleton>
+      <Skeleton isLoaded={!isLoading} rounded={'lg'}>
+        <NavigationMenuItem
+          title={'Proposals'}
+          key={'proposals'}
+          icon={MdOutlinePoll}
+          isActive={pathname.startsWith('/course/[address]/proposals')}
+          visible={true}
+          links={[
+            {
+              title: 'Create',
+              href: `/course/${courseAddress}/proposals/create`,
+              active: pathname.startsWith('/course/[address]/proposals/create'),
+              visible: isAdminOrMagister,
+            },
+            {
+              title: 'Explore',
+              href: `/course/${courseAddress}/proposals/explore?active=true`,
+              active: pathname.startsWith(
+                '/course/[address]/proposals/explore',
+              ),
+              visible: true,
+            },
+          ]}
+        />
+      </Skeleton>
     </NavigationMenu>
   )
 }
