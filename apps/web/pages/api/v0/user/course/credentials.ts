@@ -8,13 +8,19 @@ import { config as TransportConfig } from '@dae/viem-config'
 import { CredentialsBurnableAbi } from '@dae/abi'
 import { decodeEventLog } from 'viem'
 import { CredentialIssuedLog } from '@dae/types'
-import { prisma } from '@dae/database'
+import { Prisma, prisma } from '@dae/database'
 import { sanitizeAddress } from '../../../../../lib/functions'
 
 // TypeScript enum for request methods
 enum HttpMethod {
   GET = 'GET',
   POST = 'POST',
+}
+
+type EnrollUserData = {
+  address: Address
+  email: string
+  discord: string
 }
 
 const handleGetRequest = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -40,9 +46,13 @@ const handleGetRequest = async (req: NextApiRequest, res: NextApiResponse) => {
 
 const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const { txHash, discordUsername, userEmail, chainId } = req.body
+    const { txHash, usersData, chainId } = req.body as {
+      txHash: Address
+      usersData: EnrollUserData[]
+      chainId: string
+    }
 
-    if (!chainId || !txHash) {
+    if (!chainId || !txHash || !usersData) {
       res.status(401).json({ success: false, error: 'Bad request' })
       return
     }
@@ -66,46 +76,60 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
       })
     })
 
-    const issuedLog = txLogsDecoded.filter(
+    const issuedLogs = txLogsDecoded.filter(
       (log: any) => log.eventName === 'Issued',
     ) as [CredentialIssuedLog]
 
-    const tokenId = issuedLog[0].args.tokenId
-    const userAddress = issuedLog[0].args.to
+    const createData = await Promise.all(
+      usersData.map(async (userData) => {
+        const userIssuedLogs = issuedLogs.filter(
+          (log) =>
+            sanitizeAddress(log.args.to) === sanitizeAddress(userData.address),
+        )
+        const tokenId = userIssuedLogs[0].args.tokenId
+        const tokenURI = await client.readContract({
+          abi: CredentialsBurnableAbi,
+          address: courseAddress,
+          functionName: 'tokenURI',
+          args: [tokenId],
+        })
 
-    const tokenURI = await client.readContract({
-      abi: CredentialsBurnableAbi,
-      address: courseAddress,
-      functionName: 'tokenURI',
-      args: [tokenId],
-    })
+        const splittedURI = tokenURI.split('/')
+        const ipfsCID = splittedURI[splittedURI.length - 1]
 
-    const splittedURI = tokenURI.split('/')
-    const ipfsCID = splittedURI[splittedURI.length - 1]
-
-    await prisma.userCredentials.create({
-      data: {
-        course: {
-          connect: {
-            address_chain_id: {
-              address: sanitizeAddress(courseAddress),
-              chain_id: parseInt(chainId),
-            },
-          },
-        },
-        user_address: sanitizeAddress(userAddress),
-        token_id: Number(tokenId),
-        credential: {
-          connect: {
+        const credential = await prisma.credential.findUnique({
+          where: {
             course_address_ipfs_cid: {
-              ipfs_cid: ipfsCID,
               course_address: sanitizeAddress(courseAddress),
+              ipfs_cid: ipfsCID,
             },
           },
-        },
-        email: userEmail ? userEmail : '',
-        discord_handle: discordUsername ? discordUsername : '',
-      },
+        })
+
+        if (!credential) {
+          return null
+        }
+
+        return {
+          course_address: sanitizeAddress(courseAddress),
+          user_address: sanitizeAddress(userData.address),
+          token_id: Number(tokenId),
+          credential_id: credential.id,
+          chain_id: parseInt(chainId),
+          email: userData.email,
+          discord_handle: userData.discord,
+        }
+      }),
+    )
+
+    const validCreateData = createData.filter(
+      (data) => data !== null,
+    ) as Prisma.UserCredentialsCreateManyInput[]
+
+    console.log(validCreateData)
+
+    await prisma.userCredentials.createMany({
+      data: validCreateData,
     })
 
     res.status(200).json({ success: true, data: null })

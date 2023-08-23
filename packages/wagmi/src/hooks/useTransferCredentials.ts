@@ -4,6 +4,12 @@ import { Address } from 'viem'
 import { CredentialsBurnableAbi } from '@dae/abi'
 import { CredentialType } from '@dae/database'
 
+export type EnrollUserData = {
+  address: Address
+  email: string
+  discord: string
+}
+
 export function useTransferCredentials(
   courseAddress: Address,
   credentialType: CredentialType,
@@ -16,10 +22,16 @@ export function useTransferCredentials(
 
   const publicClient = usePublicClient()
 
-  const { writeAsync } = useContractWrite({
+  const { writeAsync: mint } = useContractWrite({
     abi: CredentialsBurnableAbi,
     address: courseAddress,
     functionName: credentialType === 'MAGISTER' ? 'mintMagister' : 'mint',
+  })
+
+  const { writeAsync: multiMint } = useContractWrite({
+    abi: CredentialsBurnableAbi,
+    address: courseAddress,
+    functionName: 'multiMint',
   })
 
   const transfer = async (
@@ -33,13 +45,17 @@ export function useTransferCredentials(
     setIsSigning(true)
 
     try {
-      if (writeAsync === undefined) {
+      if (credentialType !== 'DISCIPULUS') {
+        throw new Error('Multi mint is not supported for this credential type.')
+      }
+
+      if (mint === undefined) {
         throw new Error(
           'The data provided is incorrect. Please ensure that you have entered the correct information.',
         )
       }
 
-      const writeResult = await writeAsync({
+      const writeResult = await mint({
         args: [address, tokenURI, 2],
       })
 
@@ -54,8 +70,73 @@ export function useTransferCredentials(
         method: 'POST',
         body: JSON.stringify({
           txHash: txReceipt.transactionHash,
-          discordUsername,
-          userEmail,
+          usersData: [
+            {
+              discord: discordUsername,
+              email: userEmail,
+              address,
+            },
+          ],
+          chainId: publicClient.chain.id,
+        }),
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      })
+
+      if (!response.ok) {
+        const responseJSON = await response.json()
+        throw new Error(responseJSON.error)
+      }
+
+      setIsLoading(false)
+      setIsSuccess(true)
+    } catch (error: any) {
+      setIsLoading(false)
+      setIsSigning(false)
+      setIsError(true)
+      setError(error.message || 'An error occurred')
+      throw error
+    }
+  }
+
+  const multiTransfer = async (
+    usersData: EnrollUserData[],
+    tokenURI: string,
+  ): Promise<void> => {
+    setIsSuccess(false)
+    setIsError(false)
+    setIsSigning(true)
+
+    try {
+      if (multiMint === undefined) {
+        throw new Error(
+          'The data provided is incorrect. Please ensure that you have entered the correct information.',
+        )
+      }
+
+      const addressToMint = usersData.map((userData) => userData.address)
+
+      const writeResult = await multiMint({
+        args: [
+          addressToMint,
+          Array(addressToMint.length).fill(tokenURI),
+          Array(addressToMint.length).fill(2),
+        ],
+      })
+
+      setIsLoading(true)
+      setIsSigning(false)
+
+      const txReceipt = await publicClient.waitForTransactionReceipt({
+        hash: writeResult.hash,
+      })
+
+      const response = await fetch('/api/v0/user/course/credentials', {
+        method: 'POST',
+        body: JSON.stringify({
+          txHash: txReceipt.transactionHash,
+          usersData: usersData,
           chainId: publicClient.chain.id,
         }),
         headers: {
@@ -81,6 +162,7 @@ export function useTransferCredentials(
 
   return {
     transfer,
+    multiTransfer,
     isLoading,
     isError,
     isSuccess,
