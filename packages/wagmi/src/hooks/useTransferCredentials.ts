@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useContractWrite, usePublicClient } from 'wagmi'
-import { Address } from 'viem'
+import { Address, ContractFunctionExecutionError } from 'viem'
 import { CredentialsBurnableAbi } from '@dae/abi'
 import { CredentialType } from '@dae/database'
 
@@ -89,7 +89,11 @@ export function useTransferCredentials(
       setIsLoading(false)
       setIsSigning(false)
       setIsError(true)
-      setError(error.message || 'An error occurred')
+      if (error instanceof ContractFunctionExecutionError) {
+        setError(error.details)
+      } else {
+        setError(error.message || 'An error occurred')
+      }
       throw error
     }
   }
@@ -153,7 +157,13 @@ export function useTransferCredentials(
       setIsLoading(false)
       setIsSigning(false)
       setIsError(true)
-      setError(error.message || 'An error occurred')
+      if (error instanceof ContractFunctionExecutionError) {
+        setError(
+          `${error.details}. Look at your browser console for more informations.`,
+        )
+      } else {
+        setError(error.message || 'An error occurred')
+      }
       throw error
     }
   }

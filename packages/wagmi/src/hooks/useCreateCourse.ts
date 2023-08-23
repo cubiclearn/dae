@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { Chain, useContractWrite, usePublicClient } from 'wagmi'
 import { normalize } from 'viem/ens'
-import { Address } from 'viem'
+import { Address, ContractFunctionExecutionError } from 'viem'
 import { CredentialsFactoryAbi } from '@dae/abi'
 import { useCreateSnapshotSpace } from '@dae/snapshot'
 import type { Course } from '@dae/database'
@@ -152,7 +152,13 @@ export function useCreateCourse(chain: Chain, address: Address) {
       setIsLoading(false)
       setIsSigning(false)
       setIsError(true)
-      setError(error.message || 'An error occurred')
+      if (error instanceof ContractFunctionExecutionError) {
+        setError(
+          `${error.details}. Look at your browser console for more informations.`,
+        )
+      } else {
+        setError(error.message || 'An error occurred')
+      }
       throw error
     }
   }
