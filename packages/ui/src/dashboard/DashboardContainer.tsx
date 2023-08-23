@@ -162,10 +162,10 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
             />
           </SimpleGrid>
         ) : (
-          <Alert status="info">
+          <Alert status="warning">
             <AlertIcon />
             <Box>
-              <AlertTitle>Info</AlertTitle>
+              <AlertTitle>Warning</AlertTitle>
               <AlertDescription>
                 Cannot calculate statistics without any student enrolled to the
                 course.

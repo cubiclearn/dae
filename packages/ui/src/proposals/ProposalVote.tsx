@@ -17,7 +17,12 @@ import {
   Center,
   Spinner,
 } from '@chakra-ui/react'
-import { Proposal, useUserVote, useVotePropsal } from '@dae/snapshot'
+import {
+  Proposal,
+  useUserVote,
+  useUserVotingPower,
+  useVotePropsal,
+} from '@dae/snapshot'
 import { ChainSnapshotHub } from '@dae/chains'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
@@ -34,7 +39,8 @@ type ProposalVoteProps = {
 
 export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
   const toast = useToast()
-  const { address } = useAccount()
+  const { address: userAddress } = useAccount()
+
   const { vote, isError, isLoading, isSuccess, error } = useVotePropsal(
     proposal.space.id,
     parseInt(proposal.network) as keyof typeof ChainSnapshotHub,
@@ -44,10 +50,13 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
 
   const { data: userVote, isLoading: isLoadingVote } = useUserVote(
     proposal.id,
-    address,
+    userAddress,
   )
   const [showRevoteForm, setShowRevoteForm] = useState(false)
   const hasVoted = userVote?.votes.length > 0
+
+  const { data: votingPower, isLoading: isLoadingVotingPower } =
+    useUserVotingPower(proposal.id, userAddress, proposal.space.id)
 
   const {
     values,
@@ -96,7 +105,7 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
     }
   }, [isLoading, isError, isSuccess])
 
-  if (isLoadingVote) {
+  if (isLoadingVote || isLoadingVotingPower) {
     return (
       <Stack spacing={4}>
         <Text fontSize={'lg'} fontWeight={'bold'}>
@@ -106,6 +115,22 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
           <Spinner />
         </Center>
       </Stack>
+    )
+  }
+
+  if (!isLoadingVotingPower && votingPower === null) {
+    return (
+      <Alert status="warning">
+        <AlertIcon />
+        <Box>
+          <AlertTitle>You are not allowed to vote this proposal.</AlertTitle>
+          <AlertDescription>
+            You do not have the necessary permissions to vote on this proposal.
+            To vote, you must hold either MAGISTER or DISCIPULUS credentials for
+            this course at the snapshot block.
+          </AlertDescription>
+        </Box>
+      </Alert>
     )
   }
 
