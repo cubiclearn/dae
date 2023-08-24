@@ -2,10 +2,10 @@ import React from 'react'
 import {
   Text,
   Heading,
-  List,
   ListItem,
   UnorderedList,
   Stack,
+  OrderedList,
 } from '@chakra-ui/react'
 import { Proposal } from '@dae/snapshot'
 import ReactMarkdown from 'react-markdown'
@@ -25,22 +25,30 @@ export const ProposalDescription: React.FC<ProposalDescriptionProps> = ({
       <ReactMarkdown
         components={{
           h1: ({ children }) => (
-            <Heading as="h3" fontSize={'2xl'} fontWeight={'normal'} mt="4">
+            <Heading as="h3" fontSize={'2xl'} fontWeight={'semibold'} mt="4">
               {children}
             </Heading>
           ),
           h2: ({ children }) => (
-            <Heading as="h4" fontSize={'xl'} fontWeight={'normal'} mt="4">
+            <Heading as="h4" fontSize={'xl'} fontWeight={'semibold'} mt="4">
               {children}
             </Heading>
           ),
           h3: ({ children }) => (
-            <Heading as="h5" fontSize={'lg'} fontWeight={'normal'} mt="4">
+            <Heading as="h5" fontSize={'lg'} fontWeight={'semibold'} mt="4">
               {children}
             </Heading>
           ),
-          ol: ({ children }) => <List>{children}</List>,
-          ul: ({ children }) => <UnorderedList>{children}</UnorderedList>,
+          ol: ({ children }) => (
+            <OrderedList marginInlineStart={'1em !important'}>
+              {children}
+            </OrderedList>
+          ),
+          ul: ({ children }) => (
+            <UnorderedList marginInlineStart={'1em !important'}>
+              {children}
+            </UnorderedList>
+          ),
           li: ({ children }) => <ListItem>{children}</ListItem>,
           p: ({ children }) => <Text fontSize={'md'}>{children}</Text>,
         }}
