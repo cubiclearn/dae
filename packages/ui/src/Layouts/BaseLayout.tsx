@@ -12,7 +12,7 @@ export function BaseLayout({ children }: BaseLayoutProps): JSX.Element {
   if (isMounted) {
     return (
       <div>
-        <>{children}</>
+        {children}
         <ToastContainer />
       </div>
     )

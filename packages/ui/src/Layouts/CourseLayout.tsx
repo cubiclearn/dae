@@ -56,7 +56,7 @@ const CourseNavigationMenu: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Stack spacing={4} mt={2}>
+      <Stack spacing={2} mt={2}>
         <Skeleton height={'56px'} isLoaded={false} rounded={'lg'} />
         <Skeleton height={'56px'} isLoaded={false} rounded={'lg'} />
         <Skeleton height={'56px'} isLoaded={false} rounded={'lg'} />
