@@ -19,7 +19,7 @@ export const CourseAddress: React.FC<CourseAddressProps> = ({
       <Skeleton
         height={'14px'}
         rounded={'lg'}
-        width={{ base: '75%', lg: '50%' }}
+        width={{ base: '75%', md: '50%', lg: '30%' }}
       />
     )
   }
