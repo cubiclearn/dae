@@ -5,7 +5,7 @@ import { Course } from '@dae/database'
 interface UseCourseData {
   data: Course | null
   error: Error | null
-  isLoading: boolean
+  isLoading: boolean // Corrected
 }
 
 interface ApiResponse {

@@ -19,7 +19,7 @@ import { ChainSnapshotWebsite } from '@dae/chains'
 export const CourseInfo: React.FC<any> = () => {
   const { data, isLoading, error } = useCourseData()
 
-  if (isLoading) {
+  if (isLoading || (!data && !error)) {
     return (
       <Center>
         <Spinner />
@@ -29,7 +29,7 @@ export const CourseInfo: React.FC<any> = () => {
 
   if (error) {
     return (
-      <Alert status='error'>
+      <Alert status="error">
         <AlertIcon />
         <Box>
           <AlertTitle>Error</AlertTitle>
@@ -43,7 +43,7 @@ export const CourseInfo: React.FC<any> = () => {
 
   if (!data) {
     return (
-      <Alert status='info'>
+      <Alert status="info">
         <AlertIcon />
         <Box>
           <AlertTitle>Nothing to show.</AlertTitle>
@@ -57,11 +57,11 @@ export const CourseInfo: React.FC<any> = () => {
     ChainSnapshotWebsite[data.chain_id as keyof typeof ChainSnapshotWebsite]
 
   return (
-    <Box padding={8} borderRadius='xl' bg={'white'} boxShadow={'base'}>
+    <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
       <Stack
         direction={'row'}
         justifyContent={'space-between'}
-        borderRadius='xl'
+        borderRadius="xl"
       >
         <Stack width={'50%'} spacing={8}>
           <Stack spacing={4}>
@@ -77,14 +77,14 @@ export const CourseInfo: React.FC<any> = () => {
           <Stack>
             <Box>
               Website:{' '}
-              <Link href={data.website_url} as={NextLink} target='_blank'>
+              <Link href={data.website_url} as={NextLink} target="_blank">
                 {data.website_url}
               </Link>
             </Box>
             {data.media_channel ? (
               <Box>
                 Access Link:{' '}
-                <Link href={data.media_channel} as={NextLink} target='_blank'>
+                <Link href={data.media_channel} as={NextLink} target="_blank">
                   {data.media_channel}
                 </Link>
               </Box>
@@ -96,7 +96,7 @@ export const CourseInfo: React.FC<any> = () => {
               <Link
                 href={`${snapshotWebsite}/#/${data.snapshot_space_ens}`}
                 as={NextLink}
-                target='_blank'
+                target="_blank"
               >
                 {`${snapshotWebsite}/#/${data.snapshot_space_ens}`}
               </Link>
@@ -106,8 +106,8 @@ export const CourseInfo: React.FC<any> = () => {
         <Box width={'50%'} boxSize={'xs'}>
           <Image
             src={data.image_url}
-            alt='Green double couch with wooden legs'
-            borderRadius='lg'
+            alt="Green double couch with wooden legs"
+            borderRadius="lg"
           />
         </Box>
       </Stack>
