@@ -92,6 +92,21 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
     [studentsKarmaData, courseData],
   )
 
+  if (studentsData?.data.students.length === 0) {
+    return (
+      <Alert status="warning">
+        <AlertIcon />
+        <Box>
+          <AlertTitle>Warning</AlertTitle>
+          <AlertDescription>
+            Cannot calculate statistics without any student enrolled to the
+            course.
+          </AlertDescription>
+        </Box>
+      </Alert>
+    )
+  }
+
   if (
     isLoadingStudentsData ||
     isLoadingKarmaData ||
@@ -113,21 +128,6 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
           <AlertTitle>Error</AlertTitle>
           <AlertDescription>
             There is an error fetching your data. Try again later.
-          </AlertDescription>
-        </Box>
-      </Alert>
-    )
-  }
-
-  if (studentsKarmaData?.length === 0) {
-    return (
-      <Alert status="warning">
-        <AlertIcon />
-        <Box>
-          <AlertTitle>Warning</AlertTitle>
-          <AlertDescription>
-            Cannot calculate statistics without any student enrolled to the
-            course.
           </AlertDescription>
         </Box>
       </Alert>
