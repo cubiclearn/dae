@@ -59,11 +59,19 @@ export const CourseInfo: React.FC<any> = () => {
   return (
     <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
       <Stack
-        direction={'row'}
-        justifyContent={'space-between'}
+        spacing={8}
         borderRadius="xl"
+        direction={{ base: 'column', lg: 'row' }}
       >
-        <Stack width={'50%'} spacing={8}>
+        <Center width={{ base: '100%', lg: '40%' }}>
+          <Image
+            src={data.image_url}
+            alt="Green double couch with wooden legs"
+            borderRadius="lg"
+            maxHeight={'300px'}
+          />
+        </Center>
+        <Stack spacing={8} width={{ base: '100%', lg: '60%' }}>
           <Stack spacing={4}>
             <Box>
               <Text fontSize={'3xl'} fontWeight={'semibold'}>
@@ -75,41 +83,45 @@ export const CourseInfo: React.FC<any> = () => {
             </Box>
           </Stack>
           <Stack>
-            <Box>
+            <Text fontWeight={'semibold'}>
               Website:{' '}
-              <Link href={data.website_url} as={NextLink} target="_blank">
+              <Link
+                fontWeight={'normal'}
+                href={data.website_url}
+                as={NextLink}
+                target="_blank"
+              >
                 {data.website_url}
               </Link>
-            </Box>
+            </Text>
             {data.media_channel ? (
-              <Box>
+              <Text fontWeight={'semibold'}>
                 Access Link:{' '}
-                <Link href={data.media_channel} as={NextLink} target="_blank">
+                <Link
+                  fontWeight={'normal'}
+                  href={data.media_channel}
+                  as={NextLink}
+                  target="_blank"
+                >
                   {data.media_channel}
                 </Link>
-              </Box>
+              </Text>
             ) : (
               <></>
             )}
-            <Box>
+            <Text fontWeight={'semibold'}>
               Snapshot Space:{' '}
               <Link
                 href={`${snapshotWebsite}/#/${data.snapshot_space_ens}`}
                 as={NextLink}
                 target="_blank"
+                fontWeight={'normal'}
               >
                 {`${snapshotWebsite}/#/${data.snapshot_space_ens}`}
               </Link>
-            </Box>
+            </Text>
           </Stack>
         </Stack>
-        <Box width={'50%'} boxSize={'xs'}>
-          <Image
-            src={data.image_url}
-            alt="Green double couch with wooden legs"
-            borderRadius="lg"
-          />
-        </Box>
       </Stack>
     </Box>
   )
