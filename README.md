@@ -1,8 +1,8 @@
-# DAE
+# DAE (Decentralized Autonomous Education)
 
-This is an official starter Turborepo.
+The official repository for the frontend of the DAE project.
 
-## Using this example
+## Run the frontend (dev)
 
 Run the following command:
 
