@@ -21,7 +21,7 @@ export const EnrollStudentsFormContainer: React.FC<EnrollStudentsFormProps> = ({
       <Stack spacing={8}>
         <FormControl display="flex" alignItems="center">
           <FormLabel htmlFor="email-alerts" mb="0">
-            Multi enroll with CSV?
+            Multi enroll?
           </FormLabel>
           <Switch id="email-alerts" onChange={handleMultiEnrollChange} />
         </FormControl>

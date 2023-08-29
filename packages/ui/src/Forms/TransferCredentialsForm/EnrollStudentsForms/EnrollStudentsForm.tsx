@@ -19,6 +19,8 @@ import {
   Tbody,
   Td,
   Text,
+  FormHelperText,
+  Link,
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
@@ -111,7 +113,7 @@ export const EnrollStudentsForm: React.FC<EnrollStudentsCSVFormProps> = ({
     <form onSubmit={handleSubmit}>
       <Stack spacing={6}>
         <FormControl isRequired isInvalid={!!errors.CSVFile && touched.CSVFile}>
-          <FormLabel>CSV File</FormLabel>
+          <FormLabel>File (.csv)</FormLabel>
           <Input
             id="CSVFile"
             onChange={handleCSVFileChange}
@@ -119,6 +121,17 @@ export const EnrollStudentsForm: React.FC<EnrollStudentsCSVFormProps> = ({
             type="file"
             py={1}
           />
+          <FormHelperText>
+            Click{' '}
+            <Link
+              isExternal
+              fontWeight={'bold'}
+              href="/files/enroll_students_example.csv"
+            >
+              here
+            </Link>{' '}
+            to download the example CSV file.
+          </FormHelperText>
           <FormErrorMessage>{errors.CSVFile}</FormErrorMessage>
         </FormControl>
         {csvData.length > 0 && (
