@@ -129,8 +129,8 @@ export const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({
         <Tbody>
           {studentsAddressAndKarma.map((student, index) => {
             return (
-              <Tr>
-                <Td>{`#${index + 1}`}</Td>
+              <Tr key={index}>
+                <Td fontWeight={'semibold'}>{`#${index + 1}`}</Td>
                 <Td>{student[0]}</Td>
                 <Td isNumeric>{student[1]}</Td>
               </Tr>

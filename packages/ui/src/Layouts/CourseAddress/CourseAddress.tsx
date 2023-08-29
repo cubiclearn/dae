@@ -25,7 +25,7 @@ export const CourseAddress: React.FC<CourseAddressProps> = ({
   }
 
   return (
-    <Text>
+    <Text fontWeight={'semibold'}>
       Course:{' '}
       <Link
         as={NextLink}
@@ -33,8 +33,8 @@ export const CourseAddress: React.FC<CourseAddressProps> = ({
           ChainBlockExplorer[chainId as keyof ChainBlockExplorer]
         }/address/${courseAddress}`}
         textDecoration={'none'}
-        _hover={{ textDecoration: 'none' }}
         isExternal
+        fontWeight={'normal'}
       >
         {courseAddress} <ExternalLinkIcon mx="2px" />
       </Link>
