@@ -30,19 +30,9 @@ export const useCourseStudents = (
     fetcher,
   )
 
-  if (!shouldFetch) {
-    return {
-      data: null,
-      error: new Error(
-        'You are not connected to Web3. Please connect your wallet before proceeding.',
-      ),
-      isLoading: false,
-    }
-  }
-
   return {
     data,
     error,
-    isLoading,
+    isLoading: isLoading,
   }
 }

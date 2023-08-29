@@ -123,3 +123,15 @@ export const USER_VOTE_QUERY = gql`
     }
   }
 `
+
+export const USER_VOTING_POWER_QUERY = gql`
+  query VotingPower($proposalId: String!, $userAddress:String!, $spaceId:String!) {
+    vp (
+      voter: $userAddress
+      space: $spaceId
+      proposal: $proposalId
+    ) {
+      vp
+    }
+  }
+`

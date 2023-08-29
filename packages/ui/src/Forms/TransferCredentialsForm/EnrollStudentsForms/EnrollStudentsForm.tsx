@@ -53,7 +53,6 @@ export const EnrollStudentsForm: React.FC<EnrollStudentsCSVFormProps> = ({
       },
       onSubmit: async () => {
         try {
-          console.log('CIAO')
           await multiTransfer(
             csvData,
             'https://dae-demo.infura-ipfs.io/ipfs/QmPfKCv7ZAz8294ShRTcHft5LSM9YaDJ4NTjZisCkhFxW8',

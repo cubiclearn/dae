@@ -32,6 +32,7 @@ export const useCourseStudentsKarma = (
   } = useContractReads({
     contracts,
     cacheOnBlock: true,
+    cacheTime: 10_000,
     select: (data) =>
       data
         .filter((el) => el.status === 'success')

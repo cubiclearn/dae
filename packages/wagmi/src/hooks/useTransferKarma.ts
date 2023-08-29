@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useContractWrite, usePublicClient } from 'wagmi'
-import { Address } from 'viem'
+import { Address, ContractFunctionExecutionError } from 'viem'
 import { KarmaAccessControlAbiUint64 } from '@dae/abi'
 
 export function useTransferKarma(
@@ -79,7 +79,13 @@ export function useTransferKarma(
       setIsLoading(false)
       setIsSigning(false)
       setIsError(true)
-      setError(error.message)
+      if (error instanceof ContractFunctionExecutionError) {
+        setError(
+          `${error.details}. Look at your browser console for more informations.`,
+        )
+      } else {
+        setError(error.message || 'An error occurred')
+      }
       throw error
     }
   }

@@ -83,20 +83,28 @@ export const ProposalCountdownTimer: React.FC<ProposalCountdownTimerProps> = ({
       </Text>
       <Stack direction="row" spacing={4}>
         <Stack width={'25%'}>
-          <Text fontSize={'lg'}>{timeLeft.days}</Text>
+          <Text fontSize={'lg'} fontWeight={'semibold'}>
+            {timeLeft.days}
+          </Text>
           <Text>Days</Text>
         </Stack>
         <Stack width={'25%'}>
-          <Text fontSize={'lg'}>{timeLeft.hours}</Text>
+          <Text fontSize={'lg'} fontWeight={'semibold'}>
+            {timeLeft.hours}
+          </Text>
           <Text>Hours</Text>
         </Stack>
         <Stack width={'25%'}>
-          <Text fontSize={'lg'}>{timeLeft.minutes}</Text>
-          <Text>Minutes</Text>
+          <Text fontSize={'lg'} fontWeight={'semibold'}>
+            {timeLeft.minutes}
+          </Text>
+          <Text>Min.</Text>
         </Stack>
         <Stack width={'25%'}>
-          <Text fontSize={'lg'}>{timeLeft.seconds}</Text>
-          <Text>Seconds</Text>
+          <Text fontSize={'lg'} fontWeight={'semibold'}>
+            {timeLeft.seconds}
+          </Text>
+          <Text>Sec.</Text>
         </Stack>
       </Stack>
     </Stack>

@@ -1,14 +1,6 @@
 import { FC, useMemo } from 'react'
 import React from 'react'
-import {
-  Box,
-  Text,
-  useDisclosure,
-  Stack,
-  Link,
-  Center,
-  Spinner,
-} from '@chakra-ui/react'
+import { Box, Text, useDisclosure, Stack, Skeleton } from '@chakra-ui/react'
 import {
   FiUsers,
   FiZap,
@@ -22,14 +14,13 @@ import { useRouter } from 'next/router'
 import { Address } from 'viem'
 import { CourseProvider } from '../CourseProvider'
 import { Web3SafeContainer } from '../Web3SafeContainer'
-import NextLink from 'next/link'
 import { NavigationMenu, NavigationMenuItem } from './NavigationMenu'
 import { Sidebar } from './SideBar'
 import { BaseDrawer } from './Drawer'
 import { Header } from './Header'
-import { ChainBlockExplorer } from '@dae/chains'
 import { useNetwork } from 'wagmi'
 import { useUserCourseCredentials } from '@dae/wagmi'
+import { CourseAddress } from './CourseAddress'
 
 const openedAccorditionIndex = (pathname: string) => {
   if (pathname.startsWith('/course/[address]/credentials')) {
@@ -63,11 +54,17 @@ const CourseNavigationMenu: React.FC = () => {
     [data],
   )
 
-  if (isLoading || !data) {
+  if (isLoading) {
     return (
-      <Center>
-        <Spinner />
-      </Center>
+      <Stack spacing={2} mt={2}>
+        <Skeleton height={'56px'} isLoaded={false} rounded={'lg'} />
+        <Skeleton height={'56px'} isLoaded={false} rounded={'lg'} />
+        <Skeleton height={'56px'} isLoaded={false} rounded={'lg'} />
+        <Skeleton height={'56px'} isLoaded={false} rounded={'lg'} />
+        <Skeleton height={'56px'} isLoaded={false} rounded={'lg'} />
+        <Skeleton height={'56px'} isLoaded={false} rounded={'lg'} />
+        <Skeleton height={'56px'} isLoaded={false} rounded={'lg'} />
+      </Stack>
     )
   }
 
@@ -270,19 +267,10 @@ export const CourseLayout: FC<Props> = ({ children, heading }) => {
             >
               {heading}
             </Text>
-            <Text>
-              Course:{' '}
-              <Link
-                as={NextLink}
-                href={`${
-                  ChainBlockExplorer[chain?.id as keyof ChainBlockExplorer]
-                }/address/${query.address}`}
-                textDecoration={'none'}
-                target="_blank"
-              >
-                {query.address}
-              </Link>
-            </Text>
+            <CourseAddress
+              chainId={chain?.id}
+              courseAddress={query.address as Address}
+            />
           </Stack>
           <Web3SafeContainer>
             <Box>{children}</Box>

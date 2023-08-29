@@ -24,7 +24,7 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { useAccount, useNetwork } from 'wagmi'
 import * as Yup from 'yup'
-import { ProgressStepper } from '../../stepper'
+import { ProgressStepper } from '../../Stepper'
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
@@ -56,7 +56,7 @@ export const CreateCourseForm = () => {
 
   if (!chain || !chain.id || !address) {
     return (
-      <Alert status='info'>
+      <Alert status="info">
         <AlertIcon />
         <Box>
           <AlertTitle>Error</AlertTitle>
@@ -160,7 +160,7 @@ export const CreateCourseForm = () => {
     <Stack
       spacing={8}
       padding={8}
-      borderRadius='xl'
+      borderRadius="xl"
       bg={'white'}
       boxShadow={'base'}
     >
@@ -169,12 +169,12 @@ export const CreateCourseForm = () => {
           <FormControl isRequired isInvalid={!!errors.name && touched.name}>
             <FormLabel>Name</FormLabel>
             <Input
-              id='name'
+              id="name"
               value={values.name}
               onChange={handleChange}
               onBlur={handleBlur}
-              type='text'
-              placeholder='Name'
+              type="text"
+              placeholder="Name"
             />
             <FormErrorMessage>{errors.name}</FormErrorMessage>
           </FormControl>
@@ -184,12 +184,12 @@ export const CreateCourseForm = () => {
           >
             <FormLabel>Description</FormLabel>
             <Input
-              id='description'
+              id="description"
               value={values.description}
               onChange={handleChange}
               onBlur={handleBlur}
-              type='text'
-              placeholder='Description'
+              type="text"
+              placeholder="Description"
             />
             <FormErrorMessage>{errors.description}</FormErrorMessage>
           </FormControl>
@@ -197,8 +197,8 @@ export const CreateCourseForm = () => {
             <FormLabel>Image</FormLabel>
             <Input
               py={1}
-              id='image'
-              type='file'
+              id="image"
+              type="file"
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 const file = event.target.files?.[0]
                 setFieldValue('image', file)
@@ -213,9 +213,9 @@ export const CreateCourseForm = () => {
           >
             <FormLabel>Website</FormLabel>
             <Input
-              id='website'
-              type='text'
-              placeholder='https://your-metadata.com'
+              id="website"
+              type="text"
+              placeholder="https://your-metadata.com"
               value={values.website}
               onChange={handleChange}
               onBlur={handleBlur}
@@ -227,12 +227,12 @@ export const CreateCourseForm = () => {
           >
             <FormLabel>Media channel</FormLabel>
             <Input
-              id='mediaChannel'
+              id="mediaChannel"
               value={values.mediaChannel}
               onChange={handleChange}
               onBlur={handleBlur}
-              type='text'
-              placeholder='https://your-media-channel.com'
+              type="text"
+              placeholder="https://your-media-channel.com"
             />
             <FormErrorMessage>{errors.mediaChannel}</FormErrorMessage>
             <FormControl
@@ -246,7 +246,7 @@ export const CreateCourseForm = () => {
                 allowMouseWheel
                 defaultValue={0}
                 min={0}
-                id='magisterBaseKarma'
+                id="magisterBaseKarma"
                 onChange={(_valueAsString, valueAsNumber) => {
                   if (isNaN(valueAsNumber)) {
                     setFieldValue('magisterBaseKarma', 0) // Set to a default value or any other appropriate value
@@ -277,7 +277,7 @@ export const CreateCourseForm = () => {
               allowMouseWheel
               defaultValue={0}
               min={0}
-              id='discipulusBaseKarma'
+              id="discipulusBaseKarma"
               onChange={(_valueAsString, valueAsNumber) => {
                 if (isNaN(valueAsNumber)) {
                   setFieldValue('discipulusBaseKarma', 0) // Set to a default value or any other appropriate value
@@ -305,12 +305,12 @@ export const CreateCourseForm = () => {
           >
             <FormLabel>Snapshot Space ENS</FormLabel>
             <Input
-              id='snapshotSpaceENS'
+              id="snapshotSpaceENS"
               value={values.snapshotSpaceENS}
               onChange={handleChange}
               onBlur={handleBlur}
-              type='text'
-              placeholder='your-ens.eth'
+              type="text"
+              placeholder="your-ens.eth"
             />
             <FormErrorMessage>
               {errors.snapshotSpaceENS ||
@@ -318,15 +318,15 @@ export const CreateCourseForm = () => {
             </FormErrorMessage>
           </FormControl>
           <Button
-            colorScheme='blue'
-            type='submit'
+            colorScheme="blue"
+            type="submit"
             isLoading={isLoading}
-            loadingText='Submitting'
+            loadingText="Submitting"
           >
             Create course
           </Button>
           {isError ? (
-            <Alert status='error'>
+            <Alert status="error">
               <AlertIcon />
               <Box>
                 <AlertTitle>Error</AlertTitle>
