@@ -68,10 +68,10 @@ export const CourseInfo: React.FC<any> = () => {
             src={data.image_url}
             alt="Green double couch with wooden legs"
             borderRadius="lg"
-            maxHeight={'300px'}
+            maxHeight={{ base: '300px', lg: '500px' }}
           />
         </Center>
-        <Stack spacing={8} width={{ base: '100%', lg: '60%' }}>
+        <Stack spacing={8} width={'100%'}>
           <Stack spacing={4}>
             <Box>
               <Text fontSize={'3xl'} fontWeight={'semibold'}>
