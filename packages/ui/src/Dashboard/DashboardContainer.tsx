@@ -12,7 +12,11 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react'
-import { PartecipantsSection, StatisticsSection } from './Sections'
+import {
+  LeaderboardSection,
+  PartecipantsSection,
+  StatisticsSection,
+} from './Sections'
 import { Course } from '@dae/database'
 
 type DashboardContainerProps = {
@@ -50,7 +54,7 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
   }
 
   return (
-    <Stack spacing={6}>
+    <Stack spacing={8}>
       <Stack spacing={4}>
         <Text fontSize={'2xl'} fontWeight={'semibold'}>
           Participants
@@ -65,6 +69,16 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
           Students Karma
         </Text>
         <StatisticsSection
+          courseAddress={courseAddress}
+          chainId={chain?.id}
+          courseData={courseData as Course | undefined}
+        />
+      </Stack>
+      <Stack spacing={4}>
+        <Text fontSize={'2xl'} fontWeight={'semibold'}>
+          Students Leaderboard
+        </Text>
+        <LeaderboardSection
           courseAddress={courseAddress}
           chainId={chain?.id}
           courseData={courseData as Course | undefined}
