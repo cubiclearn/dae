@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { CredentialsCard } from './CredentialsCard'
-import { SimpleGrid } from '@chakra-ui/react'
+import { SimpleGrid, Stack } from '@chakra-ui/react'
 import {
   Alert,
   AlertIcon,
@@ -9,6 +9,7 @@ import {
   Box,
   Center,
   Spinner,
+  Text,
 } from '@chakra-ui/react'
 import { useCourseCredentials } from '@dae/wagmi'
 import { Address, useNetwork } from 'wagmi'
@@ -27,6 +28,22 @@ export const CourseCredentialsList: React.FC<CourseCardListProps> = ({
     chain?.id,
   )
 
+  const BASE_CREDENTIALS = useMemo(
+    () =>
+      data !== null
+        ? data.filter((credential) => credential.type !== 'OTHER')
+        : [],
+    [data],
+  )
+
+  const CUSTOM_CREDENTIALS = useMemo(
+    () =>
+      data !== null
+        ? data.filter((credential) => credential.type === 'OTHER')
+        : [],
+    [data],
+  )
+
   if (isLoading) {
     return (
       <Center>
@@ -37,7 +54,7 @@ export const CourseCredentialsList: React.FC<CourseCardListProps> = ({
 
   if (error) {
     return (
-      <Alert status='error'>
+      <Alert status="error">
         <AlertIcon />
         <Box>
           <AlertTitle>Error</AlertTitle>
@@ -51,7 +68,7 @@ export const CourseCredentialsList: React.FC<CourseCardListProps> = ({
 
   if (!data || data.length === 0) {
     return (
-      <Alert status='info'>
+      <Alert status="info">
         <AlertIcon />
         <Box>
           <AlertTitle>Nothing to show.</AlertTitle>
@@ -62,13 +79,46 @@ export const CourseCredentialsList: React.FC<CourseCardListProps> = ({
   }
 
   return (
-    <SimpleGrid
-      columns={{ base: 1, sm: 2, lg: 3, xl: 5 }}
-      spacing={{ base: 8 }}
-    >
-      {data.map((credential) => (
-        <CredentialsCard key={credential.ipfs_cid} data={credential} />
-      ))}
-    </SimpleGrid>
+    <Stack spacing={8}>
+      <Stack spacing={4}>
+        <Text fontSize={'xl'} fontWeight={'semibold'}>
+          Base
+        </Text>
+        <SimpleGrid
+          columns={{ base: 1, sm: 2, lg: 3, xl: 5 }}
+          spacing={{ base: 8 }}
+        >
+          {BASE_CREDENTIALS.map((credential) => (
+            <CredentialsCard key={credential.ipfs_cid} data={credential} />
+          ))}
+        </SimpleGrid>
+      </Stack>
+      <Stack spacing={4}>
+        <Text fontSize={'xl'} fontWeight={'semibold'}>
+          Custom
+        </Text>
+
+        {CUSTOM_CREDENTIALS.length > 0 ? (
+          <SimpleGrid
+            columns={{ base: 1, sm: 2, lg: 3, xl: 5 }}
+            spacing={{ base: 8 }}
+          >
+            {CUSTOM_CREDENTIALS.map((credential) => (
+              <CredentialsCard key={credential.ipfs_cid} data={credential} />
+            ))}
+          </SimpleGrid>
+        ) : (
+          <Alert status="info">
+            <AlertIcon />
+            <Box>
+              <AlertTitle>Nothing to show.</AlertTitle>
+              <AlertDescription>
+                You haven't created a custom credential yet.
+              </AlertDescription>
+            </Box>
+          </Alert>
+        )}
+      </Stack>
+    </Stack>
   )
 }

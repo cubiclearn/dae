@@ -16,7 +16,7 @@ import { useCreateCredential } from '@dae/wagmi'
 import { useFormik } from 'formik'
 import { useRouter } from 'next/router'
 import React, { useEffect } from 'react'
-import { useNetwork } from 'wagmi'
+import { Address, useNetwork } from 'wagmi'
 import * as Yup from 'yup'
 
 const validationSchema = Yup.object().shape({
@@ -53,14 +53,16 @@ export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
     },
     onSubmit: async (values) => {
       try {
-        const formData = new FormData()
-
-        formData.set('file', values.image!)
-        formData.set('name', values.name)
-        formData.set('description', values.description)
-        formData.set('courseAddress', courseAddress)
-        formData.set('chainId', chain!.id.toString())
-        await create(formData)
+        if (!values.image || !chain) {
+          return
+        }
+        await create(
+          values.image,
+          values.name,
+          values.description,
+          courseAddress as Address,
+          chain.id,
+        )
         router.push(`/course/${courseAddress}/credentials/list`)
       } catch (_e) {}
     },
@@ -89,18 +91,18 @@ export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
   }, [isLoading, isError, isSuccess])
 
   return (
-    <Box padding={8} borderRadius='xl' bg={'white'} boxShadow={'base'}>
+    <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
       <form onSubmit={handleSubmit}>
         <Stack spacing={4}>
           <FormControl isRequired isInvalid={!!errors.name && touched.name}>
             <FormLabel>Name</FormLabel>
             <Input
-              id='name'
+              id="name"
               value={values.name}
               onChange={handleChange}
               onBlur={handleBlur}
-              type='text'
-              placeholder='Name'
+              type="text"
+              placeholder="Name"
             />
             <FormErrorMessage>{errors.name}</FormErrorMessage>
           </FormControl>
@@ -110,12 +112,12 @@ export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
           >
             <FormLabel>Description</FormLabel>
             <Input
-              id='description'
+              id="description"
               value={values.description}
               onChange={handleChange}
               onBlur={handleBlur}
-              type='text'
-              placeholder='Description'
+              type="text"
+              placeholder="Description"
             />
             <FormErrorMessage>{errors.description}</FormErrorMessage>
           </FormControl>
@@ -123,8 +125,8 @@ export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
             <FormLabel>Image</FormLabel>
             <Input
               py={1}
-              id='image'
-              type='file'
+              id="image"
+              type="file"
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 const file = event.target.files?.[0]
                 setFieldValue('image', file)
@@ -134,15 +136,15 @@ export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
             <FormErrorMessage>{errors.image}</FormErrorMessage>
           </FormControl>
           <Button
-            colorScheme='blue'
-            type='submit'
+            colorScheme="blue"
+            type="submit"
             isLoading={isLoading}
-            loadingText='Submitting'
+            loadingText="Submitting"
           >
             Create credential
           </Button>
           {isError ? (
-            <Alert status='error'>
+            <Alert status="error">
               <AlertIcon />
               <Box>
                 <AlertTitle>Error</AlertTitle>

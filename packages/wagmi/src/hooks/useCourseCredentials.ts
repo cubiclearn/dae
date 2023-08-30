@@ -34,11 +34,17 @@ export const useCourseCredentials = (
     data: response,
     error,
     isLoading,
-  } = useSWR<ApiResponse>(shouldFetch ? url : null, fetcher)
+    isValidating,
+  } = useSWR<ApiResponse>(shouldFetch ? url : null, fetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    revalidateOnMount: true,
+  })
 
   return {
     data: response?.data?.credentials ?? null,
     error,
-    isLoading,
+    isLoading: isLoading || isValidating,
   }
 }

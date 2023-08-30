@@ -10,6 +10,7 @@ import { Address } from 'viem'
 // TypeScript enum for request methods
 enum HttpMethod {
   POST = 'POST',
+  DELETE = 'DELETE',
 }
 
 const asyncParse = (
@@ -21,6 +22,13 @@ const asyncParse = (
       maxFileSize: 1 * 1024 * 1024,
     })
     form.parse(req, (err, fields, files) => {
+      if (err && err.code === 1009) {
+        return reject(
+          new Error(
+            'Sorry, the file you uploaded exceeds the maximum allowed size of 1MB.',
+          ),
+        )
+      }
       if (err) return reject(err)
       resolve({ fields, files })
     })
@@ -36,6 +44,23 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (!name || !description || !courseAddress || !chainId) {
       throw new Error('Error Uploading image to ipfs')
+    }
+
+    const session = await getSession({ req })
+
+    const userCredentials = await prisma.userCredentials.findMany({
+      where: {
+        user_address: sanitizeAddress(session!.user.address as Address),
+        course_address: sanitizeAddress(courseAddress[0] as Address),
+        chain_id: parseInt(chainId[0] as string),
+        credential: {
+          OR: [{ type: 'ADMIN' }, { type: 'MAGISTER' }],
+        },
+      },
+    })
+
+    if (userCredentials.length === 0) {
+      return res.status(401).json({ success: false, error: 'Unauthorized' })
     }
 
     const buffer = fs.readFileSync(filepath)
@@ -88,6 +113,46 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(500).json({ success: false, error: err.message })
   }
 }
+const handleDeleteRequest = async (
+  req: NextApiRequest,
+  res: NextApiResponse,
+) => {
+  try {
+    const { credentialId, courseAddress, chainId } = req.query
+
+    if (!credentialId || !courseAddress || !chainId) {
+      throw new Error('Error Uploading image to ipfs')
+    }
+
+    const session = await getSession({ req })
+
+    const userCredentials = await prisma.userCredentials.findMany({
+      where: {
+        user_address: sanitizeAddress(session!.user.address as Address),
+        course_address: sanitizeAddress(courseAddress as Address),
+        chain_id: parseInt(chainId as string),
+        credential: {
+          OR: [{ type: 'ADMIN' }, { type: 'MAGISTER' }],
+        },
+      },
+    })
+
+    if (userCredentials.length === 0) {
+      return res.status(401).json({ success: false, error: 'Unauthorized' })
+    }
+
+    await prisma.credential.delete({
+      where: {
+        id: parseInt(credentialId as string),
+      },
+    })
+
+    return res.status(200).json({ success: true, data: null })
+  } catch (err: any) {
+    console.error(err)
+    return res.status(500).json({ success: false, error: err.message })
+  }
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -117,6 +182,8 @@ export default async function handler(
   switch (req.method) {
     case HttpMethod.POST:
       return handlePostRequest(req, res)
+    case HttpMethod.DELETE:
+      return handleDeleteRequest(req, res)
     default:
       return res
         .status(400)
