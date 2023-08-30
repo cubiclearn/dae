@@ -19,7 +19,7 @@ interface CourseCardProps extends BoxProps {
 export const CourseCard: FC<CourseCardProps> = ({ data: course, ...rest }) => {
   if (!course) {
     return (
-      <Alert status='error'>
+      <Alert status="error">
         <AlertIcon />
         <AlertDescription>There is an error fetching courses</AlertDescription>
       </Alert>
@@ -32,16 +32,16 @@ export const CourseCard: FC<CourseCardProps> = ({ data: course, ...rest }) => {
       href={`/course/${course.address}/info`}
       style={{ textDecoration: 'none' }}
     >
-      <Card maxW='sm' {...rest}>
+      <Card maxW="sm" {...rest}>
         <CardBody>
           <Image
             src={course.image_url}
-            alt=''
-            borderRadius='lg'
+            alt=""
+            borderRadius="lg"
             aspectRatio={1}
           />
-          <Stack mt='6' spacing='3'>
-            <Heading size='md'>{course.name}</Heading>
+          <Stack mt="6" spacing="3">
+            <Heading size="md">{course.name}</Heading>
             <Text>{course.description}</Text>
           </Stack>
         </CardBody>

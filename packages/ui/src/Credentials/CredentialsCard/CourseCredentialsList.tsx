@@ -10,9 +10,11 @@ import {
   Center,
   Spinner,
   Text,
+  Link,
 } from '@chakra-ui/react'
 import { useCourseCredentials } from '@dae/wagmi'
 import { Address, useNetwork } from 'wagmi'
+import NextLink from 'next/link'
 
 interface CourseCardListProps {
   courseAddress: Address
@@ -104,7 +106,14 @@ export const CourseCredentialsList: React.FC<CourseCardListProps> = ({
             spacing={{ base: 8 }}
           >
             {CUSTOM_CREDENTIALS.map((credential) => (
-              <CredentialsCard key={credential.ipfs_cid} data={credential} />
+              <Link
+                as={NextLink}
+                href={`/course/${credential.course_address}/credentials/${credential.id}/info`}
+                _hover={{ textDecoration: 'none' }}
+                key={credential.ipfs_cid}
+              >
+                <CredentialsCard data={credential} />
+              </Link>
             ))}
           </SimpleGrid>
         ) : (

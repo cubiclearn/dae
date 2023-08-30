@@ -1,5 +1,5 @@
 import React from 'react'
-import { useCourseData } from '../CourseProvider'
+import { useCourseData } from '../../CourseProvider'
 import {
   Center,
   Spinner,

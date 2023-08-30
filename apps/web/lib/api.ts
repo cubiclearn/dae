@@ -145,30 +145,22 @@ export const getUserCourseCredentials = async (
   })
 }
 
-export const createCourseCredentials = async (
-  courseAddress: Address,
-  chainId: number,
-  credentialData: Credential,
-) => {
-  prisma.course.update({
+export const getCourseCredentialUsers = async (
+  credentialId: number,
+): Promise<UserCredentials[]> => {
+  return prisma.userCredentials.findMany({
     where: {
-      address_chain_id: {
-        address: sanitizeAddress(courseAddress),
-        chain_id: chainId,
-      },
+      credential_id: credentialId,
     },
-    data: {
-      credentials: {
-        connectOrCreate: {
-          where: { id: credentialData.id },
-          create: {
-            ...credentialData,
-          },
-        },
-      },
-    },
-    include: {
-      credentials: true,
+  })
+}
+
+export const getCourseCredential = async (
+  credentialId: number,
+): Promise<Credential | null> => {
+  return prisma.credential.findUnique({
+    where: {
+      id: credentialId,
     },
   })
 }

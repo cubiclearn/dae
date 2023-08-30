@@ -6,9 +6,11 @@ import { prisma } from '@dae/database'
 import fs from 'fs'
 import { sanitizeAddress } from '../../../../lib/functions'
 import { Address } from 'viem'
+import { getCourseCredential } from '../../../../lib/api'
 
 // TypeScript enum for request methods
 enum HttpMethod {
+  GET = 'GET',
   POST = 'POST',
   DELETE = 'DELETE',
 }
@@ -33,6 +35,27 @@ const asyncParse = (
       resolve({ fields, files })
     })
   })
+
+const handleGetRequest = async (req: NextApiRequest, res: NextApiResponse) => {
+  try {
+    const { credentialId } = req.query
+
+    if (!credentialId) {
+      return res.status(400).json({ success: false, error: 'Bad request.' })
+    }
+
+    const credential = await getCourseCredential(
+      parseInt(credentialId as string),
+    )
+
+    return res
+      .status(200)
+      .json({ success: true, data: { credential: credential } })
+  } catch (err: any) {
+    console.error(err)
+    return res.status(500).json({ success: false, error: err.message })
+  }
+}
 
 const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
@@ -180,6 +203,8 @@ export default async function handler(
 
   // Handle the respective request method
   switch (req.method) {
+    case HttpMethod.GET:
+      return handleGetRequest(req, res)
     case HttpMethod.POST:
       return handlePostRequest(req, res)
     case HttpMethod.DELETE:

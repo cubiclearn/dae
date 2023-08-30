@@ -12,7 +12,7 @@ import { Alert, AlertIcon, AlertDescription } from '@chakra-ui/react'
 import { useDeleteCredential } from '@dae/wagmi'
 import { Credential } from '@dae/database'
 import { Address } from 'viem'
-import { ConfirmActionModal } from '../ConfirmActionModal'
+import { ConfirmActionModal } from '../../ConfirmActionModal'
 
 type CredentialsCardProps = {
   data: Credential
@@ -52,7 +52,7 @@ export const CredentialsCard: FC<CredentialsCardProps> = ({ data }) => {
   }
 
   return (
-    <Card maxW="sm">
+    <Card maxW="sm" boxShadow={'md'}>
       <CardBody>
         <Image
           src={data.image_url}
