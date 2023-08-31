@@ -108,7 +108,11 @@ const CourseNavigationMenu: React.FC = () => {
           {
             title: 'Course Credentials',
             href: `/course/${courseAddress}/credentials/list`,
-            active: pathname.startsWith('/course/[address]/credentials/list'),
+            active:
+              pathname.startsWith('/course/[address]/credentials/list') ||
+              pathname.startsWith(
+                '/course/[address]/credentials/[credentialId]',
+              ),
             visible: isAdminOrMagister,
           },
           {

@@ -29,14 +29,20 @@ export const useCourseCredentialUsers = (
 
   const shouldFetch = credentialId !== undefined
 
-  const { data, error, isLoading } = useSWR<ApiResponse>(
+  const { data, error, isLoading, isValidating } = useSWR<ApiResponse>(
     shouldFetch ? url : null,
     fetcher,
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      revalidateOnMount: true,
+    },
   )
 
   return {
     data: data?.data.credentialUsers ?? null,
     error,
-    isLoading: isLoading,
+    isLoading: isLoading || isValidating,
   }
 }
