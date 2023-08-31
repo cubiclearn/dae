@@ -3,9 +3,9 @@ import { useSWRConfig } from 'swr'
 import { Address } from 'viem'
 
 export const useDeleteCredential = (
-  credentialId: number,
-  courseAddress: Address,
-  chainId: number,
+  credentialId: number | undefined,
+  courseAddress: Address | undefined,
+  chainId: number | undefined,
 ) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isSuccess, setIsSuccess] = useState<boolean>(false)
@@ -14,6 +14,14 @@ export const useDeleteCredential = (
   const { mutate } = useSWRConfig()
 
   const deleteCredential = async () => {
+    if (
+      credentialId === undefined ||
+      courseAddress === undefined ||
+      chainId === undefined
+    ) {
+      return
+    }
+
     setIsLoading(true)
     setIsSuccess(false)
     setIsError(false)
