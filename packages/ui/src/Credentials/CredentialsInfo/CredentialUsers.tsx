@@ -28,12 +28,12 @@ export const CredentialUsers: React.FC<CredentialUsersProps> = ({
     <Stack
       spacing={4}
       borderRadius={'lg'}
-      p={4}
+      p={6}
       background={'white'}
       boxShadow={'md'}
     >
       <Text fontWeight={'semibold'} fontSize={'2xl'}>
-        Credential owners
+        Credential holders
       </Text>
       {credentialUsersData.length > 0 ? (
         <TableContainer>

@@ -10,7 +10,7 @@ export const CredentialInfo: React.FC<CredentialInfoProps> = ({
   credentialData,
 }) => {
   return (
-    <Card overflow="hidden" p={4} boxShadow={'md'}>
+    <Card overflow="hidden" p={6} boxShadow={'md'}>
       <Stack
         spacing={{ base: 4, sm: 6, lg: 4 }}
         direction={{ base: 'column', sm: 'row', lg: 'column' }}
