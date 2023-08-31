@@ -4,13 +4,11 @@ import { Stack } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { Address } from 'viem'
 
-export default function Teaching() {
+export default function Info() {
   const router = useRouter()
-  const credentialId =
-    typeof router.query.credentialId === 'string'
-      ? parseInt(router.query.credentialId)
-      : undefined
+  const credentialId = router.query.credentialId as string | undefined
   const courseAddress = router.query.address as Address
+  const parsedCredentialId = credentialId ? parseInt(credentialId) : undefined
 
   return (
     <>
@@ -23,7 +21,7 @@ export default function Teaching() {
       <Layout.Course heading="Credential Info">
         <Stack spacing={8}>
           <CredentialInfoContainer
-            credentialId={credentialId}
+            credentialId={parsedCredentialId}
             courseAddress={courseAddress}
           />
         </Stack>

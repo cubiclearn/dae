@@ -1,13 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
 import { getUserCourseCredentials } from '../../../../../lib/api'
-import { Address } from 'viem'
+import { Address, zeroAddress } from 'viem'
 import { createPublicClient } from 'viem'
 import { ChainKey } from '@dae/chains'
 import { config as TransportConfig } from '@dae/viem-config'
 import { CredentialsBurnableAbi } from '@dae/abi'
 import { decodeEventLog } from 'viem'
-import { CredentialIssuedLog } from '@dae/types'
+import { CredentialIssuedLog, CredentialTransferLog } from '@dae/types'
 import { Prisma, prisma } from '@dae/database'
 import { sanitizeAddress } from '../../../../../lib/functions'
 
@@ -15,6 +15,7 @@ import { sanitizeAddress } from '../../../../../lib/functions'
 enum HttpMethod {
   GET = 'GET',
   POST = 'POST',
+  DELETE = 'DELETE',
 }
 
 type EnrollUserData = {
@@ -42,6 +43,69 @@ const handleGetRequest = async (req: NextApiRequest, res: NextApiResponse) => {
   )
 
   res.status(200).json({ success: true, data: { credentials: credentials } })
+}
+
+const handleDeleteRequest = async (
+  req: NextApiRequest,
+  res: NextApiResponse,
+) => {
+  const { txHash, chainId } = req.query as {
+    txHash: Address
+    chainId: string
+  }
+
+  if (!chainId || !txHash) {
+    res.status(401).json({ message: 'Bad request' })
+    return
+  }
+
+  try {
+    const client = createPublicClient({
+      chain: ChainKey[chainId],
+      transport: TransportConfig[chainId].transport,
+    })
+
+    const txRecept = await client.getTransactionReceipt({
+      hash: txHash,
+    })
+
+    const txLogsDecoded = txRecept.logs.map((log) => {
+      return {
+        ...decodeEventLog({
+          abi: CredentialsBurnableAbi,
+          data: log.data,
+          topics: log.topics,
+        }),
+        address: log.address,
+      }
+    })
+
+    const transferLogs = txLogsDecoded.filter(
+      (log: any) => log.eventName === 'Transfer',
+    ) as [CredentialTransferLog & { address: Address }]
+
+    const burnLogs = transferLogs.filter((log) => log.args.to === zeroAddress)
+    console.log(burnLogs)
+    if (burnLogs.length === 0) {
+      return res.status(500).json({
+        success: false,
+        error: 'There are no burn logs inside this transaction.',
+      })
+    }
+
+    const burnData = await prisma.userCredentials.delete({
+      where: {
+        course_address_token_id: {
+          course_address: sanitizeAddress(burnLogs[0].address),
+          token_id: Number(burnLogs[0].args.tokenId),
+        },
+      },
+    })
+
+    return res.status(200).json({ success: true, data: burnData })
+  } catch (error: any) {
+    return res.status(500).json({ success: false, error: error.message })
+  }
 }
 
 const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -87,6 +151,7 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
             sanitizeAddress(log.args.to) === sanitizeAddress(userData.address),
         )
         const tokenId = userIssuedLogs[0].args.tokenId
+
         const tokenURI = await client.readContract({
           abi: CredentialsBurnableAbi,
           address: courseAddress,
@@ -125,8 +190,6 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     const validCreateData = createData.filter(
       (data) => data !== null,
     ) as Prisma.UserCredentialsCreateManyInput[]
-
-    console.log(validCreateData)
 
     await prisma.userCredentials.createMany({
       data: validCreateData,
@@ -168,6 +231,8 @@ export default async function handler(
       return handleGetRequest(req, res)
     case HttpMethod.POST:
       return handlePostRequest(req, res)
+    case HttpMethod.DELETE:
+      return handleDeleteRequest(req, res)
     default:
       return res
         .status(400)

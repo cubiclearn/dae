@@ -13,20 +13,18 @@ import {
 type DeleteModalProps = {
   isOpen: boolean
   onClose: () => void
-  onConfirmAction: () => void
+  onConfirm: () => void
   title: string
   body: string
-  cancelButtonText: string
   confirmButtonText: string
 }
 
 export const ConfirmActionModal: FC<DeleteModalProps> = ({
   isOpen,
   onClose,
-  onConfirmAction,
+  onConfirm,
   title,
   body,
-  cancelButtonText,
   confirmButtonText,
 }) => {
   return (
@@ -38,9 +36,9 @@ export const ConfirmActionModal: FC<DeleteModalProps> = ({
         <ModalBody>{body}</ModalBody>
         <ModalFooter>
           <Button colorScheme="gray" onClick={onClose}>
-            {cancelButtonText}
+            Cancel
           </Button>
-          <Button colorScheme="red" onClick={onConfirmAction} ml={3}>
+          <Button colorScheme="red" onClick={onConfirm} ml={3}>
             {confirmButtonText}
           </Button>
         </ModalFooter>

@@ -46,7 +46,7 @@ export const CredentialInfoContainer: React.FC<CredentialInfoContainerProps> =
     const {
       deleteCredential,
       isLoading: isDeletingCredential,
-      isError: errorDeletingCredential,
+      isError: isErrorDeletingCredential,
     } = useDeleteCredential(
       credentialData?.id,
       credentialData?.course_address as Address,
@@ -72,6 +72,8 @@ export const CredentialInfoContainer: React.FC<CredentialInfoContainerProps> =
     }
 
     if (
+      !credentialId ||
+      !courseAddress ||
       isLoadingCredentialUsersData ||
       (!credentialUsersData && !credentialUsersDataError) ||
       isLoadingCredentialData ||
@@ -112,7 +114,7 @@ export const CredentialInfoContainer: React.FC<CredentialInfoContainerProps> =
 
     return (
       <Stack spacing={{ base: 8, lg: 4 }}>
-        {errorDeletingCredential ? (
+        {isErrorDeletingCredential ? (
           <Alert status="error">
             <AlertIcon />
             <Box>
@@ -160,17 +162,19 @@ export const CredentialInfoContainer: React.FC<CredentialInfoContainerProps> =
             <CredentialInfo credentialData={credentialData} />
           </Box>
           <Box flex={{ base: '1', lg: '2 1 70%', xl: '2 1 80%' }}>
-            <CredentialUsers credentialUsersData={credentialUsersData} />
+            <CredentialUsers
+              courseAddress={courseAddress}
+              credentialUsersData={credentialUsersData}
+            />
           </Box>
         </Stack>
         <ConfirmActionModal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
-          onConfirmAction={handleConfirmDelete}
+          onConfirm={handleConfirmDelete}
           title="Confirm Deletion"
           body="Are you sure you want to delete this credential?"
           confirmButtonText="Delete"
-          cancelButtonText="Cancel"
         />
       </Stack>
     )
