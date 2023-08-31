@@ -36,7 +36,12 @@ export const useUserCourseCredentials = (
     data: response,
     error,
     isLoading,
-  } = useSWR<ApiResponse>(shouldFetch ? url : null, fetcher)
+  } = useSWR<ApiResponse>(shouldFetch ? url : null, fetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    revalidateOnMount: true,
+  })
 
   return {
     data: response?.data?.credentials ?? null,

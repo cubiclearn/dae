@@ -48,7 +48,7 @@ export const CredentialUsers: React.FC<CredentialUsersProps> = ({
               {credentialUsersData.map((user, index) => {
                 return (
                   <Tr key={index}>
-                    <Td>#{index + 1}</Td>
+                    <Td>{index + 1}</Td>
                     <Td>{user.user_address}</Td>
                   </Tr>
                 )
