@@ -19,7 +19,7 @@ const asyncParse = (
   new Promise((resolve, reject) => {
     const form = new IncomingForm({ multiples: true })
     form.parse(req, (err, fields, files) => {
-      if (err.code === 1009) {
+      if (err && err.code === 1009) {
         return reject(
           new Error(
             'Sorry, the file you uploaded exceeds the maximum allowed size of 1MB.',

@@ -91,7 +91,7 @@ export const CredentialInfoContainer: React.FC<CredentialInfoContainerProps> =
         <Alert status="error">
           <AlertIcon />
           <Box>
-            <AlertTitle>Error</AlertTitle>
+            <AlertTitle>Something went wrong.</AlertTitle>
             <AlertDescription>
               There is an error fetching your data. Try again later.
             </AlertDescription>
@@ -118,7 +118,7 @@ export const CredentialInfoContainer: React.FC<CredentialInfoContainerProps> =
           <Alert status="error">
             <AlertIcon />
             <Box>
-              <AlertTitle>Something went wrong</AlertTitle>
+              <AlertTitle>Something went wrong.</AlertTitle>
               <AlertDescription>
                 There is an error deleting this credential. Try again later.
               </AlertDescription>

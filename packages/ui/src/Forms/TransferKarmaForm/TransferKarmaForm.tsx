@@ -37,10 +37,17 @@ const validationSchema = Yup.object().shape({
 
 export const TransferKarmaForm: React.FC<any> = () => {
   const { data } = useCourseData()
-  const { transfer, isLoading, isError, isSuccess, error, isSigning } =
-    useTransferKarma(
-      data ? (data.karma_access_control_address as Address) : undefined,
-    )
+  const {
+    transfer,
+    isLoading,
+    isError,
+    isSuccess,
+    error,
+    isSigning,
+    isValidating,
+  } = useTransferKarma(
+    data ? (data.karma_access_control_address as Address) : undefined,
+  )
 
   const toast = useToast()
 
@@ -151,7 +158,7 @@ export const TransferKarmaForm: React.FC<any> = () => {
           <Button
             colorScheme="blue"
             type="submit"
-            isLoading={isLoading || isSigning}
+            isLoading={isLoading || isSigning || isValidating}
             loadingText="Submitting"
           >
             Transfer karma
@@ -160,7 +167,7 @@ export const TransferKarmaForm: React.FC<any> = () => {
             <Alert status="error">
               <AlertIcon />
               <Box>
-                <AlertTitle>Error</AlertTitle>
+                <AlertTitle>Something went wrong.</AlertTitle>
                 <AlertDescription>{error}</AlertDescription>
               </Box>
             </Alert>

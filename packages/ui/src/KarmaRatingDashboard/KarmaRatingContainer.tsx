@@ -22,7 +22,7 @@ type KarmaRatingContainerProps = {
 export const KarmaRatingContainer: React.FC<KarmaRatingContainerProps> = ({
   userAddress,
 }) => {
-  const { data: courseData } = useCourseData()
+  const { data: courseData, error: errorLoadingCourseData } = useCourseData()
   const {
     data: karmaBalance,
     isLoading,
@@ -34,7 +34,7 @@ export const KarmaRatingContainer: React.FC<KarmaRatingContainerProps> = ({
     userAddress,
   )
 
-  if (isLoading) {
+  if (isLoading || (!courseData && !errorLoadingCourseData)) {
     return (
       <Center>
         <Spinner />
@@ -47,7 +47,7 @@ export const KarmaRatingContainer: React.FC<KarmaRatingContainerProps> = ({
       <Alert status="error">
         <AlertIcon />
         <Box>
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>Something went wrong.</AlertTitle>
           <AlertDescription>{error.message}</AlertDescription>
         </Box>
       </Alert>

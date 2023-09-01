@@ -1,8 +1,8 @@
-import { useState } from 'react'
 import { useContractWrite, usePublicClient } from 'wagmi'
-import { Address, ContractFunctionExecutionError } from 'viem'
+import { Address } from 'viem'
 import { CredentialsBurnableAbi } from '@dae/abi'
 import { CredentialType } from '@dae/database'
+import { useWeb3HookState } from '../useWeb3HookState'
 
 export type EnrollUserData = {
   address: Address
@@ -14,11 +14,15 @@ export function useTransferCredentials(
   courseAddress: Address,
   credentialType: CredentialType,
 ) {
-  const [error, setError] = useState<string | null>(null)
-  const [isError, setIsError] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSigning, setIsSigning] = useState(false)
+  const {
+    isSuccess,
+    isValidating,
+    isLoading,
+    isSigning,
+    isError,
+    error,
+    ...state
+  } = useWeb3HookState()
 
   const publicClient = usePublicClient()
 
@@ -38,9 +42,7 @@ export function useTransferCredentials(
     userData: EnrollUserData,
     tokenURI: string,
   ): Promise<void> => {
-    setIsSuccess(false)
-    setIsError(false)
-    setIsSigning(true)
+    state.setValidating()
 
     try {
       if (mint === undefined) {
@@ -49,12 +51,13 @@ export function useTransferCredentials(
         )
       }
 
+      state.setSigning()
+
       const writeResult = await mint({
         args: [userData.address, tokenURI, 2],
       })
 
-      setIsLoading(true)
-      setIsSigning(false)
+      state.setLoading()
 
       const txReceipt = await publicClient.waitForTransactionReceipt({
         hash: writeResult.hash,
@@ -83,17 +86,9 @@ export function useTransferCredentials(
         throw new Error(responseJSON.error)
       }
 
-      setIsLoading(false)
-      setIsSuccess(true)
+      state.setSuccess()
     } catch (error: any) {
-      setIsLoading(false)
-      setIsSigning(false)
-      setIsError(true)
-      if (error instanceof ContractFunctionExecutionError) {
-        setError(error.details)
-      } else {
-        setError(error.message || 'An error occurred')
-      }
+      state.handleError(error)
       throw error
     }
   }
@@ -102,9 +97,7 @@ export function useTransferCredentials(
     usersData: EnrollUserData[],
     tokenURI: string,
   ): Promise<void> => {
-    setIsSuccess(false)
-    setIsError(false)
-    setIsSigning(true)
+    state.setValidating()
 
     try {
       if (credentialType !== 'DISCIPULUS') {
@@ -119,6 +112,8 @@ export function useTransferCredentials(
 
       const addressToMint = usersData.map((userData) => userData.address)
 
+      state.setSigning()
+
       const writeResult = await multiMint({
         args: [
           addressToMint,
@@ -127,8 +122,7 @@ export function useTransferCredentials(
         ],
       })
 
-      setIsLoading(true)
-      setIsSigning(false)
+      state.setLoading()
 
       const txReceipt = await publicClient.waitForTransactionReceipt({
         hash: writeResult.hash,
@@ -151,19 +145,9 @@ export function useTransferCredentials(
         throw new Error(responseJSON.error)
       }
 
-      setIsLoading(false)
-      setIsSuccess(true)
+      state.setSuccess()
     } catch (error: any) {
-      setIsLoading(false)
-      setIsSigning(false)
-      setIsError(true)
-      if (error instanceof ContractFunctionExecutionError) {
-        setError(
-          `${error.details}. Look at your browser console for more informations.`,
-        )
-      } else {
-        setError(error.message || 'An error occurred')
-      }
+      state.handleError(error)
       throw error
     }
   }
@@ -176,5 +160,6 @@ export function useTransferCredentials(
     isSuccess,
     error,
     isSigning,
+    isValidating,
   }
 }

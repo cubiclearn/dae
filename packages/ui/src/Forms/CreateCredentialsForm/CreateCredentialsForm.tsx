@@ -147,8 +147,12 @@ export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
             <Alert status="error">
               <AlertIcon />
               <Box>
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
+                <AlertTitle>Something went wrong.</AlertTitle>
+                <AlertDescription>
+                  {error && error instanceof Error
+                    ? error.message
+                    : 'Unknown Error'}
+                </AlertDescription>
               </Box>
             </Alert>
           ) : (

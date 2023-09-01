@@ -1,27 +1,50 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { Chain, useContractWrite, usePublicClient } from 'wagmi'
-import { normalize } from 'viem/ens'
-import { Address, ContractFunctionExecutionError } from 'viem'
+import { Address } from 'viem'
 import { CredentialsFactoryAbi } from '@dae/abi'
 import { useCreateSnapshotSpace } from '@dae/snapshot'
 import type { Course } from '@dae/database'
-import { createPublicClient, http } from 'viem'
 import { mainnet, goerli } from 'viem/chains'
 import { FactoryContractAddress } from '@dae/chains'
+import { UseWeb3WriteHookInterface } from '@dae/types'
+import { useWeb3HookState } from '../useWeb3HookState'
 
-export function useCreateCourse(chain: Chain, address: Address) {
-  const [error, setError] = useState<string | null>(null)
-  const [isError, setIsError] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSigning, setIsSigning] = useState(false)
-  const [step, setStep] = useState<null | number>(null)
+interface CreateCredentialHookInterface extends UseWeb3WriteHookInterface {
+  create: (
+    name: string,
+    description: string,
+    image: File,
+    website: string,
+    mediaChannel: string,
+    magisterBaseKarma: number,
+    discipulusBaseKarma: number,
+    snapshotSpaceENS: string,
+  ) => Promise<void>
+  step: number
+}
 
+export function useCreateCourse(
+  chain: Chain | undefined,
+  creatorAddress: Address | undefined,
+): CreateCredentialHookInterface {
+  const {
+    isSuccess,
+    isValidating,
+    isLoading,
+    isSigning,
+    isError,
+    error,
+    ...state
+  } = useWeb3HookState()
+
+  const [step, setStep] = useState<number>(0)
   const { create: createSnapshotSpace } = useCreateSnapshotSpace()
 
-  const factoryAddress = FactoryContractAddress[
-    chain.id as keyof FactoryContractAddress
-  ] as Address
+  const factoryAddress = chain
+    ? (FactoryContractAddress[
+        chain.id as keyof FactoryContractAddress
+      ] as Address)
+    : undefined
 
   const { writeAsync } = useContractWrite({
     address: factoryAddress,
@@ -31,14 +54,11 @@ export function useCreateCourse(chain: Chain, address: Address) {
 
   const publicClient = usePublicClient()
 
-  const ensCheckerPublicClient = useMemo(
-    () =>
-      createPublicClient({
-        chain: chain && !chain.testnet && chain.id !== 31337 ? mainnet : goerli,
-        transport: http(),
-      }),
-    [chain],
-  )
+  const ENSChainId =
+    chain && !chain.testnet && chain.id !== 31337 ? mainnet.id : goerli.id
+  const ENSPublicClient = usePublicClient({
+    chainId: ENSChainId,
+  })
 
   const create = async (
     name: string,
@@ -50,26 +70,26 @@ export function useCreateCourse(chain: Chain, address: Address) {
     discipulusBaseKarma: number,
     snapshotSpaceENS: string,
   ) => {
-    setIsSuccess(false)
-    setIsError(false)
-    setIsSigning(true)
-    setIsLoading(true)
-
     try {
+      state.setValidating()
       setStep(0)
 
-      const resolverAddress = await ensCheckerPublicClient.getEnsAddress({
-        name: normalize(snapshotSpaceENS),
+      if (!snapshotSpaceENS.match(/^([a-z0-9-]+\.eth)$/i)) {
+        throw new Error('Invalid ENS address.')
+      }
+
+      const resolverAddress = await ENSPublicClient.getEnsAddress({
+        name: snapshotSpaceENS,
       })
 
-      if (resolverAddress !== address) {
+      if (resolverAddress !== creatorAddress) {
         throw new Error('You are not the owner of this ENS address.')
       }
 
+      state.setLoading()
+
       const formData = new FormData()
-
       formData.append('file', image)
-
       formData.append('name', name)
       formData.append('description', description)
       formData.append('website', website)
@@ -95,18 +115,20 @@ export function useCreateCourse(chain: Chain, address: Address) {
         )
       }
 
+      state.setSigning()
+
       const writeResult = await writeAsync({
         args: [
           name,
           'DAEC',
           `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${metadataIPFSHash}`,
-          BigInt(100),
+          BigInt(1000),
           BigInt(magisterBaseKarma),
           BigInt(discipulusBaseKarma),
         ],
       })
 
-      setIsSigning(false)
+      state.setLoading()
       setStep(2)
 
       const txReceipt = await publicClient.waitForTransactionReceipt({
@@ -145,20 +167,9 @@ export function useCreateCourse(chain: Chain, address: Address) {
       )
 
       setStep(4)
-
-      setIsLoading(false)
-      setIsSuccess(true)
+      state.setSuccess()
     } catch (error: any) {
-      setIsLoading(false)
-      setIsSigning(false)
-      setIsError(true)
-      if (error instanceof ContractFunctionExecutionError) {
-        setError(
-          `${error.details}. Look at your browser console for more informations.`,
-        )
-      } else {
-        setError(error.message || 'An error occurred')
-      }
+      state.handleError(error)
       throw error
     }
   }
@@ -168,6 +179,7 @@ export function useCreateCourse(chain: Chain, address: Address) {
     isLoading,
     isError,
     isSuccess,
+    isValidating,
     error,
     isSigning,
     step,

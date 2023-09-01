@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
 import { IncomingForm, Fields, Files } from 'formidable'
 import { uploadToIPFS } from '../../../../lib/ipfs'
-import { prisma } from '@dae/database'
+import { Prisma, prisma } from '@dae/database'
 import fs from 'fs'
 import { sanitizeAddress } from '../../../../lib/functions'
 import { Address } from 'viem'
@@ -131,11 +131,30 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     return res
       .status(200)
       .json({ success: true, data: { credential: credential } })
-  } catch (err: any) {
-    console.error(err)
-    return res.status(500).json({ success: false, error: err.message })
+  } catch (error: any) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      switch (error.code) {
+        case 'P2002':
+          return res.status(409).json({
+            success: false,
+            error: 'A credential with the same metadata already exists.',
+          })
+        default:
+          return res.status(400).json({
+            success: false,
+            error: 'Unknown Prisma error occurred.',
+          })
+      }
+    } else {
+      console.error(error)
+      return res.status(500).json({
+        success: false,
+        error: `Unexpected error occurred: ${error.message}`,
+      })
+    }
   }
 }
+
 const handleDeleteRequest = async (
   req: NextApiRequest,
   res: NextApiResponse,

@@ -33,10 +33,10 @@ export const CourseCardList: React.FC<CourseCardListProps> = ({ role }) => {
 
   if (!chain || !chain.id || !address) {
     return (
-      <Alert status='error'>
+      <Alert status="error">
         <AlertIcon />
         <Box>
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>Something went wrong.</AlertTitle>
           <AlertDescription>
             You are not connected to Web3. Please connect your wallet before
             proceeding.
@@ -56,10 +56,10 @@ export const CourseCardList: React.FC<CourseCardListProps> = ({ role }) => {
 
   if (error) {
     return (
-      <Alert status='error'>
+      <Alert status="error">
         <AlertIcon />
         <Box>
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>Something went wrong.</AlertTitle>
           <AlertDescription>
             There is an error fetching your data. Try again later.
           </AlertDescription>
@@ -70,7 +70,7 @@ export const CourseCardList: React.FC<CourseCardListProps> = ({ role }) => {
 
   if (!response || response.data.courses.length === 0) {
     return (
-      <Alert status='info'>
+      <Alert status="info">
         <AlertIcon />
         <Box>
           <AlertTitle>Nothing to show.</AlertTitle>

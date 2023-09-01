@@ -1,15 +1,26 @@
-import { useState } from 'react'
 import { useContractWrite, usePublicClient } from 'wagmi'
-import { Address, ContractFunctionExecutionError } from 'viem'
+import { Address } from 'viem'
 import { CredentialsBurnableAbi } from '@dae/abi'
 import { mutate } from 'swr'
+import { useWeb3HookState } from '../useWeb3HookState'
+import { UseWeb3WriteHookInterface } from '@dae/types'
 
-export function useBurnCredential(courseAddress: Address) {
-  const [error, setError] = useState<Error | null>(null)
-  const [isError, setIsError] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSigning, setIsSigning] = useState(false)
+interface BurnCredentialHookInterface extends UseWeb3WriteHookInterface {
+  burnCredential: (tokenId: number, credentialId: number) => Promise<void>
+}
+
+export function useBurnCredential(
+  courseAddress: Address,
+): BurnCredentialHookInterface {
+  const {
+    isSuccess,
+    isValidating,
+    isLoading,
+    isSigning,
+    isError,
+    error,
+    ...state
+  } = useWeb3HookState()
 
   const publicClient = usePublicClient()
 
@@ -23,9 +34,7 @@ export function useBurnCredential(courseAddress: Address) {
     tokenId: number,
     credentialId: number,
   ): Promise<void> => {
-    setIsSuccess(false)
-    setIsError(false)
-    setIsSigning(true)
+    state.setValidating()
 
     try {
       if (burn === undefined) {
@@ -34,12 +43,13 @@ export function useBurnCredential(courseAddress: Address) {
         )
       }
 
+      state.setSigning()
+
       const writeResult = await burn({
         args: [BigInt(tokenId)],
       })
 
-      setIsLoading(true)
-      setIsSigning(false)
+      state.setLoading()
 
       const txReceipt = await publicClient.waitForTransactionReceipt({
         hash: writeResult.hash,
@@ -57,18 +67,12 @@ export function useBurnCredential(courseAddress: Address) {
         throw new Error(responseJSON.error)
       }
 
-      setIsLoading(false)
-      setIsSuccess(true)
-      mutate(`/api/v0/course/credential/users?credentialId=${credentialId}`)
+      await mutate(
+        `/api/v0/course/credential/users?credentialId=${credentialId}`,
+      )
+      state.setSuccess()
     } catch (error: any) {
-      setIsLoading(false)
-      setIsSigning(false)
-      setIsError(true)
-      if (error instanceof ContractFunctionExecutionError) {
-        setError(new Error(error.details))
-      } else {
-        setError(new Error(error.message || 'An error occurred'))
-      }
+      state.handleError(error)
       throw error
     }
   }
@@ -80,5 +84,6 @@ export function useBurnCredential(courseAddress: Address) {
     isSuccess,
     error,
     isSigning,
+    isValidating,
   }
 }

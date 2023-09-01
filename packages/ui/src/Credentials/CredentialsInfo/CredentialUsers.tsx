@@ -38,6 +38,7 @@ export const CredentialUsers: React.FC<CredentialUsersProps> = ({
     isError: isErrorBurningCredential,
     isSuccess: isSuccessBurningCredential,
     isSigning: isSigningBurningCredentialTransaction,
+    isValidating: isValidatingBurningCredential,
   } = useBurnCredential(courseAddress)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -107,7 +108,7 @@ export const CredentialUsers: React.FC<CredentialUsersProps> = ({
         <Alert status="error">
           <AlertIcon />
           <Box>
-            <AlertTitle>Something went wrong</AlertTitle>
+            <AlertTitle>Something went wrong.</AlertTitle>
             <AlertDescription>
               There is an error burning this credential. Try again later.
             </AlertDescription>
@@ -117,7 +118,7 @@ export const CredentialUsers: React.FC<CredentialUsersProps> = ({
         <></>
       )}
       <Text fontWeight={'semibold'} fontSize={'2xl'}>
-        Credential holders
+        Credential Holders
       </Text>
       {credentialUsersData.length > 0 ? (
         <TableContainer>
@@ -141,6 +142,7 @@ export const CredentialUsers: React.FC<CredentialUsersProps> = ({
                         onClick={() => handleOpenModal(userCredential)}
                         isLoading={
                           (isBurningCredential ||
+                            isValidatingBurningCredential ||
                             isSigningBurningCredentialTransaction) &&
                           selectedCredential?.token_id ===
                             userCredential.token_id

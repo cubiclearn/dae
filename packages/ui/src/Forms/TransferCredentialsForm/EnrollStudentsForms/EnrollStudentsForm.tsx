@@ -171,7 +171,7 @@ export const EnrollStudentsForm: React.FC<EnrollStudentsCSVFormProps> = ({
           <Alert status="error">
             <AlertIcon />
             <Box>
-              <AlertTitle>Error</AlertTitle>
+              <AlertTitle>Something went wrong.</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
             </Box>
           </Alert>

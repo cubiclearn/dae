@@ -39,10 +39,10 @@ export const TeachersRowList: React.FC<TeachersRowListProps> = ({
 
   if (error) {
     return (
-      <Alert status='error'>
+      <Alert status="error">
         <AlertIcon />
         <Box>
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>Something went wrong.</AlertTitle>
           <AlertDescription>
             There is an error fetching your data. Try again later.
           </AlertDescription>
@@ -53,7 +53,7 @@ export const TeachersRowList: React.FC<TeachersRowListProps> = ({
 
   if (!response || response.data.teachers.length === 0) {
     return (
-      <Alert status='info'>
+      <Alert status="info">
         <AlertIcon />
         <Box>
           <AlertTitle>Nothing to show.</AlertTitle>
@@ -66,14 +66,14 @@ export const TeachersRowList: React.FC<TeachersRowListProps> = ({
   }
 
   return (
-    <Box padding={8} borderRadius='xl' bg={'white'} boxShadow={'base'}>
+    <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
       <Box pb={2}>
-        <Text fontWeight='semibold' fontSize='xl'>
+        <Text fontWeight="semibold" fontSize="xl">
           Teachers list
         </Text>
       </Box>
       <TableContainer>
-        <Table variant='simple'>
+        <Table variant="simple">
           <Thead>
             <Tr>
               <Th>{''}</Th>
