@@ -22,21 +22,21 @@ export const UserRow: React.FC<UserRowProps> = ({ user }) => {
   return (
     <Tr>
       <Td>
-        <Avatar src='' size={'sm'} />
+        <Avatar src="" size={'sm'} />
       </Td>
       <Td>
-        <Text verticalAlign={'center'} fontSize='md'>
+        <Text verticalAlign={'center'} fontSize="md">
           {user.user_address}
         </Text>
       </Td>
       <Td>
-        <Text verticalAlign={'center'} fontSize='md'>
-          {user.email}
+        <Text verticalAlign={'center'} fontSize="md">
+          {user.user_email}
         </Text>
       </Td>
       <Td>
-        <Text verticalAlign={'center'} fontSize='md'>
-          {user.discord_handle}
+        <Text verticalAlign={'center'} fontSize="md">
+          {user.user_discord_handle}
         </Text>
       </Td>
       <Td isNumeric>{isSuccess ? karmaBalance?.toString() : '--'}</Td>

@@ -108,7 +108,7 @@ export const CourseCredentialsList: React.FC<CourseCardListProps> = ({
             {CUSTOM_CREDENTIALS.map((credential) => (
               <Link
                 as={NextLink}
-                href={`/course/${credential.course_address}/credentials/${credential.id}/info`}
+                href={`/course/${credential.course_address}/credentials/${credential.ipfs_cid}/info`}
                 _hover={{ textDecoration: 'none' }}
                 key={credential.ipfs_cid}
               >

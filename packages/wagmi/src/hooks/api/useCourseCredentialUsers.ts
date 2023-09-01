@@ -1,5 +1,7 @@
 import useSWR from 'swr'
 import { UserCredentials } from '@dae/database'
+import { Address } from 'viem'
+import { useMemo } from 'react'
 
 interface useCourseCredentialUsersData {
   data: UserCredentials[] | null
@@ -23,11 +25,20 @@ const fetcher = async (url: string) => {
 }
 
 export const useCourseCredentialUsers = (
-  credentialId: number | undefined,
+  credentialCid: string | undefined,
+  courseAddress: Address | undefined,
+  chainId: number | undefined,
 ): useCourseCredentialUsersData => {
-  const url = `/api/v0/course/credential/users?credentialId=${credentialId}`
+  const shouldFetch =
+    credentialCid !== undefined &&
+    courseAddress !== undefined &&
+    chainId !== undefined
 
-  const shouldFetch = credentialId !== undefined
+  const url = useMemo(
+    () =>
+      `/api/v0/course/credential/users?credentialCid=${credentialCid}&courseAddress=${courseAddress}&chainId=${chainId?.toString()}`,
+    [credentialCid, courseAddress, chainId],
+  )
 
   const { data, error, isLoading, isValidating } = useSWR<ApiResponse>(
     shouldFetch ? url : null,

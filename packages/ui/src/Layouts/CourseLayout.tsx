@@ -111,7 +111,7 @@ const CourseNavigationMenu: React.FC = () => {
             active:
               pathname.startsWith('/course/[address]/credentials/list') ||
               pathname.startsWith(
-                '/course/[address]/credentials/[credentialId]',
+                '/course/[address]/credentials/[credentialCid]',
               ),
             visible: isAdminOrMagister,
           },

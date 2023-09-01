@@ -44,7 +44,6 @@ enum CredentialType {
 }
 
 model Credential {
-  id               Int               @id @default(autoincrement())
   name             String
   description      String
   image_url        String
@@ -56,19 +55,20 @@ model Credential {
   course_address   String
   course_chain_id  Int
 
-  @@unique([course_address, ipfs_cid])
+  @@id([course_address, course_chain_id, ipfs_cid])
 }
 
 model UserCredentials {
-  course         Course     @relation(fields: [course_address, chain_id], references: [address, chain_id])
-  course_address String
-  chain_id       Int
-  token_id       Int
-  user_address   String
-  credential     Credential @relation(fields: [credential_id], references: [id])
-  credential_id  Int
-  email          String     @default("")
-  discord_handle String     @default("")
+  user_address        String
+  course              Course     @relation(fields: [course_address, course_chain_id], references: [address, chain_id])
+  course_address      String
+  course_chain_id     Int
+  credential          Credential @relation(fields: [credential_ipfs_cid, course_address, course_chain_id], references: [ipfs_cid, course_address, course_chain_id])
+  credential_ipfs_cid String
+  credential_token_id Int
+  user_email          String     @default("")
+  user_discord_handle String     @default("")
 
-  @@id([course_address, token_id])
+  @@id([user_address, course_address, credential_token_id, course_chain_id])
+  @@unique([user_address, course_address, credential_ipfs_cid, course_chain_id])
 }

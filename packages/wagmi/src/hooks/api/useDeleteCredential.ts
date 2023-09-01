@@ -3,7 +3,7 @@ import { Address } from 'viem'
 import { useApiRequest } from './useApiRequest'
 
 export const useDeleteCredential = (
-  credentialId: number | undefined,
+  credentialCid: string | undefined,
   courseAddress: Address | undefined,
   chainId: number | undefined,
 ) => {
@@ -12,7 +12,7 @@ export const useDeleteCredential = (
 
   const deleteCredential = async () => {
     if (
-      credentialId === undefined ||
+      credentialCid === undefined ||
       courseAddress === undefined ||
       chainId === undefined
     ) {
@@ -20,7 +20,7 @@ export const useDeleteCredential = (
     }
 
     const urlParamsDeletion = new URLSearchParams({
-      credentialId: credentialId.toString(),
+      credentialId: credentialCid,
       courseAddress: courseAddress.toString(),
       chainId: chainId.toString(),
     })

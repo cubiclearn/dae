@@ -23,32 +23,34 @@ import NextLink from 'next/link'
 import { Address } from 'viem'
 import { ConfirmActionModal } from '../../ConfirmActionModal'
 import { useRouter } from 'next/router'
+import { useNetwork } from 'wagmi'
 
 type CredentialInfoContainerProps = {
-  credentialId: number | undefined
+  credentialCid: string | undefined
   courseAddress: Address | undefined
 }
 
 export const CredentialInfoContainer: React.FC<CredentialInfoContainerProps> =
-  ({ credentialId, courseAddress }) => {
+  ({ credentialCid, courseAddress }) => {
     const router = useRouter()
+    const { chain } = useNetwork()
     const {
       data: credentialUsersData,
       isLoading: isLoadingCredentialUsersData,
       error: credentialUsersDataError,
-    } = useCourseCredentialUsers(credentialId)
+    } = useCourseCredentialUsers(credentialCid, courseAddress, chain?.id)
     const {
       data: credentialData,
       isLoading: isLoadingCredentialData,
       error: credentialDataError,
-    } = useCourseCredential(credentialId)
+    } = useCourseCredential(credentialCid, courseAddress, chain?.id)
 
     const {
       deleteCredential,
       isLoading: isDeletingCredential,
       isError: isErrorDeletingCredential,
     } = useDeleteCredential(
-      credentialData?.id,
+      credentialData?.ipfs_cid,
       credentialData?.course_address as Address,
       credentialData?.course_chain_id,
     )
@@ -72,7 +74,7 @@ export const CredentialInfoContainer: React.FC<CredentialInfoContainerProps> =
     }
 
     if (
-      !credentialId ||
+      !credentialCid ||
       !courseAddress ||
       isLoadingCredentialUsersData ||
       (!credentialUsersData && !credentialUsersDataError) ||

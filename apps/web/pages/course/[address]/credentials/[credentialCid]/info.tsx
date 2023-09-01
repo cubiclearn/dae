@@ -6,9 +6,8 @@ import { Address } from 'viem'
 
 export default function Info() {
   const router = useRouter()
-  const credentialId = router.query.credentialId as string | undefined
+  const credentialCid = router.query.credentialCid as string
   const courseAddress = router.query.address as Address
-  const parsedCredentialId = credentialId ? parseInt(credentialId) : undefined
 
   return (
     <>
@@ -21,7 +20,7 @@ export default function Info() {
       <Layout.Course heading="Credential Info">
         <Stack spacing={8}>
           <CredentialInfoContainer
-            credentialId={parsedCredentialId}
+            credentialCid={credentialCid}
             courseAddress={courseAddress}
           />
         </Stack>

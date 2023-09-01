@@ -38,14 +38,16 @@ const asyncParse = (
 
 const handleGetRequest = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const { credentialId } = req.query
+    const { credentialCid, courseAddress, chainId } = req.query
 
-    if (!credentialId) {
+    if (!credentialCid || !courseAddress) {
       return res.status(400).json({ success: false, error: 'Bad request.' })
     }
 
     const credential = await getCourseCredential(
-      parseInt(credentialId as string),
+      credentialCid as string,
+      courseAddress as Address,
+      parseInt(chainId as string),
     )
 
     return res
@@ -75,7 +77,7 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
       where: {
         user_address: sanitizeAddress(session!.user.address as Address),
         course_address: sanitizeAddress(courseAddress[0] as Address),
-        chain_id: parseInt(chainId[0] as string),
+        course_chain_id: parseInt(chainId[0] as string),
         credential: {
           OR: [{ type: 'ADMIN' }, { type: 'MAGISTER' }],
         },
@@ -160,9 +162,9 @@ const handleDeleteRequest = async (
   res: NextApiResponse,
 ) => {
   try {
-    const { credentialId, courseAddress, chainId } = req.query
+    const { credentialCid, courseAddress, chainId } = req.query
 
-    if (!credentialId || !courseAddress || !chainId) {
+    if (!credentialCid || !courseAddress || !chainId) {
       throw new Error('Error Uploading image to ipfs')
     }
 
@@ -172,7 +174,7 @@ const handleDeleteRequest = async (
       where: {
         user_address: sanitizeAddress(session!.user.address as Address),
         course_address: sanitizeAddress(courseAddress as Address),
-        chain_id: parseInt(chainId as string),
+        course_chain_id: parseInt(chainId as string),
         credential: {
           OR: [{ type: 'ADMIN' }, { type: 'MAGISTER' }],
         },
@@ -185,7 +187,11 @@ const handleDeleteRequest = async (
 
     await prisma.credential.delete({
       where: {
-        id: parseInt(credentialId as string),
+        course_address_course_chain_id_ipfs_cid: {
+          course_address: courseAddress as Address,
+          ipfs_cid: credentialCid as string,
+          course_chain_id: parseInt(chainId as string),
+        },
       },
     })
 

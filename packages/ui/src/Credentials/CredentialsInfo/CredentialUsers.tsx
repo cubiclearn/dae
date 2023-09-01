@@ -84,10 +84,7 @@ export const CredentialUsers: React.FC<CredentialUsersProps> = ({
     try {
       if (selectedCredential !== null) {
         setIsModalOpen(false)
-        await burnCredential(
-          selectedCredential.token_id,
-          selectedCredential.credential_id,
-        )
+        await burnCredential(selectedCredential.credential_token_id)
         setselectedCredential(null)
       }
     } catch (_e: any) {
@@ -144,8 +141,8 @@ export const CredentialUsers: React.FC<CredentialUsersProps> = ({
                           (isBurningCredential ||
                             isValidatingBurningCredential ||
                             isSigningBurningCredentialTransaction) &&
-                          selectedCredential?.token_id ===
-                            userCredential.token_id
+                          selectedCredential?.credential_token_id ===
+                            userCredential.credential_token_id
                         }
                       >
                         X

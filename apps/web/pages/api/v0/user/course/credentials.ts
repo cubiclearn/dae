@@ -8,7 +8,7 @@ import { config as TransportConfig } from '@dae/viem-config'
 import { CredentialsBurnableAbi } from '@dae/abi'
 import { decodeEventLog } from 'viem'
 import { CredentialIssuedLog, CredentialTransferLog } from '@dae/types'
-import { Prisma, prisma } from '@dae/database'
+import { Prisma, UserCredentials, prisma } from '@dae/database'
 import { sanitizeAddress } from '../../../../../lib/functions'
 
 // TypeScript enum for request methods
@@ -85,7 +85,7 @@ const handleDeleteRequest = async (
     ) as [CredentialTransferLog & { address: Address }]
 
     const burnLogs = transferLogs.filter((log) => log.args.to === zeroAddress)
-    console.log(burnLogs)
+
     if (burnLogs.length === 0) {
       return res.status(500).json({
         success: false,
@@ -95,15 +95,18 @@ const handleDeleteRequest = async (
 
     const burnData = await prisma.userCredentials.delete({
       where: {
-        course_address_token_id: {
+        user_address_course_address_credential_token_id_course_chain_id: {
           course_address: sanitizeAddress(burnLogs[0].address),
-          token_id: Number(burnLogs[0].args.tokenId),
+          user_address: sanitizeAddress(burnLogs[0].args.from),
+          credential_token_id: Number(burnLogs[0].args.tokenId),
+          course_chain_id: parseInt(chainId as string),
         },
       },
     })
 
     return res.status(200).json({ success: true, data: burnData })
   } catch (error: any) {
+    console.log(error)
     return res.status(500).json({ success: false, error: error.message })
   }
 }
@@ -152,6 +155,8 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
         )
         const tokenId = userIssuedLogs[0].args.tokenId
 
+        console.log(tokenId)
+
         const tokenURI = await client.readContract({
           abi: CredentialsBurnableAbi,
           address: courseAddress,
@@ -162,11 +167,13 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
         const splittedURI = tokenURI.split('/')
         const ipfsCID = splittedURI[splittedURI.length - 1]
 
+        // Verify that the credential does not already exist
         const credential = await prisma.credential.findUnique({
           where: {
-            course_address_ipfs_cid: {
+            course_address_course_chain_id_ipfs_cid: {
               course_address: sanitizeAddress(courseAddress),
               ipfs_cid: ipfsCID,
+              course_chain_id: parseInt(chainId as string),
             },
           },
         })
@@ -178,12 +185,12 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
         return {
           course_address: sanitizeAddress(courseAddress),
           user_address: sanitizeAddress(userData.address),
-          token_id: Number(tokenId),
-          credential_id: credential.id,
-          chain_id: parseInt(chainId),
-          email: userData.email,
-          discord_handle: userData.discord,
-        }
+          credential_token_id: Number(tokenId),
+          credential_ipfs_cid: credential.ipfs_cid,
+          course_chain_id: parseInt(chainId),
+          user_email: userData.email,
+          user_discord_handle: userData.discord,
+        } as UserCredentials
       }),
     )
 

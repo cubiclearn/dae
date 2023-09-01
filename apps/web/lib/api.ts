@@ -22,7 +22,7 @@ export const getCourseStudents = async (
   return prisma.userCredentials.findMany({
     where: {
       course_address: sanitizeAddress(courseAddress),
-      chain_id: chainId,
+      course_chain_id: chainId,
       credential: {
         type: 'DISCIPULUS',
       },
@@ -37,7 +37,7 @@ export const getCourseTeachers = async (
   return prisma.userCredentials.findMany({
     where: {
       course_address: sanitizeAddress(courseAddress),
-      chain_id: chainId,
+      course_chain_id: chainId,
       credential: {
         type: 'MAGISTER',
       },
@@ -146,21 +146,31 @@ export const getUserCourseCredentials = async (
 }
 
 export const getCourseCredentialUsers = async (
-  credentialId: number,
+  credentialCid: string,
+  courseAddress: Address,
+  chainId: number,
 ): Promise<UserCredentials[]> => {
   return prisma.userCredentials.findMany({
     where: {
-      credential_id: credentialId,
+      credential_ipfs_cid: credentialCid,
+      course_address: courseAddress,
+      course_chain_id: chainId,
     },
   })
 }
 
 export const getCourseCredential = async (
-  credentialId: number,
+  credentialCid: string,
+  courseAddress: Address,
+  chainId: number,
 ): Promise<Credential | null> => {
   return prisma.credential.findUnique({
     where: {
-      id: credentialId,
+      course_address_course_chain_id_ipfs_cid: {
+        ipfs_cid: credentialCid,
+        course_address: sanitizeAddress(courseAddress),
+        course_chain_id: chainId,
+      },
     },
   })
 }
