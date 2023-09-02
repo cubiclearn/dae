@@ -40,15 +40,42 @@ export function useTransferCredentials(
 
   const transfer = async (
     userData: EnrollUserData,
-    tokenURI: string,
+    credentialIPFSCid: string,
   ): Promise<void> => {
     state.setValidating()
 
     try {
+      const tokenURI = `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${credentialIPFSCid}`
       if (mint === undefined) {
         throw new Error(
           'The data provided is incorrect. Please ensure that you have entered the correct information.',
         )
+      }
+
+      const checkExistingCredentialSearchParams = new URLSearchParams({
+        chainId: publicClient.chain.id.toString(),
+        courseAddress: courseAddress,
+        userAddress: userData.address,
+        credentialCid: credentialIPFSCid,
+      })
+
+      const alreadyExistingCredentialResponse = await fetch(
+        `/api/v0/user/course/credential?${checkExistingCredentialSearchParams}`,
+        {
+          method: 'GET',
+        },
+      )
+
+      if (!alreadyExistingCredentialResponse.ok) {
+        const responseJSON = await alreadyExistingCredentialResponse.json()
+        throw new Error(responseJSON.error)
+      }
+
+      const alreadyExistingCredentialResponseJSON =
+        await alreadyExistingCredentialResponse.json()
+
+      if (alreadyExistingCredentialResponseJSON.data.credential) {
+        throw new Error('Credential already minted to this address.')
       }
 
       state.setSigning()
@@ -95,14 +122,50 @@ export function useTransferCredentials(
 
   const multiTransfer = async (
     usersData: EnrollUserData[],
-    tokenURI: string,
+    credentialIPFSCid: string,
   ): Promise<void> => {
     state.setValidating()
 
     try {
+      const tokenURI = `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${credentialIPFSCid}`
       if (credentialType !== 'DISCIPULUS') {
         throw new Error('Multi mint is not supported for this credential type.')
       }
+
+      const checkExistingCredentialPromises = usersData.map(
+        async (userData) => {
+          const checkExistingCredentialSearchParams = new URLSearchParams({
+            chainId: publicClient.chain.id.toString(),
+            courseAddress: courseAddress,
+            userAddress: userData.address,
+            credentialCid: credentialIPFSCid,
+          })
+
+          const alreadyExistingCredentialResponse = await fetch(
+            `/api/v0/user/course/credential?${checkExistingCredentialSearchParams}`,
+            {
+              method: 'GET',
+            },
+          )
+          if (!alreadyExistingCredentialResponse.ok) {
+            const responseJSON = await alreadyExistingCredentialResponse.json()
+            throw new Error(responseJSON.error)
+          }
+
+          const alreadyExistingCredentialResponseJSON =
+            await alreadyExistingCredentialResponse.json()
+
+          if (alreadyExistingCredentialResponseJSON.data.credential) {
+            throw new Error(
+              `Credential already minted to this address (${userData.address}). Please remove it from the list and retry.`,
+            )
+          }
+
+          return null
+        },
+      )
+
+      await Promise.all(checkExistingCredentialPromises)
 
       if (multiMint === undefined) {
         throw new Error(

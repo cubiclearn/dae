@@ -57,7 +57,7 @@ export const EnrollStudentsForm: React.FC<EnrollStudentsCSVFormProps> = ({
         try {
           await multiTransfer(
             csvData,
-            'https://dae-demo.infura-ipfs.io/ipfs/QmPfKCv7ZAz8294ShRTcHft5LSM9YaDJ4NTjZisCkhFxW8',
+            'QmPfKCv7ZAz8294ShRTcHft5LSM9YaDJ4NTjZisCkhFxW8',
           )
           router.push(`/course/${courseAddress}/students/list`)
         } catch (_e) {}

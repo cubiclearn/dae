@@ -22,12 +22,12 @@ import { useBurnCredential } from '@dae/wagmi'
 import { Address } from 'viem'
 import { ConfirmActionModal } from '../../ConfirmActionModal'
 
-interface CredentialUsersProps {
+interface CredentialHoldersProps {
   courseAddress: Address
   credentialUsersData: UserCredentials[]
 }
 
-export const CredentialUsers: React.FC<CredentialUsersProps> = ({
+export const CredentialHolders: React.FC<CredentialHoldersProps> = ({
   courseAddress,
   credentialUsersData,
 }) => {
@@ -160,7 +160,7 @@ export const CredentialUsers: React.FC<CredentialUsersProps> = ({
           <Box>
             <AlertTitle>Nothing to show.</AlertTitle>
             <AlertDescription>
-              There is no user who owns this credential.
+              There is no user who holds this credential.
             </AlertDescription>
           </Box>
         </Alert>

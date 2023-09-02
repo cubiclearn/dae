@@ -174,3 +174,21 @@ export const getCourseCredential = async (
     },
   })
 }
+
+export const getUserCourseCredential = async (
+  credentialCid: string,
+  courseAddress: Address,
+  chainId: number,
+  userAddress: Address,
+): Promise<UserCredentials | null> => {
+  return prisma.userCredentials.findUnique({
+    where: {
+      user_address_course_address_credential_ipfs_cid_course_chain_id: {
+        credential_ipfs_cid: credentialCid,
+        course_address: sanitizeAddress(courseAddress),
+        course_chain_id: chainId,
+        user_address: sanitizeAddress(userAddress),
+      },
+    },
+  })
+}

@@ -3,7 +3,7 @@ import { UserCredentials } from '@dae/database'
 import { Address } from 'viem'
 import { useMemo } from 'react'
 
-interface useCourseCredentialUsersData {
+interface useCourseCredentialHoldersData {
   data: UserCredentials[] | null
   error: Error | null
   isLoading: boolean
@@ -24,11 +24,11 @@ const fetcher = async (url: string) => {
   return response.json() as Promise<ApiResponse>
 }
 
-export const useCourseCredentialUsers = (
+export const useCourseCredentialHolders = (
   credentialCid: string | undefined,
   courseAddress: Address | undefined,
   chainId: number | undefined,
-): useCourseCredentialUsersData => {
+): useCourseCredentialHoldersData => {
   const shouldFetch =
     credentialCid !== undefined &&
     courseAddress !== undefined &&

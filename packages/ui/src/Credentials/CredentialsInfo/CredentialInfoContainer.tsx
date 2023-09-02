@@ -12,10 +12,10 @@ import {
 } from '@chakra-ui/react'
 import React, { useState } from 'react'
 import { CredentialInfo } from './CredentialInfo'
-import { CredentialUsers } from './CredentialUsers'
+import { CredentialHolders } from './CredentialHolders'
 import {
   useCourseCredential,
-  useCourseCredentialUsers,
+  useCourseCredentialHolders,
   useDeleteCredential,
 } from '@dae/wagmi'
 import { ArrowBackIcon } from '@chakra-ui/icons'
@@ -38,7 +38,7 @@ export const CredentialInfoContainer: React.FC<CredentialInfoContainerProps> =
       data: credentialUsersData,
       isLoading: isLoadingCredentialUsersData,
       error: credentialUsersDataError,
-    } = useCourseCredentialUsers(credentialCid, courseAddress, chain?.id)
+    } = useCourseCredentialHolders(credentialCid, courseAddress, chain?.id)
     const {
       data: credentialData,
       isLoading: isLoadingCredentialData,
@@ -164,7 +164,7 @@ export const CredentialInfoContainer: React.FC<CredentialInfoContainerProps> =
             <CredentialInfo credentialData={credentialData} />
           </Box>
           <Box flex={{ base: '1', lg: '2 1 70%', xl: '2 1 80%' }}>
-            <CredentialUsers
+            <CredentialHolders
               courseAddress={courseAddress}
               credentialUsersData={credentialUsersData}
             />
