@@ -57,7 +57,7 @@ export const PartecipantsSection: React.FC<PartecipantsSectionProps> = ({
       <Alert status="error">
         <AlertIcon />
         <Box>
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>Something went wrong.</AlertTitle>
           <AlertDescription>
             There is an error fetching your data. Try again later.
           </AlertDescription>

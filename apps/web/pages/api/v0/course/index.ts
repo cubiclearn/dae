@@ -158,8 +158,9 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
             ipfs_metadata: baseURI,
             timestamp: Number(timestamp),
             chain_id: Number(chainId),
-            karma_access_control_address:
-              karmaAccessControlAddress.toLowerCase(),
+            karma_access_control_address: sanitizeAddress(
+              karmaAccessControlAddress,
+            ),
             snapshot_space_ens: jsonMetadata['snapshot-ens'],
             magister_base_karma: Number(baseMagisterKarma),
             discipulus_base_karma: Number(baseDiscipulusKarma),
@@ -242,14 +243,18 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
                 },
               },
               user_address: sanitizeAddress(transaction.from),
-              token_id: Number(MAX_SUPPLY),
+              credential_token_id: Number(MAX_SUPPLY),
               credential: {
                 connect: {
-                  id: adminCredential.id,
+                  course_address_course_chain_id_ipfs_cid: {
+                    course_address: sanitizeAddress(course.address as Address),
+                    ipfs_cid: adminCredential.ipfs_cid,
+                    course_chain_id: parseInt(chainId as string),
+                  },
                 },
               },
-              email: '',
-              discord_handle: '',
+              user_email: '',
+              user_discord_handle: '',
             },
           }),
         ])

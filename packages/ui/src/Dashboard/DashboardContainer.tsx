@@ -46,7 +46,7 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
       <Alert status="error">
         <AlertIcon />
         <Box>
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>Something went wrong.</AlertTitle>
           <AlertDescription>This course does not exist</AlertDescription>
         </Box>
       </Alert>

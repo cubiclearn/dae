@@ -18,10 +18,10 @@ export const Web3SafeContainer: React.FC<Web3SafeContainerProps> = ({
   const { address } = useAccount()
   if (!address) {
     return (
-      <Alert status='info'>
+      <Alert status="info">
         <AlertIcon />
         <Box>
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>Something went wrong.</AlertTitle>
           <AlertDescription>You are not connected to Web3</AlertDescription>
         </Box>
       </Alert>

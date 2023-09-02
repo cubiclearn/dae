@@ -1,5 +1,5 @@
 import React from 'react'
-import { Avatar, Text, Td, Tr } from '@chakra-ui/react'
+import { Avatar, Text, Td, Tr, Button } from '@chakra-ui/react'
 import type { UserCredentials } from '@dae/database'
 import { useCourseData } from '../CourseProvider'
 import { Address } from 'viem'
@@ -7,9 +7,15 @@ import { useKarmaBalance } from '@dae/wagmi'
 
 export type UserRowProps = {
   user: UserCredentials
+  onDelete: () => void
+  isDeleting: boolean
 }
 
-export const UserRow: React.FC<UserRowProps> = ({ user }) => {
+export const UserRow: React.FC<UserRowProps> = ({
+  user,
+  onDelete,
+  isDeleting,
+}) => {
   const course = useCourseData()
 
   const { data: karmaBalance, isSuccess } = useKarmaBalance(
@@ -22,24 +28,29 @@ export const UserRow: React.FC<UserRowProps> = ({ user }) => {
   return (
     <Tr>
       <Td>
-        <Avatar src='' size={'sm'} />
+        <Avatar src="" size={'sm'} />
       </Td>
       <Td>
-        <Text verticalAlign={'center'} fontSize='md'>
+        <Text verticalAlign={'center'} fontSize="md">
           {user.user_address}
         </Text>
       </Td>
       <Td>
-        <Text verticalAlign={'center'} fontSize='md'>
-          {user.email}
+        <Text verticalAlign={'center'} fontSize="md">
+          {user.user_email}
         </Text>
       </Td>
       <Td>
-        <Text verticalAlign={'center'} fontSize='md'>
-          {user.discord_handle}
+        <Text verticalAlign={'center'} fontSize="md">
+          {user.user_discord_handle}
         </Text>
       </Td>
       <Td isNumeric>{isSuccess ? karmaBalance?.toString() : '--'}</Td>
+      <Td>
+        <Button colorScheme="red" onClick={onDelete} isLoading={isDeleting}>
+          X
+        </Button>
+      </Td>
     </Tr>
   )
 }

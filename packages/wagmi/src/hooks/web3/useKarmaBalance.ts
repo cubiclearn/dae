@@ -1,16 +1,17 @@
-import { Address } from 'viem'
+import { Address, zeroAddress } from 'viem'
 import { useContractRead } from 'wagmi'
 import { KarmaAccessControlAbiUint64 } from '@dae/abi'
+import { UseWeb3ReadHookInterface } from '@dae/types'
 
 export const useKarmaBalance = (
   karmaAccessControlAddress: Address | undefined,
   userAddress: Address | undefined,
-) => {
+): UseWeb3ReadHookInterface<bigint> => {
   const { data: hasAccess } = useContractRead({
     address: karmaAccessControlAddress,
     abi: KarmaAccessControlAbiUint64,
     functionName: 'hasAccess',
-    args: [userAddress ?? '0x0000000000000000000000000000000000000000'],
+    args: [userAddress ?? zeroAddress],
     enabled: !!userAddress,
   })
 
@@ -20,7 +21,7 @@ export const useKarmaBalance = (
     address: karmaAccessControlAddress,
     abi: KarmaAccessControlAbiUint64,
     functionName: 'ratingOf',
-    args: [userAddress ?? '0x0000000000000000000000000000000000000000'],
+    args: [userAddress ?? zeroAddress],
     enabled: !!shouldFetch,
   })
 

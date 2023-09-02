@@ -1,17 +1,20 @@
-import { useState } from 'react'
 import { useContractWrite, usePublicClient } from 'wagmi'
-import { Address, ContractFunctionExecutionError } from 'viem'
+import { Address } from 'viem'
 import { KarmaAccessControlAbiUint64 } from '@dae/abi'
+import { useWeb3HookState } from '../useWeb3HookState'
 
 export function useTransferKarma(
   karmaAccessControlAddress: Address | undefined,
 ) {
-  const [error, setError] = useState<string | null>(null)
-  const [isError, setIsError] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSigning, setIsSigning] = useState(false)
-
+  const {
+    isSuccess,
+    isValidating,
+    isLoading,
+    isSigning,
+    isError,
+    error,
+    ...state
+  } = useWeb3HookState()
   const publicClient = usePublicClient()
 
   const { writeAsync } = useContractWrite({
@@ -25,11 +28,7 @@ export function useTransferKarma(
     karmaIncrement: number,
   ): Promise<void> => {
     try {
-      setIsSuccess(false)
-      setIsError(false)
-      setIsSigning(true)
-      setIsLoading(false)
-
+      state.setValidating()
       if (karmaAccessControlAddress === undefined) {
         throw new Error('Karma Access Control Address is invalid')
       }
@@ -64,28 +63,21 @@ export function useTransferKarma(
         )
       }
 
+      state.setSigning()
+
       const data = await writeAsync({
         args: [userAddress, userCurrentKarmaAmount + BigInt(karmaIncrement)],
       })
-      setIsLoading(true)
-      setIsSigning(false)
+
+      state.setLoading()
 
       await publicClient.waitForTransactionReceipt({
         hash: data.hash as Address,
       })
-      setIsLoading(false)
-      setIsSuccess(true)
+
+      state.setSuccess()
     } catch (error: any) {
-      setIsLoading(false)
-      setIsSigning(false)
-      setIsError(true)
-      if (error instanceof ContractFunctionExecutionError) {
-        setError(
-          `${error.details}. Look at your browser console for more informations.`,
-        )
-      } else {
-        setError(error.message || 'An error occurred')
-      }
+      state.handleError(error)
       throw error
     }
   }
@@ -97,5 +89,6 @@ export function useTransferKarma(
     isSuccess,
     error,
     isSigning,
+    isValidating,
   }
 }

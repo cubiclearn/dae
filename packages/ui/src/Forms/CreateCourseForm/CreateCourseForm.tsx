@@ -59,7 +59,7 @@ export const CreateCourseForm = () => {
       <Alert status="info">
         <AlertIcon />
         <Box>
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>Something went wrong.</AlertTitle>
           <AlertDescription>
             You are not connected to Web3. Please connect your wallet before
           </AlertDescription>
@@ -68,8 +68,16 @@ export const CreateCourseForm = () => {
     )
   }
 
-  const { create, isLoading, isError, error, isSuccess, step } =
-    useCreateCourse(chain, address)
+  const {
+    create,
+    isLoading,
+    isError,
+    error,
+    isSuccess,
+    isSigning,
+    isValidating,
+    step,
+  } = useCreateCourse(chain, address)
   const toast = useToast()
   const router = useRouter()
 
@@ -320,7 +328,7 @@ export const CreateCourseForm = () => {
           <Button
             colorScheme="blue"
             type="submit"
-            isLoading={isLoading}
+            isLoading={isLoading || isSigning || isValidating}
             loadingText="Submitting"
           >
             Create course
@@ -329,8 +337,12 @@ export const CreateCourseForm = () => {
             <Alert status="error">
               <AlertIcon />
               <Box>
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
+                <AlertTitle>Something went wrong.</AlertTitle>
+                <AlertDescription>
+                  {error && error instanceof Error
+                    ? error.message
+                    : 'Unknown Error'}
+                </AlertDescription>
               </Box>
             </Alert>
           ) : (
@@ -338,7 +350,7 @@ export const CreateCourseForm = () => {
           )}
         </Stack>
       </form>
-      {isLoading ? (
+      {isLoading || isSigning || isValidating ? (
         <Box>
           <ProgressStepper steps={steps} activeStep={activeStep} />
         </Box>

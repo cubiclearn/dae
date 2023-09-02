@@ -1,5 +1,5 @@
 import React from 'react'
-import { useCourseData } from '../CourseProvider'
+import { useCourseData } from '../../CourseProvider'
 import {
   Center,
   Spinner,
@@ -32,7 +32,7 @@ export const CourseInfo: React.FC<any> = () => {
       <Alert status="error">
         <AlertIcon />
         <Box>
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>Something went wrong.</AlertTitle>
           <AlertDescription>
             There is an error fetching your data. Try again later.
           </AlertDescription>
@@ -63,7 +63,7 @@ export const CourseInfo: React.FC<any> = () => {
         borderRadius="xl"
         direction={{ base: 'column', lg: 'row' }}
       >
-        <Center width={{ base: '100%', lg: '40%' }}>
+        <Center width={{ base: '100%', md: '40%', lg: '30%' }}>
           <Image
             src={data.image_url}
             alt="Green double couch with wooden legs"

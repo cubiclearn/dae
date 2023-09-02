@@ -41,8 +41,15 @@ type EnrollStudentsCSVFormProps = {
 export const EnrollStudentsForm: React.FC<EnrollStudentsCSVFormProps> = ({
   courseAddress,
 }) => {
-  const { multiTransfer, isLoading, isError, isSuccess, error, isSigning } =
-    useTransferCredentials(courseAddress as Address, 'DISCIPULUS')
+  const {
+    multiTransfer,
+    isLoading,
+    isError,
+    isSuccess,
+    error,
+    isSigning,
+    isValidating,
+  } = useTransferCredentials(courseAddress as Address, 'DISCIPULUS')
   const toast = useToast()
   const router = useRouter()
 
@@ -57,7 +64,7 @@ export const EnrollStudentsForm: React.FC<EnrollStudentsCSVFormProps> = ({
         try {
           await multiTransfer(
             csvData,
-            'https://dae-demo.infura-ipfs.io/ipfs/QmPfKCv7ZAz8294ShRTcHft5LSM9YaDJ4NTjZisCkhFxW8',
+            'QmPfKCv7ZAz8294ShRTcHft5LSM9YaDJ4NTjZisCkhFxW8',
           )
           router.push(`/course/${courseAddress}/students/list`)
         } catch (_e) {}
@@ -162,7 +169,7 @@ export const EnrollStudentsForm: React.FC<EnrollStudentsCSVFormProps> = ({
         <Button
           colorScheme="blue"
           type="submit"
-          isLoading={isLoading || isSigning}
+          isLoading={isLoading || isSigning || isValidating}
           loadingText="Submitting"
         >
           Enroll students
@@ -171,7 +178,7 @@ export const EnrollStudentsForm: React.FC<EnrollStudentsCSVFormProps> = ({
           <Alert status="error">
             <AlertIcon />
             <Box>
-              <AlertTitle>Error</AlertTitle>
+              <AlertTitle>Something went wrong.</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
             </Box>
           </Alert>

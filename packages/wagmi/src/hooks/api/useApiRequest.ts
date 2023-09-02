@@ -1,25 +1,22 @@
 import { useState } from 'react'
 
-export const useCreateCredential = () => {
+export const useApiRequest = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isSuccess, setIsSuccess] = useState<boolean>(false)
   const [isError, setIsError] = useState<boolean>(false)
-  const [error, setError] = useState<string>('')
+  const [error, setError] = useState<Error | null>(null)
 
-  const create = async (formData: FormData) => {
+  const makeRequest = async (request: Promise<Response>) => {
     setIsLoading(true)
     setIsSuccess(false)
     setIsError(false)
-    setError('')
+    setError(null)
 
     try {
-      const metadataIPFSResponse = await fetch('/api/v0/course/credential', {
-        method: 'POST',
-        body: formData,
-      })
+      const response = await request
 
-      if (!metadataIPFSResponse.ok) {
-        const responseJSON = await metadataIPFSResponse.json()
+      if (!response.ok) {
+        const responseJSON = await response.json()
         throw new Error(responseJSON.error)
       }
 
@@ -28,13 +25,15 @@ export const useCreateCredential = () => {
     } catch (error: any) {
       setIsLoading(false)
       setIsError(true)
-      setError(error.message || 'An error occurred creating this credential.')
+      setError(
+        new Error(error.message || 'An error occurred processing the request.'),
+      )
       throw error
     }
   }
 
   return {
-    create,
+    makeRequest,
     isLoading,
     isSuccess,
     isError,

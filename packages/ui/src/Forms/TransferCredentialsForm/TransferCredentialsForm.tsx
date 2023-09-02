@@ -26,7 +26,7 @@ const validationSchema = Yup.object().shape({
   userAddress: Yup.string()
     .matches(ethereumAddressRegex, 'Invalid Ethereum address')
     .required('Ethereum address is required'),
-  tokenURI: Yup.string().required('Credential IPFS CID is required'),
+  credentialIPFSCid: Yup.string().required('Credential IPFS CID is required'),
 })
 
 type TransferCredentialsFormProps = {
@@ -38,8 +38,15 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
     const { chain } = useNetwork()
     const { data } = useCourseCredentials(courseAddress as Address, chain?.id)
 
-    const { transfer, isLoading, isError, isSuccess, error, isSigning } =
-      useTransferCredentials(courseAddress as Address, 'OTHER')
+    const {
+      transfer,
+      isLoading,
+      isError,
+      isSuccess,
+      error,
+      isSigning,
+      isValidating,
+    } = useTransferCredentials(courseAddress as Address, 'OTHER')
 
     const toast = useToast()
 
@@ -55,7 +62,7 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
     } = useFormik({
       initialValues: {
         userAddress: '',
-        tokenURI: '',
+        credentialIPFSCid: '',
       },
       onSubmit: async (values) => {
         try {
@@ -65,7 +72,7 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
               email: '',
               discord: '',
             },
-            values.tokenURI,
+            values.credentialIPFSCid,
           )
           resetForm()
         } catch (_e) {}
@@ -115,13 +122,15 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
             </FormControl>
             <FormControl
               isRequired
-              isInvalid={!!errors.tokenURI && touched.tokenURI}
+              isInvalid={
+                !!errors.credentialIPFSCid && touched.credentialIPFSCid
+              }
             >
               <FormLabel>Credential</FormLabel>
               <Select
-                placeholder="Select option"
+                placeholder="Select the credential to transfer"
                 onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                  setFieldValue('tokenURI', event.target.value)
+                  setFieldValue('credentialIPFSCid', event.target.value)
                 }}
               >
                 {data ? (
@@ -131,7 +140,7 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
                       return (
                         <option
                           key={credential.ipfs_cid}
-                          value={credential.ipfs_url}
+                          value={credential.ipfs_cid}
                         >
                           {credential.name}
                         </option>
@@ -141,12 +150,12 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
                   <></>
                 )}
               </Select>
-              <FormErrorMessage>{errors.tokenURI}</FormErrorMessage>
+              <FormErrorMessage>{errors.credentialIPFSCid}</FormErrorMessage>
             </FormControl>
             <Button
               colorScheme="blue"
               type="submit"
-              isLoading={isLoading || isSigning}
+              isLoading={isLoading || isSigning || isValidating}
               loadingText="Submitting"
             >
               Assign Credential
@@ -155,7 +164,7 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
               <Alert status="error">
                 <AlertIcon />
                 <Box>
-                  <AlertTitle>Error</AlertTitle>
+                  <AlertTitle>Something went wrong.</AlertTitle>
                   <AlertDescription>{error}</AlertDescription>
                 </Box>
               </Alert>

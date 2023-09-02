@@ -19,6 +19,13 @@ const asyncParse = (
   new Promise((resolve, reject) => {
     const form = new IncomingForm({ multiples: true })
     form.parse(req, (err, fields, files) => {
+      if (err && err.code === 1009) {
+        return reject(
+          new Error(
+            'Sorry, the file you uploaded exceeds the maximum allowed size of 1MB.',
+          ),
+        )
+      }
       if (err) return reject(err)
       resolve({ fields, files })
     })
@@ -29,12 +36,12 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     const fData = await asyncParse(req)
     const file = fData.files.file[0]
 
-    const filePath = path.join('/tmp', file['newFilename'])
+    const filePath = path.join('/tmp', file.newFilename)
     const fileData = fs.readFileSync(filePath)
 
     const imageFormData = new FormData()
-    const blob = new Blob([fileData], { type: file['mimetype'] })
-    imageFormData.append('file', blob, file['originalFilename'])
+    const blob = new Blob([fileData], { type: file.mimetype })
+    imageFormData.append('file', blob, file.originalFilename)
 
     const imageIPFSResponse = await fetch(
       'https://ipfs.infura.io:5001/api/v0/add',
@@ -57,11 +64,11 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     metadataFormData.append(
       'data',
       JSON.stringify({
-        image: `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${ipfsData['Hash']}`,
+        image: `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${ipfsData.Hash}`,
         ...{
-          name: fData.fields['name'][0],
-          description: fData.fields['description'][0],
-          website: fData.fields['website'][0],
+          name: fData.fields.name[0],
+          description: fData.fields.description[0],
+          website: fData.fields.website[0],
           'snapshot-ens': fData.fields['snapshot-ens'][0],
           'media-channel': fData.fields['media-channel'][0],
         },

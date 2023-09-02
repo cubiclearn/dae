@@ -1,8 +1,8 @@
-import { useState } from 'react'
 import { useContractWrite, usePublicClient } from 'wagmi'
-import { Address, ContractFunctionExecutionError } from 'viem'
+import { Address } from 'viem'
 import { CredentialsBurnableAbi } from '@dae/abi'
 import { CredentialType } from '@dae/database'
+import { useWeb3HookState } from '../useWeb3HookState'
 
 export type EnrollUserData = {
   address: Address
@@ -14,11 +14,15 @@ export function useTransferCredentials(
   courseAddress: Address,
   credentialType: CredentialType,
 ) {
-  const [error, setError] = useState<string | null>(null)
-  const [isError, setIsError] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSigning, setIsSigning] = useState(false)
+  const {
+    isSuccess,
+    isValidating,
+    isLoading,
+    isSigning,
+    isError,
+    error,
+    ...state
+  } = useWeb3HookState()
 
   const publicClient = usePublicClient()
 
@@ -36,25 +40,53 @@ export function useTransferCredentials(
 
   const transfer = async (
     userData: EnrollUserData,
-    tokenURI: string,
+    credentialIPFSCid: string,
   ): Promise<void> => {
-    setIsSuccess(false)
-    setIsError(false)
-    setIsSigning(true)
+    state.setValidating()
 
     try {
+      const tokenURI = `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${credentialIPFSCid}`
       if (mint === undefined) {
         throw new Error(
           'The data provided is incorrect. Please ensure that you have entered the correct information.',
         )
       }
 
+      const checkExistingCredentialSearchParams = new URLSearchParams({
+        chainId: publicClient.chain.id.toString(),
+        courseAddress: courseAddress,
+        userAddress: userData.address,
+        credentialCid: credentialIPFSCid,
+      })
+
+      const alreadyExistingCredentialResponse = await fetch(
+        `/api/v0/user/course/credential?${checkExistingCredentialSearchParams}`,
+        {
+          method: 'GET',
+        },
+      )
+
+      if (!alreadyExistingCredentialResponse.ok) {
+        const responseJSON = await alreadyExistingCredentialResponse.json()
+        throw new Error(responseJSON.error)
+      }
+
+      const alreadyExistingCredentialResponseJSON =
+        await alreadyExistingCredentialResponse.json()
+
+      if (alreadyExistingCredentialResponseJSON.data.credential) {
+        throw new Error(
+          `Credential already minted to this address (${userData.address}).`,
+        )
+      }
+
+      state.setSigning()
+
       const writeResult = await mint({
         args: [userData.address, tokenURI, 2],
       })
 
-      setIsLoading(true)
-      setIsSigning(false)
+      state.setLoading()
 
       const txReceipt = await publicClient.waitForTransactionReceipt({
         hash: writeResult.hash,
@@ -83,33 +115,59 @@ export function useTransferCredentials(
         throw new Error(responseJSON.error)
       }
 
-      setIsLoading(false)
-      setIsSuccess(true)
+      state.setSuccess()
     } catch (error: any) {
-      setIsLoading(false)
-      setIsSigning(false)
-      setIsError(true)
-      if (error instanceof ContractFunctionExecutionError) {
-        setError(error.details)
-      } else {
-        setError(error.message || 'An error occurred')
-      }
+      state.handleError(error)
       throw error
     }
   }
 
   const multiTransfer = async (
     usersData: EnrollUserData[],
-    tokenURI: string,
+    credentialIPFSCid: string,
   ): Promise<void> => {
-    setIsSuccess(false)
-    setIsError(false)
-    setIsSigning(true)
+    state.setValidating()
 
     try {
+      const tokenURI = `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${credentialIPFSCid}`
       if (credentialType !== 'DISCIPULUS') {
         throw new Error('Multi mint is not supported for this credential type.')
       }
+
+      const checkExistingCredentialPromises = usersData.map(
+        async (userData) => {
+          const checkExistingCredentialSearchParams = new URLSearchParams({
+            chainId: publicClient.chain.id.toString(),
+            courseAddress: courseAddress,
+            userAddress: userData.address,
+            credentialCid: credentialIPFSCid,
+          })
+
+          const alreadyExistingCredentialResponse = await fetch(
+            `/api/v0/user/course/credential?${checkExistingCredentialSearchParams}`,
+            {
+              method: 'GET',
+            },
+          )
+          if (!alreadyExistingCredentialResponse.ok) {
+            const responseJSON = await alreadyExistingCredentialResponse.json()
+            throw new Error(responseJSON.error)
+          }
+
+          const alreadyExistingCredentialResponseJSON =
+            await alreadyExistingCredentialResponse.json()
+
+          if (alreadyExistingCredentialResponseJSON.data.credential) {
+            throw new Error(
+              `Credential already minted to this address (${userData.address}). Please remove it from the list and retry.`,
+            )
+          }
+
+          return null
+        },
+      )
+
+      await Promise.all(checkExistingCredentialPromises)
 
       if (multiMint === undefined) {
         throw new Error(
@@ -119,6 +177,8 @@ export function useTransferCredentials(
 
       const addressToMint = usersData.map((userData) => userData.address)
 
+      state.setSigning()
+
       const writeResult = await multiMint({
         args: [
           addressToMint,
@@ -127,8 +187,7 @@ export function useTransferCredentials(
         ],
       })
 
-      setIsLoading(true)
-      setIsSigning(false)
+      state.setLoading()
 
       const txReceipt = await publicClient.waitForTransactionReceipt({
         hash: writeResult.hash,
@@ -151,19 +210,9 @@ export function useTransferCredentials(
         throw new Error(responseJSON.error)
       }
 
-      setIsLoading(false)
-      setIsSuccess(true)
+      state.setSuccess()
     } catch (error: any) {
-      setIsLoading(false)
-      setIsSigning(false)
-      setIsError(true)
-      if (error instanceof ContractFunctionExecutionError) {
-        setError(
-          `${error.details}. Look at your browser console for more informations.`,
-        )
-      } else {
-        setError(error.message || 'An error occurred')
-      }
+      state.handleError(error)
       throw error
     }
   }
@@ -176,5 +225,6 @@ export function useTransferCredentials(
     isSuccess,
     error,
     isSigning,
+    isValidating,
   }
 }
