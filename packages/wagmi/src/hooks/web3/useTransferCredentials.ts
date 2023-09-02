@@ -75,7 +75,9 @@ export function useTransferCredentials(
         await alreadyExistingCredentialResponse.json()
 
       if (alreadyExistingCredentialResponseJSON.data.credential) {
-        throw new Error('Credential already minted to this address.')
+        throw new Error(
+          `Credential already minted to this address (${userData.address}).`,
+        )
       }
 
       state.setSigning()
