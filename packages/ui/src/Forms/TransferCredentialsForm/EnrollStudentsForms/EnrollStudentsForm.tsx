@@ -41,8 +41,15 @@ type EnrollStudentsCSVFormProps = {
 export const EnrollStudentsForm: React.FC<EnrollStudentsCSVFormProps> = ({
   courseAddress,
 }) => {
-  const { multiTransfer, isLoading, isError, isSuccess, error, isSigning } =
-    useTransferCredentials(courseAddress as Address, 'DISCIPULUS')
+  const {
+    multiTransfer,
+    isLoading,
+    isError,
+    isSuccess,
+    error,
+    isSigning,
+    isValidating,
+  } = useTransferCredentials(courseAddress as Address, 'DISCIPULUS')
   const toast = useToast()
   const router = useRouter()
 
@@ -162,7 +169,7 @@ export const EnrollStudentsForm: React.FC<EnrollStudentsCSVFormProps> = ({
         <Button
           colorScheme="blue"
           type="submit"
-          isLoading={isLoading || isSigning}
+          isLoading={isLoading || isSigning || isValidating}
           loadingText="Submitting"
         >
           Enroll students

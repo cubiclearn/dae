@@ -1,5 +1,5 @@
 import React from 'react'
-import { Avatar, Text, Td, Tr } from '@chakra-ui/react'
+import { Avatar, Text, Td, Tr, Button } from '@chakra-ui/react'
 import type { UserCredentials } from '@dae/database'
 import { useCourseData } from '../CourseProvider'
 import { Address } from 'viem'
@@ -7,9 +7,15 @@ import { useKarmaBalance } from '@dae/wagmi'
 
 export type UserRowProps = {
   user: UserCredentials
+  onDelete: () => void
+  isDeleting: boolean
 }
 
-export const UserRow: React.FC<UserRowProps> = ({ user }) => {
+export const UserRow: React.FC<UserRowProps> = ({
+  user,
+  onDelete,
+  isDeleting,
+}) => {
   const course = useCourseData()
 
   const { data: karmaBalance, isSuccess } = useKarmaBalance(
@@ -40,6 +46,11 @@ export const UserRow: React.FC<UserRowProps> = ({ user }) => {
         </Text>
       </Td>
       <Td isNumeric>{isSuccess ? karmaBalance?.toString() : '--'}</Td>
+      <Td>
+        <Button colorScheme="red" onClick={onDelete} isLoading={isDeleting}>
+          X
+        </Button>
+      </Td>
     </Tr>
   )
 }

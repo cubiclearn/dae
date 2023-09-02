@@ -4,7 +4,7 @@ import { CredentialsBurnableAbi } from '@dae/abi'
 import { mutate } from 'swr'
 import { useWeb3HookState } from '../useWeb3HookState'
 import { UseWeb3WriteHookInterface } from '@dae/types'
-import { UserCredentials } from '@dae/database'
+import { CredentialType, UserCredentials } from '@dae/database'
 
 interface BurnCredentialHookInterface extends UseWeb3WriteHookInterface {
   burnCredential: (tokenId: number) => Promise<void>
@@ -12,6 +12,7 @@ interface BurnCredentialHookInterface extends UseWeb3WriteHookInterface {
 
 export function useBurnCredential(
   courseAddress: Address,
+  credentialType: CredentialType,
 ): BurnCredentialHookInterface {
   const {
     isSuccess,
@@ -70,9 +71,23 @@ export function useBurnCredential(
         data: UserCredentials
       }
 
-      await mutate(
-        `/api/v0/course/credential/users?credentialCid=${responseJSON.data.credential_ipfs_cid}&courseAddress=${responseJSON.data.course_address}&chainId=${responseJSON.data.course_chain_id}`,
-      )
+      if (credentialType === 'OTHER') {
+        await mutate(
+          `/api/v0/course/credential/users?credentialCid=${responseJSON.data.credential_ipfs_cid}&courseAddress=${responseJSON.data.course_address}&chainId=${responseJSON.data.course_chain_id}`,
+        )
+      }
+
+      if (credentialType === 'DISCIPULUS') {
+        await mutate(
+          `/api/v0/course/students?courseAddress=${courseAddress}&chainId=${responseJSON.data.course_chain_id}`,
+        )
+      }
+
+      if (credentialType === 'MAGISTER') {
+        await mutate(
+          `/api/v0/course/credential/users?credentialCid=${responseJSON.data.credential_ipfs_cid}&courseAddress=${responseJSON.data.course_address}&chainId=${responseJSON.data.course_chain_id}`,
+        )
+      }
 
       state.setSuccess()
     } catch (error: any) {

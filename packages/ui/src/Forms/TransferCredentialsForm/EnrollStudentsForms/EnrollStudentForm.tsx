@@ -36,8 +36,15 @@ export const EnrollStudentForm: React.FC<TransferCredentialsFormProps> = ({
   courseAddress,
 }) => {
   const router = useRouter()
-  const { transfer, isLoading, isError, isSuccess, error, isSigning } =
-    useTransferCredentials(courseAddress as Address, 'DISCIPULUS')
+  const {
+    transfer,
+    isLoading,
+    isError,
+    isSuccess,
+    error,
+    isSigning,
+    isValidating,
+  } = useTransferCredentials(courseAddress as Address, 'DISCIPULUS')
 
   const toast = useToast()
 
@@ -134,7 +141,7 @@ export const EnrollStudentForm: React.FC<TransferCredentialsFormProps> = ({
         <Button
           colorScheme="blue"
           type="submit"
-          isLoading={isLoading || isSigning}
+          isLoading={isLoading || isSigning || isValidating}
           loadingText="Submitting"
         >
           Enroll student

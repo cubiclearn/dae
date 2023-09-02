@@ -39,7 +39,7 @@ export const CredentialHolders: React.FC<CredentialHoldersProps> = ({
     isSuccess: isSuccessBurningCredential,
     isSigning: isSigningBurningCredentialTransaction,
     isValidating: isValidatingBurningCredential,
-  } = useBurnCredential(courseAddress)
+  } = useBurnCredential(courseAddress, 'OTHER')
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedCredential, setselectedCredential] =

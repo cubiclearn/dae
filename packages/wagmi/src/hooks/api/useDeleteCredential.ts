@@ -20,7 +20,7 @@ export const useDeleteCredential = (
     }
 
     const urlParamsDeletion = new URLSearchParams({
-      credentialId: credentialCid,
+      credentialCid: credentialCid,
       courseAddress: courseAddress.toString(),
       chainId: chainId.toString(),
     })
