@@ -29,6 +29,11 @@ export function useTransferKarma(
   ): Promise<void> => {
     try {
       state.setValidating()
+
+      if (karmaIncrement === 0) {
+        throw new Error('Karma increment value cannot be 0.')
+      }
+
       if (karmaAccessControlAddress === undefined) {
         throw new Error('Karma Access Control Address is invalid')
       }

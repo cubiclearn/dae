@@ -218,7 +218,9 @@ const CourseNavigationMenu: React.FC = () => {
           {
             title: 'Explore',
             href: `/course/${courseAddress}/proposals/explore?active=true`,
-            active: pathname.startsWith('/course/[address]/proposals/explore'),
+            active:
+              pathname.startsWith('/course/[address]/proposals/explore') ||
+              pathname.startsWith('/course/[address]/proposals/[proposalId]'),
             visible: true,
           },
         ]}
