@@ -55,12 +55,16 @@ export const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({
     chainId,
   )
 
-  const studentsAddressAndKarma = useMemo(
+  const studentsAddressAndKarmaOrderedDesc = useMemo(
     () =>
       studentsKarmaData && courseData
-        ? studentsAddresses.map((studentAddress, index) => {
-            return [studentAddress, studentsKarmaData[index]]
-          })
+        ? studentsAddresses
+            .map((studentAddress, index) => {
+              return [studentAddress, studentsKarmaData[index]]
+            })
+            .sort(
+              (studentA, studentB) => Number(studentB[1]) - Number(studentA[1]),
+            )
         : undefined,
     [studentsKarmaData, courseData],
   )
@@ -84,7 +88,7 @@ export const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({
     isLoadingStudentsData ||
     isLoadingKarmaData ||
     (studentsData === undefined && !errorLoadingStudents) ||
-    studentsAddressAndKarma === undefined
+    studentsAddressAndKarmaOrderedDesc === undefined
   ) {
     return (
       <Center>
@@ -127,7 +131,7 @@ export const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({
           </Tr>
         </Thead>
         <Tbody>
-          {studentsAddressAndKarma.map((student, index) => {
+          {studentsAddressAndKarmaOrderedDesc.map((student, index) => {
             return (
               <Tr key={index}>
                 <Td fontWeight={'semibold'}>{`#${index + 1}`}</Td>
