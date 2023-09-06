@@ -151,7 +151,7 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
             address: sanitizeAddress(contractAddress),
             name: jsonMetadata.name,
             description: jsonMetadata.description,
-            media_channel: jsonMetadata.media_channel,
+            media_channel: jsonMetadata['media-channel'],
             image_url: jsonMetadata.image,
             website_url: jsonMetadata.website,
             symbol: symbol,

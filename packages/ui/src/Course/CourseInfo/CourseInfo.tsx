@@ -96,7 +96,7 @@ export const CourseInfo: React.FC<any> = () => {
             </Text>
             {data.media_channel ? (
               <Text fontWeight={'semibold'}>
-                Access Link:{' '}
+                Media Channel:{' '}
                 <Link
                   fontWeight={'normal'}
                   href={data.media_channel}
