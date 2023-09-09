@@ -52,19 +52,26 @@ export const MultiTransferKarmaForm: React.FC<any> = () => {
 
   const [csvData, setCsvData] = useState<TransferData[]>([])
 
-  const { errors, touched, handleBlur, handleSubmit, setFieldValue } =
-    useFormik({
-      initialValues: {
-        CSVFile: null,
-      },
-      onSubmit: async () => {
-        try {
-          await multiTransfer(csvData)
-          setCsvData([])
-        } catch (_e) {}
-      },
-      validationSchema: validationSchema,
-    })
+  const {
+    errors,
+    touched,
+    handleBlur,
+    handleSubmit,
+    setFieldValue,
+    resetForm,
+  } = useFormik({
+    initialValues: {
+      CSVFile: null,
+    },
+    onSubmit: async () => {
+      try {
+        await multiTransfer(csvData)
+        setCsvData([])
+        resetForm()
+      } catch (_e) {}
+    },
+    validationSchema: validationSchema,
+  })
 
   const karmaAmountData = useContractReads({
     contracts: csvData.map((user) => {
@@ -171,7 +178,15 @@ export const MultiTransferKarmaForm: React.FC<any> = () => {
                           ? Number(karmaAmountData.data[index].result)
                           : '--'}
                       </Td>
-                      <Td>{row.karma_increment}</Td>
+                      <Td
+                        color={
+                          row.karma_increment > 0 ? 'green.500' : 'red.500'
+                        }
+                      >
+                        {row.karma_increment > 0
+                          ? `+${Number(row.karma_increment)}`
+                          : `${Number(row.karma_increment)}`}
+                      </Td>
                       <Td>
                         {karmaAmountData.data &&
                         karmaAmountData.data[index].status === 'success'
