@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
 import { getCourseCredentials } from '../../../../lib/api'
 import { Address } from 'viem'
+import { CredentialType } from '@prisma/client'
 
 // TypeScript enum for request methods
 enum HttpMethod {
@@ -9,16 +10,21 @@ enum HttpMethod {
 }
 
 const handleGetRequest = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { chainId, address } = req.query as {
+  const { chainId, address, type } = req.query as {
     chainId: string
     address: Address
+    type: CredentialType | undefined
   }
 
   if (!chainId || !address) {
     return res.status(400).json({ success: false, error: 'Bad request.' })
   }
 
-  const credentials = await getCourseCredentials(address, parseInt(chainId, 10))
+  const credentials = await getCourseCredentials(
+    address,
+    parseInt(chainId, 10),
+    type,
+  )
 
   return res
     .status(200)

@@ -1,5 +1,10 @@
 import { prisma } from '@dae/database'
-import type { Course, UserCredentials, Credential } from '@dae/database'
+import type {
+  Course,
+  UserCredentials,
+  Credential,
+  CredentialType,
+} from '@dae/database'
 import { Address } from 'viem'
 import { sanitizeAddress } from './functions'
 
@@ -110,11 +115,13 @@ export const getUserCourses = async (
 export const getCourseCredentials = async (
   courseAddress: Address,
   chainId: number,
+  credentialType: CredentialType | undefined,
 ): Promise<Credential[]> => {
   return prisma.credential.findMany({
     where: {
       course_address: sanitizeAddress(courseAddress),
       course_chain_id: chainId,
+      type: credentialType,
     },
     orderBy: [
       {

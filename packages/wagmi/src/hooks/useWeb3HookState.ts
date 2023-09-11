@@ -45,10 +45,10 @@ export function useWeb3HookState() {
     let errorMessage
     switch (true) {
       case error instanceof ContractFunctionExecutionError:
-        errorMessage = error.details
+        errorMessage = (error as ContractFunctionExecutionError).shortMessage
         break
       case error instanceof TransactionExecutionError:
-        errorMessage = error.details
+        errorMessage = (error as TransactionExecutionError).shortMessage
         break
       default:
         errorMessage = error.message || 'An error occurred'

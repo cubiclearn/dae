@@ -1,6 +1,6 @@
 import { Address } from 'viem'
 import useSWR from 'swr'
-import { Credential } from '@dae/database'
+import { Credential, CredentialType } from '@dae/database'
 
 interface UseCourseCredentialsData {
   data: Credential[] | null
@@ -25,8 +25,23 @@ const fetcher = async (url: string) => {
 export const useCourseCredentials = (
   courseAddress: Address | undefined,
   chainId: number | undefined,
+  credentialType?: CredentialType | undefined,
 ): UseCourseCredentialsData => {
-  const url = `/api/v0/course/credentials?address=${courseAddress}&chainId=${chainId}`
+  const URLParams = new URLSearchParams()
+
+  if (courseAddress) {
+    URLParams.append('address', courseAddress)
+  }
+
+  if (chainId) {
+    URLParams.append('chainId', chainId.toString())
+  }
+
+  if (credentialType) {
+    URLParams.append('type', credentialType)
+  }
+
+  const url = `/api/v0/course/credentials?${URLParams}`
 
   const shouldFetch = courseAddress && chainId
 
