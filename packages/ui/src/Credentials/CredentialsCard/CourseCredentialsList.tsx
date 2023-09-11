@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import { CredentialsCard } from './CredentialsCard'
 import { SimpleGrid, Stack } from '@chakra-ui/react'
 import {
@@ -9,7 +9,6 @@ import {
   Box,
   Center,
   Spinner,
-  Text,
   Link,
 } from '@chakra-ui/react'
 import { useCourseCredentials } from '@dae/wagmi'
@@ -28,22 +27,7 @@ export const CourseCredentialsList: React.FC<CourseCardListProps> = ({
   const { data, error, isLoading } = useCourseCredentials(
     courseAddress,
     chain?.id,
-  )
-
-  const BASE_CREDENTIALS = useMemo(
-    () =>
-      data !== null
-        ? data.filter((credential) => credential.type !== 'OTHER')
-        : [],
-    [data],
-  )
-
-  const CUSTOM_CREDENTIALS = useMemo(
-    () =>
-      data !== null
-        ? data.filter((credential) => credential.type === 'OTHER')
-        : [],
-    [data],
+    'OTHER',
   )
 
   if (isLoading) {
@@ -74,7 +58,18 @@ export const CourseCredentialsList: React.FC<CourseCardListProps> = ({
         <AlertIcon />
         <Box>
           <AlertTitle>Nothing to show.</AlertTitle>
-          <AlertDescription>There is no credentials to show</AlertDescription>
+          <AlertDescription>
+            You haven't created credentials yet. Click{' '}
+            <Link
+              fontWeight={'bold'}
+              as={NextLink}
+              href={`/course/${courseAddress}/credentials/create`}
+              _hover={{ textDecoration: 'none' }}
+            >
+              here
+            </Link>{' '}
+            to create a new one.
+          </AlertDescription>
         </Box>
       </Alert>
     )
@@ -83,50 +78,21 @@ export const CourseCredentialsList: React.FC<CourseCardListProps> = ({
   return (
     <Stack spacing={8}>
       <Stack spacing={4}>
-        <Text fontSize={'xl'} fontWeight={'semibold'}>
-          Base
-        </Text>
         <SimpleGrid
           columns={{ base: 1, sm: 2, lg: 3, xl: 5 }}
           spacing={{ base: 8 }}
         >
-          {BASE_CREDENTIALS.map((credential) => (
-            <CredentialsCard key={credential.ipfs_cid} data={credential} />
+          {data.map((credential) => (
+            <Link
+              as={NextLink}
+              href={`/course/${credential.course_address}/credentials/${credential.ipfs_cid}/info`}
+              _hover={{ textDecoration: 'none' }}
+              key={credential.ipfs_cid}
+            >
+              <CredentialsCard data={credential} />
+            </Link>
           ))}
         </SimpleGrid>
-      </Stack>
-      <Stack spacing={4}>
-        <Text fontSize={'xl'} fontWeight={'semibold'}>
-          Custom
-        </Text>
-
-        {CUSTOM_CREDENTIALS.length > 0 ? (
-          <SimpleGrid
-            columns={{ base: 1, sm: 2, lg: 3, xl: 5 }}
-            spacing={{ base: 8 }}
-          >
-            {CUSTOM_CREDENTIALS.map((credential) => (
-              <Link
-                as={NextLink}
-                href={`/course/${credential.course_address}/credentials/${credential.ipfs_cid}/info`}
-                _hover={{ textDecoration: 'none' }}
-                key={credential.ipfs_cid}
-              >
-                <CredentialsCard data={credential} />
-              </Link>
-            ))}
-          </SimpleGrid>
-        ) : (
-          <Alert status="info">
-            <AlertIcon />
-            <Box>
-              <AlertTitle>Nothing to show.</AlertTitle>
-              <AlertDescription>
-                You haven't created a custom credential yet.
-              </AlertDescription>
-            </Box>
-          </Alert>
-        )}
       </Stack>
     </Stack>
   )
