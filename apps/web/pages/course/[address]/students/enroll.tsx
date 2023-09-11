@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import { Stack } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
-import { EnrollStudentsFormContainer, Layout } from '@dae/ui'
+import { Layout, TransferCredentialsFormContainer } from '@dae/ui'
 
 export default function ProfilePage() {
   const { query } = useRouter()
@@ -17,7 +17,10 @@ export default function ProfilePage() {
       </Head>
       <Layout.Course heading="Enroll student">
         <Stack spacing={8}>
-          <EnrollStudentsFormContainer courseAddress={courseAddress} />
+          <TransferCredentialsFormContainer
+            courseAddress={courseAddress}
+            credentialType={'DISCIPULUS'}
+          />
         </Stack>
       </Layout.Course>
     </>

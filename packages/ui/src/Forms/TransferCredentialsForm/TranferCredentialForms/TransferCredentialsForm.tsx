@@ -67,38 +67,30 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
 
     const [csvData, setCsvData] = useState<TransferCredentialsData[]>([])
 
-    const {
-      values,
-      errors,
-      touched,
-      handleBlur,
-      handleSubmit,
-      handleReset,
-      setFieldValue,
-    } = useFormik({
-      initialValues: {
-        credentialIPFSCid: '',
-        CSVFile: null,
-      },
-      onSubmit: async () => {
-        try {
-          if (data) {
-            const credentialCID =
-              credentialType === 'DISCIPULUS' || credentialType === 'MAGISTER'
-                ? data[0].ipfs_cid
-                : values.credentialIPFSCid
-            await multiTransfer(csvData, credentialCID)
-            if (fileInputRef.current) {
-              fileInputRef.current.value = ''
+    const { values, errors, touched, handleBlur, handleSubmit, setFieldValue } =
+      useFormik({
+        initialValues: {
+          credentialIPFSCid: '',
+          CSVFile: null,
+        },
+        onSubmit: async () => {
+          try {
+            if (data) {
+              const credentialCID =
+                credentialType === 'DISCIPULUS' || credentialType === 'MAGISTER'
+                  ? data[0].ipfs_cid
+                  : values.credentialIPFSCid
+              await multiTransfer(csvData, credentialCID)
+              if (fileInputRef.current) {
+                fileInputRef.current.value = ''
+              }
+              setFieldValue('credentialIPFSCid', '')
+              setCsvData([])
             }
-            setFieldValue('credentialIPFSCid', '')
-            setCsvData([])
-            console.log('RESET')
-          }
-        } catch (_e) {}
-      },
-      validationSchema: validationSchema,
-    })
+          } catch (_e) {}
+        },
+        validationSchema: validationSchema,
+      })
 
     useEffect(() => {
       if (isError) {
@@ -159,7 +151,6 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
                 onBlur={handleBlur}
                 type="file"
                 ref={fileInputRef}
-                onReset={handleReset}
                 py={1}
               />
               <FormHelperText>
@@ -242,7 +233,8 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
             isLoading={isLoading || isSigning || isValidating}
             loadingText="Submitting"
           >
-            Transfer credentials
+            {credentialType === 'DISCIPULUS' && 'Enroll students'}
+            {credentialType === 'OTHER' && 'Transfer credentials'}
           </Button>
           {isError ? (
             <Alert status="error">

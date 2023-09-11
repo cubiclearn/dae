@@ -21,11 +21,13 @@ export const TransferCredentialsFormContainer: React.FC<
   return (
     <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
       <Stack spacing={8}>
-        <FormControl display="flex" alignItems="center">
-          <FormLabel mb="0">Multi transfer?</FormLabel>
-          <Switch onChange={handleMultiEnrollChange} />
-        </FormControl>
-        {multiEnroll ? (
+        {credentialType !== 'MAGISTER' && (
+          <FormControl display="flex" alignItems="center">
+            <FormLabel mb="0">Multi transfer?</FormLabel>
+            <Switch onChange={handleMultiEnrollChange} />
+          </FormControl>
+        )}
+        {multiEnroll && credentialType !== 'MAGISTER' ? (
           <TransferCredentialsForm
             courseAddress={courseAddress}
             credentialType={credentialType}

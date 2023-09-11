@@ -208,7 +208,9 @@ export const TransferCredentialForm: React.FC<TransferCredentialFormProps> = ({
           isLoading={isLoading || isSigning || isValidating}
           loadingText="Submitting"
         >
-          Enroll student
+          {credentialType === 'DISCIPULUS' && 'Enroll student'}
+          {credentialType === 'MAGISTER' && 'Enroll teacher'}
+          {credentialType === 'OTHER' && 'Transfer credential'}
         </Button>
         {isError ? (
           <Alert status="error">
