@@ -124,7 +124,6 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
 
       const text = await file.text()
 
-      // Use PapaParse for CSV parsing
       Papa.parse<TransferCredentialsData>(text, {
         header: true,
         skipEmptyLines: true,

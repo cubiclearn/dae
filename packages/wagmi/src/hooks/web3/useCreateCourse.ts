@@ -122,7 +122,6 @@ export function useCreateCourse(
           name,
           'DAEC',
           `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${metadataIPFSHash}`,
-          BigInt(1000),
           BigInt(magisterBaseKarma),
           BigInt(discipulusBaseKarma),
         ],

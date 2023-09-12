@@ -36,11 +36,6 @@ export const CredentialsFactoryAbi = [
         type: 'string',
       },
       {
-        internalType: 'uint256',
-        name: 'maxSupply',
-        type: 'uint256',
-      },
-      {
         internalType: 'uint64',
         name: '_baseMagisterKarma',
         type: 'uint64',

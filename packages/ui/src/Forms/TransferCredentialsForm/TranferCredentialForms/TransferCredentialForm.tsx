@@ -14,21 +14,13 @@ import {
   useToast,
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
-import React, { ChangeEvent, useEffect } from 'react'
+import React, { ChangeEvent, useEffect, useMemo } from 'react'
 import { Address, useNetwork } from 'wagmi'
 import * as Yup from 'yup'
 import { useCourseCredentials, useTransferCredentials } from '@dae/wagmi'
 import { CredentialType } from '@dae/database'
-const ethereumAddressRegex = /^0x([A-Fa-f0-9]{40})$/
 
-const validationSchema = Yup.object().shape({
-  userAddress: Yup.string()
-    .matches(ethereumAddressRegex, 'Invalid Ethereum address')
-    .required('Ethereum address is required'),
-  userEmail: Yup.string().email('Invalid email'),
-  userDiscordUsername: Yup.string(),
-  credentialIPFSCid: Yup.string().required('Credential IPFS CID is required'),
-})
+const ethereumAddressRegex = /^0x([A-Fa-f0-9]{40})$/
 
 type TransferCredentialFormProps = {
   courseAddress: string
@@ -58,6 +50,27 @@ export const TransferCredentialForm: React.FC<TransferCredentialFormProps> = ({
 
   const toast = useToast()
 
+  const validationSchema = useMemo(() => {
+    if (credentialType === 'DISCIPULUS' || credentialType === 'MAGISTER') {
+      return Yup.object().shape({
+        userAddress: Yup.string()
+          .matches(ethereumAddressRegex, 'Invalid Ethereum address')
+          .required('Ethereum address is required'),
+        userEmail: Yup.string().email('Invalid email'),
+        userDiscordUsername: Yup.string(),
+      })
+    }
+
+    return Yup.object().shape({
+      userAddress: Yup.string()
+        .matches(ethereumAddressRegex, 'Invalid Ethereum address')
+        .required('Ethereum address is required'),
+      credentialIPFSCid: Yup.string().required(
+        'You have to select a credential',
+      ),
+    })
+  }, [credentialType])
+
   const {
     values,
     errors,
@@ -65,10 +78,12 @@ export const TransferCredentialForm: React.FC<TransferCredentialFormProps> = ({
     handleBlur,
     handleChange,
     handleSubmit,
+    handleReset,
     setFieldValue,
+    resetForm,
   } = useFormik({
     initialValues: {
-      credentialIPFSCid: '',
+      credentialIPFSCid: credentialType ?? '',
       userAddress: '',
       userEmail: '',
       userDiscordUsername: '',
@@ -89,11 +104,40 @@ export const TransferCredentialForm: React.FC<TransferCredentialFormProps> = ({
             },
             credentialCID,
           )
+          resetForm()
         }
       } catch (_e) {}
     },
     validationSchema: validationSchema,
   })
+
+  const renderCredentialOptions = useMemo(() => {
+    if (data) {
+      return data.map((credential) => {
+        return (
+          <option key={credential.ipfs_cid} value={credential.ipfs_cid}>
+            {credential.name}
+          </option>
+        )
+      })
+    }
+    return <></>
+  }, [data])
+
+  const renderErrorAlert = useMemo(() => {
+    if (isError) {
+      return (
+        <Alert status="error">
+          <AlertIcon />
+          <Box>
+            <AlertTitle>Something went wrong.</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Box>
+        </Alert>
+      )
+    }
+    return <></>
+  }, [isError])
 
   useEffect(() => {
     if (isError) {
@@ -116,6 +160,71 @@ export const TransferCredentialForm: React.FC<TransferCredentialFormProps> = ({
     }
   }, [isLoading, isError, isSuccess])
 
+  if (credentialType === 'MAGISTER' || credentialType === 'DISCIPULUS') {
+    return (
+      <form onSubmit={handleSubmit}>
+        <Stack spacing={4}>
+          <FormControl
+            isRequired
+            isInvalid={!!errors.userAddress && touched.userAddress}
+          >
+            <FormLabel>Ethereum Address</FormLabel>
+            <Input
+              id="userAddress"
+              value={values.userAddress}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              type="text"
+              placeholder="Ethereum Address"
+              onReset={handleReset}
+            />
+            <FormErrorMessage>{errors.userAddress}</FormErrorMessage>
+          </FormControl>
+          <FormControl isInvalid={!!errors.userEmail && touched.userEmail}>
+            <FormLabel>E-mail</FormLabel>
+            <Input
+              id="userEmail"
+              value={values.userEmail}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              type="text"
+              placeholder="Email"
+              onReset={handleReset}
+            />
+            <FormErrorMessage>{errors.userEmail}</FormErrorMessage>
+          </FormControl>
+          <FormControl
+            isInvalid={
+              !!errors.userDiscordUsername && touched.userDiscordUsername
+            }
+          >
+            <FormLabel>Discord Username</FormLabel>
+            <Input
+              id="userDiscordUsername"
+              value={values.userDiscordUsername}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              type="text"
+              placeholder="Discord username"
+              onReset={handleReset}
+            />
+            <FormErrorMessage>{errors.userDiscordUsername}</FormErrorMessage>
+          </FormControl>
+          <Button
+            colorScheme="blue"
+            type="submit"
+            isLoading={isLoading || isSigning || isValidating}
+            loadingText="Submitting"
+          >
+            {credentialType === 'DISCIPULUS' && 'Enroll student'}
+            {credentialType === 'MAGISTER' && 'Enroll teacher'}
+          </Button>
+          {renderErrorAlert}
+        </Stack>
+      </form>
+    )
+  }
+
   return (
     <form onSubmit={handleSubmit}>
       <Stack spacing={4}>
@@ -131,98 +240,35 @@ export const TransferCredentialForm: React.FC<TransferCredentialFormProps> = ({
             onBlur={handleBlur}
             type="text"
             placeholder="Ethereum Address"
+            onReset={handleReset}
           />
           <FormErrorMessage>{errors.userAddress}</FormErrorMessage>
         </FormControl>
-        {credentialType === 'DISCIPULUS' || credentialType === 'MAGISTER' ? (
-          <FormControl isInvalid={!!errors.userEmail && touched.userEmail}>
-            <FormLabel>E-mail</FormLabel>
-            <Input
-              id="userEmail"
-              value={values.userEmail}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              type="text"
-              placeholder="Email"
-            />
-            <FormErrorMessage>{errors.userEmail}</FormErrorMessage>
-          </FormControl>
-        ) : (
-          <></>
-        )}
-        {credentialType === 'DISCIPULUS' || credentialType === 'MAGISTER' ? (
-          <FormControl
-            isInvalid={
-              !!errors.userDiscordUsername && touched.userDiscordUsername
-            }
+        <FormControl
+          isRequired
+          isInvalid={!!errors.credentialIPFSCid && touched.credentialIPFSCid}
+        >
+          <FormLabel>Credential</FormLabel>
+          <Select
+            placeholder="Select the credential to transfer"
+            onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+              setFieldValue('credentialIPFSCid', event.target.value)
+            }}
+            onReset={handleReset}
           >
-            <FormLabel>Discord Username</FormLabel>
-            <Input
-              id="userDiscordUsername"
-              value={values.userDiscordUsername}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              type="text"
-              placeholder="Discord username"
-            />
-            <FormErrorMessage>{errors.userDiscordUsername}</FormErrorMessage>
-          </FormControl>
-        ) : (
-          <></>
-        )}
-        {credentialType === 'OTHER' ? (
-          <FormControl
-            isRequired
-            isInvalid={!!errors.credentialIPFSCid && touched.credentialIPFSCid}
-          >
-            <FormLabel>Credential</FormLabel>
-            <Select
-              placeholder="Select the credential to transfer"
-              onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                setFieldValue('credentialIPFSCid', event.target.value)
-              }}
-            >
-              {data ? (
-                data.map((credential) => {
-                  return (
-                    <option
-                      key={credential.ipfs_cid}
-                      value={credential.ipfs_cid}
-                    >
-                      {credential.name}
-                    </option>
-                  )
-                })
-              ) : (
-                <></>
-              )}
-            </Select>
-            <FormErrorMessage>{errors.credentialIPFSCid}</FormErrorMessage>
-          </FormControl>
-        ) : (
-          <></>
-        )}
+            {renderCredentialOptions}
+          </Select>
+          <FormErrorMessage>{errors.credentialIPFSCid}</FormErrorMessage>
+        </FormControl>
         <Button
           colorScheme="blue"
           type="submit"
           isLoading={isLoading || isSigning || isValidating}
           loadingText="Submitting"
         >
-          {credentialType === 'DISCIPULUS' && 'Enroll student'}
-          {credentialType === 'MAGISTER' && 'Enroll teacher'}
-          {credentialType === 'OTHER' && 'Transfer credential'}
+          Transfer credential
         </Button>
-        {isError ? (
-          <Alert status="error">
-            <AlertIcon />
-            <Box>
-              <AlertTitle>Something went wrong.</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Box>
-          </Alert>
-        ) : (
-          <></>
-        )}
+        {renderErrorAlert}
       </Stack>
     </form>
   )
