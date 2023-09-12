@@ -233,7 +233,7 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
                 },
               },
               user_address: sanitizeAddress(transaction.from),
-              credential_token_id: 0,
+              credential_token_id: -1,
               credential: {
                 connect: {
                   course_address_course_chain_id_ipfs_cid: {
