@@ -139,6 +139,18 @@ export const TransferCredentialForm: React.FC<TransferCredentialFormProps> = ({
     return <></>
   }, [isError])
 
+  const renderButtonText = useMemo(() => {
+    if (credentialType === 'MAGISTER') {
+      return 'Enroll teacher'
+    }
+
+    if (credentialType === 'DISCIPULUS') {
+      return 'Enroll student'
+    }
+
+    return 'Transfer credential'
+  }, [credentialType])
+
   useEffect(() => {
     if (isError) {
       toast({
@@ -216,8 +228,7 @@ export const TransferCredentialForm: React.FC<TransferCredentialFormProps> = ({
             isLoading={isLoading || isSigning || isValidating}
             loadingText="Submitting"
           >
-            {credentialType === 'DISCIPULUS' && 'Enroll student'}
-            {credentialType === 'MAGISTER' && 'Enroll teacher'}
+            {renderButtonText}
           </Button>
           {renderErrorAlert}
         </Stack>
@@ -266,7 +277,7 @@ export const TransferCredentialForm: React.FC<TransferCredentialFormProps> = ({
           isLoading={isLoading || isSigning || isValidating}
           loadingText="Submitting"
         >
-          Transfer credential
+          {renderButtonText}
         </Button>
         {renderErrorAlert}
       </Stack>

@@ -24,7 +24,14 @@ import {
   Select,
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { Address, useNetwork } from 'wagmi'
 import * as Yup from 'yup'
 import {
@@ -113,26 +120,144 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
       }
     }, [isLoading, isError, isSuccess])
 
-    const handleCSVFileChange = async (
-      e: React.ChangeEvent<HTMLInputElement>,
-    ) => {
-      const file = e.target.files?.[0]
+    const handleCSVFileChange = useCallback(
+      async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0]
 
-      if (!file) {
-        return
+        if (!file) {
+          return
+        }
+
+        const text = await file.text()
+
+        Papa.parse<TransferCredentialsData>(text, {
+          header: true,
+          skipEmptyLines: true,
+          dynamicTyping: true,
+          complete: (results) => {
+            setFieldValue('CSVFile', file)
+            setCsvData(results.data)
+          },
+        })
+      },
+      [],
+    )
+
+    const renderCredentialOptions = useMemo(() => {
+      if (data) {
+        return data.map((credential) => {
+          return (
+            <option key={credential.ipfs_cid} value={credential.ipfs_cid}>
+              {credential.name}
+            </option>
+          )
+        })
+      }
+      return <></>
+    }, [data])
+
+    const renderCSVUsersTable = useMemo(() => {
+      if (csvData.length > 0) {
+        return (
+          <Stack spacing={2}>
+            <Text fontWeight={'semibold'}>Summary</Text>
+            <TableContainer>
+              <Table>
+                <Thead>
+                  <Tr>
+                    <Th>Address</Th>
+                    <Th>Email</Th>
+                    <Th>Discord handle</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {csvData.map((row) => (
+                    <Tr key={row.address}>
+                      <Td>{row.address}</Td>
+                      <Td>{row.email}</Td>
+                      <Td>{row.discord}</Td>
+                    </Tr>
+                  ))}
+                </Tbody>
+              </Table>
+            </TableContainer>
+          </Stack>
+        )
+      }
+    }, [csvData])
+
+    const renderErrorAlert = useMemo(() => {
+      if (isError) {
+        return (
+          <Alert status="error">
+            <AlertIcon />
+            <Box>
+              <AlertTitle>Something went wrong.</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Box>
+          </Alert>
+        )
+      }
+      return <></>
+    }, [isError])
+
+    const renderSubmitButtonText = useMemo(() => {
+      if (credentialType === 'MAGISTER') {
+        return 'Enroll teacher'
       }
 
-      const text = await file.text()
+      if (credentialType === 'DISCIPULUS') {
+        return 'Enroll student'
+      }
 
-      Papa.parse<TransferCredentialsData>(text, {
-        header: true,
-        skipEmptyLines: true,
-        dynamicTyping: true,
-        complete: (results) => {
-          setFieldValue('CSVFile', file)
-          setCsvData(results.data)
-        },
-      })
+      return 'Transfer credential'
+    }, [credentialType])
+
+    if (credentialType === 'MAGISTER' || credentialType === 'DISCIPULUS') {
+      return (
+        <form onSubmit={handleSubmit}>
+          <Stack spacing={8}>
+            <Stack spacing={4}>
+              <FormControl
+                isRequired
+                isInvalid={!!errors.CSVFile && touched.CSVFile}
+              >
+                <FormLabel>File (.csv)</FormLabel>
+                <Input
+                  id="CSVFile"
+                  onChange={handleCSVFileChange}
+                  onBlur={handleBlur}
+                  type="file"
+                  ref={fileInputRef}
+                  py={1}
+                />
+                <FormHelperText>
+                  Click{' '}
+                  <Link
+                    isExternal
+                    fontWeight={'bold'}
+                    href="/files/enroll_students_example.csv"
+                  >
+                    here
+                  </Link>{' '}
+                  to download the example CSV file.
+                </FormHelperText>
+                <FormErrorMessage>{errors.CSVFile}</FormErrorMessage>
+              </FormControl>
+            </Stack>
+            {renderCSVUsersTable}
+            <Button
+              colorScheme="blue"
+              type="submit"
+              isLoading={isLoading || isSigning || isValidating}
+              loadingText="Submitting"
+            >
+              {renderSubmitButtonText}
+            </Button>
+            {renderErrorAlert}
+          </Stack>
+        </form>
+      )
     }
 
     return (
@@ -165,87 +290,35 @@ export const TransferCredentialsForm: React.FC<TransferCredentialsFormProps> =
               </FormHelperText>
               <FormErrorMessage>{errors.CSVFile}</FormErrorMessage>
             </FormControl>
-            {credentialType === 'OTHER' ? (
-              <FormControl
-                isRequired
-                isInvalid={
-                  !!errors.credentialIPFSCid && touched.credentialIPFSCid
-                }
+            <FormControl
+              isRequired
+              isInvalid={
+                !!errors.credentialIPFSCid && touched.credentialIPFSCid
+              }
+            >
+              <FormLabel>Credential</FormLabel>
+              <Select
+                placeholder="Select the credential to transfer"
+                onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+                  setFieldValue('credentialIPFSCid', event.target.value)
+                }}
+                value={values.credentialIPFSCid}
               >
-                <FormLabel>Credential</FormLabel>
-                <Select
-                  placeholder="Select the credential to transfer"
-                  onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                    setFieldValue('credentialIPFSCid', event.target.value)
-                  }}
-                  value={values.credentialIPFSCid}
-                >
-                  {data ? (
-                    data.map((credential) => {
-                      return (
-                        <option
-                          key={credential.ipfs_cid}
-                          value={credential.ipfs_cid}
-                        >
-                          {credential.name}
-                        </option>
-                      )
-                    })
-                  ) : (
-                    <></>
-                  )}
-                </Select>
-                <FormErrorMessage>{errors.credentialIPFSCid}</FormErrorMessage>
-              </FormControl>
-            ) : (
-              <></>
-            )}
+                {renderCredentialOptions}
+              </Select>
+              <FormErrorMessage>{errors.credentialIPFSCid}</FormErrorMessage>
+            </FormControl>
           </Stack>
-          {csvData.length > 0 && (
-            <Stack spacing={2}>
-              <Text fontWeight={'semibold'}>Summary</Text>
-              <TableContainer>
-                <Table>
-                  <Thead>
-                    <Tr>
-                      <Th>Address</Th>
-                      <Th>Email</Th>
-                      <Th>Discord handle</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {csvData.map((row) => (
-                      <Tr key={row.address}>
-                        <Td>{row.address}</Td>
-                        <Td>{row.email}</Td>
-                        <Td>{row.discord}</Td>
-                      </Tr>
-                    ))}
-                  </Tbody>
-                </Table>
-              </TableContainer>
-            </Stack>
-          )}
+          {renderCSVUsersTable}
           <Button
             colorScheme="blue"
             type="submit"
             isLoading={isLoading || isSigning || isValidating}
             loadingText="Submitting"
           >
-            {credentialType === 'DISCIPULUS' && 'Enroll students'}
-            {credentialType === 'OTHER' && 'Transfer credentials'}
+            {renderSubmitButtonText}
           </Button>
-          {isError ? (
-            <Alert status="error">
-              <AlertIcon />
-              <Box>
-                <AlertTitle>Something went wrong.</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-              </Box>
-            </Alert>
-          ) : (
-            <></>
-          )}
+          {renderErrorAlert}
         </Stack>
       </form>
     )
