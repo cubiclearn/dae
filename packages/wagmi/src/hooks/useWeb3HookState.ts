@@ -54,10 +54,14 @@ export function useWeb3HookState() {
     let parsedError: Error
     switch (true) {
       case error instanceof ContractFunctionExecutionError:
-        parsedError = error as ContractFunctionExecutionError
+        parsedError = new Error(
+          (error as ContractFunctionExecutionError).shortMessage,
+        )
         break
       case error instanceof TransactionExecutionError:
-        parsedError = error as TransactionExecutionError
+        parsedError = new Error(
+          (error as TransactionExecutionError).shortMessage,
+        )
         break
       case error instanceof Error:
         parsedError = error as Error
