@@ -138,6 +138,18 @@ export function useCreateCourse(
         ],
       })
 
+      await fetch('/api/v0/transactions', {
+        method: 'POST',
+        body: JSON.stringify({
+          txHash: writeResult.hash,
+          chainId: publicClient.chain.id,
+          action: 'CREATE_COURSE',
+        }),
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      })
+
       state.setLoading()
       setStep(2)
 

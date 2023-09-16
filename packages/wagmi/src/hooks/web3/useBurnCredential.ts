@@ -48,6 +48,18 @@ export function useBurnCredential(
         args: [BigInt(tokenId)],
       })
 
+      await fetch('/api/v0/transactions', {
+        method: 'POST',
+        body: JSON.stringify({
+          txHash: writeResult.hash,
+          chainId: publicClient.chain.id,
+          action: 'BURN_CREDENTIAL',
+        }),
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      })
+
       state.setLoading()
 
       const txReceipt = await publicClient.waitForTransactionReceipt({

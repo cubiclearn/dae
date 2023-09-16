@@ -104,6 +104,15 @@ const handleDeleteRequest = async (
       },
     })
 
+    await prisma.transactionsVerifications.update({
+      where: {
+        transaction_hash: txHash,
+      },
+      data: {
+        verified: true,
+      },
+    })
+
     return res.status(200).json({ success: true, data: burnData })
   } catch (error: any) {
     console.log(error)
@@ -155,8 +164,6 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
         )
         const tokenId = userIssuedLogs[0].args.tokenId
 
-        console.log(tokenId)
-
         const tokenURI = await client.readContract({
           abi: CredentialsBurnableAbi,
           address: courseAddress,
@@ -200,6 +207,15 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
 
     await prisma.userCredentials.createMany({
       data: validCreateData,
+    })
+
+    await prisma.transactionsVerifications.update({
+      where: {
+        transaction_hash: txHash,
+      },
+      data: {
+        verified: true,
+      },
     })
 
     res.status(200).json({ success: true, data: null })
