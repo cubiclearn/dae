@@ -4,10 +4,10 @@ import { CredentialsBurnableAbi } from '@dae/abi'
 import { CredentialType } from '@dae/database'
 import { useWeb3HookState } from '../useWeb3HookState'
 
-export type EnrollUserData = {
+export type TransferCredentialsData = {
   address: Address
-  email: string
-  discord: string
+  email?: string
+  discord?: string
 }
 
 export function useTransferCredentials(
@@ -39,7 +39,7 @@ export function useTransferCredentials(
   })
 
   const transfer = async (
-    userData: EnrollUserData,
+    userData: TransferCredentialsData,
     credentialIPFSCid: string,
   ): Promise<void> => {
     state.setValidating()
@@ -123,16 +123,13 @@ export function useTransferCredentials(
   }
 
   const multiTransfer = async (
-    usersData: EnrollUserData[],
+    usersData: TransferCredentialsData[],
     credentialIPFSCid: string,
   ): Promise<void> => {
     state.setValidating()
 
     try {
       const tokenURI = `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${credentialIPFSCid}`
-      if (credentialType !== 'DISCIPULUS') {
-        throw new Error('Multi mint is not supported for this credential type.')
-      }
 
       const checkExistingCredentialPromises = usersData.map(
         async (userData) => {

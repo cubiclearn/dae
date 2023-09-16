@@ -3,7 +3,7 @@ import { Address } from 'viem'
 import { CredentialsBurnableAbi } from '@dae/abi'
 import { mutate } from 'swr'
 import { useWeb3HookState } from '../useWeb3HookState'
-import { UseWeb3WriteHookInterface } from '@dae/types'
+import type { UseWeb3WriteHookInterface } from '@dae/types'
 import { CredentialType, UserCredentials } from '@dae/database'
 
 interface BurnCredentialHookInterface extends UseWeb3WriteHookInterface {
@@ -33,9 +33,9 @@ export function useBurnCredential(
   })
 
   const burnCredential = async (tokenId: number): Promise<void> => {
-    state.setValidating()
-
     try {
+      state.setValidating()
+
       if (burn === undefined) {
         throw new Error(
           'The data provided is incorrect. Please ensure that you have entered the correct information.',
@@ -90,7 +90,7 @@ export function useBurnCredential(
       }
 
       state.setSuccess()
-    } catch (error: any) {
+    } catch (error: unknown) {
       state.handleError(error)
       throw error
     }

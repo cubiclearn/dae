@@ -88,39 +88,29 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     const karmaAccessControlAddress: Address =
       karmaAccessControlCreatedLog.args.karmaAccessControl
 
-    const [
-      symbol,
-      baseURI,
-      baseMagisterKarma,
-      baseDiscipulusKarma,
-      MAX_SUPPLY,
-    ] = await Promise.all([
-      client.readContract({
-        address: contractAddress,
-        abi: CredentialsBurnableAbi,
-        functionName: 'symbol',
-      }),
-      client.readContract({
-        address: contractAddress,
-        abi: CredentialsBurnableAbi,
-        functionName: 'baseURI',
-      }),
-      client.readContract({
-        address: karmaAccessControlAddress,
-        abi: KarmaAccessControlAbiUint64,
-        functionName: 'BASE_MAGISTER_KARMA',
-      }),
-      client.readContract({
-        address: karmaAccessControlAddress,
-        abi: KarmaAccessControlAbiUint64,
-        functionName: 'BASE_DISCIPULUS_KARMA',
-      }),
-      client.readContract({
-        address: contractAddress,
-        abi: CredentialsBurnableAbi,
-        functionName: 'MAX_SUPPLY',
-      }),
-    ])
+    const [symbol, baseURI, baseMagisterKarma, baseDiscipulusKarma] =
+      await Promise.all([
+        client.readContract({
+          address: contractAddress,
+          abi: CredentialsBurnableAbi,
+          functionName: 'symbol',
+        }),
+        client.readContract({
+          address: contractAddress,
+          abi: CredentialsBurnableAbi,
+          functionName: 'baseURI',
+        }),
+        client.readContract({
+          address: karmaAccessControlAddress,
+          abi: KarmaAccessControlAbiUint64,
+          functionName: 'BASE_MAGISTER_KARMA',
+        }),
+        client.readContract({
+          address: karmaAccessControlAddress,
+          abi: KarmaAccessControlAbiUint64,
+          functionName: 'BASE_DISCIPULUS_KARMA',
+        }),
+      ])
 
     const timestamp = (
       await client.getBlock({ blockNumber: transaction.blockNumber! })
@@ -151,7 +141,7 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
             address: sanitizeAddress(contractAddress),
             name: jsonMetadata.name,
             description: jsonMetadata.description,
-            media_channel: jsonMetadata.media_channel,
+            media_channel: jsonMetadata['media-channel'],
             image_url: jsonMetadata.image,
             website_url: jsonMetadata.website,
             symbol: symbol,
@@ -243,7 +233,7 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
                 },
               },
               user_address: sanitizeAddress(transaction.from),
-              credential_token_id: Number(MAX_SUPPLY),
+              credential_token_id: -1,
               credential: {
                 connect: {
                   course_address_course_chain_id_ipfs_cid: {

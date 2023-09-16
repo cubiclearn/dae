@@ -10,15 +10,20 @@ import {
   FormLabel,
   Input,
   Stack,
-  useToast,
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
-import React, { useEffect } from 'react'
-import { Address } from 'wagmi'
+import React from 'react'
+import { Address, useNetwork } from 'wagmi'
 import * as Yup from 'yup'
-import { useTransferCredentials } from '@dae/wagmi'
-import { useRouter } from 'next/router'
+import { useCourseCredentials, useTransferCredentials } from '@dae/wagmi'
+import { useFormFeedback } from '../../../hooks'
+
 const ethereumAddressRegex = /^0x([A-Fa-f0-9]{40})$/
+
+type TransferCredentialFormProps = {
+  courseAddress: string
+  credentialType: 'MAGISTER' | 'DISCIPULUS'
+}
 
 const validationSchema = Yup.object().shape({
   userAddress: Yup.string()
@@ -28,14 +33,16 @@ const validationSchema = Yup.object().shape({
   userDiscordUsername: Yup.string(),
 })
 
-type TransferCredentialsFormProps = {
-  courseAddress: string
-}
+export const BaseCredentialSingleTransferForm: React.FC<
+  TransferCredentialFormProps
+> = ({ courseAddress, credentialType }) => {
+  const { chain } = useNetwork()
+  const { data } = useCourseCredentials(
+    courseAddress as Address,
+    chain?.id,
+    credentialType,
+  )
 
-export const EnrollStudentForm: React.FC<TransferCredentialsFormProps> = ({
-  courseAddress,
-}) => {
-  const router = useRouter()
   const {
     transfer,
     isLoading,
@@ -44,53 +51,42 @@ export const EnrollStudentForm: React.FC<TransferCredentialsFormProps> = ({
     error,
     isSigning,
     isValidating,
-  } = useTransferCredentials(courseAddress as Address, 'DISCIPULUS')
+  } = useTransferCredentials(courseAddress as Address, credentialType)
 
-  const toast = useToast()
-
-  const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
-    useFormik({
-      initialValues: {
-        userAddress: '',
-        userEmail: '',
-        userDiscordUsername: '',
-      },
-      onSubmit: async (values) => {
-        try {
+  const {
+    values,
+    errors,
+    touched,
+    handleBlur,
+    handleChange,
+    handleSubmit,
+    handleReset,
+    resetForm,
+  } = useFormik({
+    initialValues: {
+      userAddress: '',
+      userEmail: '',
+      userDiscordUsername: '',
+    },
+    onSubmit: async (values) => {
+      try {
+        if (data) {
           await transfer(
             {
               address: values.userAddress as Address,
               email: values.userEmail,
               discord: values.userDiscordUsername,
             },
-            'https://dae-demo.infura-ipfs.io/ipfs/QmPfKCv7ZAz8294ShRTcHft5LSM9YaDJ4NTjZisCkhFxW8',
+            data[0].ipfs_cid,
           )
-          router.push(`/course/${courseAddress}/students/list`)
-        } catch (_e) {}
-      },
-      validationSchema: validationSchema,
-    })
+          resetForm()
+        }
+      } catch (_e) {}
+    },
+    validationSchema: validationSchema,
+  })
 
-  useEffect(() => {
-    if (isError) {
-      toast({
-        title: 'Error transferring credential.',
-        status: 'error',
-      })
-    }
-    if (isSuccess) {
-      toast({
-        title: 'Credential transferred with success!',
-        status: 'success',
-      })
-    }
-    if (isLoading) {
-      toast({
-        title: 'Transferring selected credential...',
-        status: 'info',
-      })
-    }
-  }, [isLoading, isError, isSuccess])
+  useFormFeedback({ isError, isSuccess, isLoading })
 
   return (
     <form onSubmit={handleSubmit}>
@@ -106,7 +102,8 @@ export const EnrollStudentForm: React.FC<TransferCredentialsFormProps> = ({
             onChange={handleChange}
             onBlur={handleBlur}
             type="text"
-            placeholder="Etereum Address"
+            placeholder="Ethereum Address"
+            onReset={handleReset}
           />
           <FormErrorMessage>{errors.userAddress}</FormErrorMessage>
         </FormControl>
@@ -119,6 +116,7 @@ export const EnrollStudentForm: React.FC<TransferCredentialsFormProps> = ({
             onBlur={handleBlur}
             type="text"
             placeholder="Email"
+            onReset={handleReset}
           />
           <FormErrorMessage>{errors.userEmail}</FormErrorMessage>
         </FormControl>
@@ -135,6 +133,7 @@ export const EnrollStudentForm: React.FC<TransferCredentialsFormProps> = ({
             onBlur={handleBlur}
             type="text"
             placeholder="Discord username"
+            onReset={handleReset}
           />
           <FormErrorMessage>{errors.userDiscordUsername}</FormErrorMessage>
         </FormControl>
@@ -144,14 +143,14 @@ export const EnrollStudentForm: React.FC<TransferCredentialsFormProps> = ({
           isLoading={isLoading || isSigning || isValidating}
           loadingText="Submitting"
         >
-          Enroll student
+          {credentialType === 'MAGISTER' ? 'Enroll teacher' : 'Enroll student'}
         </Button>
         {isError ? (
           <Alert status="error">
             <AlertIcon />
             <Box>
               <AlertTitle>Something went wrong.</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
+              <AlertDescription>{error?.message}</AlertDescription>
             </Box>
           </Alert>
         ) : (

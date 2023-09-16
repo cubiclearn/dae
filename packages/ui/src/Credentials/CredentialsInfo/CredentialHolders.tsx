@@ -169,9 +169,9 @@ export const CredentialHolders: React.FC<CredentialHoldersProps> = ({
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onConfirm={handleBurnCredential}
-        title="Confirm Deletion"
-        body="Are you sure you want to delete this credential?"
-        confirmButtonText="Delete"
+        title="Confirm operation"
+        body="Are you sure you want to revoke this credential?"
+        confirmButtonText="Revoke"
       />
     </Stack>
   )

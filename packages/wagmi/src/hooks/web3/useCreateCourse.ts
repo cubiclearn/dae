@@ -56,6 +56,7 @@ export function useCreateCourse(
 
   const ENSChainId =
     chain && !chain.testnet && chain.id !== 31337 ? mainnet.id : goerli.id
+
   const ENSPublicClient = usePublicClient({
     chainId: ENSChainId,
   })
@@ -122,7 +123,6 @@ export function useCreateCourse(
           name,
           'DAEC',
           `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${metadataIPFSHash}`,
-          BigInt(1000),
           BigInt(magisterBaseKarma),
           BigInt(discipulusBaseKarma),
         ],

@@ -29,7 +29,8 @@ const calculateStatistics = (data: number[], initialKarmaValue: number) => {
 
   // Calculate standard deviation
   const squaredDiffs = data.map((value) => (value - mean) ** 2)
-  const variance = squaredDiffs.reduce((acc, val) => acc + val, 0) / data.length
+  const variance =
+    squaredDiffs.reduce((acc, val) => acc + val, 0) / (data.length - 1)
   const stdDeviation = Math.sqrt(variance)
 
   // Calculate Learning Return Index

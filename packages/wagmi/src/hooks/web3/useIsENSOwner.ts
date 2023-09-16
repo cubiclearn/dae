@@ -1,5 +1,9 @@
+import { ChainId } from '@dae/chains'
 import { Address } from 'viem'
 import { useEnsAddress, useNetwork } from 'wagmi'
+
+const THREE_MINUTES = 1000 * 60 * 3
+const ENS_REGEX = /^([a-z0-9-]+\.eth)$/i
 
 export const useIsENSOwner = (
   userAddress: Address | undefined,
@@ -7,16 +11,16 @@ export const useIsENSOwner = (
 ) => {
   const { chain } = useNetwork()
   const shouldFetch =
-    chain &&
-    !!userAddress &&
-    !!ENSName &&
-    !!ENSName.match(/^([a-z0-9-]+\.eth)$/i)
+    chain && !!userAddress && !!ENSName && !!ENSName.match(ENS_REGEX)
 
   const { data, isError, isLoading, isSuccess } = useEnsAddress({
     name: ENSName,
     enabled: shouldFetch,
-    cacheTime: 1000 * 60 * 3,
-    chainId: chain?.id === 31337 || chain?.testnet ? 5 : 1,
+    cacheTime: THREE_MINUTES,
+    chainId:
+      chain?.id === ChainId.FOUNDRY || chain?.testnet
+        ? ChainId.GOERLI
+        : ChainId.ETHEREUM,
   })
 
   return {

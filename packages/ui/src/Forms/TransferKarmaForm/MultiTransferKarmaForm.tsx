@@ -24,23 +24,19 @@ import {
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { Address } from 'wagmi'
+import { Address, useContractReads } from 'wagmi'
 import * as Yup from 'yup'
-import { useTransferCredentials, EnrollUserData } from '@dae/wagmi'
-import { useRouter } from 'next/router'
+import { TransferData, useTransferKarma } from '@dae/wagmi'
 import Papa from 'papaparse'
+import { useCourseData } from '../../CourseProvider'
+import { KarmaAccessControlAbiUint64 } from '@dae/abi'
 
 const validationSchema = Yup.object().shape({
   CSVFile: Yup.mixed().required('CSV file is required'),
 })
 
-type EnrollStudentsCSVFormProps = {
-  courseAddress: string
-}
-
-export const EnrollStudentsForm: React.FC<EnrollStudentsCSVFormProps> = ({
-  courseAddress,
-}) => {
+export const MultiTransferKarmaForm: React.FC<any> = () => {
+  const { data } = useCourseData()
   const {
     multiTransfer,
     isLoading,
@@ -49,28 +45,46 @@ export const EnrollStudentsForm: React.FC<EnrollStudentsCSVFormProps> = ({
     error,
     isSigning,
     isValidating,
-  } = useTransferCredentials(courseAddress as Address, 'DISCIPULUS')
+  } = useTransferKarma(
+    data ? (data.karma_access_control_address as Address) : undefined,
+  )
   const toast = useToast()
-  const router = useRouter()
 
-  const [csvData, setCsvData] = useState<EnrollUserData[]>([])
+  const [csvData, setCsvData] = useState<TransferData[]>([])
 
-  const { errors, touched, handleBlur, handleSubmit, setFieldValue } =
-    useFormik({
-      initialValues: {
-        CSVFile: null,
-      },
-      onSubmit: async () => {
-        try {
-          await multiTransfer(
-            csvData,
-            'QmPfKCv7ZAz8294ShRTcHft5LSM9YaDJ4NTjZisCkhFxW8',
-          )
-          router.push(`/course/${courseAddress}/students/list`)
-        } catch (_e) {}
-      },
-      validationSchema: validationSchema,
-    })
+  const {
+    errors,
+    touched,
+    handleBlur,
+    handleSubmit,
+    setFieldValue,
+    resetForm,
+  } = useFormik({
+    initialValues: {
+      CSVFile: null,
+    },
+    onSubmit: async () => {
+      try {
+        await multiTransfer(csvData)
+        setCsvData([])
+        resetForm()
+      } catch (_e) {}
+    },
+    validationSchema: validationSchema,
+  })
+
+  const karmaAmountData = useContractReads({
+    contracts: csvData.map((user) => {
+      return {
+        abi: KarmaAccessControlAbiUint64,
+        address: data?.karma_access_control_address as Address | undefined,
+        functionName: 'ratingOf',
+        args: [user.address as Address],
+      }
+    }),
+    enabled: csvData.length > 0,
+    cacheOnBlock: true,
+  })
 
   useEffect(() => {
     if (isError) {
@@ -105,7 +119,7 @@ export const EnrollStudentsForm: React.FC<EnrollStudentsCSVFormProps> = ({
     const text = await file.text()
 
     // Use PapaParse for CSV parsing
-    Papa.parse<EnrollUserData>(text, {
+    Papa.parse<TransferData>(text, {
       header: true,
       skipEmptyLines: true,
       dynamicTyping: true,
@@ -133,7 +147,7 @@ export const EnrollStudentsForm: React.FC<EnrollStudentsCSVFormProps> = ({
             <Link
               isExternal
               fontWeight={'bold'}
-              href="/files/enroll_students_example.csv"
+              href="/files/multi_transfer_karma_example.csv"
             >
               here
             </Link>{' '}
@@ -143,22 +157,43 @@ export const EnrollStudentsForm: React.FC<EnrollStudentsCSVFormProps> = ({
         </FormControl>
         {csvData.length > 0 && (
           <Stack spacing={2}>
-            <Text fontWeight={'semibold'}>Students List</Text>
+            <Text fontWeight={'semibold'}>Summary</Text>
             <TableContainer>
               <Table>
                 <Thead>
                   <Tr>
                     <Th>Address</Th>
-                    <Th>Email</Th>
-                    <Th>Discord handle</Th>
+                    <Th>Karma</Th>
+                    <Th>Increment</Th>
+                    <Th>Total</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {csvData.map((row) => (
+                  {csvData.map((row, index) => (
                     <Tr key={row.address}>
                       <Td>{row.address}</Td>
-                      <Td>{row.email}</Td>
-                      <Td>{row.discord}</Td>
+                      <Td>
+                        {karmaAmountData.data &&
+                        karmaAmountData.data[index].status === 'success'
+                          ? Number(karmaAmountData.data[index].result)
+                          : '--'}
+                      </Td>
+                      <Td
+                        color={
+                          row.karma_increment > 0 ? 'green.500' : 'red.500'
+                        }
+                      >
+                        {row.karma_increment > 0
+                          ? `+${Number(row.karma_increment)}`
+                          : `${Number(row.karma_increment)}`}
+                      </Td>
+                      <Td>
+                        {karmaAmountData.data &&
+                        karmaAmountData.data[index].status === 'success'
+                          ? Number(karmaAmountData.data[index].result) +
+                            row.karma_increment
+                          : '--'}
+                      </Td>
                     </Tr>
                   ))}
                 </Tbody>
@@ -172,14 +207,14 @@ export const EnrollStudentsForm: React.FC<EnrollStudentsCSVFormProps> = ({
           isLoading={isLoading || isSigning || isValidating}
           loadingText="Submitting"
         >
-          Enroll students
+          Transfer Karma
         </Button>
         {isError ? (
           <Alert status="error">
             <AlertIcon />
             <Box>
               <AlertTitle>Something went wrong.</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
+              <AlertDescription>{error?.message}</AlertDescription>
             </Box>
           </Alert>
         ) : (

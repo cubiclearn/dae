@@ -2,6 +2,7 @@ import { mainnet, sepolia, foundry } from 'viem/chains'
 
 export const ChainId = {
   ETHEREUM: 1,
+  GOERLI: 5,
   FOUNDRY: 31337,
   SEPOLIA: 11155111,
 } as const
@@ -38,7 +39,7 @@ export type ChainSnapshotWebsite =
 
 export const FactoryContractAddress = {
   [ChainId.ETHEREUM]: '',
-  [ChainId.SEPOLIA]: '0x1f4789f45e5f808053963582380fe5a9d337284d',
+  [ChainId.SEPOLIA]: '0xb6c59c1538d362d9495f1564629ae2b59f0532af',
   [ChainId.FOUNDRY]: process.env.NEXT_PUBLIC_FOUNDRY_FACTORY_CONTRACT_ADDRESS,
 } as const
 
