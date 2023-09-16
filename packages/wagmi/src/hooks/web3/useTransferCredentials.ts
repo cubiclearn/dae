@@ -128,9 +128,9 @@ export function useTransferCredentials(
       }
 
       state.setSuccess()
-    } catch (error: any) {
-      state.handleError(error)
-      throw error
+    } catch (e: any) {
+      state.handleError(e)
+      throw e
     }
   }
 
@@ -220,9 +220,9 @@ export function useTransferCredentials(
       }
 
       state.setSuccess()
-    } catch (error: any) {
-      state.handleError(error)
-      throw error
+    } catch (e: any) {
+      state.handleError(e)
+      throw e
     }
   }
 

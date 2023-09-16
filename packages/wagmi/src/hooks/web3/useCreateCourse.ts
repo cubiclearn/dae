@@ -190,9 +190,9 @@ export function useCreateCourse(
 
       setStep(4)
       state.setSuccess()
-    } catch (error: any) {
-      state.handleError(error)
-      throw error
+    } catch (e: unknown) {
+      state.handleError(e)
+      throw e
     }
   }
 

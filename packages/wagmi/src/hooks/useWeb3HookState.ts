@@ -61,6 +61,7 @@ export function useWeb3HookState() {
         break
       case error instanceof Error:
         parsedError = error as Error
+        break
       default:
         parsedError = new Error('An error occurred')
     }

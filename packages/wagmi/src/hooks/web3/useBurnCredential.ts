@@ -102,9 +102,9 @@ export function useBurnCredential(
       }
 
       state.setSuccess()
-    } catch (error: unknown) {
-      state.handleError(error)
-      throw error
+    } catch (e: unknown) {
+      state.handleError(e)
+      throw e
     }
   }
 
