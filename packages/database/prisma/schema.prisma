@@ -72,3 +72,11 @@ model UserCredentials {
   @@id([user_address, course_address, credential_token_id, course_chain_id])
   @@unique([user_address, course_address, credential_ipfs_cid, course_chain_id])
 }
+
+model TransactionsVerifications {
+  transaction_hash String  @id
+  user_address     String
+  chain_id         Int
+  verified         Boolean @default(false)
+  action           String
+}

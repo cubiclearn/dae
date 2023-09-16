@@ -18,7 +18,7 @@ enum HttpMethod {
   DELETE = 'DELETE',
 }
 
-type EnrollUserData = {
+type UserCredentialData = {
   address: Address
   email: string
   discord: string
@@ -104,6 +104,15 @@ const handleDeleteRequest = async (
       },
     })
 
+    await prisma.transactionsVerifications.update({
+      where: {
+        transaction_hash: txHash,
+      },
+      data: {
+        verified: true,
+      },
+    })
+
     return res.status(200).json({ success: true, data: burnData })
   } catch (error: any) {
     console.log(error)
@@ -115,11 +124,11 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { txHash, usersData, chainId } = req.body as {
       txHash: Address
-      usersData: EnrollUserData[]
+      usersData: UserCredentialData[] | undefined
       chainId: string
     }
 
-    if (!chainId || !txHash || !usersData) {
+    if (!chainId || !txHash) {
       res.status(401).json({ success: false, error: 'Bad request' })
       return
     }
@@ -148,26 +157,16 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     ) as [CredentialIssuedLog]
 
     const createData = await Promise.all(
-      usersData.map(async (userData) => {
-        const userIssuedLogs = issuedLogs.filter(
-          (log) =>
-            sanitizeAddress(log.args.to) === sanitizeAddress(userData.address),
-        )
-        const tokenId = userIssuedLogs[0].args.tokenId
-
-        console.log(tokenId)
-
+      issuedLogs.map(async (log) => {
+        const tokenId = log.args.tokenId
         const tokenURI = await client.readContract({
           abi: CredentialsBurnableAbi,
           address: courseAddress,
           functionName: 'tokenURI',
           args: [tokenId],
         })
-
         const splittedURI = tokenURI.split('/')
         const ipfsCID = splittedURI[splittedURI.length - 1]
-
-        // Verify that the credential does not already exist
         const credential = await prisma.credential.findUnique({
           where: {
             course_address_course_chain_id_ipfs_cid: {
@@ -182,14 +181,18 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
           return null
         }
 
+        const credentialUserData = usersData?.filter(
+          (usersData) => usersData.address === log.args.to,
+        )[0]
+
         return {
           course_address: sanitizeAddress(courseAddress),
-          user_address: sanitizeAddress(userData.address),
+          user_address: sanitizeAddress(log.args.to),
           credential_token_id: Number(tokenId),
           credential_ipfs_cid: credential.ipfs_cid,
           course_chain_id: parseInt(chainId),
-          user_email: userData.email,
-          user_discord_handle: userData.discord,
+          user_email: credentialUserData?.email ?? '',
+          user_discord_handle: credentialUserData?.discord ?? '',
         } as UserCredentials
       }),
     )
@@ -200,6 +203,15 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
 
     await prisma.userCredentials.createMany({
       data: validCreateData,
+    })
+
+    await prisma.transactionsVerifications.update({
+      where: {
+        transaction_hash: txHash,
+      },
+      data: {
+        verified: true,
+      },
     })
 
     res.status(200).json({ success: true, data: null })

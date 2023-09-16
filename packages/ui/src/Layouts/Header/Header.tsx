@@ -18,12 +18,12 @@ export const Header: FC<HeaderProps> = ({
   return (
     <Flex
       px={{ base: 4, md: 8 }}
-      height='20'
-      alignItems='center'
+      height="20"
+      alignItems="center"
       bg={useColorModeValue('white', 'gray.900')}
-      borderBottomWidth='1px'
+      borderBottomWidth="1px"
       borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
-      as='header'
+      as="header"
       position={'fixed'}
       right={0}
       zIndex={'sticky'}
@@ -33,8 +33,8 @@ export const Header: FC<HeaderProps> = ({
         <IconButton
           display={{ base: 'flex', md: 'none' }}
           onClick={onOpen}
-          variant='outline'
-          aria-label='open menu'
+          variant="outline"
+          aria-label="open menu"
           icon={<FiMenu />}
         />
       ) : (

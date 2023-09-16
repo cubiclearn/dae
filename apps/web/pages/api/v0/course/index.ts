@@ -249,6 +249,15 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
           }),
         ])
 
+        await prisma.transactionsVerifications.update({
+          where: {
+            transaction_hash: txHash,
+          },
+          data: {
+            verified: true,
+          },
+        })
+
         return course
       },
       {

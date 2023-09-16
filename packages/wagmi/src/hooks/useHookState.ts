@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { ContractFunctionExecutionError } from 'viem'
 
 export function useHookState() {
   const [state, setState] = useState({
@@ -29,18 +28,15 @@ export function useHookState() {
       isValidating: false,
     })
 
-  const handleError = (error: any) => {
-    const errorMessage =
-      error instanceof ContractFunctionExecutionError
-        ? error.details
-        : error.message || 'An error occurred'
-
-    setState({
-      ...state,
-      isError: true,
-      isLoading: false,
-      error: errorMessage,
-    })
+  const handleError = (error: unknown) => {
+    let parsedError: Error
+    switch (true) {
+      case error instanceof Error:
+        parsedError = error as Error
+        break
+      default:
+        parsedError = new Error('An error occurred')
+    }
   }
 
   const setSuccess = () =>

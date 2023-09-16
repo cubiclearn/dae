@@ -92,9 +92,9 @@ export function useTransferKarma(
       })
 
       state.setSuccess()
-    } catch (error: any) {
-      state.handleError(error)
-      throw error
+    } catch (e: any) {
+      state.handleError(e)
+      throw e
     }
   }
 
@@ -182,9 +182,9 @@ export function useTransferKarma(
       })
 
       state.setSuccess()
-    } catch (error: any) {
-      state.handleError(error)
-      throw error
+    } catch (e: any) {
+      state.handleError(e)
+      throw e
     }
   }
 
