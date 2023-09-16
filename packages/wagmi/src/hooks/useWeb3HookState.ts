@@ -1,8 +1,17 @@
 import { useState } from 'react'
 import { ContractFunctionExecutionError, TransactionExecutionError } from 'viem'
 
+type Web3HookState = {
+  error: Error | null
+  isError: boolean
+  isSuccess: boolean
+  isLoading: boolean
+  isSigning: boolean
+  isValidating: boolean
+}
+
 export function useWeb3HookState() {
-  const [state, setState] = useState({
+  const [state, setState] = useState<Web3HookState>({
     error: null,
     isError: false,
     isSuccess: false,
@@ -41,17 +50,19 @@ export function useWeb3HookState() {
       isValidating: false,
     })
 
-  const handleError = (error: any) => {
-    let errorMessage
+  const handleError = (error: unknown) => {
+    let parsedError: Error
     switch (true) {
       case error instanceof ContractFunctionExecutionError:
-        errorMessage = (error as ContractFunctionExecutionError).shortMessage
+        parsedError = error as ContractFunctionExecutionError
         break
       case error instanceof TransactionExecutionError:
-        errorMessage = (error as TransactionExecutionError).shortMessage
+        parsedError = error as TransactionExecutionError
         break
+      case error instanceof Error:
+        parsedError = error as Error
       default:
-        errorMessage = error.message || 'An error occurred'
+        parsedError = new Error('An error occurred')
     }
 
     setState({
@@ -59,7 +70,7 @@ export function useWeb3HookState() {
       isError: true,
       isLoading: false,
       isSigning: false,
-      error: errorMessage,
+      error: parsedError,
     })
   }
 

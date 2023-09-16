@@ -2,10 +2,11 @@ import Head from 'next/head'
 import { Stack } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { Layout, TransferCredentialsFormContainer } from '@dae/ui'
+import { Address } from 'viem'
 
 export default function ProfilePage() {
   const { query } = useRouter()
-  const courseAddress = query.address as string
+  const courseAddress = query.address as Address
 
   return (
     <>

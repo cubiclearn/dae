@@ -1,44 +1,25 @@
-import React, { useState } from 'react'
-import { Box, FormControl, FormLabel, Stack, Switch } from '@chakra-ui/react'
-import { TransferCredentialForm } from './TranferCredentialForms/TransferCredentialForm'
-import { TransferCredentialsForm } from './TranferCredentialForms/TransferCredentialsForm'
+import React from 'react'
+import { BaseCredentialsTransferForm } from './BaseCredentialsTransferForms'
+import { CredentialsTransferForm } from './CredentialsTransferForms'
 import { CredentialType } from '@dae/database'
+import { Address } from 'viem'
 
 type TransferCredentialsFormContainerProps = {
-  courseAddress: string
+  courseAddress: Address
   credentialType: CredentialType
 }
 
 export const TransferCredentialsFormContainer: React.FC<
   TransferCredentialsFormContainerProps
 > = ({ courseAddress, credentialType }) => {
-  const [multiEnroll, setMultiEnroll] = useState(false)
-
-  const handleMultiEnrollChange = () => {
-    setMultiEnroll(!multiEnroll)
+  if (credentialType === 'MAGISTER' || credentialType === 'DISCIPULUS') {
+    return (
+      <BaseCredentialsTransferForm
+        courseAddress={courseAddress}
+        credentialType={credentialType}
+      />
+    )
   }
 
-  return (
-    <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
-      <Stack spacing={8}>
-        {credentialType !== 'MAGISTER' && (
-          <FormControl display="flex" alignItems="center">
-            <FormLabel mb="0">Multi transfer?</FormLabel>
-            <Switch onChange={handleMultiEnrollChange} />
-          </FormControl>
-        )}
-        {multiEnroll && credentialType !== 'MAGISTER' ? (
-          <TransferCredentialsForm
-            courseAddress={courseAddress}
-            credentialType={credentialType}
-          />
-        ) : (
-          <TransferCredentialForm
-            courseAddress={courseAddress}
-            credentialType={credentialType}
-          />
-        )}
-      </Stack>
-    </Box>
-  )
+  return <CredentialsTransferForm courseAddress={courseAddress} />
 }

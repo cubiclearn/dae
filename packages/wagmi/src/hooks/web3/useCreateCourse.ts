@@ -56,6 +56,7 @@ export function useCreateCourse(
 
   const ENSChainId =
     chain && !chain.testnet && chain.id !== 31337 ? mainnet.id : goerli.id
+
   const ENSPublicClient = usePublicClient({
     chainId: ENSChainId,
   })

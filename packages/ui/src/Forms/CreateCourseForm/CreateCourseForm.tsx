@@ -338,11 +338,7 @@ export const CreateCourseForm = () => {
               <AlertIcon />
               <Box>
                 <AlertTitle>Something went wrong.</AlertTitle>
-                <AlertDescription>
-                  {error && error instanceof Error
-                    ? error.message
-                    : 'Unknown Error'}
-                </AlertDescription>
+                <AlertDescription>{error?.message}</AlertDescription>
               </Box>
             </Alert>
           ) : (

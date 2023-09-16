@@ -6,8 +6,8 @@ import { useWeb3HookState } from '../useWeb3HookState'
 
 export type TransferCredentialsData = {
   address: Address
-  email: string
-  discord: string
+  email?: string
+  discord?: string
 }
 
 export function useTransferCredentials(
