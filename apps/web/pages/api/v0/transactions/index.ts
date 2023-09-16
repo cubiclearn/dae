@@ -23,8 +23,6 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
       action: any
     }
 
-    console.log('TEST')
-
     if (
       !chainId ||
       !txHash ||
