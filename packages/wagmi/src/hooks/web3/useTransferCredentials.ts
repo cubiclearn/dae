@@ -196,6 +196,18 @@ export function useTransferCredentials(
         ],
       })
 
+      await fetch('/api/v0/transactions', {
+        method: 'POST',
+        body: JSON.stringify({
+          txHash: writeResult.hash,
+          chainId: publicClient.chain.id,
+          action: 'TRANSFER_CREDENTIALS',
+        }),
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      })
+
       state.setLoading()
 
       const txReceipt = await publicClient.waitForTransactionReceipt({
