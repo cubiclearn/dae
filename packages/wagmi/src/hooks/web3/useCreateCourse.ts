@@ -110,6 +110,16 @@ export function useCreateCourse(
 
       const { Hash: metadataIPFSHash } = await uploadMetadataResponse.json()
 
+      const metadataBaseURI = `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${metadataIPFSHash}`
+
+      const metadataResponse = await fetch(metadataBaseURI)
+
+      if (!metadataResponse.ok) {
+        throw new Error(
+          'There is a problem uploading your metadata. Try again.',
+        )
+      }
+
       if (writeAsync === undefined) {
         throw new Error(
           'The data provided is incorrect. Please ensure that you have entered the correct information.',
@@ -122,7 +132,7 @@ export function useCreateCourse(
         args: [
           name,
           'DAEC',
-          `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${metadataIPFSHash}`,
+          metadataBaseURI,
           BigInt(magisterBaseKarma),
           BigInt(discipulusBaseKarma),
         ],
