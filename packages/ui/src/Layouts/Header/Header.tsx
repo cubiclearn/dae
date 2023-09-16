@@ -4,7 +4,6 @@ import { ConnectButton } from './ConnectButton'
 import { FC } from 'react'
 import { FiMenu } from 'react-icons/fi'
 import { Logo } from '../Logo'
-import { ResyncButton } from './ResyncButton'
 
 interface HeaderProps extends FlexProps {
   onOpen: () => void
@@ -30,7 +29,6 @@ export const Header: FC<HeaderProps> = ({
       zIndex={'sticky'}
       {...rest}
     >
-      <ResyncButton />
       {showDrawerButton ? (
         <IconButton
           display={{ base: 'flex', md: 'none' }}
