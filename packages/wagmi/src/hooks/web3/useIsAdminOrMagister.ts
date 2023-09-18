@@ -1,13 +1,12 @@
 import { CredentialsBurnableAbi } from '@dae/abi'
 import { Address, keccak256, toHex, zeroAddress } from 'viem'
-import { useContractRead } from 'wagmi'
+import { useAccount, useContractRead } from 'wagmi'
 
 const THREE_MINUTES = 1000 * 60 * 3
 
-export const useIsAdminOrMagister = (
-  courseAddress: Address | undefined,
-  userAddress: Address | undefined,
-) => {
+export const useIsAdminOrMagister = (courseAddress: Address | undefined) => {
+  const { address: userAddress } = useAccount()
+
   const {
     data: isMagister,
     isLoading: isLoadingMagister,

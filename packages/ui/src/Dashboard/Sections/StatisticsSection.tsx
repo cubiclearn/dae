@@ -111,7 +111,7 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
   if (
     isLoadingStudentsData ||
     isLoadingKarmaData ||
-    (studentsData === undefined && !errorLoadingStudents) ||
+    (!studentsData && !errorLoadingStudents) ||
     statistics === undefined
   ) {
     return (
@@ -121,7 +121,7 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
     )
   }
 
-  if (errorLoadingStudents || errorLoadingKarma) {
+  if (errorLoadingStudents || errorLoadingKarma || !studentsData) {
     return (
       <Alert status="error">
         <AlertIcon />
@@ -137,11 +137,11 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
 
   return (
     <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 5 }} spacing={4}>
-      <DashboardBlock title="Max Value" value={statistics.maxValue} />
-      <DashboardBlock title="Min Value" value={statistics.minValue} />
+      <DashboardBlock title="Max Value" value={statistics.maxValue} isInt />
+      <DashboardBlock title="Min Value" value={statistics.minValue} isInt />
       <DashboardBlock title="Mean" value={statistics.mean} />
-      <DashboardBlock title="Median" value={statistics.median} />
-      <DashboardBlock title="Std Deviation" value={statistics.stdDeviation} />
+      <DashboardBlock title="Median" value={statistics.median} isInt />
+      <DashboardBlock title="Std. Deviation" value={statistics.stdDeviation} />
       <DashboardBlock
         title="Learning Return Index"
         value={statistics.learningReturnIndex}

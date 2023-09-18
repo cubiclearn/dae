@@ -18,7 +18,7 @@ import { NavigationMenu, NavigationMenuItem } from './NavigationMenu'
 import { Sidebar } from './SideBar'
 import { BaseDrawer } from './Drawer'
 import { Header } from './Header'
-import { useAccount, useNetwork } from 'wagmi'
+import { useNetwork } from 'wagmi'
 import { useIsAdminOrMagister } from '@dae/wagmi'
 import { CourseAddress } from './CourseAddress'
 
@@ -40,10 +40,9 @@ const openedAccorditionIndex = (pathname: string) => {
 
 const CourseNavigationMenu: React.FC = () => {
   const { pathname, query } = useRouter()
-  const { address: userAddress } = useAccount()
   const courseAddress = query.address as Address
   const { data: isAdminOrMagister, isLoading: isFetchingUserRole } =
-    useIsAdminOrMagister(courseAddress, userAddress)
+    useIsAdminOrMagister(courseAddress)
 
   if (isFetchingUserRole) {
     return (
@@ -170,11 +169,6 @@ const CourseNavigationMenu: React.FC = () => {
               href: `/course/${courseAddress}/karma/transfer`,
               active: pathname.startsWith('/course/[address]/karma/transfer'),
             },
-            {
-              title: 'My Karma',
-              href: `/course/${courseAddress}/karma/rating`,
-              active: pathname.startsWith('/course/[address]/karma/rating'),
-            },
           ]}
           title="Karma"
         />
@@ -217,6 +211,18 @@ const CourseNavigationMenu: React.FC = () => {
         title="Info"
       />
       <NavigationMenuItem
+        key={'dashboard'}
+        icon={FiTrendingUp}
+        isActive={pathname === '/course/[address]/dashboard'}
+        links={[
+          {
+            title: 'Dashboard',
+            href: `/course/${courseAddress}/dashboard`,
+          },
+        ]}
+        title="Dashboard"
+      />
+      <NavigationMenuItem
         title={'Credentials'}
         key={'credentials'}
         icon={FiShield}
@@ -230,19 +236,6 @@ const CourseNavigationMenu: React.FC = () => {
             ),
           },
         ]}
-      />
-      <NavigationMenuItem
-        key={'karma'}
-        icon={FiZap}
-        isActive={pathname.startsWith('/course/[address]/karma')}
-        links={[
-          {
-            title: 'My Karma',
-            href: `/course/${courseAddress}/karma/rating`,
-            active: pathname.startsWith('/course/[address]/karma/rating'),
-          },
-        ]}
-        title="Karma"
       />
       <NavigationMenuItem
         title={'Proposals'}
