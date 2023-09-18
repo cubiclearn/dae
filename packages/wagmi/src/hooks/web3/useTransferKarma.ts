@@ -69,8 +69,17 @@ export function useTransferKarma(
         args: [userAddress],
       })
 
-      if (Number(userCurrentKarmaAmount) + karmaIncrement < 0) {
-        throw new Error('Invalid karma amount. The amount cannot be negative.')
+      const userBaseKarma = await publicClient.readContract({
+        abi: KarmaAccessControlAbiUint64,
+        address: karmaAccessControlAddress,
+        functionName: 'getBaseKarma',
+        args: [userAddress],
+      })
+
+      if (Number(userCurrentKarmaAmount) + karmaIncrement < userBaseKarma) {
+        throw new Error(
+          'Invalid karma amount. The amount cannot be under user base karma.',
+        )
       }
 
       if (rate === undefined) {
@@ -147,9 +156,19 @@ export function useTransferKarma(
             args: [user.address],
           })
 
-          if (Number(userCurrentKarmaAmount) + user.karma_increment < 0) {
+          const userBaseKarma = await publicClient.readContract({
+            abi: KarmaAccessControlAbiUint64,
+            address: karmaAccessControlAddress,
+            functionName: 'getBaseKarma',
+            args: [user.address],
+          })
+
+          if (
+            Number(userCurrentKarmaAmount) + user.karma_increment <
+            userBaseKarma
+          ) {
             throw new Error(
-              'Invalid karma amount. The amount cannot be negative.',
+              'Invalid karma amount. The amount cannot be under user base karma.',
             )
           }
 

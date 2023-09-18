@@ -29,10 +29,8 @@ const openedAccorditionIndex = (pathname: string) => {
     return 1
   } else if (pathname.startsWith('/course/[address]/students')) {
     return 2
-  } else if (pathname.startsWith('/course/[address]/karma')) {
-    return 3
   } else if (pathname.startsWith('/course/[address]/proposals')) {
-    return 4
+    return 3
   } else {
     return undefined
   }
