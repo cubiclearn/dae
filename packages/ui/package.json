@@ -23,6 +23,7 @@
         "@chakra-ui/react": "2.6.1",
         "@dae/abi": "workspace:*",
         "@dae/chains": "workspace:*",
+        "@dae/constants": "workspace: *",
         "@dae/database": "workspace:*",
         "@dae/hooks": "workspace:*",
         "@dae/snapshot": "workspace:*",

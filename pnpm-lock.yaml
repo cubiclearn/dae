@@ -199,6 +199,18 @@ importers:
         specifier: 1.4.1
         version: 1.4.1(typescript@5.0.4)
 
+  packages/constants:
+    devDependencies:
+      '@dae/typescript-config':
+        specifier: workspace:*
+        version: link:../../config/typescript
+      eslint:
+        specifier: 8.29.0
+        version: 8.29.0
+      typescript:
+        specifier: 5.0.4
+        version: 5.0.4
+
   packages/database:
     dependencies:
       '@prisma/client':
@@ -366,6 +378,9 @@ importers:
       '@dae/chains':
         specifier: workspace:*
         version: link:../chains
+      '@dae/constants':
+        specifier: 'workspace: *'
+        version: link:../constants
       '@dae/database':
         specifier: workspace:*
         version: link:../database

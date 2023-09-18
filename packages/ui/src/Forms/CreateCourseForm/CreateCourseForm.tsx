@@ -25,11 +25,30 @@ import { useEffect } from 'react'
 import { useAccount, useNetwork } from 'wagmi'
 import * as Yup from 'yup'
 import { ProgressStepper } from '../../Stepper'
+import {
+  MAXIMUM_ALLOWED_UPLOAD_FILE_SIZE,
+  SUPPORTED_IMAGE_FILE_TYPES,
+} from '@dae/constants'
+import { checkFileType, checkFileSize } from '../utils'
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
   description: Yup.string().required('Description is required'),
-  image: Yup.mixed().required('Image is required'),
+  image: Yup.mixed()
+    .required('Image is required.')
+    .test(
+      'fileType',
+      'Please select a valid image file.',
+      (file) => file && checkFileType(file as File, SUPPORTED_IMAGE_FILE_TYPES),
+    )
+    .test(
+      'fileSize',
+      `Image exceeds maximum allowed file size of ${
+        MAXIMUM_ALLOWED_UPLOAD_FILE_SIZE / (1024 * 1024)
+      }MB.`,
+      (file) =>
+        file && checkFileSize(file as File, MAXIMUM_ALLOWED_UPLOAD_FILE_SIZE),
+    ),
   website: Yup.string()
     .url('Invalid website URL')
     .required('Website is required'),
@@ -113,7 +132,16 @@ export const CreateCourseForm = () => {
     handleChange,
     handleSubmit,
     setFieldValue,
-  } = useFormik({
+  } = useFormik<{
+    name: string
+    description: string
+    image: File | null
+    website: string
+    mediaChannel: string
+    discipulusBaseKarma: number
+    magisterBaseKarma: number
+    snapshotSpaceENS: string
+  }>({
     initialValues: {
       name: '',
       description: '',
@@ -126,10 +154,11 @@ export const CreateCourseForm = () => {
     },
     onSubmit: async (values) => {
       try {
+        if (!values.image) return
         await create(
           values.name,
           values.description,
-          values.image!,
+          values.image,
           values.website,
           values.mediaChannel,
           values.magisterBaseKarma,
@@ -137,9 +166,7 @@ export const CreateCourseForm = () => {
           values.snapshotSpaceENS,
         )
         router.push('/profile/courses/teaching')
-      } catch (_e) {
-        console.log(_e)
-      }
+      } catch (_e) {}
     },
     validationSchema: validationSchema,
   })
@@ -201,7 +228,7 @@ export const CreateCourseForm = () => {
             />
             <FormErrorMessage>{errors.description}</FormErrorMessage>
           </FormControl>
-          <FormControl isRequired>
+          <FormControl isRequired isInvalid={!!errors.image && touched.image}>
             <FormLabel>Image</FormLabel>
             <Input
               py={1}

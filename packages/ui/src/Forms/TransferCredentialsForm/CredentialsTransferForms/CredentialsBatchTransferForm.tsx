@@ -33,9 +33,16 @@ import {
 } from '@dae/wagmi'
 import Papa from 'papaparse'
 import { useFormFeedback } from '../../../hooks'
+import { checkFileType } from '../../utils'
 
 const validationSchema = Yup.object().shape({
-  CSVFile: Yup.mixed().required('CSV file is required'),
+  CSVFile: Yup.mixed()
+    .required('CSV file is required.')
+    .test(
+      'fileType',
+      'Please select a valid .csv file.',
+      (file) => file && checkFileType(file as File, ['text/csv']),
+    ),
 })
 
 type TransferCredentialsFormProps = {
@@ -171,7 +178,7 @@ export const CredentialsBatchTransferForm: React.FC<
             <FormErrorMessage>{errors.credentialIPFSCid}</FormErrorMessage>
           </FormControl>
         </Stack>
-        {csvData.length > 0 ? (
+        {csvData.length > 0 && !errors.CSVFile ? (
           <Stack spacing={2}>
             <Text fontWeight={'semibold'}>Summary</Text>
             <TableContainer>

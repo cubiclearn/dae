@@ -18,11 +18,30 @@ import { useRouter } from 'next/router'
 import React, { useEffect } from 'react'
 import { Address, useNetwork } from 'wagmi'
 import * as Yup from 'yup'
+import { checkFileSize, checkFileType } from '../utils'
+import {
+  MAXIMUM_ALLOWED_UPLOAD_FILE_SIZE,
+  SUPPORTED_IMAGE_FILE_TYPES,
+} from '@dae/constants'
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
   description: Yup.string().required('Description is required'),
-  image: Yup.mixed().required('Image is required'),
+  image: Yup.mixed()
+    .required('Image is required.')
+    .test(
+      'fileType',
+      'Please select a valid image file.',
+      (file) => file && checkFileType(file as File, SUPPORTED_IMAGE_FILE_TYPES),
+    )
+    .test(
+      'fileSize',
+      `Image exceeds maximum allowed file size of ${
+        MAXIMUM_ALLOWED_UPLOAD_FILE_SIZE / (1024 * 1024)
+      }MB.`,
+      (file) =>
+        file && checkFileSize(file as File, MAXIMUM_ALLOWED_UPLOAD_FILE_SIZE),
+    ),
 })
 
 type CreateCredentialsFormProps = {
@@ -45,7 +64,7 @@ export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
     handleChange,
     handleSubmit,
     setFieldValue,
-  } = useFormik({
+  } = useFormik<{ name: string; description: string; image: File | null }>({
     initialValues: {
       name: '',
       description: '',
@@ -121,7 +140,7 @@ export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
             />
             <FormErrorMessage>{errors.description}</FormErrorMessage>
           </FormControl>
-          <FormControl isRequired>
+          <FormControl isRequired isInvalid={!!errors.image && touched.image}>
             <FormLabel>Image</FormLabel>
             <Input
               py={1}
