@@ -1,9 +1,9 @@
 import { RepeatIcon } from '@chakra-ui/icons'
 import { Button } from '@chakra-ui/react'
 import { UseVerifyUserTransactions } from '@dae/wagmi'
-import './ResyncButton.css'
+import './SyncButton.css'
 
-export const ResyncButton = () => {
+export const SyncButton = () => {
   const { verify, isLoading } = UseVerifyUserTransactions()
 
   return (
