@@ -15,7 +15,7 @@ import {
   Text,
   Image,
 } from '@chakra-ui/react'
-import { ResyncButton } from './ResyncButton'
+import { ResyncButton } from '../../ResyncButton/ResyncButton'
 
 export const ConnectButton: FC = (_props) => {
   const { disconnect } = useDisconnect({
