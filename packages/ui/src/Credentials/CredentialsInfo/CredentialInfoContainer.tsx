@@ -24,6 +24,7 @@ import { Address } from 'viem'
 import { ConfirmActionModal } from '../../ConfirmActionModal'
 import { useRouter } from 'next/router'
 import { useNetwork } from 'wagmi'
+import { SyncButton } from '../../SyncButton'
 
 type CredentialInfoContainerProps = {
   credentialCid: string | undefined
@@ -130,14 +131,19 @@ export const CredentialInfoContainer: React.FC<CredentialInfoContainerProps> =
           <></>
         )}
         <Stack justifyContent={'space-between'} direction={'row'}>
-          <Box>
+          <Stack
+            justifyContent={'space-between'}
+            direction={'row'}
+            width={'full'}
+          >
             <Link
               as={NextLink}
               href={`/course/${courseAddress}/credentials/list`}
             >
               <Button leftIcon={<ArrowBackIcon />}>Back</Button>
             </Link>
-          </Box>
+            <SyncButton />
+          </Stack>
           {credentialUsersData.length === 0 ? (
             <Box>
               <Button
