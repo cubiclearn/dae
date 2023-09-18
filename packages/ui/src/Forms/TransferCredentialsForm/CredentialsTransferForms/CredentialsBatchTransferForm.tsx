@@ -133,7 +133,7 @@ export const CredentialsBatchTransferForm: React.FC<
               <Link
                 isExternal
                 fontWeight={'bold'}
-                href="/files/enroll_students_example.csv"
+                href="/files/multi_transfer_credentials_example.csv"
               >
                 here
               </Link>{' '}

@@ -13,6 +13,7 @@ export const SyncButton = () => {
       isDisabled={isLoading}
       onClick={verify}
       iconSpacing={0}
+      px={3}
     />
   )
 }

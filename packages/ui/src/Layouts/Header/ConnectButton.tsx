@@ -15,7 +15,6 @@ import {
   Text,
   Image,
 } from '@chakra-ui/react'
-import { SyncButton } from '../../SyncButton'
 
 export const ConnectButton: FC = (_props) => {
   const { disconnect } = useDisconnect({
@@ -79,7 +78,6 @@ export const ConnectButton: FC = (_props) => {
 
               return (
                 <Flex className="flex gap-5">
-                  <SyncButton />
                   <Button
                     onClick={openChainModal}
                     fontSize={'md'}

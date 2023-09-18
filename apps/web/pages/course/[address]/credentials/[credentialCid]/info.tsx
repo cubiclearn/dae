@@ -1,6 +1,6 @@
 import Head from 'next/head'
-import { CredentialInfoContainer, Layout } from '@dae/ui'
-import { Stack } from '@chakra-ui/react'
+import { CredentialInfoContainer, Layout, SyncButton } from '@dae/ui'
+import { Box, Stack } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { Address } from 'viem'
 
@@ -18,7 +18,10 @@ export default function Info() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout.Course heading="Credential Info">
-        <Stack spacing={8}>
+        <Stack spacing={4}>
+          <Box alignSelf={'flex-end'}>
+            <SyncButton />
+          </Box>
           <CredentialInfoContainer
             credentialCid={credentialCid}
             courseAddress={courseAddress}
