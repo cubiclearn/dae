@@ -48,22 +48,6 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
 
           await siwe.verify({ signature: credentials?.signature || '' })
 
-          const addressCount = await prisma.account.count({
-            where: {
-              address: siwe.address,
-            },
-          })
-
-          if (addressCount === 0) {
-            await prisma.account.create({
-              data: {
-                address: siwe.address,
-                name: '',
-                surname: '',
-              },
-            })
-          }
-
           return {
             id: siwe.address,
           }
