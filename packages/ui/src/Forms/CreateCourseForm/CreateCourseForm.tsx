@@ -270,36 +270,34 @@ export const CreateCourseForm = () => {
               placeholder="https://your-media-channel.com"
             />
             <FormErrorMessage>{errors.mediaChannel}</FormErrorMessage>
-            <FormControl
-              isRequired
-              isInvalid={
-                !!errors.magisterBaseKarma && touched.magisterBaseKarma
-              }
+          </FormControl>
+          <FormControl
+            isRequired
+            isInvalid={!!errors.magisterBaseKarma && touched.magisterBaseKarma}
+          >
+            <FormLabel>Magister base karma</FormLabel>
+            <NumberInput
+              allowMouseWheel
+              defaultValue={0}
+              min={0}
+              id="magisterBaseKarma"
+              onChange={(_valueAsString, valueAsNumber) => {
+                if (isNaN(valueAsNumber)) {
+                  setFieldValue('magisterBaseKarma', 0) // Set to a default value or any other appropriate value
+                } else {
+                  setFieldValue('magisterBaseKarma', valueAsNumber)
+                }
+              }}
+              value={values.magisterBaseKarma}
+              onBlur={handleBlur}
             >
-              <FormLabel>Magister base karma</FormLabel>
-              <NumberInput
-                allowMouseWheel
-                defaultValue={0}
-                min={0}
-                id="magisterBaseKarma"
-                onChange={(_valueAsString, valueAsNumber) => {
-                  if (isNaN(valueAsNumber)) {
-                    setFieldValue('magisterBaseKarma', 0) // Set to a default value or any other appropriate value
-                  } else {
-                    setFieldValue('magisterBaseKarma', valueAsNumber)
-                  }
-                }}
-                value={values.magisterBaseKarma}
-                onBlur={handleBlur}
-              >
-                <NumberInputField />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-              <FormErrorMessage>{errors.magisterBaseKarma}</FormErrorMessage>
-            </FormControl>
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+            <FormErrorMessage>{errors.magisterBaseKarma}</FormErrorMessage>
           </FormControl>
           <FormControl
             isRequired
