@@ -63,7 +63,7 @@ export const CourseInfo: React.FC<any> = () => {
         borderRadius="xl"
         direction={{ base: 'column', lg: 'row' }}
       >
-        <Center width={{ base: '100%', md: '40%', lg: '30%' }}>
+        <Center width={{ base: '100%', lg: '30%' }}>
           <Image
             src={data.image_url}
             alt="Green double couch with wooden legs"
