@@ -1,7 +1,8 @@
 import { FC } from 'react'
-import { Box, Drawer, DrawerContent, useDisclosure } from '@chakra-ui/react'
+import { Box } from '@chakra-ui/react'
 import { Header } from './Header'
 import { IconType } from 'react-icons'
+import { Footer } from './Footer'
 
 type NavItemChildProps = {
   name: string
@@ -14,52 +15,41 @@ type Props = {
   navItems?: NavItemChildProps[]
 }
 
-export const PageLayout: FC<Props> = ({
-  children,
-  navItems = [],
-}): JSX.Element => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
-
-  if (navItems.length === 0) {
-    return (
-      <main>
+export const PageLayout: FC<Props> = ({ children }): JSX.Element => {
+  return (
+    <main
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+      }}
+    >
+      <Box height={'80px'} w="full">
         <Header
-          onOpen={onOpen}
+          onOpen={() => {}}
           showDrawerButton={false}
           width={{ base: '100%' }}
           justifyContent={{ base: 'space-between' }}
         />
-        <Box position={'absolute'} top={'80px'}>
-          <Box>{children}</Box>
-        </Box>
-      </main>
-    )
-  }
-
-  return (
-    <main>
-      <Header
-        onOpen={onOpen}
-        showDrawerButton={true}
-        width={{ base: '100%' }}
-        justifyContent={{ base: 'space-between' }}
-      />
-      <Drawer
-        autoFocus={false}
-        isOpen={isOpen}
-        placement='left'
-        onClose={onClose}
-        returnFocusOnClose={false}
-        onOverlayClick={onClose}
-        size='xs'
+      </Box>
+      <Box
+        flex="1"
+        overflowY={{ base: 'auto', md: 'hidden' }}
+        position={{ base: 'static', md: 'relative' }}
+        w="full"
+        height={'calc(100% - 160px)'}
       >
-        <DrawerContent>
-          <></>
-        </DrawerContent>
-      </Drawer>
-
-      <Box position={'absolute'} top={'80px'}>
         <Box>{children}</Box>
+      </Box>
+      <Box
+        height={'80px'}
+        borderTop={'1px solid'}
+        borderColor={'gray.200'}
+        position={{ base: 'static', md: 'fixed' }}
+        bottom={{ base: 'unset', md: '0' }} // Offset for footer
+        w="full"
+      >
+        <Footer />
       </Box>
     </main>
   )

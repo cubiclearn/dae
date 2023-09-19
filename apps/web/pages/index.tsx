@@ -17,12 +17,13 @@ const Home: FC = () => {
         <Center>
           <Stack
             width={{ md: '100vw', base: 'unset' }}
-            height={{ md: 'calc(100vh - 80px)', base: 'unset' }}
+            height={{ md: 'calc(100vh - 160px)', base: 'unset' }}
             direction={{ md: 'row', base: 'column' }}
-            spacing={8}
+            spacing={4}
             align={'center'}
             justify={'center'}
             overflowY={'auto'}
+            py={8}
           >
             <Box
               width={{ md: '30%', sm: 0 }}
@@ -32,12 +33,16 @@ const Home: FC = () => {
               <Image src="/dae-home-image.png" borderRadius={'lg'} />
             </Box>
             <Box
-              width={{ md: '30%', sm: 0 }}
+              width={{ md: '30%', sm: '100%' }}
               padding={'30px'}
               minW={{ md: '350px', base: 'unset' }}
             >
               <Stack spacing={8}>
-                <Text fontSize={'4xl'} fontWeight={'bold'}>
+                <Text
+                  fontSize={'4xl'}
+                  fontWeight={'extrabold'}
+                  lineHeight={'normal'}
+                >
                   Decentralized Autonomous Education
                 </Text>
                 <Stack spacing={4} fontSize={'lg'}>

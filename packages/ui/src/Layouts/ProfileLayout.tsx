@@ -17,7 +17,7 @@ import { FiBook } from 'react-icons/fi'
 import { NavItemDropdown } from './DrawerNavItem'
 import { useRouter } from 'next/router'
 import { Logo } from './Logo'
-import { Web3SafeContainer } from '../Web3SafeContainer'
+import { Web3SafeContainer } from './Web3SafeContainer'
 import { Header } from './Header'
 
 const openedAccorditionIndex = (pathname: string) => {
@@ -36,16 +36,16 @@ const SidebarContent: FC<SidebarProps> = ({ onClose, ...rest }) => {
   const { pathname } = useRouter()
   return (
     <Box
-      transition='3s ease'
+      transition="3s ease"
       bg={useColorModeValue('white', 'gray.900')}
-      borderRight='1px'
+      borderRight="1px"
       borderRightColor={useColorModeValue('gray.200', 'gray.700')}
       w={{ base: 'full', md: 60 }}
-      pos='fixed'
-      h='full'
+      pos="fixed"
+      h="full"
       {...rest}
     >
-      <Flex h='20' alignItems='center' mx='8' justifyContent='space-between'>
+      <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
         <Logo />
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
@@ -87,7 +87,7 @@ export const ProfileLayout: FC<Props> = ({ children, heading }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (
-    <Box minH='100vh'>
+    <Box minH="100vh">
       <SidebarContent
         onClose={() => onClose}
         display={{ base: 'none', md: 'block' }}
@@ -95,11 +95,11 @@ export const ProfileLayout: FC<Props> = ({ children, heading }) => {
       <Drawer
         autoFocus={false}
         isOpen={isOpen}
-        placement='left'
+        placement="left"
         onClose={onClose}
         returnFocusOnClose={false}
         onOverlayClick={onClose}
-        size='xs'
+        size="xs"
       >
         <DrawerContent>
           <SidebarContent onClose={onClose} />
@@ -122,7 +122,7 @@ export const ProfileLayout: FC<Props> = ({ children, heading }) => {
         bg={'gray.50'}
       >
         <Stack display={'flex'} fontSize={'3xl'} fontWeight={'semibold'} mb={8}>
-          <Text as='h2' fontSize={'3xl'} textTransform={'capitalize'}>
+          <Text as="h2" fontSize={'3xl'} textTransform={'capitalize'}>
             {heading}
           </Text>
         </Stack>
