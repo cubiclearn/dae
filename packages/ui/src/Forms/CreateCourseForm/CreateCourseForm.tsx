@@ -14,6 +14,7 @@ import {
   NumberInput,
   NumberInputField,
   NumberInputStepper,
+  Select,
   Stack,
   useSteps,
   useToast,
@@ -30,6 +31,7 @@ import {
   SUPPORTED_IMAGE_FILE_TYPES,
 } from '@dae/constants'
 import { checkFileType, checkFileSize } from '../utils'
+import { type VotingStrategy } from '@dae/types'
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
@@ -67,6 +69,9 @@ const validationSchema = Yup.object().shape({
       /^([a-z0-9-]+\.eth)$/i,
       'Invalid Snapshot Space ENS format (e.g., your-ens.eth)',
     ),
+  votingStrategy: Yup.string()
+    .required('Voting strategy is required.')
+    .matches(/^(linear-voting|quadratic-voting)$/, 'Invalid voting type'),
 })
 
 export const CreateCourseForm = () => {
@@ -141,6 +146,7 @@ export const CreateCourseForm = () => {
     discipulusBaseKarma: number
     magisterBaseKarma: number
     snapshotSpaceENS: string
+    votingStrategy: VotingStrategy
   }>({
     initialValues: {
       name: '',
@@ -151,6 +157,7 @@ export const CreateCourseForm = () => {
       discipulusBaseKarma: 0,
       magisterBaseKarma: 0,
       snapshotSpaceENS: '',
+      votingStrategy: 'linear-voting',
     },
     onSubmit: async (values) => {
       try {
@@ -164,6 +171,7 @@ export const CreateCourseForm = () => {
           values.magisterBaseKarma,
           values.discipulusBaseKarma,
           values.snapshotSpaceENS,
+          values.votingStrategy,
         )
         router.push('/profile/courses/teaching')
       } catch (_e) {}
@@ -349,6 +357,22 @@ export const CreateCourseForm = () => {
               {errors.snapshotSpaceENS ||
                 (!isENSOwner && 'You are not the owner of this ENS address.')}
             </FormErrorMessage>
+          </FormControl>
+          <FormControl
+            isRequired
+            isInvalid={!!errors.votingStrategy && touched.votingStrategy}
+          >
+            <FormLabel>Voting strategy</FormLabel>
+            <Select
+              id="votingStrategy"
+              placeholder="Select voting strategy"
+              onChange={handleChange}
+              defaultValue={'linear-voting'}
+            >
+              <option value={'linear-voting'}>Linear Voting</option>
+              <option value={'quadratic-voting'}>Quadratic Voting</option>
+            </Select>
+            <FormErrorMessage>{errors.votingStrategy}</FormErrorMessage>
           </FormControl>
           <Button
             colorScheme="blue"

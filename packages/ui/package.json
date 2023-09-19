@@ -27,6 +27,7 @@
         "@dae/database": "workspace:*",
         "@dae/hooks": "workspace:*",
         "@dae/snapshot": "workspace:*",
+        "@dae/types": "workspace:*",
         "@dae/typescript-config": "workspace:*",
         "@dae/wagmi": "workspace:*",
         "@emotion/react": "11.11.0",

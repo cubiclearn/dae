@@ -33,3 +33,6 @@ export interface UseWeb3ReadHookInterface<T> {
     error: Error | null
     data: T | undefined
 }
+
+
+export type VotingStrategy = "linear-voting" | "quadratic-voting"

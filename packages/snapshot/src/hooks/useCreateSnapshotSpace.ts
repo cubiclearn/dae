@@ -2,6 +2,7 @@ import { Address, useAccount, useNetwork } from 'wagmi'
 import snapshot from '@snapshot-labs/snapshot.js'
 import { useEthersSigner } from './useEthersSigner'
 import { ChainSnapshotHub } from '@dae/chains'
+import { type VotingStrategy } from '@dae/types'
 
 const buildSpaceSettings = (
   ownerAddress: Address,
@@ -10,6 +11,7 @@ const buildSpaceSettings = (
   spaceDescription: string,
   chainId: string,
   karmaAccessControlAddress: Address,
+  votingStrategy: VotingStrategy,
 ) => {
   return JSON.stringify({
     name: spaceName,
@@ -39,7 +41,10 @@ const buildSpaceSettings = (
                 type: 'address',
               },
             ],
-            name: 'ratingOf',
+            name:
+              votingStrategy === 'linear-voting'
+                ? 'ratingOf'
+                : 'quadraticRatingOf',
             outputs: [
               {
                 internalType: 'uint64',
@@ -74,6 +79,7 @@ export const useCreateSnapshotSpace = () => {
     spaceSymbol: string,
     spaceDescription: string,
     karmaAccessControlAddress: string,
+    votingStrategy: VotingStrategy,
   ) => {
     if (!chain) {
       throw new Error(
@@ -88,6 +94,7 @@ export const useCreateSnapshotSpace = () => {
       spaceDescription,
       chain.id.toString(),
       karmaAccessControlAddress as Address,
+      votingStrategy,
     )
 
     try {

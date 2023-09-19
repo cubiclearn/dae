@@ -291,6 +291,9 @@ importers:
       '@dae/chains':
         specifier: workspace:*
         version: link:../chains
+      '@dae/types':
+        specifier: workspace:*
+        version: link:../types
       '@dae/typescript-config':
         specifier: workspace:*
         version: link:../../config/typescript
@@ -390,6 +393,9 @@ importers:
       '@dae/snapshot':
         specifier: workspace:*
         version: link:../snapshot
+      '@dae/types':
+        specifier: workspace:*
+        version: link:../types
       '@dae/typescript-config':
         specifier: workspace:*
         version: link:../../config/typescript

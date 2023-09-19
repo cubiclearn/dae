@@ -6,7 +6,7 @@ import { useCreateSnapshotSpace } from '@dae/snapshot'
 import type { Course } from '@dae/database'
 import { mainnet, goerli } from 'viem/chains'
 import { FactoryContractAddress } from '@dae/chains'
-import { UseWeb3WriteHookInterface } from '@dae/types'
+import { UseWeb3WriteHookInterface, VotingStrategy } from '@dae/types'
 import { useWeb3HookState } from '../useWeb3HookState'
 
 interface CreateCredentialHookInterface extends UseWeb3WriteHookInterface {
@@ -19,6 +19,7 @@ interface CreateCredentialHookInterface extends UseWeb3WriteHookInterface {
     magisterBaseKarma: number,
     discipulusBaseKarma: number,
     snapshotSpaceENS: string,
+    votingStrategy: 'linear-voting' | 'quadratic-voting',
   ) => Promise<void>
   step: number
 }
@@ -70,6 +71,7 @@ export function useCreateCourse(
     magisterBaseKarma: number,
     discipulusBaseKarma: number,
     snapshotSpaceENS: string,
+    votingStrategy: VotingStrategy,
   ) => {
     try {
       state.setValidating()
@@ -186,6 +188,7 @@ export function useCreateCourse(
         responseData.data.course.symbol,
         responseData.data.course.description,
         responseData.data.course.karma_access_control_address,
+        votingStrategy,
       )
 
       setStep(4)
