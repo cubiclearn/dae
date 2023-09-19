@@ -46,7 +46,7 @@ export const PageLayout: FC<Props> = ({ children }): JSX.Element => {
         borderTop={'1px solid'}
         borderColor={'gray.200'}
         position={{ base: 'static', md: 'fixed' }}
-        bottom={{ base: 'unset', md: '0' }} // Offset for footer
+        bottom={{ base: 'unset', md: '0' }}
         w="full"
       >
         <Footer />
