@@ -113,7 +113,7 @@ export const NavigationMenuItem: React.FC<NavigationMenuItemProps> = ({
         <UnorderedList spacing={3}>
           {links.map((link) => {
             return (
-              <ListItem px={2} key={link.title}>
+              <ListItem px={1} key={link.title}>
                 <Link
                   as={NextLink}
                   href={link.href}
