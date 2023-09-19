@@ -57,8 +57,7 @@ export const Footer = () => {
         <Text fontWeight={'bold'} fontSize={'md'}>
           Version:{' '}
           <Text fontWeight={'normal'} as="span">
-            {process.env.NEXT_PUBLIC_COMMIT_TAG ??
-              process.env.NEXT_PUBLIC_COMMIT_SHA}
+            {''}
           </Text>
         </Text>
         <Stack direction={'row'} spacing={6}>

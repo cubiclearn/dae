@@ -23,9 +23,7 @@
                 "INFURA_IPFS_API_KEY",
                 "INFURA_IPFS_API_SECRET",
                 "INFURA_IPFS_API_ENDPOINT",
-                "NEXT_PUBLIC_IPFS_GATEWAY_URL",
-                "NEXT_PUBLIC_COMMIT_TAG",
-                "NEXT_PUBLIC_COMMIT_SHA"
+                "NEXT_PUBLIC_IPFS_GATEWAY_URL"
             ]
         },
         "start": {
@@ -48,9 +46,7 @@
                 "INFURA_IPFS_API_KEY",
                 "INFURA_IPFS_API_SECRET",
                 "INFURA_IPFS_API_ENDPOINT",
-                "NEXT_PUBLIC_IPFS_GATEWAY_URL",
-                "NEXT_PUBLIC_COMMIT_TAG",
-                "NEXT_PUBLIC_COMMIT_SHA"
+                "NEXT_PUBLIC_IPFS_GATEWAY_URL"
             ],
             "persistent": true
         },
@@ -69,9 +65,7 @@
                 "INFURA_IPFS_API_KEY",
                 "INFURA_IPFS_API_SECRET",
                 "INFURA_IPFS_API_ENDPOINT",
-                "NEXT_PUBLIC_IPFS_GATEWAY_URL",
-                "NEXT_PUBLIC_COMMIT_TAG",
-                "NEXT_PUBLIC_COMMIT_SHA"
+                "NEXT_PUBLIC_IPFS_GATEWAY_URL"
             ],
             "cache": false,
             "persistent": true
