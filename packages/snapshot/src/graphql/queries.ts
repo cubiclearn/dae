@@ -1,5 +1,23 @@
 import { gql } from '@apollo/client'
 
+export const SPACE_QUERY = gql`
+  query Space($spaceId: String!) {
+    space(
+      id: $spaceId,
+    ) {
+      id
+      name
+      about
+      network
+      symbol
+      strategies {
+        network
+        params
+      }
+    }
+  }
+`
+
 export const FOLLOWS_QUERY = gql`
   query Follows($follower: String!, $spaceId: String) {
     follows(

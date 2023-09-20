@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { Layout } from '@dae/ui'
+import { Layout, ProposalContainer } from '@dae/ui'
 import { useRouter } from 'next/router'
 import { Stack, Tabs, TabList, Tab, Link } from '@chakra-ui/react'
 import NextLink from 'next/link'
@@ -17,29 +17,31 @@ export default function TransferKarmaPage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout.Course heading="Explore proposals">
-        <Stack spacing={8}>
-          <Tabs index={active === 'true' ? 0 : 1}>
-            <TabList>
-              <Link
-                as={NextLink}
-                href={`/course/${router.query.address}/proposals/explore?active=true`}
-                _hover={{ textDecoration: 'none' }}
-              >
-                <Tab>Active</Tab>
-              </Link>
-              <Link
-                as={NextLink}
-                href={`/course/${router.query.address}/proposals/explore?active=false`}
-                _hover={{ textDecoration: 'none' }}
-              >
-                <Tab>Closed</Tab>
-              </Link>
-            </TabList>
-          </Tabs>
-          <ProposalRowList
-            state={router.query.active === 'true' ? 'active' : 'closed'}
-          />
-        </Stack>
+        <ProposalContainer>
+          <Stack spacing={8}>
+            <Tabs index={active === 'true' ? 0 : 1}>
+              <TabList>
+                <Link
+                  as={NextLink}
+                  href={`/course/${router.query.address}/proposals/explore?active=true`}
+                  _hover={{ textDecoration: 'none' }}
+                >
+                  <Tab>Active</Tab>
+                </Link>
+                <Link
+                  as={NextLink}
+                  href={`/course/${router.query.address}/proposals/explore?active=false`}
+                  _hover={{ textDecoration: 'none' }}
+                >
+                  <Tab>Closed</Tab>
+                </Link>
+              </TabList>
+            </Tabs>
+            <ProposalRowList
+              state={router.query.active === 'true' ? 'active' : 'closed'}
+            />
+          </Stack>
+        </ProposalContainer>
       </Layout.Course>
     </>
   )

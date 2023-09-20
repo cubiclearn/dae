@@ -3,6 +3,7 @@ import snapshot from '@snapshot-labs/snapshot.js'
 import { useEthersSigner } from './useEthersSigner'
 import { ChainSnapshotHub } from '@dae/chains'
 import { type VotingStrategy } from '@dae/types'
+import { useHookState } from './useHookState'
 
 const buildSpaceSettings = (
   ownerAddress: Address,
@@ -68,6 +69,9 @@ const buildSpaceSettings = (
 export const useCreateSnapshotSpace = () => {
   const { address } = useAccount()
   const { chain } = useNetwork()
+  const { isSuccess, isValidating, isLoading, isError, error, ...state } =
+    useHookState()
+
   const spaceNetwork = chain!.id as keyof typeof ChainSnapshotHub
   const hub = ChainSnapshotHub[spaceNetwork]
   const snapshotClient = new snapshot.Client712(hub)
@@ -81,33 +85,41 @@ export const useCreateSnapshotSpace = () => {
     karmaAccessControlAddress: string,
     votingStrategy: VotingStrategy,
   ) => {
-    if (!chain) {
-      throw new Error(
-        'The data provided is incorrect. Please ensure that you have entered the correct information.',
-      )
-    }
-
-    const spaceSettings = buildSpaceSettings(
-      address as Address,
-      spaceName,
-      spaceSymbol,
-      spaceDescription,
-      chain.id.toString(),
-      karmaAccessControlAddress as Address,
-      votingStrategy,
-    )
-
+    state.setValidating()
     try {
+      if (!chain) {
+        throw new Error(
+          'The data provided is incorrect. Please ensure that you have entered the correct information.',
+        )
+      }
+      state.setLoading()
+
+      const spaceSettings = buildSpaceSettings(
+        address as Address,
+        spaceName,
+        spaceSymbol,
+        spaceDescription,
+        chain.id.toString(),
+        karmaAccessControlAddress as Address,
+        votingStrategy,
+      )
       await snapshotClient.space(signer as any, address as string, {
         space: snapshotSpaceENS,
         settings: spaceSettings,
       })
-    } catch (_e) {
-      console.log(_e)
+      state.setSuccess()
+    } catch (e) {
+      state.handleError(e)
+      throw e
     }
   }
 
   return {
     create,
+    isLoading,
+    isError,
+    isSuccess,
+    error,
+    isValidating,
   }
 }

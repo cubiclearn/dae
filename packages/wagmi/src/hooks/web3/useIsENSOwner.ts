@@ -26,7 +26,7 @@ export const useIsENSOwner = (
   return {
     data: data === undefined ? undefined : data === userAddress,
     isError,
-    isLoading,
+    isLoading: isLoading || (!data && !isError),
     isSuccess,
   }
 }

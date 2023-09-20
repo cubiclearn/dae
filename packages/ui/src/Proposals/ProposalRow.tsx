@@ -2,7 +2,7 @@ import { Box, Link } from '@chakra-ui/react'
 import { Proposal } from '@dae/snapshot'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { ProposalHeading } from './ProposalHeading'
+import { ProposalHeading } from './ProposalDetails/ProposalHeading'
 
 type ProposalRowProps = {
   proposal: Proposal
