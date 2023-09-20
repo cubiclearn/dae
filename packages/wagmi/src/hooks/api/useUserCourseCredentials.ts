@@ -2,7 +2,7 @@ import { Address } from 'viem'
 import useSWR from 'swr'
 import { Credential } from '@dae/database'
 import { useAccount } from 'wagmi'
-import { UseSWRHook } from '@dae/types'
+import { SWRHook } from '@dae/types'
 
 interface ApiResponse {
   success: boolean
@@ -21,7 +21,7 @@ const fetcher = async (url: string) => {
 export const useUserCourseCredentials = (
   courseAddress: Address | undefined,
   chainId: number | undefined,
-): UseSWRHook<Credential[]> => {
+): SWRHook<Credential[]> => {
   const { address: userAddress } = useAccount()
   const url = `/api/v0/user/course/credentials?courseAddress=${courseAddress}&chainId=${chainId}&userAddress=${userAddress}`
 
@@ -39,7 +39,7 @@ export const useUserCourseCredentials = (
   )
 
   return {
-    data: response?.data?.credentials ?? null,
+    data: response?.data?.credentials ?? undefined,
     error,
     isLoading: !response && !error,
     isSuccess: Boolean(response && !error),
