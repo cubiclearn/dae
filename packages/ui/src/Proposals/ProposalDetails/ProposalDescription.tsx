@@ -7,8 +7,8 @@ import {
   Stack,
   OrderedList,
 } from '@chakra-ui/react'
-import { Proposal } from '@dae/snapshot'
 import ReactMarkdown from 'react-markdown'
+import { Proposal } from '@dae/snapshot'
 
 type ProposalDescriptionProps = {
   proposal: Proposal

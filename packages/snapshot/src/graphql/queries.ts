@@ -1,4 +1,11 @@
-import { gql } from '@apollo/client'
+import { gql } from 'graphql-request'
+import { type Strategy } from '@snapshot-labs/snapshot.js/dist/voting/types'
+import { type ProposalType } from '@snapshot-labs/snapshot.js/dist/sign/types'
+
+export type Space = {
+  id: string
+  name: string
+}
 
 export const SPACE_QUERY = gql`
   query Space($spaceId: String!) {
@@ -11,6 +18,7 @@ export const SPACE_QUERY = gql`
       network
       symbol
       strategies {
+        name
         network
         params
       }
@@ -18,29 +26,20 @@ export const SPACE_QUERY = gql`
   }
 `
 
-export const FOLLOWS_QUERY = gql`
-  query Follows($follower: String!, $spaceId: String) {
-    follows(
-      first: 10,
-      where: {
-        follower: $follower,
-        space: $spaceId
-      }
-    ) {
-      follower
-      space {
-        id
-      }
-      created
-    }
+export type SPACE_QUERY = {
+  space: {
+    id: string
+    name: string
+    about: string
+    network: string
+    symbol: string
+    strategies: Strategy[]
   }
-`
+}
 
 export const PROPOSALS_QUERY = gql`
   query Proposals($spaceId: String!, $state: String){
     proposals (
-      first: 5,
-      skip: 0,
       where: {
         space: $spaceId,
         state: $state
@@ -50,18 +49,9 @@ export const PROPOSALS_QUERY = gql`
     ) {
       id
       title
-      body
-      choices
-      start
       end
-      snapshot
       state
-      scores
-      scores_by_strategy
-      scores_total
-      scores_updated
       author
-      type
       network
       space {
         id
@@ -70,6 +60,18 @@ export const PROPOSALS_QUERY = gql`
     }
 }
 `
+
+export type PROPOSALS_QUERY = {
+  proposals: {
+    id: string
+    title: string
+    end: number
+    state: string
+    author: string
+    network: string
+    space: Space
+  }[]
+}
 
 export const PROPOSAL_QUERY = gql`
   query Proposal($proposalId: String!) {
@@ -85,7 +87,6 @@ export const PROPOSAL_QUERY = gql`
       scores
       scores_by_strategy
       scores_total
-      scores_updated
       author
       type
       network
@@ -97,11 +98,31 @@ export const PROPOSAL_QUERY = gql`
   }
 `
 
+export type Proposal = {
+  id: string
+  title: string
+  body: string
+  choices: string[]
+  start: number
+  end: number
+  snapshot: string
+  state: string
+  scores: number[]
+  scores_by_strategy: number[][]
+  scores_total: number
+  author: string
+  type: ProposalType
+  network: string
+  space: Space
+}
+
+export type PROPOSAL_QUERY = {
+  proposal: Proposal
+}
+
 export const PROPOSAL_VOTES_QUERY = gql`
   query Votes($proposalId: String!) {
     votes (
-      first: 1000
-      skip: 0
       where: {
         proposal: $proposalId
       }
@@ -110,21 +131,31 @@ export const PROPOSAL_VOTES_QUERY = gql`
     ) {
       id
       voter
-      vp
-      vp_by_strategy
-      vp_state
-      created
       proposal {
         id
       }
       choice
       space {
         id
+        name
       }
     }
   }
 `
-export const USER_VOTE_QUERY = gql`
+
+export type PROPOSAL_VOTES_QUERY = {
+  votes: {
+    id: string
+    voter: string
+    choice: number
+    proposal: {
+      id: string
+    }
+    space: Space
+  }[]
+}
+
+export const USER_VOTES_QUERY = gql`
   query Votes($proposalId: String!, $userAddress:String!) {
     votes (
       first: 1
@@ -142,6 +173,16 @@ export const USER_VOTE_QUERY = gql`
   }
 `
 
+export type USER_VOTES_QUERY = {
+  votes: {
+    id: string
+    choice: number
+    proposal: {
+      id: string
+    }
+  }[]
+}
+
 export const USER_VOTING_POWER_QUERY = gql`
   query VotingPower($proposalId: String!, $userAddress:String!, $spaceId:String!) {
     vp (
@@ -153,3 +194,7 @@ export const USER_VOTING_POWER_QUERY = gql`
     }
   }
 `
+
+export type USER_VOTING_POWER_QUERY = {
+  vp: { vp: number }
+}

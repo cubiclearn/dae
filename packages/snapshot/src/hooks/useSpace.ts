@@ -1,27 +1,23 @@
+import useSWR from 'swr'
+import { useSnapshotGraphQL } from './useSnapshotGraphQL'
 import { SPACE_QUERY } from '../graphql/queries'
-import { useSnapshotApolloQuery } from './useApolloQuery'
-import { useEffect } from 'react'
+import { type SWRHook } from '@dae/types'
 
-export const useSpace = (spaceId: String | undefined) => {
-  const { data, error, isLoading, isError, isSuccess, query } =
-    useSnapshotApolloQuery()
+export const useSpace = (spaceId: String | undefined): SWRHook<SPACE_QUERY> => {
+  const client = useSnapshotGraphQL()
+  const shouldFetch = spaceId !== undefined
 
-  useEffect(() => {
-    if (spaceId !== undefined) {
-      query({
-        query: SPACE_QUERY,
-        variables: {
-          spaceId: spaceId,
-        },
-      })
-    }
-  }, [spaceId])
+  const { data, error } = useSWR(
+    [SPACE_QUERY, { spaceId: spaceId }],
+    ([query, variables]) => client?.fetch<SPACE_QUERY>(query, variables),
+    { isPaused: () => !shouldFetch },
+  )
 
   return {
     data,
-    isLoading,
-    isError,
-    isSuccess,
-    error,
+    isLoading: Boolean(!data && !error),
+    isError: Boolean(error),
+    error: error,
+    isSuccess: Boolean(data && !error),
   }
 }

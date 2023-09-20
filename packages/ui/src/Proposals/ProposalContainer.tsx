@@ -54,9 +54,9 @@ export const ProposalContainer: React.FC<ProposalContainerProps> = ({
   }
 
   if (
-    snapshotSpaceData.space === null ||
-    Number(snapshotSpaceData.space.network) !== courseData?.chain_id ||
-    snapshotSpaceData.space.strategies[0].params.address !==
+    !snapshotSpaceData?.space ||
+    Number(snapshotSpaceData?.space.network) !== courseData?.chain_id ||
+    snapshotSpaceData?.space.strategies[0].params.address !==
       courseData?.karma_access_control_address
   ) {
     return <CreateSnapshotSpaceForm />

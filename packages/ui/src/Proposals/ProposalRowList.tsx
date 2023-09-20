@@ -20,7 +20,7 @@ type ProposalRowListProps = {
 export const ProposalRowList: React.FC<ProposalRowListProps> = ({ state }) => {
   const course = useCourseData()
   const { data, isLoading, error } = useSpaceProposals(
-    course.data ? course.data.snapshot_space_ens : undefined,
+    course.data?.snapshot_space_ens,
     state,
   )
 
@@ -46,7 +46,7 @@ export const ProposalRowList: React.FC<ProposalRowListProps> = ({ state }) => {
     )
   }
 
-  if (!data || data.proposals!.length === 0) {
+  if (!data || data.proposals.length === 0) {
     return (
       <Alert status="info">
         <AlertIcon />
@@ -60,7 +60,7 @@ export const ProposalRowList: React.FC<ProposalRowListProps> = ({ state }) => {
 
   return (
     <Stack spacing={6}>
-      {data.proposals!.map((proposal) => {
+      {data.proposals.map((proposal) => {
         return <ProposalRow key={proposal.id} proposal={proposal} />
       })}
     </Stack>

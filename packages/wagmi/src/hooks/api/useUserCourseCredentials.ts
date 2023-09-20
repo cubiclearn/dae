@@ -27,22 +27,22 @@ export const useUserCourseCredentials = (
 
   const shouldFetch = courseAddress && chainId && userAddress
 
-  const {
-    data: response,
-    error,
-    isLoading,
-    isValidating,
-  } = useSWR<ApiResponse>(shouldFetch ? url : null, fetcher, {
-    revalidateIfStale: false,
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-    revalidateOnMount: true,
-  })
+  const { data: response, error } = useSWR<ApiResponse>(
+    shouldFetch ? url : null,
+    fetcher,
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      revalidateOnMount: true,
+    },
+  )
 
   return {
     data: response?.data?.credentials ?? null,
     error,
-    isLoading,
-    isValidating,
+    isLoading: !response && !error,
+    isSuccess: Boolean(response && !error),
+    isError: Boolean(error),
   }
 }

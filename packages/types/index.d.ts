@@ -10,11 +10,12 @@ export type CredentialTransferLog = {eventName : string, args : {from : `0x${str
 
 export type CredentialIssuedLog = {eventName : string, args : {from : `0x${string}`, to : `0x${string}`, tokenId : bigint, burnAuth: bigint}}
 
-export interface UseSWRHook<T> {
-    data: T | null
-    error: Error | null
+export interface SWRHook<T> {
+    data: T | undefined
+    error: Error | undefined
     isLoading: boolean
-    isValidating?: boolean
+    isSuccess: boolean
+    isError: boolean
 }
 
 export interface UseWeb3WriteHookInterface {

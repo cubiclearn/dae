@@ -40,6 +40,7 @@
         "dependencies": [
             "@dae/abi",
             "@dae/chains",
+            "@dae/constants",
             "@dae/database",
             "@dae/hooks",
             "@dae/snapshot",

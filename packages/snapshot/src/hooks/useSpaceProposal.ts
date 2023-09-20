@@ -1,27 +1,25 @@
 import { PROPOSAL_QUERY } from '../graphql/queries'
-import { useSnapshotApolloQuery } from './useApolloQuery'
-import { useEffect } from 'react'
+import { useSnapshotGraphQL } from './useSnapshotGraphQL'
+import useSWR from 'swr'
+import { type SWRHook } from '@dae/types'
 
-export const useSpaceProposal = (proposalId: String | undefined) => {
-  const { data, error, isLoading, isError, isSuccess, query } =
-    useSnapshotApolloQuery()
+export const useSpaceProposal = (
+  proposalId: String | undefined,
+): SWRHook<PROPOSAL_QUERY> => {
+  const client = useSnapshotGraphQL()
+  const shouldFetch = proposalId !== undefined
 
-  useEffect(() => {
-    if (proposalId !== undefined) {
-      query({
-        query: PROPOSAL_QUERY,
-        variables: {
-          proposalId: proposalId,
-        },
-      })
-    }
-  }, [proposalId])
+  const { data, error } = useSWR(
+    [PROPOSAL_QUERY, { proposalId: proposalId }],
+    ([query, variables]) => client?.fetch<PROPOSAL_QUERY>(query, variables),
+    { isPaused: () => !shouldFetch },
+  )
 
   return {
     data,
-    isLoading,
-    isError,
-    isSuccess,
-    error,
+    isLoading: Boolean(!data && !error),
+    isError: Boolean(error),
+    error: error,
+    isSuccess: Boolean(data && !error),
   }
 }

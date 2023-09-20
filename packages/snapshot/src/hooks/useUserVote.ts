@@ -1,32 +1,27 @@
+import useSWR from 'swr'
 import { Address } from 'viem'
-import { USER_VOTE_QUERY } from '../graphql/queries'
-import { useSnapshotApolloQuery } from './useApolloQuery'
-import { useEffect } from 'react'
+import { USER_VOTES_QUERY } from '../graphql/queries'
+import { useSnapshotGraphQL } from './useSnapshotGraphQL'
+import { type SWRHook } from '@dae/types'
 
 export const useUserVote = (
   proposalId: string | undefined,
   userAddress: Address | undefined,
-) => {
-  const { data, error, isLoading, isError, isSuccess, query } =
-    useSnapshotApolloQuery()
+): SWRHook<USER_VOTES_QUERY> => {
+  const client = useSnapshotGraphQL()
+  const shouldFetch = proposalId !== undefined && userAddress !== undefined
 
-  useEffect(() => {
-    if (proposalId !== undefined && userAddress !== undefined) {
-      query({
-        query: USER_VOTE_QUERY,
-        variables: {
-          proposalId: proposalId,
-          userAddress: userAddress,
-        },
-      })
-    }
-  }, [proposalId, userAddress])
+  const { data, error } = useSWR(
+    [USER_VOTES_QUERY, { proposalId: proposalId, userAddress: userAddress }],
+    ([query, variables]) => client?.fetch<USER_VOTES_QUERY>(query, variables),
+    { isPaused: () => !shouldFetch },
+  )
 
   return {
-    data,
-    isLoading,
-    isError,
-    isSuccess,
-    error,
+    data: data,
+    isLoading: Boolean(!data && !error),
+    isError: Boolean(error),
+    error: error,
+    isSuccess: Boolean(data && !error),
   }
 }
