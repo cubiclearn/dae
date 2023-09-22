@@ -109,7 +109,7 @@ export const NavigationMenuItem: React.FC<NavigationMenuItemProps> = ({
         </Box>
         <AccordionIcon />
       </AccordionButton>
-      <AccordionPanel p={0} px="4" mx="6" my="1">
+      <AccordionPanel p={0} px="2" mx="6" my="1">
         <UnorderedList spacing={3}>
           {links.map((link) => {
             return (
