@@ -15,7 +15,7 @@ import {
 import { useCreateCredential } from '@dae/wagmi'
 import { useFormik } from 'formik'
 import { useRouter } from 'next/router'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Address, useNetwork } from 'wagmi'
 import * as Yup from 'yup'
 import { checkFileSize, checkFileType } from '../utils'
@@ -23,6 +23,7 @@ import {
   MAXIMUM_ALLOWED_UPLOAD_FILE_SIZE,
   SUPPORTED_IMAGE_FILE_TYPES,
 } from '@dae/constants'
+import { useLeavePageConfirmation } from '../../hooks'
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
@@ -51,10 +52,12 @@ type CreateCredentialsFormProps = {
 export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
   courseAddress,
 }) => {
-  const { create, isLoading, isSuccess, isError, error } = useCreateCredential()
+  const { create, isLoading, isError, error } = useCreateCredential()
   const { chain } = useNetwork()
   const router = useRouter()
   const toast = useToast()
+
+  useLeavePageConfirmation(isLoading, 'Changes you made may not be saved.')
 
   const {
     values,
@@ -72,42 +75,31 @@ export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
     },
     onSubmit: async (values) => {
       try {
-        if (!values.image || !chain) {
-          return
-        }
-        await create(
-          values.image,
-          values.name,
-          values.description,
-          courseAddress as Address,
-          chain.id,
+        if (!values.image || !chain) return
+        toast.promise(
+          create(
+            values.image,
+            values.name,
+            values.description,
+            courseAddress as Address,
+            chain.id,
+          ),
+          {
+            success: {
+              title: 'Credential created with success!',
+            },
+            error: { title: 'Error creating credential.' },
+            loading: {
+              title: 'Credential creation in progress...',
+              onCloseComplete: () =>
+                router.push(`/course/${courseAddress}/credentials/list`),
+            },
+          },
         )
-        router.push(`/course/${courseAddress}/credentials/list`)
       } catch (_e) {}
     },
     validationSchema: validationSchema,
   })
-
-  useEffect(() => {
-    if (isError) {
-      toast({
-        title: 'Error creating credential.',
-        status: 'error',
-      })
-    }
-    if (isSuccess) {
-      toast({
-        title: 'Credential created with success!',
-        status: 'success',
-      })
-    }
-    if (isLoading) {
-      toast({
-        title: 'Creating new credential...',
-        status: 'info',
-      })
-    }
-  }, [isLoading, isError, isSuccess])
 
   return (
     <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>

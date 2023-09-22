@@ -12,6 +12,7 @@ import { CredentialsBurnableAbi } from '@dae/abi'
 import { ChainKey } from '@dae/chains'
 import { sanitizeAddress } from '../../../../../lib/functions'
 import { config as TransportConfig } from '@dae/viem-config'
+import { CONFIRMATION_BLOCKS } from '@dae/constants'
 
 // TypeScript enum for request methods
 enum HttpMethod {
@@ -88,8 +89,9 @@ const handleDeleteRequest = async (
       transport: TransportConfig[chainId].transport,
     })
 
-    const txRecept = await client.getTransactionReceipt({
+    const txRecept = await client.waitForTransactionReceipt({
       hash: txHash,
+      confirmations: CONFIRMATION_BLOCKS,
     })
 
     const txLogsDecoded = txRecept.logs.map((log) => {
@@ -144,12 +146,10 @@ const handleDeleteRequest = async (
       },
     })
 
-    return res
-      .status(200)
-      .json({
-        status: ApiResponseStatus.success,
-        data: { userCredential: deletedCredential },
-      })
+    return res.status(200).json({
+      status: ApiResponseStatus.success,
+      data: { userCredential: deletedCredential },
+    })
   } catch (error: any) {
     console.log(error)
     return res.status(500).json({

@@ -32,6 +32,7 @@ import {
 } from '@dae/constants'
 import { checkFileType, checkFileSize } from '../utils'
 import { type VotingStrategy } from '@dae/types'
+import { useLeavePageConfirmation } from '../../hooks'
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
@@ -92,18 +93,12 @@ export const CreateCourseForm = () => {
     )
   }
 
-  const {
-    create,
-    isLoading,
-    isError,
-    error,
-    isSuccess,
-    isSigning,
-    isValidating,
-    step,
-  } = useCreateCourse(chain, address)
+  const { create, isLoading, isError, error, isSigning, isValidating, step } =
+    useCreateCourse(chain, address)
   const toast = useToast()
   const router = useRouter()
+
+  useLeavePageConfirmation(isLoading, 'Changes you made may not be saved.')
 
   const steps = [
     {
@@ -162,18 +157,31 @@ export const CreateCourseForm = () => {
     onSubmit: async (values) => {
       try {
         if (!values.image) return
-        await create(
-          values.name,
-          values.description,
-          values.image,
-          values.website,
-          values.mediaChannel,
-          values.magisterBaseKarma,
-          values.discipulusBaseKarma,
-          values.snapshotSpaceENS,
-          values.votingStrategy,
+        toast.promise(
+          create(
+            values.name,
+            values.description,
+            values.image,
+            values.website,
+            values.mediaChannel,
+            values.magisterBaseKarma,
+            values.discipulusBaseKarma,
+            values.snapshotSpaceENS,
+            values.votingStrategy,
+          ),
+          {
+            success: {
+              title: 'Course created with success!',
+            },
+            error: { title: 'Error creating course.' },
+            loading: {
+              title: 'Course creation in progress...',
+              description:
+                'Processing transaction on the blockchain can take some time (usually around one minute).',
+              onCloseComplete: () => router.push('/profile/courses/teaching'),
+            },
+          },
         )
-        router.push('/profile/courses/teaching')
       } catch (_e) {}
     },
     validationSchema: validationSchema,
@@ -182,22 +190,10 @@ export const CreateCourseForm = () => {
   const { data: isENSOwner } = useIsENSOwner(address, values.snapshotSpaceENS)
 
   useEffect(() => {
-    if (isError) {
-      toast({
-        title: 'Error creating course.',
-        status: 'error',
-      })
-    }
-    if (isSuccess) {
-      toast({
-        title: 'Course created with success!',
-        status: 'success',
-      })
-    }
     if (isLoading && step) {
       setActiveStep(step)
     }
-  }, [isLoading, isError, isSuccess, step])
+  }, [step])
 
   return (
     <Stack

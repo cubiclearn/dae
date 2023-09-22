@@ -11,6 +11,7 @@ import { ApiResponse, ApiResponseStatus, CredentialIssuedLog } from '@dae/types'
 import { Prisma, UserCredentials, prisma } from '@dae/database'
 import { sanitizeAddress } from '../../../../../lib/functions'
 import { Credential } from '@dae/database'
+import { CONFIRMATION_BLOCKS } from '@dae/constants'
 
 // TypeScript enum for request methods
 enum HttpMethod {
@@ -84,8 +85,9 @@ const handlePostRequest = async (
       transport: TransportConfig[chainId].transport,
     })
 
-    const txRecept = await client.getTransactionReceipt({
+    const txRecept = await client.waitForTransactionReceipt({
       hash: txHash,
+      confirmations: CONFIRMATION_BLOCKS,
     })
 
     const courseAddress = txRecept.to as Address

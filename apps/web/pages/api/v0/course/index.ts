@@ -13,6 +13,7 @@ import { config as TransportConfig } from '@dae/viem-config'
 import { decodeEventLog } from 'viem'
 import { ChainKey } from '@dae/chains'
 import { ApiResponse, ApiResponseStatus } from '@dae/types'
+import { CONFIRMATION_BLOCKS } from '@dae/constants'
 
 // TypeScript enum for request methods
 enum HttpMethod {
@@ -66,6 +67,7 @@ const handlePostRequest = async (
 
     const transaction = await client.waitForTransactionReceipt({
       hash: txHash,
+      confirmations: CONFIRMATION_BLOCKS,
     })
 
     const txRecept = await client.getTransactionReceipt({ hash: txHash })
@@ -341,11 +343,9 @@ export default async function handler(
     case HttpMethod.POST:
       return handlePostRequest(req, res)
     default:
-      return res
-        .status(400)
-        .json({
-          status: ApiResponseStatus.error,
-          message: 'This method is not supported',
-        })
+      return res.status(400).json({
+        status: ApiResponseStatus.error,
+        message: 'This method is not supported',
+      })
   }
 }

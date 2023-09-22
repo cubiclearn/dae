@@ -51,6 +51,9 @@ importers:
       '@dae/abi':
         specifier: workspace:*
         version: link:../../packages/abi
+      '@dae/constants':
+        specifier: workspace:*
+        version: link:../../packages/constants
       '@dae/database':
         specifier: workspace:*
         version: link:../../packages/database
@@ -469,6 +472,9 @@ importers:
       '@dae/chains':
         specifier: workspace:*
         version: link:../chains
+      '@dae/constants':
+        specifier: workspace:*
+        version: link:../constants
       '@dae/database':
         specifier: workspace:*
         version: link:../database

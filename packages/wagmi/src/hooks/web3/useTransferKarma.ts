@@ -2,6 +2,7 @@ import { useContractWrite, usePublicClient } from 'wagmi'
 import { Address } from 'viem'
 import { KarmaAccessControlAbiUint64 } from '@dae/abi'
 import { useWeb3HookState } from '../useWeb3HookState'
+import { CONFIRMATION_BLOCKS } from '@dae/constants'
 
 export type TransferData = {
   address: Address
@@ -98,6 +99,7 @@ export function useTransferKarma(
 
       await publicClient.waitForTransactionReceipt({
         hash: data.hash as Address,
+        confirmations: CONFIRMATION_BLOCKS,
       })
 
       state.setSuccess()
@@ -198,6 +200,7 @@ export function useTransferKarma(
 
       await publicClient.waitForTransactionReceipt({
         hash: data.hash as Address,
+        confirmations: CONFIRMATION_BLOCKS,
       })
 
       state.setSuccess()

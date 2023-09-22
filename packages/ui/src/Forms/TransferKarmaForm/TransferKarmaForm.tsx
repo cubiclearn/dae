@@ -26,12 +26,13 @@ import {
   useToast,
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback } from 'react'
 import { Address } from 'wagmi'
 import * as Yup from 'yup'
 import { useKarmaBalance, useTransferKarma } from '@dae/wagmi'
 import { useCourseData } from '../../CourseProvider'
 import { isAddress } from 'viem'
+import { useLeavePageConfirmation } from '../../hooks'
 
 const ethereumAddressRegex = /^0x([A-Fa-f0-9]{40})$/
 
@@ -44,17 +45,12 @@ const validationSchema = Yup.object().shape({
 
 export const TransferKarmaForm: React.FC<any> = () => {
   const { data } = useCourseData()
-  const {
-    transfer,
-    isLoading,
-    isError,
-    isSuccess,
-    error,
-    isSigning,
-    isValidating,
-  } = useTransferKarma(data?.karma_access_control_address)
+  const { transfer, isLoading, isError, error, isSigning, isValidating } =
+    useTransferKarma(data?.karma_access_control_address)
 
   const toast = useToast()
+
+  useLeavePageConfirmation(isLoading, 'Changes you made may not be saved.')
 
   const {
     values,
@@ -72,7 +68,23 @@ export const TransferKarmaForm: React.FC<any> = () => {
     },
     onSubmit: async (values) => {
       try {
-        await transfer(values.userAddress as Address, values.karmaIncrement)
+        toast.promise(
+          transfer(values.userAddress as Address, values.karmaIncrement),
+          {
+            success: {
+              title: 'Karma transferred with success!',
+            },
+            error: { title: 'Error transferring karma.' },
+            loading: {
+              title: 'Karma transfer in progress...',
+              description:
+                'Processing transaction on the blockchain can take some time (usually around one minute).',
+              onCloseComplete: () => {
+                resetForm()
+              },
+            },
+          },
+        )
         resetForm()
       } catch (_e) {}
     },
@@ -94,27 +106,6 @@ export const TransferKarmaForm: React.FC<any> = () => {
     },
     [],
   )
-
-  useEffect(() => {
-    if (isError) {
-      toast({
-        title: 'Error transferring karma.',
-        status: 'error',
-      })
-    }
-    if (isSuccess) {
-      toast({
-        title: 'Karma transferred with success!',
-        status: 'success',
-      })
-    }
-    if (isLoading) {
-      toast({
-        title: 'Transferring karma...',
-        status: 'info',
-      })
-    }
-  }, [isLoading, isError, isSuccess])
 
   return (
     <form onSubmit={handleSubmit}>

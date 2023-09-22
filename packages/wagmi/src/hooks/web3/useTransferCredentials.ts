@@ -4,6 +4,7 @@ import { CredentialsBurnableAbi } from '@dae/abi'
 import { Credential, CredentialType } from '@dae/database'
 import { useWeb3HookState } from '../useWeb3HookState'
 import { ApiResponse } from '@dae/types'
+import { CONFIRMATION_BLOCKS } from '@dae/constants'
 
 export type TransferCredentialsData = {
   address: Address
@@ -104,6 +105,7 @@ export function useTransferCredentials(
 
       const txReceipt = await publicClient.waitForTransactionReceipt({
         hash: writeResult.hash,
+        confirmations: CONFIRMATION_BLOCKS,
       })
 
       const response = await fetch('/api/v0/user/course/credentials', {
@@ -215,6 +217,7 @@ export function useTransferCredentials(
 
       const txReceipt = await publicClient.waitForTransactionReceipt({
         hash: writeResult.hash,
+        confirmations: CONFIRMATION_BLOCKS,
       })
 
       const response = await fetch('/api/v0/user/course/credentials', {

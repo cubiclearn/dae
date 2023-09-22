@@ -4,6 +4,7 @@ import { CredentialsBurnableAbi } from '@dae/abi'
 import { useWeb3HookState } from '../useWeb3HookState'
 import type { UseWeb3WriteHookInterface } from '@dae/types'
 import { CredentialType } from '@dae/database'
+import { CONFIRMATION_BLOCKS } from '@dae/constants'
 
 interface BurnCredentialHookInterface extends UseWeb3WriteHookInterface {
   burnCredential: (tokenId: number) => Promise<void>
@@ -63,6 +64,7 @@ export function useBurnCredential(
 
       const txReceipt = await publicClient.waitForTransactionReceipt({
         hash: writeResult.hash,
+        confirmations: CONFIRMATION_BLOCKS,
       })
 
       const deleteResponse = await fetch(

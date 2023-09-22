@@ -12,6 +12,7 @@ import {
   VotingStrategy,
 } from '@dae/types'
 import { useWeb3HookState } from '../useWeb3HookState'
+import { CONFIRMATION_BLOCKS } from '@dae/constants'
 
 interface CreateCredentialHookInterface extends UseWeb3WriteHookInterface {
   create: (
@@ -170,6 +171,7 @@ export function useCreateCourse(
 
       const txReceipt = await publicClient.waitForTransactionReceipt({
         hash: writeResult.hash,
+        confirmations: CONFIRMATION_BLOCKS,
       })
 
       const response = await fetch('/api/v0/course', {
