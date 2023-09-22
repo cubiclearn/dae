@@ -7,13 +7,23 @@ type DashboardBlockProps = {
   isInt?: boolean
 }
 
+const formatValue = (value: number | undefined, toInt = false): string => {
+  if (!value || isNaN(Number(value))) {
+    return '0'
+  }
+  if (toInt) {
+    return Math.round(value).toString()
+  }
+
+  return value.toFixed(2)
+}
+
 export const DashboardBlock: React.FC<DashboardBlockProps> = ({
   title,
   value,
   isInt = false,
 }) => {
-  const formattedValue =
-    (value && (isInt ? Math.round(value) : value.toFixed(2))) ?? '--'
+  const formattedValue = formatValue(value, isInt)
 
   return (
     <Stat
