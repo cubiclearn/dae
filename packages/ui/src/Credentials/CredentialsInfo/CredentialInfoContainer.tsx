@@ -158,18 +158,11 @@ export const CredentialInfoContainer: React.FC<CredentialInfoContainerProps> =
             <></>
           )}
         </Stack>
-        <Stack
-          direction={{ base: 'column', lg: 'row' }} // Stack vertically on base, horizontally on lg
-          spacing={8}
-          maxW="100%"
-        >
-          <Box
-            flex={{ base: 'none', lg: '1 1 30%', xl: '1 1 20%' }} // 30% width on lg, auto on base
-            maxW={{ base: '100%', lg: 'none' }} // Adjust max width based on screen size
-          >
+        <Stack direction={{ base: 'column', lg: 'row' }} spacing={8}>
+          <Box width={{ base: 'none', lg: '30%', xl: '20%' }}>
             <CredentialInfo credentialData={credentialData.credential} />
           </Box>
-          <Box flex={{ base: '1', lg: '2 1 70%', xl: '2 1 80%' }}>
+          <Box width={{ base: 'none', lg: '70%', xl: '80%' }}>
             <CredentialHolders
               courseAddress={courseAddress}
               credentialUsersData={credentialUsersData.userCredentials}

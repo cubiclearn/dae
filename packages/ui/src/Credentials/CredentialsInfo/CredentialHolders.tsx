@@ -114,57 +114,59 @@ export const CredentialHolders: React.FC<CredentialHoldersProps> = ({
       ) : (
         <></>
       )}
-      <Text fontWeight={'semibold'} fontSize={'2xl'}>
-        Credential Holders
-      </Text>
-      {credentialUsersData.length > 0 ? (
-        <TableContainer>
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                <Th width={'5%'}>{}</Th>
-                <Th>Address</Th>
-                <Th width={'5%'}>{}</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {credentialUsersData.map((userCredential, index) => {
-                return (
-                  <Tr key={index}>
-                    <Td>{index + 1}</Td>
-                    <Td>{userCredential.user_address}</Td>
-                    <Td>
-                      <Button
-                        colorScheme="red"
-                        onClick={() => handleOpenModal(userCredential)}
-                        isLoading={
-                          (isBurningCredential ||
-                            isValidatingBurningCredential ||
-                            isSigningBurningCredentialTransaction) &&
-                          selectedCredential?.credential_token_id ===
-                            userCredential.credential_token_id
-                        }
-                      >
-                        X
-                      </Button>
-                    </Td>
-                  </Tr>
-                )
-              })}
-            </Tbody>
-          </Table>
-        </TableContainer>
-      ) : (
-        <Alert status="info">
-          <AlertIcon />
-          <Box>
-            <AlertTitle>Nothing to show.</AlertTitle>
-            <AlertDescription>
-              There is no user who holds this credential.
-            </AlertDescription>
-          </Box>
-        </Alert>
-      )}
+      <Stack spacing={2}>
+        <Text fontWeight={'semibold'} fontSize={'2xl'}>
+          Credential Holders
+        </Text>
+        {credentialUsersData.length > 0 ? (
+          <TableContainer>
+            <Table variant="simple">
+              <Thead>
+                <Tr>
+                  <Th width={'5%'}>{}</Th>
+                  <Th>Address</Th>
+                  <Th width={'5%'}>{}</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {credentialUsersData.map((userCredential, index) => {
+                  return (
+                    <Tr key={index}>
+                      <Td>{index + 1}</Td>
+                      <Td>{userCredential.user_address}</Td>
+                      <Td>
+                        <Button
+                          colorScheme="red"
+                          onClick={() => handleOpenModal(userCredential)}
+                          isLoading={
+                            (isBurningCredential ||
+                              isValidatingBurningCredential ||
+                              isSigningBurningCredentialTransaction) &&
+                            selectedCredential?.credential_token_id ===
+                              userCredential.credential_token_id
+                          }
+                        >
+                          X
+                        </Button>
+                      </Td>
+                    </Tr>
+                  )
+                })}
+              </Tbody>
+            </Table>
+          </TableContainer>
+        ) : (
+          <Alert status="info">
+            <AlertIcon />
+            <Box>
+              <AlertTitle>Nothing to show.</AlertTitle>
+              <AlertDescription>
+                There is no user who holds this credential.
+              </AlertDescription>
+            </Box>
+          </Alert>
+        )}
+      </Stack>
       <ConfirmActionModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
