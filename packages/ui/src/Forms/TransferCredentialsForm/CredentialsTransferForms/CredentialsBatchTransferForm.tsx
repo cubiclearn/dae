@@ -161,7 +161,7 @@ export const CredentialsBatchTransferForm: React.FC<
               value={values.credentialIPFSCid}
             >
               {data ? (
-                data.map((credential) => {
+                data.credentials.map((credential) => {
                   return (
                     <option
                       key={credential.ipfs_cid}

@@ -34,12 +34,7 @@ export const PartecipantsSection: React.FC<PartecipantsSectionProps> = ({
     error: errorLoadingTeachers,
   } = useCourseTeachers(courseAddress, chainId)
 
-  if (
-    isLoadingStudentsData ||
-    isLoadingTeachersData ||
-    (studentsData === undefined && !errorLoadingStudents) ||
-    (teachersData === undefined && !errorLoadingTeachers)
-  ) {
+  if (isLoadingStudentsData || isLoadingTeachersData) {
     return (
       <Center>
         <Spinner />
@@ -66,8 +61,8 @@ export const PartecipantsSection: React.FC<PartecipantsSectionProps> = ({
     )
   }
 
-  const studentsLength = studentsData.data.students.length
-  const teachersLength = teachersData.data.teachers.length
+  const studentsLength = studentsData.students.length
+  const teachersLength = teachersData.teachers.length
 
   return (
     <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 5 }} spacing={4}>

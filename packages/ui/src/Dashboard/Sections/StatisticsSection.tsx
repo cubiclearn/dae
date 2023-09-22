@@ -68,9 +68,8 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
     (courseData?.karma_access_control_address as Address) || undefined
 
   const studentsAddresses =
-    studentsData?.data.students.map(
-      (student) => student.user_address as Address,
-    ) || []
+    studentsData?.students.map((student) => student.user_address as Address) ||
+    []
 
   const {
     data: studentsKarmaData,
@@ -93,7 +92,7 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
     [studentsKarmaData, courseData],
   )
 
-  if (studentsData?.data.students.length === 0) {
+  if (studentsData?.students.length === 0) {
     return (
       <Alert status="warning">
         <AlertIcon />

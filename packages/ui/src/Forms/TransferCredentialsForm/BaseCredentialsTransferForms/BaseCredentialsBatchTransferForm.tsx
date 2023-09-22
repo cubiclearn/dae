@@ -81,7 +81,7 @@ export const BaseCredentialsBatchTransfer: React.FC<
       onSubmit: async () => {
         try {
           if (data) {
-            await multiTransfer(csvData, data[0].ipfs_cid)
+            await multiTransfer(csvData, data.credentials[0].ipfs_cid)
             if (fileInputRef.current) {
               fileInputRef.current.value = ''
             }

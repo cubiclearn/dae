@@ -33,11 +33,7 @@ export const StudentsRowList: React.FC<StudentsRowListProps> = ({
 }) => {
   const { chain } = useNetwork()
 
-  const {
-    data: response,
-    error,
-    isLoading,
-  } = useCourseStudents(courseAddress, chain?.id)
+  const { data, error, isLoading } = useCourseStudents(courseAddress, chain?.id)
 
   const toast = useToast()
   const {
@@ -125,7 +121,7 @@ export const StudentsRowList: React.FC<StudentsRowListProps> = ({
     )
   }
 
-  if (!response || response.data.students.length === 0) {
+  if (!data || data.students.length === 0) {
     return (
       <Alert status="info">
         <AlertIcon />
@@ -174,7 +170,7 @@ export const StudentsRowList: React.FC<StudentsRowListProps> = ({
             </Tr>
           </Thead>
           <Tbody>
-            {response.data.students.map((student) => (
+            {data.students.map((student) => (
               <UserRow
                 key={student.user_address}
                 user={student}

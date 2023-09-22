@@ -41,9 +41,8 @@ export const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({
     (courseData?.karma_access_control_address as Address) || undefined
 
   const studentsAddresses =
-    studentsData?.data.students.map(
-      (student) => student.user_address as Address,
-    ) || []
+    studentsData?.students.map((student) => student.user_address as Address) ||
+    []
 
   const {
     data: studentsKarmaData,
@@ -69,7 +68,7 @@ export const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({
     [studentsKarmaData, courseData],
   )
 
-  if (studentsData?.data.students.length === 0) {
+  if (studentsData?.students.length === 0) {
     return (
       <Alert status="warning">
         <AlertIcon />
@@ -87,7 +86,6 @@ export const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({
   if (
     isLoadingStudentsData ||
     isLoadingKarmaData ||
-    (studentsData === undefined && !errorLoadingStudents) ||
     studentsAddressAndKarmaOrderedDesc === undefined
   ) {
     return (

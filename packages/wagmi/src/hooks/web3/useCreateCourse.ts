@@ -6,7 +6,11 @@ import { useCreateSnapshotSpace } from '@dae/snapshot'
 import type { Course } from '@dae/database'
 import { mainnet, goerli } from 'viem/chains'
 import { FactoryContractAddress } from '@dae/chains'
-import { UseWeb3WriteHookInterface, VotingStrategy } from '@dae/types'
+import {
+  ApiResponse,
+  UseWeb3WriteHookInterface,
+  VotingStrategy,
+} from '@dae/types'
 import { useWeb3HookState } from '../useWeb3HookState'
 
 interface CreateCredentialHookInterface extends UseWeb3WriteHookInterface {
@@ -110,9 +114,18 @@ export function useCreateCourse(
 
       setStep(1)
 
-      const { Hash: metadataIPFSHash } = await uploadMetadataResponse.json()
+      const { data: ipfsMetadataResponseData } =
+        (await uploadMetadataResponse.json()) as ApiResponse<{
+          metadata: { Hash: string }
+        }>
 
-      const metadataBaseURI = `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${metadataIPFSHash}`
+      if (!ipfsMetadataResponseData) {
+        throw new Error(
+          'There is a problem uploading your metadata. Try again.',
+        )
+      }
+
+      const metadataBaseURI = `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${ipfsMetadataResponseData.metadata.Hash}`
 
       const metadataResponse = await fetch(metadataBaseURI)
 

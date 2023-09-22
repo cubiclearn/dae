@@ -1,10 +1,9 @@
 import { useContractWrite, usePublicClient } from 'wagmi'
 import { Address } from 'viem'
 import { CredentialsBurnableAbi } from '@dae/abi'
-import { mutate } from 'swr'
 import { useWeb3HookState } from '../useWeb3HookState'
 import type { UseWeb3WriteHookInterface } from '@dae/types'
-import { CredentialType, UserCredentials } from '@dae/database'
+import { CredentialType } from '@dae/database'
 
 interface BurnCredentialHookInterface extends UseWeb3WriteHookInterface {
   burnCredential: (tokenId: number) => Promise<void>
@@ -12,7 +11,7 @@ interface BurnCredentialHookInterface extends UseWeb3WriteHookInterface {
 
 export function useBurnCredential(
   courseAddress: Address,
-  credentialType: CredentialType,
+  _credentialType: CredentialType,
 ): BurnCredentialHookInterface {
   const {
     isSuccess,
@@ -67,7 +66,7 @@ export function useBurnCredential(
       })
 
       const deleteResponse = await fetch(
-        `/api/v0/user/course/credentials?txHash=${txReceipt.transactionHash}&chainId=${publicClient.chain.id}`,
+        `/api/v0/user/course/credential?txHash=${txReceipt.transactionHash}&chainId=${publicClient.chain.id}`,
         {
           method: 'DELETE',
         },
@@ -76,29 +75,6 @@ export function useBurnCredential(
       if (!deleteResponse.ok) {
         const responseJSON = await deleteResponse.json()
         throw new Error(responseJSON.error)
-      }
-
-      const responseJSON = (await deleteResponse.json()) as {
-        success: boolean
-        data: UserCredentials
-      }
-
-      if (credentialType === 'OTHER') {
-        await mutate(
-          `/api/v0/course/credential/users?credentialCid=${responseJSON.data.credential_ipfs_cid}&courseAddress=${responseJSON.data.course_address}&chainId=${responseJSON.data.course_chain_id}`,
-        )
-      }
-
-      if (credentialType === 'DISCIPULUS') {
-        await mutate(
-          `/api/v0/course/students?courseAddress=${courseAddress}&chainId=${responseJSON.data.course_chain_id}`,
-        )
-      }
-
-      if (credentialType === 'MAGISTER') {
-        await mutate(
-          `/api/v0/course/credential/users?credentialCid=${responseJSON.data.credential_ipfs_cid}&courseAddress=${responseJSON.data.course_address}&chainId=${responseJSON.data.course_chain_id}`,
-        )
       }
 
       state.setSuccess()

@@ -13,10 +13,12 @@ export const getCourse = (
   courseAddress: Address,
   chainId: number,
 ): Promise<Course | null> => {
-  return prisma.course.findFirst({
+  return prisma.course.findUnique({
     where: {
-      address: sanitizeAddress(courseAddress),
-      chain_id: chainId,
+      address_chain_id: {
+        address: sanitizeAddress(courseAddress),
+        chain_id: chainId,
+      },
     },
   })
 }
@@ -153,7 +155,7 @@ export const getUserCourseCredentials = async (
   })
 }
 
-export const getCourseCredentialUsers = async (
+export const getCourseUsersCredentials = async (
   credentialCid: string,
   courseAddress: Address,
   chainId: number,
@@ -203,7 +205,7 @@ export const getUserCourseCredential = async (
 
 export const getUserUnverifiedTransactions = async (
   userAddress: Address,
-): Promise<TransactionsVerifications[] | null> => {
+): Promise<TransactionsVerifications[]> => {
   return prisma.transactionsVerifications.findMany({
     where: {
       user_address: sanitizeAddress(userAddress),

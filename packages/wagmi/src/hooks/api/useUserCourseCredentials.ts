@@ -1,48 +1,33 @@
 import { Address } from 'viem'
 import useSWR from 'swr'
 import { Credential } from '@dae/database'
-import { useAccount } from 'wagmi'
-import { SWRHook } from '@dae/types'
-
-interface ApiResponse {
-  success: boolean
-  data?: { credentials: Credential[] | null }
-  error?: string
-}
-
-const fetcher = async (url: string) => {
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error('Failed to fetch data')
-  }
-  return response.json()
-}
+import { ApiResponse, SWRHook } from '@dae/types'
+import { useApi } from './useApi'
 
 export const useUserCourseCredentials = (
+  userAddress: Address | undefined,
   courseAddress: Address | undefined,
   chainId: number | undefined,
-): SWRHook<Credential[]> => {
-  const { address: userAddress } = useAccount()
+): SWRHook<{ credentials: Credential[] }> => {
+  const client = useApi()
   const url = `/api/v0/user/course/credentials?courseAddress=${courseAddress}&chainId=${chainId}&userAddress=${userAddress}`
 
   const shouldFetch = courseAddress && chainId && userAddress
 
-  const { data: response, error } = useSWR<ApiResponse>(
-    shouldFetch ? url : null,
-    fetcher,
-    {
-      revalidateIfStale: false,
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      revalidateOnMount: true,
-    },
-  )
+  const { data: response, error } = useSWR<
+    ApiResponse<{ credentials: Credential[] }>
+  >(shouldFetch ? url : null, client.request, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    revalidateOnMount: true,
+  })
 
   return {
-    data: response?.data?.credentials ?? undefined,
-    error,
-    isLoading: !response && !error,
-    isSuccess: Boolean(response && !error),
+    data: response?.data || undefined,
+    isLoading: Boolean(!response && !error),
     isError: Boolean(error),
+    error: error,
+    isSuccess: Boolean(response && !error),
   }
 }

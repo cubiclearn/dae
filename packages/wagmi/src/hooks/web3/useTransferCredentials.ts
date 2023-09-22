@@ -1,8 +1,9 @@
 import { useContractWrite, usePublicClient } from 'wagmi'
 import { Address } from 'viem'
 import { CredentialsBurnableAbi } from '@dae/abi'
-import { CredentialType } from '@dae/database'
+import { Credential, CredentialType } from '@dae/database'
 import { useWeb3HookState } from '../useWeb3HookState'
+import { ApiResponse } from '@dae/types'
 
 export type TransferCredentialsData = {
   address: Address
@@ -71,10 +72,11 @@ export function useTransferCredentials(
         throw new Error(responseJSON.error)
       }
 
-      const alreadyExistingCredentialResponseJSON =
-        await alreadyExistingCredentialResponse.json()
+      const alreadyExistingCredentialResponseJSON: ApiResponse<{
+        credential: Credential
+      }> = await alreadyExistingCredentialResponse.json()
 
-      if (alreadyExistingCredentialResponseJSON.data.credential) {
+      if (alreadyExistingCredentialResponseJSON.data?.credential) {
         throw new Error(
           `Credential already minted to this address (${userData.address}).`,
         )
@@ -163,10 +165,11 @@ export function useTransferCredentials(
             throw new Error(responseJSON.error)
           }
 
-          const alreadyExistingCredentialResponseJSON =
-            await alreadyExistingCredentialResponse.json()
+          const alreadyExistingCredentialResponseJSON: ApiResponse<{
+            credential: Credential
+          }> = await alreadyExistingCredentialResponse.json()
 
-          if (alreadyExistingCredentialResponseJSON.data.credential) {
+          if (alreadyExistingCredentialResponseJSON.data?.credential) {
             throw new Error(
               `Credential already minted to this address (${userData.address}). Please remove it from the list and retry.`,
             )

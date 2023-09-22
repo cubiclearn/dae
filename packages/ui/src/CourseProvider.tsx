@@ -13,11 +13,11 @@ const Context = createContext<{
       })
     | null
   isLoading: boolean
-  error: Error | null
+  error: Error | undefined
 }>({
   data: null,
   isLoading: false,
-  error: null,
+  error: undefined,
 })
 
 export const CourseProvider: FC<{
@@ -30,12 +30,12 @@ export const CourseProvider: FC<{
     chain?.id,
   )
 
-  const courseData = data
+  const courseData = data?.course
     ? {
-        ...data,
-        address: data.address as Address,
-        karma_access_control_address:
-          data.karma_access_control_address as Address,
+        ...data.course,
+        address: data.course.address as Address,
+        karma_access_control_address: data.course
+          .karma_access_control_address as Address,
       }
     : null
 

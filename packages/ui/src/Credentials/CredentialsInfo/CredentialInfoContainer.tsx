@@ -51,9 +51,9 @@ export const CredentialInfoContainer: React.FC<CredentialInfoContainerProps> =
       isLoading: isDeletingCredential,
       isError: isErrorDeletingCredential,
     } = useDeleteCredential(
-      credentialData?.ipfs_cid,
-      credentialData?.course_address as Address,
-      credentialData?.course_chain_id,
+      credentialData?.credential.ipfs_cid,
+      credentialData?.credential.course_address as Address,
+      credentialData?.credential.course_chain_id,
     )
 
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -144,7 +144,7 @@ export const CredentialInfoContainer: React.FC<CredentialInfoContainerProps> =
             </Link>
             <SyncButton />
           </Stack>
-          {credentialUsersData.length === 0 ? (
+          {credentialUsersData.userCredentials.length === 0 ? (
             <Box>
               <Button
                 colorScheme="red"
@@ -167,12 +167,12 @@ export const CredentialInfoContainer: React.FC<CredentialInfoContainerProps> =
             flex={{ base: 'none', lg: '1 1 30%', xl: '1 1 20%' }} // 30% width on lg, auto on base
             maxW={{ base: '100%', lg: 'none' }} // Adjust max width based on screen size
           >
-            <CredentialInfo credentialData={credentialData} />
+            <CredentialInfo credentialData={credentialData.credential} />
           </Box>
           <Box flex={{ base: '1', lg: '2 1 70%', xl: '2 1 80%' }}>
             <CredentialHolders
               courseAddress={courseAddress}
-              credentialUsersData={credentialUsersData}
+              credentialUsersData={credentialUsersData.userCredentials}
             />
           </Box>
         </Stack>

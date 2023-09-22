@@ -112,7 +112,7 @@ export const CredentialsSingleTransferForm: React.FC<
             onReset={handleReset}
           >
             {data ? (
-              data.map((credential) => {
+              data.credentials.map((credential) => {
                 return (
                   <option key={credential.ipfs_cid} value={credential.ipfs_cid}>
                     {credential.name}

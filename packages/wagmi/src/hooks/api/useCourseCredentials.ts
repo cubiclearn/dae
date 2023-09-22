@@ -1,32 +1,15 @@
 import { Address } from 'viem'
 import useSWR from 'swr'
 import { Credential, CredentialType } from '@dae/database'
-
-interface UseCourseCredentialsData {
-  data: Credential[] | null
-  error: Error | null
-  isLoading: boolean
-}
-
-interface ApiResponse {
-  success: boolean
-  data?: { credentials: Credential[] | null }
-  error?: string
-}
-
-const fetcher = async (url: string) => {
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error('Failed to fetch data')
-  }
-  return response.json()
-}
+import { ApiResponse, SWRHook } from '@dae/types'
+import { useApi } from './useApi'
 
 export const useCourseCredentials = (
   courseAddress: Address | undefined,
   chainId: number | undefined,
   credentialType?: CredentialType | undefined,
-): UseCourseCredentialsData => {
+): SWRHook<{ credentials: Credential[] }> => {
+  const client = useApi()
   const URLParams = new URLSearchParams()
 
   if (courseAddress) {
@@ -45,12 +28,9 @@ export const useCourseCredentials = (
 
   const shouldFetch = courseAddress && chainId
 
-  const {
-    data: response,
-    error,
-    isLoading,
-    isValidating,
-  } = useSWR<ApiResponse>(shouldFetch ? url : null, fetcher, {
+  const { data: response, error } = useSWR<
+    ApiResponse<{ credentials: Credential[] }>
+  >(shouldFetch ? url : null, client.request, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
@@ -58,8 +38,10 @@ export const useCourseCredentials = (
   })
 
   return {
-    data: response?.data?.credentials ?? null,
-    error,
-    isLoading: isLoading || isValidating,
+    data: response?.data || undefined,
+    isLoading: Boolean(!response && !error),
+    isError: Boolean(error),
+    error: error,
+    isSuccess: Boolean(response && !error),
   }
 }

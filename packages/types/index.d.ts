@@ -10,7 +10,20 @@ export type CredentialTransferLog = {eventName : string, args : {from : `0x${str
 
 export type CredentialIssuedLog = {eventName : string, args : {from : `0x${string}`, to : `0x${string}`, tokenId : bigint, burnAuth: bigint}}
 
-export interface SWRHook<T> {
+
+export enum ApiResponseStatus {
+    "success",
+    "fail",
+    "error"
+}
+
+export type ApiResponse<T> = {
+    status: ApiResponseStatus
+    data?: T | null
+    message?: string
+}
+
+export type SWRHook<T> = {
     data: T | undefined
     error: Error | undefined
     isLoading: boolean
@@ -18,7 +31,7 @@ export interface SWRHook<T> {
     isError: boolean
 }
 
-export interface UseWeb3WriteHookInterface {
+export type UseWeb3WriteHookInterface = {
     isLoading: boolean
     isSuccess: boolean
     isError: boolean

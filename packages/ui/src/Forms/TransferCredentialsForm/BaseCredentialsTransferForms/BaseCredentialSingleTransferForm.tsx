@@ -77,7 +77,7 @@ export const BaseCredentialSingleTransferForm: React.FC<
               email: values.userEmail,
               discord: values.userDiscordUsername,
             },
-            data[0].ipfs_cid,
+            data.credentials[0].ipfs_cid,
           )
           resetForm()
         }

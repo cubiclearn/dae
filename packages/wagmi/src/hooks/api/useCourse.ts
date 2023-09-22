@@ -1,44 +1,29 @@
 import { Address } from 'viem'
 import useSWR from 'swr'
 import { Course } from '@dae/database'
-
-interface UseCourseData {
-  data: Course | null
-  error: Error | null
-  isLoading: boolean // Corrected
-}
-
-interface ApiResponse {
-  success: boolean
-  data?: { course: Course }
-  error?: string
-}
-
-const fetcher = async (url: string) => {
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error('Failed to fetch data')
-  }
-  return response.json()
-}
+import { useApi } from './useApi'
+import { ApiResponse } from '@dae/types'
+import { type SWRHook } from '@dae/types'
 
 export const useCourse = (
   courseAddress: Address | undefined,
   chainId: number | undefined,
-): UseCourseData => {
+): SWRHook<{ course: Course }> => {
+  const client = useApi()
   const url = `/api/v0/course?address=${courseAddress}&chainId=${chainId}`
 
   const shouldFetch = courseAddress !== undefined && chainId !== undefined
 
-  const {
-    data: response,
-    error,
-    isLoading,
-  } = useSWR<ApiResponse>(shouldFetch ? url : null, fetcher)
+  const { data: response, error } = useSWR<ApiResponse<{ course: Course }>>(
+    shouldFetch ? url : null,
+    client.request,
+  )
 
   return {
-    data: response?.data?.course ?? null,
-    error,
-    isLoading,
+    data: response?.data || undefined,
+    isLoading: Boolean(!response && !error),
+    isError: Boolean(error),
+    error: error,
+    isSuccess: Boolean(response && !error),
   }
 }

@@ -1,49 +1,29 @@
 import { Address } from 'viem'
 import useSWR from 'swr'
 import { Course } from '@dae/database'
-
-export interface UserCoursesResponse {
-  success: boolean
-  data: {
-    courses: Course[]
-  }
-}
-
-const fetcher = async (url: string) => {
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error('Failed to fetch data')
-  }
-  return response.json() as Promise<UserCoursesResponse>
-}
+import { useApi } from './useApi'
+import { ApiResponse, SWRHook } from '@dae/types'
 
 export const useUserCourses = (
-  address: Address | undefined,
+  userAddress: Address | undefined,
   chainId: number | undefined,
   role: 'EDUCATOR' | 'DISCIPULUS',
-) => {
-  const url = `/api/v0/user/courses?userAddress=${address}&chainId=${chainId}&role=${role}`
+): SWRHook<{ courses: Course[] }> => {
+  const client = useApi()
+  const url = `/api/v0/user/courses?userAddress=${userAddress}&chainId=${chainId}&role=${role}`
 
-  const shouldFetch = address !== undefined && chainId !== undefined
+  const shouldFetch = userAddress !== undefined && chainId !== undefined
 
-  const { data, error, isLoading } = useSWR<UserCoursesResponse>(
+  const { data: response, error } = useSWR<ApiResponse<{ courses: Course[] }>>(
     shouldFetch ? url : null,
-    fetcher,
+    client.request,
   )
 
-  if (!shouldFetch) {
-    return {
-      data: null,
-      error: new Error(
-        'You are not connected to Web3. Please connect your wallet before proceeding.',
-      ),
-      isLoading: false,
-    }
-  }
-
   return {
-    data,
-    error,
-    isLoading,
+    data: response?.data || undefined,
+    isLoading: Boolean(!response && !error),
+    isError: Boolean(error),
+    error: error,
+    isSuccess: Boolean(response && !error),
   }
 }

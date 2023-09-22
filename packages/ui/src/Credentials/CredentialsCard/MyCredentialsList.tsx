@@ -11,7 +11,7 @@ import {
   Spinner,
 } from '@chakra-ui/react'
 import { useUserCourseCredentials } from '@dae/wagmi'
-import { Address, useNetwork } from 'wagmi'
+import { Address, useAccount, useNetwork } from 'wagmi'
 
 interface CourseCardListProps {
   courseAddress: Address
@@ -21,8 +21,10 @@ export const MyCredentialsList: React.FC<CourseCardListProps> = ({
   courseAddress,
 }) => {
   const { chain } = useNetwork()
+  const { address } = useAccount()
 
   const { data, error, isLoading } = useUserCourseCredentials(
+    address,
     courseAddress,
     chain?.id,
   )
@@ -49,7 +51,7 @@ export const MyCredentialsList: React.FC<CourseCardListProps> = ({
     )
   }
 
-  if (!data || data.length === 0) {
+  if (!data || data.credentials.length === 0) {
     return (
       <Alert status="info">
         <AlertIcon />
@@ -66,7 +68,7 @@ export const MyCredentialsList: React.FC<CourseCardListProps> = ({
       columns={{ base: 1, sm: 2, lg: 3, xl: 5 }}
       spacing={{ base: 8 }}
     >
-      {data.map((credential) => (
+      {data.credentials.map((credential) => (
         <CredentialsCard key={credential.ipfs_cid} data={credential} />
       ))}
     </SimpleGrid>
