@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
   Stack,
   Table,
@@ -36,7 +36,6 @@ export const CredentialHolders: React.FC<CredentialHoldersProps> = ({
     burnCredential,
     isLoading: isBurningCredential,
     isError: isErrorBurningCredential,
-    isSuccess: isSuccessBurningCredential,
     isSigning: isSigningBurningCredentialTransaction,
     isValidating: isValidatingBurningCredential,
   } = useBurnCredential(courseAddress, 'OTHER')
@@ -55,36 +54,21 @@ export const CredentialHolders: React.FC<CredentialHoldersProps> = ({
     setIsModalOpen(false)
   }
 
-  useEffect(() => {
-    if (isErrorBurningCredential) {
-      toast({
-        title: 'Error burning credential.',
-        status: 'error',
-      })
-    }
-    if (isSuccessBurningCredential) {
-      toast({
-        title: 'Credential burned with success!',
-        status: 'success',
-      })
-    }
-    if (isBurningCredential) {
-      toast({
-        title: 'Burning selected credential...',
-        status: 'info',
-      })
-    }
-  }, [
-    isBurningCredential,
-    isErrorBurningCredential,
-    isSuccessBurningCredential,
-  ])
-
   const handleBurnCredential = async () => {
     try {
       if (selectedCredential !== null) {
         setIsModalOpen(false)
-        await burnCredential(selectedCredential.credential_token_id)
+        toast.promise(burnCredential(selectedCredential.credential_token_id), {
+          success: {
+            title: 'User credential burned with success!',
+          },
+          error: { title: 'Error burning user credential.' },
+          loading: {
+            title: 'Burning user credential in progress...',
+            description:
+              'Processing transaction on the blockchain can take some time (usually around one minute).',
+          },
+        })
         setselectedCredential(null)
       }
     } catch (_e: any) {

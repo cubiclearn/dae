@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
   Table,
   TableContainer,
@@ -40,7 +40,6 @@ export const StudentsRowList: React.FC<StudentsRowListProps> = ({
     burnCredential,
     isLoading: isBurningCredential,
     isError: isErrorBurningCredential,
-    isSuccess: isSuccessBurningCredential,
     isSigning: isSigningBurningCredentialTransaction,
     isValidating: isValidatingBurningCredential,
   } = useBurnCredential(courseAddress, 'MAGISTER')
@@ -59,37 +58,23 @@ export const StudentsRowList: React.FC<StudentsRowListProps> = ({
     setIsModalOpen(false)
   }
 
-  useEffect(() => {
-    if (isErrorBurningCredential) {
-      toast({
-        title: 'Error burning credential.',
-        status: 'error',
-      })
-    }
-    if (isSuccessBurningCredential) {
-      toast({
-        title: 'Credential burned with success!',
-        status: 'success',
-      })
-    }
-    if (isBurningCredential) {
-      toast({
-        title: 'Burning selected credential...',
-        status: 'info',
-      })
-    }
-  }, [
-    isBurningCredential,
-    isErrorBurningCredential,
-    isSuccessBurningCredential,
-  ])
-
   const handleBurnStudentCredential = async () => {
     try {
       if (selectedStudentToBurnCredential !== null) {
         setIsModalOpen(false)
-        await burnCredential(
-          selectedStudentToBurnCredential.credential_token_id,
+        toast.promise(
+          burnCredential(selectedStudentToBurnCredential.credential_token_id),
+          {
+            success: {
+              title: 'User credential burned with success!',
+            },
+            error: { title: 'Error burning user credential.' },
+            loading: {
+              title: 'Burning user credential in progress...',
+              description:
+                'Processing transaction on the blockchain can take some time (usually around one minute).',
+            },
+          },
         )
         setSelectedStudentToBurnCredential(null)
       }
