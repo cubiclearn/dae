@@ -68,9 +68,8 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
     (courseData?.karma_access_control_address as Address) || undefined
 
   const studentsAddresses =
-    studentsData?.data.students.map(
-      (student) => student.user_address as Address,
-    ) || []
+    studentsData?.students.map((student) => student.user_address as Address) ||
+    []
 
   const {
     data: studentsKarmaData,
@@ -93,7 +92,7 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
     [studentsKarmaData, courseData],
   )
 
-  if (studentsData?.data.students.length === 0) {
+  if (studentsData?.students.length === 0) {
     return (
       <Alert status="warning">
         <AlertIcon />
@@ -111,7 +110,7 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
   if (
     isLoadingStudentsData ||
     isLoadingKarmaData ||
-    (studentsData === undefined && !errorLoadingStudents) ||
+    (!studentsData && !errorLoadingStudents) ||
     statistics === undefined
   ) {
     return (
@@ -121,7 +120,7 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
     )
   }
 
-  if (errorLoadingStudents || errorLoadingKarma) {
+  if (errorLoadingStudents || errorLoadingKarma || !studentsData) {
     return (
       <Alert status="error">
         <AlertIcon />
@@ -137,11 +136,11 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
 
   return (
     <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 5 }} spacing={4}>
-      <DashboardBlock title="Max Value" value={statistics.maxValue} />
-      <DashboardBlock title="Min Value" value={statistics.minValue} />
+      <DashboardBlock title="Max Value" value={statistics.maxValue} isInt />
+      <DashboardBlock title="Min Value" value={statistics.minValue} isInt />
       <DashboardBlock title="Mean" value={statistics.mean} />
-      <DashboardBlock title="Median" value={statistics.median} />
-      <DashboardBlock title="Std Deviation" value={statistics.stdDeviation} />
+      <DashboardBlock title="Median" value={statistics.median} isInt />
+      <DashboardBlock title="Std. Deviation" value={statistics.stdDeviation} />
       <DashboardBlock
         title="Learning Return Index"
         value={statistics.learningReturnIndex}

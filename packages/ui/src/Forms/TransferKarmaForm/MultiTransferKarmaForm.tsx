@@ -23,13 +23,14 @@ import {
   Link,
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Address, useContractReads } from 'wagmi'
 import * as Yup from 'yup'
 import { TransferData, useTransferKarma } from '@dae/wagmi'
 import Papa from 'papaparse'
 import { useCourseData } from '../../CourseProvider'
 import { KarmaAccessControlAbiUint64 } from '@dae/abi'
+import { useLeavePageConfirmation } from '../../hooks'
 
 const validationSchema = Yup.object().shape({
   CSVFile: Yup.mixed().required('CSV file is required'),
@@ -37,18 +38,13 @@ const validationSchema = Yup.object().shape({
 
 export const MultiTransferKarmaForm: React.FC<any> = () => {
   const { data } = useCourseData()
-  const {
-    multiTransfer,
-    isLoading,
-    isError,
-    isSuccess,
-    error,
-    isSigning,
-    isValidating,
-  } = useTransferKarma(
-    data ? (data.karma_access_control_address as Address) : undefined,
-  )
+  const { multiTransfer, isLoading, isError, error, isSigning, isValidating } =
+    useTransferKarma(
+      data ? (data.karma_access_control_address as Address) : undefined,
+    )
   const toast = useToast()
+
+  useLeavePageConfirmation(isLoading, 'Changes you made may not be saved.')
 
   const [csvData, setCsvData] = useState<TransferData[]>([])
 
@@ -65,9 +61,21 @@ export const MultiTransferKarmaForm: React.FC<any> = () => {
     },
     onSubmit: async () => {
       try {
-        await multiTransfer(csvData)
-        setCsvData([])
-        resetForm()
+        toast.promise(multiTransfer(csvData), {
+          success: {
+            title: 'Karma transferred with success!',
+          },
+          error: { title: 'Error transferring karma.' },
+          loading: {
+            title: 'Karma transfer in progress...',
+            description:
+              'Processing transaction on the blockchain can take some time (usually around one minute).',
+            onCloseComplete: () => {
+              setCsvData([])
+              resetForm()
+            },
+          },
+        })
       } catch (_e) {}
     },
     validationSchema: validationSchema,
@@ -85,27 +93,6 @@ export const MultiTransferKarmaForm: React.FC<any> = () => {
     enabled: csvData.length > 0,
     cacheOnBlock: true,
   })
-
-  useEffect(() => {
-    if (isError) {
-      toast({
-        title: 'Error transferring credential.',
-        status: 'error',
-      })
-    }
-    if (isSuccess) {
-      toast({
-        title: 'Credential transferred with success!',
-        status: 'success',
-      })
-    }
-    if (isLoading) {
-      toast({
-        title: 'Transferring selected credential...',
-        status: 'info',
-      })
-    }
-  }, [isLoading, isError, isSuccess])
 
   const handleCSVFileChange = async (
     e: React.ChangeEvent<HTMLInputElement>,

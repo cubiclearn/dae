@@ -11,14 +11,15 @@ import {
   Input,
   Select,
   Stack,
+  useToast,
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
 import React, { ChangeEvent } from 'react'
 import { Address, useNetwork } from 'wagmi'
 import * as Yup from 'yup'
 import { useCourseCredentials, useTransferCredentials } from '@dae/wagmi'
-import { useFormFeedback } from '../../../hooks'
 import { ETHEREUM_ADDRESS_REGEX } from '../../../constants'
+import { useLeavePageConfirmation } from '../../../hooks'
 
 type TransferCredentialFormProps = {
   courseAddress: Address
@@ -36,18 +37,12 @@ export const CredentialsSingleTransferForm: React.FC<
 > = ({ courseAddress }) => {
   const { chain } = useNetwork()
   const { data } = useCourseCredentials(courseAddress, chain?.id, 'OTHER')
+  const toast = useToast()
 
-  const {
-    transfer,
-    isLoading,
-    isError,
-    isSuccess,
-    error,
-    isSigning,
-    isValidating,
-  } = useTransferCredentials(courseAddress, 'OTHER')
+  const { transfer, isLoading, isError, error, isSigning, isValidating } =
+    useTransferCredentials(courseAddress, 'OTHER')
 
-  useFormFeedback({ isError, isSuccess, isLoading })
+  useLeavePageConfirmation(isLoading, 'Changes you made may not be saved.')
 
   const {
     values,
@@ -66,15 +61,28 @@ export const CredentialsSingleTransferForm: React.FC<
     },
     onSubmit: async (values) => {
       try {
-        if (data) {
-          await transfer(
+        if (!data) return
+        toast.promise(
+          transfer(
             {
               address: values.userAddress as Address,
             },
             values.credentialIPFSCid,
-          )
-          resetForm()
-        }
+          ).then(() => {
+            resetForm()
+          }),
+          {
+            success: {
+              title: 'Credential transferred with success!',
+            },
+            error: { title: 'Error transferring credential.' },
+            loading: {
+              title: 'Credential transfer in progress...',
+              description:
+                'Processing transaction on the blockchain can take some time (usually around one minute).',
+            },
+          },
+        )
       } catch (_e) {}
     },
     validationSchema: validationSchema,
@@ -112,7 +120,7 @@ export const CredentialsSingleTransferForm: React.FC<
             onReset={handleReset}
           >
             {data ? (
-              data.map((credential) => {
+              data.credentials.map((credential) => {
                 return (
                   <option key={credential.ipfs_cid} value={credential.ipfs_cid}>
                     {credential.name}

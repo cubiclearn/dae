@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
   Stack,
   Table,
@@ -36,7 +36,6 @@ export const CredentialHolders: React.FC<CredentialHoldersProps> = ({
     burnCredential,
     isLoading: isBurningCredential,
     isError: isErrorBurningCredential,
-    isSuccess: isSuccessBurningCredential,
     isSigning: isSigningBurningCredentialTransaction,
     isValidating: isValidatingBurningCredential,
   } = useBurnCredential(courseAddress, 'OTHER')
@@ -55,40 +54,30 @@ export const CredentialHolders: React.FC<CredentialHoldersProps> = ({
     setIsModalOpen(false)
   }
 
-  useEffect(() => {
-    if (isErrorBurningCredential) {
-      toast({
-        title: 'Error burning credential.',
-        status: 'error',
-      })
-    }
-    if (isSuccessBurningCredential) {
-      toast({
-        title: 'Credential burned with success!',
-        status: 'success',
-      })
-    }
-    if (isBurningCredential) {
-      toast({
-        title: 'Burning selected credential...',
-        status: 'info',
-      })
-    }
-  }, [
-    isBurningCredential,
-    isErrorBurningCredential,
-    isSuccessBurningCredential,
-  ])
-
   const handleBurnCredential = async () => {
-    try {
-      if (selectedCredential !== null) {
-        setIsModalOpen(false)
-        await burnCredential(selectedCredential.credential_token_id)
-        setselectedCredential(null)
-      }
-    } catch (_e: any) {
-      setselectedCredential(null)
+    if (selectedCredential !== null) {
+      setIsModalOpen(false)
+      toast.promise(
+        burnCredential(selectedCredential.credential_token_id)
+          .then(() => {
+            setselectedCredential(null)
+          })
+          .catch(() => {
+            setselectedCredential(null)
+          }),
+        {
+          success: {
+            title: 'User credential burned with success!',
+          },
+          error: { title: 'Error burning user credential.' },
+          loading: {
+            title: 'Burning user credential in progress...',
+            description:
+              'Processing transaction on the blockchain can take some time (usually around one minute).',
+          },
+        },
+      )
+    } else {
       setIsModalOpen(false)
     }
   }
@@ -114,57 +103,59 @@ export const CredentialHolders: React.FC<CredentialHoldersProps> = ({
       ) : (
         <></>
       )}
-      <Text fontWeight={'semibold'} fontSize={'2xl'}>
-        Credential Holders
-      </Text>
-      {credentialUsersData.length > 0 ? (
-        <TableContainer>
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                <Th width={'5%'}>{}</Th>
-                <Th>Address</Th>
-                <Th width={'5%'}>{}</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {credentialUsersData.map((userCredential, index) => {
-                return (
-                  <Tr key={index}>
-                    <Td>{index + 1}</Td>
-                    <Td>{userCredential.user_address}</Td>
-                    <Td>
-                      <Button
-                        colorScheme="red"
-                        onClick={() => handleOpenModal(userCredential)}
-                        isLoading={
-                          (isBurningCredential ||
-                            isValidatingBurningCredential ||
-                            isSigningBurningCredentialTransaction) &&
-                          selectedCredential?.credential_token_id ===
-                            userCredential.credential_token_id
-                        }
-                      >
-                        X
-                      </Button>
-                    </Td>
-                  </Tr>
-                )
-              })}
-            </Tbody>
-          </Table>
-        </TableContainer>
-      ) : (
-        <Alert status="info">
-          <AlertIcon />
-          <Box>
-            <AlertTitle>Nothing to show.</AlertTitle>
-            <AlertDescription>
-              There is no user who holds this credential.
-            </AlertDescription>
-          </Box>
-        </Alert>
-      )}
+      <Stack spacing={2}>
+        <Text fontWeight={'semibold'} fontSize={'2xl'}>
+          Credential Holders
+        </Text>
+        {credentialUsersData.length > 0 ? (
+          <TableContainer>
+            <Table variant="simple">
+              <Thead>
+                <Tr>
+                  <Th width={'5%'}>{}</Th>
+                  <Th>Address</Th>
+                  <Th width={'5%'}>{}</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {credentialUsersData.map((userCredential, index) => {
+                  return (
+                    <Tr key={index}>
+                      <Td>{index + 1}</Td>
+                      <Td>{userCredential.user_address}</Td>
+                      <Td>
+                        <Button
+                          colorScheme="red"
+                          onClick={() => handleOpenModal(userCredential)}
+                          isLoading={
+                            (isBurningCredential ||
+                              isValidatingBurningCredential ||
+                              isSigningBurningCredentialTransaction) &&
+                            selectedCredential?.credential_token_id ===
+                              userCredential.credential_token_id
+                          }
+                        >
+                          X
+                        </Button>
+                      </Td>
+                    </Tr>
+                  )
+                })}
+              </Tbody>
+            </Table>
+          </TableContainer>
+        ) : (
+          <Alert status="info">
+            <AlertIcon />
+            <Box>
+              <AlertTitle>Nothing to show.</AlertTitle>
+              <AlertDescription>
+                There is no user who holds this credential.
+              </AlertDescription>
+            </Box>
+          </Alert>
+        )}
+      </Stack>
       <ConfirmActionModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}

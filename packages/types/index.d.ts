@@ -10,14 +10,28 @@ export type CredentialTransferLog = {eventName : string, args : {from : `0x${str
 
 export type CredentialIssuedLog = {eventName : string, args : {from : `0x${string}`, to : `0x${string}`, tokenId : bigint, burnAuth: bigint}}
 
-export interface UseSWRHook<T> {
-    data: T | null
-    error: Error | null
-    isLoading: boolean
-    isValidating?: boolean
+
+export enum ApiResponseStatus {
+    "success",
+    "fail",
+    "error"
 }
 
-export interface UseWeb3WriteHookInterface {
+export type ApiResponse<T> = {
+    status: ApiResponseStatus
+    data?: T | null
+    message?: string
+}
+
+export type SWRHook<T> = {
+    data: T | undefined
+    error: Error | undefined
+    isLoading: boolean
+    isSuccess: boolean
+    isError: boolean
+}
+
+export type UseWeb3WriteHookInterface = {
     isLoading: boolean
     isSuccess: boolean
     isError: boolean
@@ -33,3 +47,6 @@ export interface UseWeb3ReadHookInterface<T> {
     error: Error | null
     data: T | undefined
 }
+
+
+export type VotingStrategy = "linear-voting" | "quadratic-voting"

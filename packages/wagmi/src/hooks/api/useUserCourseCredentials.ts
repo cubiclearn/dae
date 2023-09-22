@@ -1,48 +1,39 @@
 import { Address } from 'viem'
 import useSWR from 'swr'
 import { Credential } from '@dae/database'
-import { useAccount } from 'wagmi'
-import { UseSWRHook } from '@dae/types'
-
-interface ApiResponse {
-  success: boolean
-  data?: { credentials: Credential[] | null }
-  error?: string
-}
-
-const fetcher = async (url: string) => {
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error('Failed to fetch data')
-  }
-  return response.json()
-}
+import { ApiResponse, SWRHook } from '@dae/types'
+import { ApiRequestUrlAndParams, useApi } from './useApi'
 
 export const useUserCourseCredentials = (
+  userAddress: Address | undefined,
   courseAddress: Address | undefined,
   chainId: number | undefined,
-): UseSWRHook<Credential[]> => {
-  const { address: userAddress } = useAccount()
-  const url = `/api/v0/user/course/credentials?courseAddress=${courseAddress}&chainId=${chainId}&userAddress=${userAddress}`
-
+): SWRHook<{ credentials: Credential[] }> => {
+  const client = useApi()
   const shouldFetch = courseAddress && chainId && userAddress
 
-  const {
-    data: response,
-    error,
-    isLoading,
-    isValidating,
-  } = useSWR<ApiResponse>(shouldFetch ? url : null, fetcher, {
-    revalidateIfStale: false,
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-    revalidateOnMount: true,
-  })
+  const { data: response, error } = useSWR<
+    ApiResponse<{ credentials: Credential[] }>
+  >(
+    shouldFetch
+      ? [
+          'course/credentials',
+          {
+            courseAddress: courseAddress,
+            chainId: chainId,
+            userAddress: userAddress,
+          },
+        ]
+      : null,
+    ([query, variables]: ApiRequestUrlAndParams) =>
+      client.request(query, variables),
+  )
 
   return {
-    data: response?.data?.credentials ?? null,
-    error,
-    isLoading,
-    isValidating,
+    data: response?.data || undefined,
+    isLoading: Boolean(!response && !error),
+    isError: Boolean(error),
+    error: error,
+    isSuccess: Boolean(response && !error),
   }
 }

@@ -3,6 +3,7 @@ import { IncomingForm, Fields, Files } from 'formidable'
 import { getSession } from 'next-auth/react'
 import path from 'path'
 import fs from 'fs'
+import { ApiResponse, ApiResponseStatus } from '@dae/types'
 
 const apiKey = process.env.INFURA_IPFS_API_KEY
 const apiSecret = process.env.INFURA_IPFS_API_SECRET
@@ -11,6 +12,14 @@ const auth = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64')
 // TypeScript enum for request methods
 enum HttpMethod {
   POST = 'POST',
+}
+
+type IpfsMetadata = {
+  name: string
+  description: string
+  website: string
+  'snapshot-ens': string
+  'media-channel': string
 }
 
 const asyncParse = (
@@ -31,7 +40,10 @@ const asyncParse = (
     })
   })
 
-const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
+const handlePostRequest = async (
+  req: NextApiRequest,
+  res: NextApiResponse<ApiResponse<{ metadata: IpfsMetadata }>>,
+) => {
   try {
     const fData = await asyncParse(req)
     const file = fData.files.file[0]
@@ -55,7 +67,10 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     )
 
     if (!imageIPFSResponse.ok) {
-      throw new Error('Error uploading course metadata to IPFS')
+      return res.status(500).json({
+        status: ApiResponseStatus.error,
+        message: 'Error uploading course metadata to IPFS',
+      })
     }
 
     const ipfsData = await imageIPFSResponse.json()
@@ -87,40 +102,55 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     )
 
     if (!metadataIPFSResponse.ok) {
-      throw new Error('Error uploading course metadata to IPFS')
+      return res.status(500).json({
+        status: ApiResponseStatus.error,
+        message: 'Error uploading course metadata to IPFS',
+      })
     }
 
     const ipfsMetadata = await metadataIPFSResponse.json()
 
-    res.status(200).json(ipfsMetadata)
+    res.status(200).json({
+      status: ApiResponseStatus.success,
+      data: { metadata: ipfsMetadata },
+    })
   } catch (error: any) {
     console.log(error)
-    return res.status(500).json({ success: false, error: error.message })
+    return res.status(500).json({
+      status: ApiResponseStatus.error,
+      message:
+        error.message ||
+        'An error occurred while processing your request. Please try again later.',
+    })
   }
 }
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse<ApiResponse<any>>,
 ) {
   // Check if req.method is defined
   if (req.method === undefined) {
-    return res
-      .status(400)
-      .json({ success: false, error: 'Request method is undefined' })
+    return res.status(400).json({
+      status: ApiResponseStatus.error,
+      message: 'Request method is undefined',
+    })
   }
 
   // Guard clause for unsupported request methods
   if (!(req.method in HttpMethod)) {
-    return res
-      .status(400)
-      .json({ success: false, error: 'This method is not supported' })
+    return res.status(400).json({
+      status: ApiResponseStatus.error,
+      message: 'This method is not supported',
+    })
   }
 
   // Guard clause for unauthenticated requests
   const session = await getSession({ req })
   if (!session) {
-    return res.status(401).json({ success: false, error: 'Unauthenticated' })
+    return res
+      .status(401)
+      .json({ status: ApiResponseStatus.error, message: 'Unauthenticated' })
   }
 
   // Handle the respective request method
@@ -128,9 +158,10 @@ export default async function handler(
     case HttpMethod.POST:
       return handlePostRequest(req, res)
     default:
-      return res
-        .status(400)
-        .json({ success: false, error: 'This method is not supported' })
+      return res.status(400).json({
+        status: ApiResponseStatus.error,
+        message: 'This method is not supported',
+      })
   }
 }
 

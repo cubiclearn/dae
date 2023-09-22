@@ -6,8 +6,14 @@ import { useCreateSnapshotSpace } from '@dae/snapshot'
 import type { Course } from '@dae/database'
 import { mainnet, goerli } from 'viem/chains'
 import { FactoryContractAddress } from '@dae/chains'
-import { UseWeb3WriteHookInterface } from '@dae/types'
+import {
+  ApiResponse,
+  UseWeb3WriteHookInterface,
+  VotingStrategy,
+} from '@dae/types'
 import { useWeb3HookState } from '../useWeb3HookState'
+import { CONFIRMATION_BLOCKS } from '@dae/constants'
+import { mutate } from 'swr'
 
 interface CreateCredentialHookInterface extends UseWeb3WriteHookInterface {
   create: (
@@ -19,6 +25,7 @@ interface CreateCredentialHookInterface extends UseWeb3WriteHookInterface {
     magisterBaseKarma: number,
     discipulusBaseKarma: number,
     snapshotSpaceENS: string,
+    votingStrategy: 'linear-voting' | 'quadratic-voting',
   ) => Promise<void>
   step: number
 }
@@ -70,6 +77,7 @@ export function useCreateCourse(
     magisterBaseKarma: number,
     discipulusBaseKarma: number,
     snapshotSpaceENS: string,
+    votingStrategy: VotingStrategy,
   ) => {
     try {
       state.setValidating()
@@ -108,9 +116,18 @@ export function useCreateCourse(
 
       setStep(1)
 
-      const { Hash: metadataIPFSHash } = await uploadMetadataResponse.json()
+      const { data: ipfsMetadataResponseData } =
+        (await uploadMetadataResponse.json()) as ApiResponse<{
+          metadata: { Hash: string }
+        }>
 
-      const metadataBaseURI = `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${metadataIPFSHash}`
+      if (!ipfsMetadataResponseData) {
+        throw new Error(
+          'There is a problem uploading your metadata. Try again.',
+        )
+      }
+
+      const metadataBaseURI = `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${ipfsMetadataResponseData.metadata.Hash}`
 
       const metadataResponse = await fetch(metadataBaseURI)
 
@@ -155,6 +172,7 @@ export function useCreateCourse(
 
       const txReceipt = await publicClient.waitForTransactionReceipt({
         hash: writeResult.hash,
+        confirmations: CONFIRMATION_BLOCKS,
       })
 
       const response = await fetch('/api/v0/course', {
@@ -186,8 +204,14 @@ export function useCreateCourse(
         responseData.data.course.symbol,
         responseData.data.course.description,
         responseData.data.course.karma_access_control_address,
+        votingStrategy,
       )
 
+      mutate(
+        (key) => Array.isArray(key) && key[0] === 'user/courses',
+        undefined,
+        { revalidate: true },
+      )
       setStep(4)
       state.setSuccess()
     } catch (e: unknown) {

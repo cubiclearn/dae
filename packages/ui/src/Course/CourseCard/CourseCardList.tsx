@@ -21,30 +21,11 @@ export const CourseCardList: React.FC<CourseCardListProps> = ({ role }) => {
   const { chain } = useNetwork()
   const { address } = useAccount()
 
-  const {
-    data: response,
-    error,
-    isLoading,
-  } = useUserCourses(
-    address ? (address as Address) : undefined,
-    chain ? chain.id : undefined,
+  const { data, error, isLoading } = useUserCourses(
+    address as Address | undefined,
+    chain?.id,
     role,
   )
-
-  if (!chain || !chain.id || !address) {
-    return (
-      <Alert status="error">
-        <AlertIcon />
-        <Box>
-          <AlertTitle>Something went wrong.</AlertTitle>
-          <AlertDescription>
-            You are not connected to Web3. Please connect your wallet before
-            proceeding.
-          </AlertDescription>
-        </Box>
-      </Alert>
-    )
-  }
 
   if (isLoading) {
     return (
@@ -68,7 +49,7 @@ export const CourseCardList: React.FC<CourseCardListProps> = ({ role }) => {
     )
   }
 
-  if (!response || response.data.courses.length === 0) {
+  if (!data || data.courses.length === 0) {
     return (
       <Alert status="info">
         <AlertIcon />
@@ -82,10 +63,10 @@ export const CourseCardList: React.FC<CourseCardListProps> = ({ role }) => {
 
   return (
     <SimpleGrid
-      columns={{ sm: 1, md: 2, lg: 3, xl: 5 }}
-      spacing={{ sm: 0, md: 8 }}
+      columns={{ base: 1, sm: 2, lg: 3, xl: 5 }}
+      spacing={{ base: 8 }}
     >
-      {response.data.courses.map((course) => (
+      {data.courses.map((course) => (
         <CourseCard key={course.address} data={course} />
       ))}
     </SimpleGrid>

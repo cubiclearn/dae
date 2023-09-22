@@ -1,16 +1,18 @@
 import { Box, Link } from '@chakra-ui/react'
-import { Proposal } from '@dae/snapshot'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { ProposalHeading } from './ProposalHeading'
+import { ProposalHeading } from './ProposalDetails/ProposalHeading'
+import { Proposal } from '@dae/snapshot'
 
 type ProposalRowProps = {
-  proposal: Proposal
+  proposal: Partial<Proposal>
 }
 
 export const ProposalRow: React.FC<ProposalRowProps> = ({ proposal }) => {
   const router = useRouter()
   const { address: courseAddress } = router.query
+
+  const { title = '', author = '', end = 0 } = proposal
 
   return (
     <Link
@@ -20,11 +22,7 @@ export const ProposalRow: React.FC<ProposalRowProps> = ({ proposal }) => {
       _hover={{ textDecoration: 'none' }}
     >
       <Box borderRadius={'xl'} padding={8} bg={'white'} boxShadow={'base'}>
-        <ProposalHeading
-          title={proposal.title}
-          author={proposal.author}
-          end={proposal.end}
-        />
+        <ProposalHeading title={title} author={author} end={end} />
       </Box>
     </Link>
   )

@@ -18,7 +18,7 @@ export default function Info() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout.Course heading="Credential Info">
-        <Stack spacing={8}>
+        <Stack spacing={4}>
           <CredentialInfoContainer
             credentialCid={credentialCid}
             courseAddress={courseAddress}

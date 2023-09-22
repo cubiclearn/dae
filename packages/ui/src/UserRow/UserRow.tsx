@@ -16,12 +16,10 @@ export const UserRow: React.FC<UserRowProps> = ({
   onDelete,
   isDeleting,
 }) => {
-  const course = useCourseData()
+  const { data: courseData } = useCourseData()
 
-  const { data: karmaBalance, isSuccess } = useKarmaBalance(
-    course.data
-      ? (course.data.karma_access_control_address as Address)
-      : undefined,
+  const { data: karmaBalance } = useKarmaBalance(
+    courseData?.karma_access_control_address,
     user.user_address as Address,
   )
 
@@ -45,7 +43,7 @@ export const UserRow: React.FC<UserRowProps> = ({
           {user.user_discord_handle}
         </Text>
       </Td>
-      <Td isNumeric>{isSuccess ? karmaBalance?.toString() : '--'}</Td>
+      <Td isNumeric>{karmaBalance ? karmaBalance?.rate?.toString() : '--'}</Td>
       <Td>
         <Button colorScheme="red" onClick={onDelete} isLoading={isDeleting}>
           X

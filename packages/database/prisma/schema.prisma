@@ -1,18 +1,10 @@
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
-  // directUrl = env("DIRECT_DATABASE_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
-}
-
-model Account {
-  address String @id
-  name    String
-  surname String
 }
 
 model Course {
@@ -30,8 +22,8 @@ model Course {
   chain_id                     Int
   karma_access_control_address String
   snapshot_space_ens           String            @default("")
-  user_credentials             UserCredentials[]
   credentials                  Credential[]
+  user_credentials             UserCredentials[]
 
   @@id([address, chain_id])
 }
@@ -73,7 +65,7 @@ model UserCredentials {
   @@unique([user_address, course_address, credential_ipfs_cid, course_chain_id])
 }
 
-model TransactionsVerifications {
+model Transactions {
   transaction_hash String  @id
   user_address     String
   chain_id         Int

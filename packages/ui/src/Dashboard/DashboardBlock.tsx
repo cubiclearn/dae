@@ -3,8 +3,19 @@ import React from 'react'
 
 type DashboardBlockProps = {
   title: string
-  value: number
+  value: number | undefined
   isInt?: boolean
+}
+
+const formatValue = (value: number | undefined, toInt = false): string => {
+  if (!value || isNaN(Number(value))) {
+    return '0'
+  }
+  if (toInt) {
+    return Math.round(value).toString()
+  }
+
+  return value.toFixed(2)
 }
 
 export const DashboardBlock: React.FC<DashboardBlockProps> = ({
@@ -12,6 +23,8 @@ export const DashboardBlock: React.FC<DashboardBlockProps> = ({
   value,
   isInt = false,
 }) => {
+  const formattedValue = formatValue(value, isInt)
+
   return (
     <Stat
       size={'md'}
@@ -22,9 +35,7 @@ export const DashboardBlock: React.FC<DashboardBlockProps> = ({
       boxShadow={'md'}
     >
       <StatLabel fontSize={'md'}>{title}</StatLabel>
-      <StatNumber fontSize={'4xl'}>
-        {isInt ? value : value.toFixed(2)}
-      </StatNumber>
+      <StatNumber fontSize={'4xl'}>{formattedValue}</StatNumber>
     </Stat>
   )
 }

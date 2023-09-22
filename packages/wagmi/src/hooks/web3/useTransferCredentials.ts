@@ -1,8 +1,11 @@
 import { useContractWrite, usePublicClient } from 'wagmi'
 import { Address } from 'viem'
 import { CredentialsBurnableAbi } from '@dae/abi'
-import { CredentialType } from '@dae/database'
+import { Credential, CredentialType } from '@dae/database'
 import { useWeb3HookState } from '../useWeb3HookState'
+import { ApiResponse } from '@dae/types'
+import { CONFIRMATION_BLOCKS } from '@dae/constants'
+import { mutate } from 'swr'
 
 export type TransferCredentialsData = {
   address: Address
@@ -71,10 +74,11 @@ export function useTransferCredentials(
         throw new Error(responseJSON.error)
       }
 
-      const alreadyExistingCredentialResponseJSON =
-        await alreadyExistingCredentialResponse.json()
+      const alreadyExistingCredentialResponseJSON: ApiResponse<{
+        credential: Credential
+      }> = await alreadyExistingCredentialResponse.json()
 
-      if (alreadyExistingCredentialResponseJSON.data.credential) {
+      if (alreadyExistingCredentialResponseJSON.data?.credential) {
         throw new Error(
           `Credential already minted to this address (${userData.address}).`,
         )
@@ -102,6 +106,7 @@ export function useTransferCredentials(
 
       const txReceipt = await publicClient.waitForTransactionReceipt({
         hash: writeResult.hash,
+        confirmations: CONFIRMATION_BLOCKS,
       })
 
       const response = await fetch('/api/v0/user/course/credentials', {
@@ -126,6 +131,16 @@ export function useTransferCredentials(
         const responseJSON = await response.json()
         throw new Error(responseJSON.error)
       }
+
+      mutate(
+        (key) =>
+          Array.isArray(key) &&
+          (key[0] === 'course/teachers' ||
+            key[0] === 'course/students' ||
+            key[0] === 'course/credential/users'),
+        undefined,
+        { revalidate: true },
+      )
 
       state.setSuccess()
     } catch (e: any) {
@@ -163,10 +178,11 @@ export function useTransferCredentials(
             throw new Error(responseJSON.error)
           }
 
-          const alreadyExistingCredentialResponseJSON =
-            await alreadyExistingCredentialResponse.json()
+          const alreadyExistingCredentialResponseJSON: ApiResponse<{
+            credential: Credential
+          }> = await alreadyExistingCredentialResponse.json()
 
-          if (alreadyExistingCredentialResponseJSON.data.credential) {
+          if (alreadyExistingCredentialResponseJSON.data?.credential) {
             throw new Error(
               `Credential already minted to this address (${userData.address}). Please remove it from the list and retry.`,
             )
@@ -212,6 +228,7 @@ export function useTransferCredentials(
 
       const txReceipt = await publicClient.waitForTransactionReceipt({
         hash: writeResult.hash,
+        confirmations: CONFIRMATION_BLOCKS,
       })
 
       const response = await fetch('/api/v0/user/course/credentials', {

@@ -24,6 +24,7 @@ import { Address } from 'viem'
 import { ConfirmActionModal } from '../../ConfirmActionModal'
 import { useRouter } from 'next/router'
 import { useNetwork } from 'wagmi'
+import { SyncButton } from '../../SyncButton'
 
 type CredentialInfoContainerProps = {
   credentialCid: string | undefined
@@ -50,9 +51,9 @@ export const CredentialInfoContainer: React.FC<CredentialInfoContainerProps> =
       isLoading: isDeletingCredential,
       isError: isErrorDeletingCredential,
     } = useDeleteCredential(
-      credentialData?.ipfs_cid,
-      credentialData?.course_address as Address,
-      credentialData?.course_chain_id,
+      credentialData?.credential.ipfs_cid,
+      credentialData?.credential.course_address as Address,
+      credentialData?.credential.course_chain_id,
     )
 
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -130,15 +131,20 @@ export const CredentialInfoContainer: React.FC<CredentialInfoContainerProps> =
           <></>
         )}
         <Stack justifyContent={'space-between'} direction={'row'}>
-          <Box>
+          <Stack
+            justifyContent={'space-between'}
+            direction={'row'}
+            width={'full'}
+          >
             <Link
               as={NextLink}
               href={`/course/${courseAddress}/credentials/list`}
             >
               <Button leftIcon={<ArrowBackIcon />}>Back</Button>
             </Link>
-          </Box>
-          {credentialUsersData.length === 0 ? (
+            <SyncButton />
+          </Stack>
+          {credentialUsersData.userCredentials.length === 0 ? (
             <Box>
               <Button
                 colorScheme="red"
@@ -152,21 +158,14 @@ export const CredentialInfoContainer: React.FC<CredentialInfoContainerProps> =
             <></>
           )}
         </Stack>
-        <Stack
-          direction={{ base: 'column', lg: 'row' }} // Stack vertically on base, horizontally on lg
-          spacing={8}
-          maxW="100%"
-        >
-          <Box
-            flex={{ base: 'none', lg: '1 1 30%', xl: '1 1 20%' }} // 30% width on lg, auto on base
-            maxW={{ base: '100%', lg: 'none' }} // Adjust max width based on screen size
-          >
-            <CredentialInfo credentialData={credentialData} />
+        <Stack direction={{ base: 'column', lg: 'row' }} spacing={8}>
+          <Box width={{ base: 'none', lg: '30%', xl: '20%' }}>
+            <CredentialInfo credentialData={credentialData.credential} />
           </Box>
-          <Box flex={{ base: '1', lg: '2 1 70%', xl: '2 1 80%' }}>
+          <Box width={{ base: 'none', lg: '70%', xl: '80%' }}>
             <CredentialHolders
               courseAddress={courseAddress}
-              credentialUsersData={credentialUsersData}
+              credentialUsersData={credentialUsersData.userCredentials}
             />
           </Box>
         </Stack>

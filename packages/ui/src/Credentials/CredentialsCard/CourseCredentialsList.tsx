@@ -52,7 +52,7 @@ export const CourseCredentialsList: React.FC<CourseCardListProps> = ({
     )
   }
 
-  if (!data || data.length === 0) {
+  if (!data || data.credentials.length === 0) {
     return (
       <Alert status="info">
         <AlertIcon />
@@ -82,7 +82,7 @@ export const CourseCredentialsList: React.FC<CourseCardListProps> = ({
           columns={{ base: 1, sm: 2, lg: 3, xl: 5 }}
           spacing={{ base: 8 }}
         >
-          {data.map((credential) => (
+          {data.credentials.map((credential) => (
             <Link
               as={NextLink}
               href={`/course/${credential.course_address}/credentials/${credential.ipfs_cid}/info`}

@@ -4,6 +4,7 @@ import {
   DrawerCloseButton,
   DrawerContent,
   Stack,
+  Box,
 } from '@chakra-ui/react'
 import { Logo } from '../Logo'
 
@@ -21,16 +22,18 @@ export const BaseDrawer: React.FC<DrawerProps> = ({
     <Drawer
       autoFocus={false}
       isOpen={isOpen}
-      placement='left'
+      placement="left"
       onClose={onClose}
       returnFocusOnClose={false}
       onOverlayClick={onClose}
-      size='xs'
+      size="xs"
     >
       <DrawerContent pt={8} px={8}>
         <DrawerCloseButton />
-        <Stack spacing={4}>
-          <Logo />
+        <Stack spacing={6}>
+          <Box mx="2">
+            <Logo />
+          </Box>
           {children}
         </Stack>
       </DrawerContent>

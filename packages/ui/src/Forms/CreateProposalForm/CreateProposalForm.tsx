@@ -19,7 +19,7 @@ import {
 } from '@chakra-ui/react'
 import { useCreateProposal } from '@dae/snapshot'
 import { useFormik } from 'formik'
-import React, { ChangeEvent, useEffect } from 'react'
+import React, { ChangeEvent } from 'react'
 import * as Yup from 'yup'
 import { useCourseData } from '../../CourseProvider'
 import { useRouter } from 'next/router'
@@ -39,7 +39,7 @@ const validationSchema = Yup.object().shape({
 export const CreateProposalForm: React.FC = () => {
   const { data } = useCourseData()
   const toast = useToast()
-  const { create, isLoading, isError, isSuccess, error } = useCreateProposal(
+  const { create, isLoading, isError, error } = useCreateProposal(
     data ? data.snapshot_space_ens : undefined,
   )
   const router = useRouter()
@@ -52,6 +52,7 @@ export const CreateProposalForm: React.FC = () => {
     handleChange,
     handleSubmit,
     setFieldValue,
+    resetForm,
   } = useFormik({
     initialValues: {
       title: '',
@@ -62,45 +63,38 @@ export const CreateProposalForm: React.FC = () => {
     },
     onSubmit: async (values) => {
       try {
-        if (!values.endDate) {
-          throw new Error('End date is unset.')
-        }
-        const result = await create(
-          values.title,
-          values.description,
-          values.choices,
-          (values.endDate as Date).getTime() / 1000,
-          values.discussionLink,
-        )
-
-        router.push(
-          `/course/${router.query.address as Address}/proposals/${result.id}`,
+        if (!values.endDate) return
+        toast.promise(
+          create(
+            values.title,
+            values.description,
+            values.choices,
+            (values.endDate as Date).getTime() / 1000,
+            values.discussionLink,
+          ).then((result) => {
+            resetForm()
+            return result
+          }),
+          {
+            success: (result) => ({
+              title: 'Credential created with success!',
+              onCloseComplete: () =>
+                router.push(
+                  `/course/${router.query.address as Address}/proposals/${
+                    result.id
+                  }`,
+                ),
+            }),
+            error: { title: 'Error creating credential.' },
+            loading: {
+              title: 'Credential creation in progress...',
+            },
+          },
         )
       } catch (_e) {}
     },
     validationSchema: validationSchema,
   })
-
-  useEffect(() => {
-    if (isError) {
-      toast({
-        title: 'Error creating credential.',
-        status: 'error',
-      })
-    }
-    if (isSuccess) {
-      toast({
-        title: 'Proposal created with success!',
-        status: 'success',
-      })
-    }
-    if (isLoading) {
-      toast({
-        title: 'Creating new proposal...',
-        status: 'info',
-      })
-    }
-  }, [isLoading, isError, isSuccess])
 
   return (
     <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
@@ -230,7 +224,7 @@ export const CreateProposalForm: React.FC = () => {
               <AlertIcon />
               <Box>
                 <AlertTitle>Something went wrong.</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
+                <AlertDescription>{error?.message}</AlertDescription>
               </Box>
             </Alert>
           ) : (

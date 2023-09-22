@@ -10,13 +10,14 @@ import {
   FormLabel,
   Input,
   Stack,
+  useToast,
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
 import React from 'react'
 import { Address, useNetwork } from 'wagmi'
 import * as Yup from 'yup'
 import { useCourseCredentials, useTransferCredentials } from '@dae/wagmi'
-import { useFormFeedback } from '../../../hooks'
+import { useLeavePageConfirmation } from '../../../hooks'
 
 const ethereumAddressRegex = /^0x([A-Fa-f0-9]{40})$/
 
@@ -42,16 +43,12 @@ export const BaseCredentialSingleTransferForm: React.FC<
     chain?.id,
     credentialType,
   )
+  const toast = useToast()
 
-  const {
-    transfer,
-    isLoading,
-    isError,
-    isSuccess,
-    error,
-    isSigning,
-    isValidating,
-  } = useTransferCredentials(courseAddress as Address, credentialType)
+  const { transfer, isLoading, isError, error, isSigning, isValidating } =
+    useTransferCredentials(courseAddress as Address, credentialType)
+
+  useLeavePageConfirmation(isLoading, 'Changes you made may not be saved.')
 
   const {
     values,
@@ -70,23 +67,34 @@ export const BaseCredentialSingleTransferForm: React.FC<
     },
     onSubmit: async (values) => {
       try {
-        if (data) {
-          await transfer(
+        if (!data) return
+        toast.promise(
+          transfer(
             {
               address: values.userAddress as Address,
               email: values.userEmail,
               discord: values.userDiscordUsername,
             },
-            data[0].ipfs_cid,
-          )
-          resetForm()
-        }
+            data.credentials[0].ipfs_cid,
+          ).then(() => {
+            resetForm()
+          }),
+          {
+            success: {
+              title: 'Credential transferred with success!',
+            },
+            error: { title: 'Error transferring credential.' },
+            loading: {
+              title: 'Credential transfer in progress...',
+              description:
+                'Processing transaction on the blockchain can take some time (usually around one minute).',
+            },
+          },
+        )
       } catch (_e) {}
     },
     validationSchema: validationSchema,
   })
-
-  useFormFeedback({ isError, isSuccess, isLoading })
 
   return (
     <form onSubmit={handleSubmit}>

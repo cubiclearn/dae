@@ -1,9 +1,9 @@
-import { TransactionsVerifications } from '@dae/database'
+import { Transactions } from '@dae/database'
 import { useHookState } from '../useHookState'
 
 type GetTransactionsApiResponse = {
   data: {
-    transactions: TransactionsVerifications[]
+    transactions: Transactions[]
   }
   success: boolean
 }
@@ -55,7 +55,7 @@ export const UseVerifyUserTransactions = () => {
           }
           if (transaction.action === 'BURN_CREDENTIAL') {
             return fetch(
-              `/api/v0/user/course/credentials?txHash=${transaction.transaction_hash}&chainId=${transaction.chain_id}`,
+              `/api/v0/user/course/credential?txHash=${transaction.transaction_hash}&chainId=${transaction.chain_id}`,
               {
                 method: 'DELETE',
               },

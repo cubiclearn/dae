@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "TransactionsVerifications" (
+CREATE TABLE "Transactions" (
     "transaction_hash" TEXT NOT NULL,
     "user_address" TEXT NOT NULL,
     "chain_id" INTEGER NOT NULL,

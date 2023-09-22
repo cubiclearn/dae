@@ -4,7 +4,7 @@ import type {
   UserCredentials,
   Credential,
   CredentialType,
-  TransactionsVerifications,
+  Transactions,
 } from '@dae/database'
 import { Address } from 'viem'
 import { sanitizeAddress } from './functions'
@@ -13,10 +13,12 @@ export const getCourse = (
   courseAddress: Address,
   chainId: number,
 ): Promise<Course | null> => {
-  return prisma.course.findFirst({
+  return prisma.course.findUnique({
     where: {
-      address: sanitizeAddress(courseAddress),
-      chain_id: chainId,
+      address_chain_id: {
+        address: sanitizeAddress(courseAddress),
+        chain_id: chainId,
+      },
     },
   })
 }
@@ -153,7 +155,7 @@ export const getUserCourseCredentials = async (
   })
 }
 
-export const getCourseCredentialUsers = async (
+export const getCourseUsersCredentials = async (
   credentialCid: string,
   courseAddress: Address,
   chainId: number,
@@ -203,8 +205,8 @@ export const getUserCourseCredential = async (
 
 export const getUserUnverifiedTransactions = async (
   userAddress: Address,
-): Promise<TransactionsVerifications[] | null> => {
-  return prisma.transactionsVerifications.findMany({
+): Promise<Transactions[]> => {
+  return prisma.transactions.findMany({
     where: {
       user_address: sanitizeAddress(userAddress),
       verified: false,

@@ -1,52 +1,32 @@
 import { Address } from 'viem'
 import { USER_VOTING_POWER_QUERY } from '../graphql/queries'
-import { useSnapshotApolloQuery } from './useApolloQuery'
-import { useEffect, useState } from 'react'
+import useSWR from 'swr'
+import { useSnapshotGraphQL } from './useSnapshotGraphQL'
+import { type SWRHook } from '@dae/types'
 
 export const useUserVotingPower = (
   proposalId: string | undefined,
   userAddress: Address | undefined,
-  space: string | undefined,
-) => {
-  const { data, query } = useSnapshotApolloQuery()
-  const [isError, setIsError] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState(null)
+  spaceId: string | undefined,
+): SWRHook<USER_VOTING_POWER_QUERY> => {
+  const client = useSnapshotGraphQL()
+  const shouldFetch = proposalId !== undefined
 
-  useEffect(() => {
-    if (
-      proposalId !== undefined &&
-      userAddress !== undefined &&
-      space !== undefined
-    ) {
-      const fetchData = async () => {
-        setIsLoading(true)
-        try {
-          await query({
-            query: USER_VOTING_POWER_QUERY,
-            variables: {
-              proposalId: proposalId,
-              userAddress: userAddress,
-              spaceId: space,
-            },
-          })
-          setIsError(false)
-          setError(null)
-        } catch (e: any) {
-          setIsError(true)
-          setError(e)
-        }
-        setIsLoading(false)
-      }
-
-      fetchData()
-    }
-  }, [proposalId, userAddress, space])
+  const { data, error } = useSWR(
+    [
+      USER_VOTING_POWER_QUERY,
+      { proposalId: proposalId, userAddress: userAddress, spaceId: spaceId },
+    ],
+    ([query, variables]) =>
+      client?.fetch<USER_VOTING_POWER_QUERY>(query, variables),
+    { isPaused: () => !shouldFetch },
+  )
 
   return {
     data,
-    isLoading,
-    isError,
-    error,
+    isLoading: Boolean(!data && !error),
+    isError: Boolean(error),
+    error: error,
+    isSuccess: Boolean(data && !error),
   }
 }

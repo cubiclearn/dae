@@ -14,6 +14,7 @@ import {
   NumberInput,
   NumberInputField,
   NumberInputStepper,
+  Select,
   Stack,
   useSteps,
   useToast,
@@ -25,11 +26,32 @@ import { useEffect } from 'react'
 import { useAccount, useNetwork } from 'wagmi'
 import * as Yup from 'yup'
 import { ProgressStepper } from '../../Stepper'
+import {
+  MAXIMUM_ALLOWED_UPLOAD_FILE_SIZE,
+  SUPPORTED_IMAGE_FILE_TYPES,
+} from '@dae/constants'
+import { checkFileType, checkFileSize } from '../utils'
+import { type VotingStrategy } from '@dae/types'
+import { useLeavePageConfirmation } from '../../hooks'
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
   description: Yup.string().required('Description is required'),
-  image: Yup.mixed().required('Image is required'),
+  image: Yup.mixed()
+    .required('Image is required.')
+    .test(
+      'fileType',
+      'Please select a valid image file.',
+      (file) => file && checkFileType(file as File, SUPPORTED_IMAGE_FILE_TYPES),
+    )
+    .test(
+      'fileSize',
+      `Image exceeds maximum allowed file size of ${
+        MAXIMUM_ALLOWED_UPLOAD_FILE_SIZE / (1024 * 1024)
+      }MB.`,
+      (file) =>
+        file && checkFileSize(file as File, MAXIMUM_ALLOWED_UPLOAD_FILE_SIZE),
+    ),
   website: Yup.string()
     .url('Invalid website URL')
     .required('Website is required'),
@@ -48,6 +70,9 @@ const validationSchema = Yup.object().shape({
       /^([a-z0-9-]+\.eth)$/i,
       'Invalid Snapshot Space ENS format (e.g., your-ens.eth)',
     ),
+  votingStrategy: Yup.string()
+    .required('Voting strategy is required.')
+    .matches(/^(linear-voting|quadratic-voting)$/, 'Invalid voting type'),
 })
 
 export const CreateCourseForm = () => {
@@ -68,18 +93,12 @@ export const CreateCourseForm = () => {
     )
   }
 
-  const {
-    create,
-    isLoading,
-    isError,
-    error,
-    isSuccess,
-    isSigning,
-    isValidating,
-    step,
-  } = useCreateCourse(chain, address)
+  const { create, isLoading, isError, error, isSigning, isValidating, step } =
+    useCreateCourse(chain, address)
   const toast = useToast()
   const router = useRouter()
+
+  useLeavePageConfirmation(isLoading, 'Changes you made may not be saved.')
 
   const steps = [
     {
@@ -113,7 +132,17 @@ export const CreateCourseForm = () => {
     handleChange,
     handleSubmit,
     setFieldValue,
-  } = useFormik({
+  } = useFormik<{
+    name: string
+    description: string
+    image: File | null
+    website: string
+    mediaChannel: string
+    discipulusBaseKarma: number
+    magisterBaseKarma: number
+    snapshotSpaceENS: string
+    votingStrategy: VotingStrategy
+  }>({
     initialValues: {
       name: '',
       description: '',
@@ -123,23 +152,37 @@ export const CreateCourseForm = () => {
       discipulusBaseKarma: 0,
       magisterBaseKarma: 0,
       snapshotSpaceENS: '',
+      votingStrategy: 'linear-voting',
     },
     onSubmit: async (values) => {
       try {
-        await create(
-          values.name,
-          values.description,
-          values.image!,
-          values.website,
-          values.mediaChannel,
-          values.magisterBaseKarma,
-          values.discipulusBaseKarma,
-          values.snapshotSpaceENS,
+        if (!values.image) return
+        toast.promise(
+          create(
+            values.name,
+            values.description,
+            values.image,
+            values.website,
+            values.mediaChannel,
+            values.magisterBaseKarma,
+            values.discipulusBaseKarma,
+            values.snapshotSpaceENS,
+            values.votingStrategy,
+          ),
+          {
+            success: {
+              title: 'Course created with success!',
+              onCloseComplete: () => router.push('/profile/courses/teaching'),
+            },
+            error: { title: 'Error creating course.' },
+            loading: {
+              title: 'Course creation in progress...',
+              description:
+                'Processing transaction on the blockchain can take some time (usually around one minute).',
+            },
+          },
         )
-        router.push('/profile/courses/teaching')
-      } catch (_e) {
-        console.log(_e)
-      }
+      } catch (_e) {}
     },
     validationSchema: validationSchema,
   })
@@ -147,22 +190,10 @@ export const CreateCourseForm = () => {
   const { data: isENSOwner } = useIsENSOwner(address, values.snapshotSpaceENS)
 
   useEffect(() => {
-    if (isError) {
-      toast({
-        title: 'Error creating course.',
-        status: 'error',
-      })
-    }
-    if (isSuccess) {
-      toast({
-        title: 'Course created with success!',
-        status: 'success',
-      })
-    }
     if (isLoading && step) {
       setActiveStep(step)
     }
-  }, [isLoading, isError, isSuccess, step])
+  }, [step])
 
   return (
     <Stack
@@ -201,7 +232,7 @@ export const CreateCourseForm = () => {
             />
             <FormErrorMessage>{errors.description}</FormErrorMessage>
           </FormControl>
-          <FormControl isRequired>
+          <FormControl isRequired isInvalid={!!errors.image && touched.image}>
             <FormLabel>Image</FormLabel>
             <Input
               py={1}
@@ -243,36 +274,34 @@ export const CreateCourseForm = () => {
               placeholder="https://your-media-channel.com"
             />
             <FormErrorMessage>{errors.mediaChannel}</FormErrorMessage>
-            <FormControl
-              isRequired
-              isInvalid={
-                !!errors.magisterBaseKarma && touched.magisterBaseKarma
-              }
+          </FormControl>
+          <FormControl
+            isRequired
+            isInvalid={!!errors.magisterBaseKarma && touched.magisterBaseKarma}
+          >
+            <FormLabel>Magister base karma</FormLabel>
+            <NumberInput
+              allowMouseWheel
+              defaultValue={0}
+              min={0}
+              id="magisterBaseKarma"
+              onChange={(_valueAsString, valueAsNumber) => {
+                if (isNaN(valueAsNumber)) {
+                  setFieldValue('magisterBaseKarma', 0) // Set to a default value or any other appropriate value
+                } else {
+                  setFieldValue('magisterBaseKarma', valueAsNumber)
+                }
+              }}
+              value={values.magisterBaseKarma}
+              onBlur={handleBlur}
             >
-              <FormLabel>Magister base karma</FormLabel>
-              <NumberInput
-                allowMouseWheel
-                defaultValue={0}
-                min={0}
-                id="magisterBaseKarma"
-                onChange={(_valueAsString, valueAsNumber) => {
-                  if (isNaN(valueAsNumber)) {
-                    setFieldValue('magisterBaseKarma', 0) // Set to a default value or any other appropriate value
-                  } else {
-                    setFieldValue('magisterBaseKarma', valueAsNumber)
-                  }
-                }}
-                value={values.magisterBaseKarma}
-                onBlur={handleBlur}
-              >
-                <NumberInputField />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-              <FormErrorMessage>{errors.magisterBaseKarma}</FormErrorMessage>
-            </FormControl>
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+            <FormErrorMessage>{errors.magisterBaseKarma}</FormErrorMessage>
           </FormControl>
           <FormControl
             isRequired
@@ -324,6 +353,22 @@ export const CreateCourseForm = () => {
               {errors.snapshotSpaceENS ||
                 (!isENSOwner && 'You are not the owner of this ENS address.')}
             </FormErrorMessage>
+          </FormControl>
+          <FormControl
+            isRequired
+            isInvalid={!!errors.votingStrategy && touched.votingStrategy}
+          >
+            <FormLabel>Voting strategy</FormLabel>
+            <Select
+              id="votingStrategy"
+              placeholder="Select voting strategy"
+              onChange={handleChange}
+              defaultValue={'linear-voting'}
+            >
+              <option value={'linear-voting'}>Linear Voting</option>
+              <option value={'quadratic-voting'}>Quadratic Voting</option>
+            </Select>
+            <FormErrorMessage>{errors.votingStrategy}</FormErrorMessage>
           </FormControl>
           <Button
             colorScheme="blue"

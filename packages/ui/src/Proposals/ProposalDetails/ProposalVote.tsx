@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
   Button,
   Select,
@@ -17,16 +17,12 @@ import {
   Center,
   Spinner,
 } from '@chakra-ui/react'
-import {
-  Proposal,
-  useUserVote,
-  useUserVotingPower,
-  useVotePropsal,
-} from '@dae/snapshot'
+import { useUserVote, useUserVotingPower, useVotePropsal } from '@dae/snapshot'
 import { ChainSnapshotHub } from '@dae/chains'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { useAccount } from 'wagmi'
+import { Proposal } from '@dae/snapshot'
 
 const validationSchema = Yup.object().shape({
   vote: Yup.string().required('Vote is required'),
@@ -41,7 +37,7 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
   const toast = useToast()
   const { address: userAddress } = useAccount()
 
-  const { vote, isError, isLoading, isSuccess, error } = useVotePropsal(
+  const { vote, isError, isLoading, error } = useVotePropsal(
     proposal.space.id,
     parseInt(proposal.network) as keyof typeof ChainSnapshotHub,
     proposal.id,
@@ -53,7 +49,6 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
     userAddress,
   )
   const [showRevoteForm, setShowRevoteForm] = useState(false)
-  const hasVoted = userVote?.votes.length > 0
 
   const { data: votingPower, isLoading: isLoadingVotingPower } =
     useUserVotingPower(proposal.id, userAddress, proposal.space.id)
@@ -73,8 +68,15 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
     },
     onSubmit: async (values) => {
       try {
-        await vote(values.vote, values.reason)
-        window.location.reload()
+        toast.promise(vote(values.vote, values.reason), {
+          success: {
+            title: 'Proposal voted with success!',
+          },
+          error: { title: 'Error voting proposal.' },
+          loading: {
+            title: 'Voting in progress...',
+          },
+        })
       } catch (_e) {}
     },
     validationSchema: validationSchema,
@@ -83,27 +85,6 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
   const handleRevoteButtonClick = () => {
     setShowRevoteForm(true)
   }
-
-  useEffect(() => {
-    if (isError) {
-      toast({
-        title: 'Error voting proposal.',
-        status: 'error',
-      })
-    }
-    if (isSuccess) {
-      toast({
-        title: 'Succefully voted proposal',
-        status: 'success',
-      })
-    }
-    if (isLoading) {
-      toast({
-        title: 'Voting proposal...',
-        status: 'info',
-      })
-    }
-  }, [isLoading, isError, isSuccess])
 
   if (isLoadingVote || isLoadingVotingPower) {
     return (
@@ -118,7 +99,7 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
     )
   }
 
-  if (!isLoadingVotingPower && votingPower === null) {
+  if (!isLoadingVotingPower && !votingPower) {
     return (
       <Alert status="warning">
         <AlertIcon />
@@ -134,25 +115,29 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
     )
   }
 
-  return hasVoted && !showRevoteForm ? (
-    <Stack spacing={4}>
-      <Text fontSize={'lg'} fontWeight={'bold'}>
-        Cast a vote
-      </Text>
-      <Alert status="success">
-        <AlertIcon />
-        <Box>
-          <AlertTitle>You have already voted!</AlertTitle>
-          <AlertDescription>{`Your vote: ${
-            proposal.choices[userVote.votes[0].choice - 1]
-          }`}</AlertDescription>
-        </Box>
-      </Alert>
-      <Button colorScheme="blue" onClick={handleRevoteButtonClick}>
-        Change Vote
-      </Button>
-    </Stack>
-  ) : (
+  if (userVote && userVote.votes.length > 0 && !showRevoteForm) {
+    return (
+      <Stack spacing={4}>
+        <Text fontSize={'lg'} fontWeight={'bold'}>
+          Cast a vote
+        </Text>
+        <Alert status="success">
+          <AlertIcon />
+          <Box>
+            <AlertTitle>You have already voted!</AlertTitle>
+            <AlertDescription>{`Your vote: ${
+              proposal.choices[userVote.votes[0].choice - 1]
+            }`}</AlertDescription>
+          </Box>
+        </Alert>
+        <Button colorScheme="blue" onClick={handleRevoteButtonClick}>
+          Change Vote
+        </Button>
+      </Stack>
+    )
+  }
+
+  return (
     <form onSubmit={handleSubmit}>
       <Stack spacing={4}>
         <Text fontSize={'lg'} fontWeight={'bold'}>
@@ -202,7 +187,7 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
             <AlertIcon />
             <Box>
               <AlertTitle>Something went wrong.</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
+              <AlertDescription>{error?.message}</AlertDescription>
             </Box>
           </Alert>
         ) : (

@@ -20,7 +20,7 @@ export const CredentialsCard: FC<CredentialsCardProps> = ({ data }) => {
   }
 
   return (
-    <Card maxW="sm" boxShadow={'md'}>
+    <Card maxW="sm" boxShadow={'md'} h={'100%'}>
       <CardBody>
         <Image
           src={data.image_url}

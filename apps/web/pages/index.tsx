@@ -14,30 +14,27 @@ const Home: FC = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout.Page>
-        <Center>
+        <Center
+          height={{ md: 'calc(100vh - 160px)', base: 'unset' }}
+          py={8}
+          overflowY={'auto'}
+        >
           <Stack
-            width={{ md: '100vw', base: 'unset' }}
-            height={{ md: 'calc(100vh - 80px)', base: 'unset' }}
+            width={{ md: '80vw', base: '90vw' }}
+            maxWidth={{ md: '100vh', base: 'unset' }}
             direction={{ md: 'row', base: 'column' }}
-            spacing={8}
-            align={'center'}
-            justify={'center'}
-            overflowY={'auto'}
+            spacing={{ md: 8, base: 4 }}
           >
-            <Box
-              width={{ md: '30%', sm: 0 }}
-              padding={'30px'}
-              minW={{ md: '350px', base: 'unset' }}
-            >
+            <Center padding={'30px'}>
               <Image src="/dae-home-image.png" borderRadius={'lg'} />
-            </Box>
-            <Box
-              width={{ md: '30%', sm: 0 }}
-              padding={'30px'}
-              minW={{ md: '350px', base: 'unset' }}
-            >
+            </Center>
+            <Center padding={'30px'}>
               <Stack spacing={8}>
-                <Text fontSize={'4xl'} fontWeight={'bold'}>
+                <Text
+                  fontSize={'4xl'}
+                  fontWeight={'extrabold'}
+                  lineHeight={'normal'}
+                >
                   Decentralized Autonomous Education
                 </Text>
                 <Stack spacing={4} fontSize={'lg'}>
@@ -68,7 +65,7 @@ const Home: FC = () => {
                   </Button>
                 </Box>
               </Stack>
-            </Box>
+            </Center>
           </Stack>
         </Center>
       </Layout.Page>

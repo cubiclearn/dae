@@ -14,10 +14,11 @@ import {
 } from '@chakra-ui/react'
 import {
   LeaderboardSection,
+  MyKarmaSection,
   PartecipantsSection,
   StatisticsSection,
 } from './Sections'
-import { Course } from '@dae/database'
+import { useIsAdminOrMagister } from '@dae/wagmi'
 
 type DashboardContainerProps = {
   courseAddress: Address
@@ -32,8 +33,13 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
     error,
   } = useCourseData()
   const { chain } = useNetwork()
+  const {
+    data: isAdminOrMagister,
+    isLoading: isFetchingUserRole,
+    isError: isErrorFetchingUserRole,
+  } = useIsAdminOrMagister(courseAddress)
 
-  if (isCourseDataLoading || (!courseData && !error)) {
+  if (isCourseDataLoading || (!courseData && !error) || isFetchingUserRole) {
     return (
       <Center>
         <Spinner />
@@ -41,7 +47,7 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
     )
   }
 
-  if (error) {
+  if (error || isErrorFetchingUserRole || !courseData) {
     return (
       <Alert status="error">
         <AlertIcon />
@@ -53,35 +59,72 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
     )
   }
 
+  if (isAdminOrMagister) {
+    return (
+      <Stack spacing={8}>
+        <Stack spacing={4}>
+          <Text fontSize={'2xl'} fontWeight={'semibold'}>
+            Your statistics
+          </Text>
+          <MyKarmaSection
+            karmaAccessControlAddress={
+              courseData.karma_access_control_address as Address
+            }
+          />
+        </Stack>
+        <Stack spacing={4}>
+          <Text fontSize={'2xl'} fontWeight={'semibold'}>
+            Participants
+          </Text>
+          <PartecipantsSection
+            courseAddress={courseAddress}
+            chainId={chain?.id}
+          />
+        </Stack>
+        <Stack spacing={4}>
+          <Text fontSize={'2xl'} fontWeight={'semibold'}>
+            Students Karma
+          </Text>
+          <StatisticsSection
+            courseAddress={courseAddress}
+            chainId={chain?.id}
+            courseData={courseData}
+          />
+        </Stack>
+        <Stack spacing={4}>
+          <Text fontSize={'2xl'} fontWeight={'semibold'}>
+            Students Leaderboard
+          </Text>
+          <LeaderboardSection
+            courseAddress={courseAddress}
+            chainId={chain?.id}
+            courseData={courseData}
+          />
+        </Stack>
+      </Stack>
+    )
+  }
+
   return (
     <Stack spacing={8}>
       <Stack spacing={4}>
         <Text fontSize={'2xl'} fontWeight={'semibold'}>
-          Participants
+          Your statistics
         </Text>
-        <PartecipantsSection
-          courseAddress={courseAddress}
-          chainId={chain?.id}
+        <MyKarmaSection
+          karmaAccessControlAddress={
+            courseData.karma_access_control_address as Address
+          }
         />
       </Stack>
       <Stack spacing={4}>
         <Text fontSize={'2xl'} fontWeight={'semibold'}>
-          Students Karma
-        </Text>
-        <StatisticsSection
-          courseAddress={courseAddress}
-          chainId={chain?.id}
-          courseData={courseData as Course | undefined}
-        />
-      </Stack>
-      <Stack spacing={4}>
-        <Text fontSize={'2xl'} fontWeight={'semibold'}>
-          Students Leaderboard
+          Students leaderboard
         </Text>
         <LeaderboardSection
           courseAddress={courseAddress}
           chainId={chain?.id}
-          courseData={courseData as Course | undefined}
+          courseData={courseData}
         />
       </Stack>
     </Stack>

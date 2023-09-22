@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { Layout } from '@dae/ui'
+import { Layout, ProposalContainer } from '@dae/ui'
 import { useRouter } from 'next/router'
 import { ProposalOverview } from '@dae/ui'
 
@@ -17,10 +17,12 @@ export default function TransferKarmaPage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout.Course heading="Proposal overview">
-        <ProposalOverview
-          proposalId={proposalId}
-          courseAddress={courseAddress}
-        />
+        <ProposalContainer>
+          <ProposalOverview
+            proposalId={proposalId}
+            courseAddress={courseAddress}
+          />
+        </ProposalContainer>
       </Layout.Course>
     </>
   )

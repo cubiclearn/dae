@@ -1,65 +1,40 @@
 import { Address } from 'viem'
 import useSWR from 'swr'
 import { Credential, CredentialType } from '@dae/database'
-
-interface UseCourseCredentialsData {
-  data: Credential[] | null
-  error: Error | null
-  isLoading: boolean
-}
-
-interface ApiResponse {
-  success: boolean
-  data?: { credentials: Credential[] | null }
-  error?: string
-}
-
-const fetcher = async (url: string) => {
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error('Failed to fetch data')
-  }
-  return response.json()
-}
+import { ApiResponse, SWRHook } from '@dae/types'
+import { ApiRequestUrlAndParams, useApi } from './useApi'
 
 export const useCourseCredentials = (
   courseAddress: Address | undefined,
   chainId: number | undefined,
   credentialType?: CredentialType | undefined,
-): UseCourseCredentialsData => {
-  const URLParams = new URLSearchParams()
-
-  if (courseAddress) {
-    URLParams.append('address', courseAddress)
-  }
-
-  if (chainId) {
-    URLParams.append('chainId', chainId.toString())
-  }
-
-  if (credentialType) {
-    URLParams.append('type', credentialType)
-  }
-
-  const url = `/api/v0/course/credentials?${URLParams}`
+): SWRHook<{ credentials: Credential[] }> => {
+  const client = useApi()
 
   const shouldFetch = courseAddress && chainId
 
-  const {
-    data: response,
-    error,
-    isLoading,
-    isValidating,
-  } = useSWR<ApiResponse>(shouldFetch ? url : null, fetcher, {
-    revalidateIfStale: false,
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-    revalidateOnMount: true,
-  })
+  const { data: response, error } = useSWR<
+    ApiResponse<{ credentials: Credential[] }>
+  >(
+    shouldFetch
+      ? [
+          'course/credentials',
+          {
+            address: courseAddress,
+            chainId: chainId,
+            type: credentialType,
+          },
+        ]
+      : null,
+    ([query, variables]: ApiRequestUrlAndParams) =>
+      client.request(query, variables),
+  )
 
   return {
-    data: response?.data?.credentials ?? null,
-    error,
-    isLoading: isLoading || isValidating,
+    data: response?.data || undefined,
+    isLoading: Boolean(!response && !error),
+    isError: Boolean(error),
+    error: error,
+    isSuccess: Boolean(response && !error),
   }
 }

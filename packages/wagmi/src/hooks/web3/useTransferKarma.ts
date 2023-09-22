@@ -2,6 +2,7 @@ import { useContractWrite, usePublicClient } from 'wagmi'
 import { Address } from 'viem'
 import { KarmaAccessControlAbiUint64 } from '@dae/abi'
 import { useWeb3HookState } from '../useWeb3HookState'
+import { CONFIRMATION_BLOCKS } from '@dae/constants'
 
 export type TransferData = {
   address: Address
@@ -69,8 +70,17 @@ export function useTransferKarma(
         args: [userAddress],
       })
 
-      if (Number(userCurrentKarmaAmount) + karmaIncrement < 0) {
-        throw new Error('Invalid karma amount. The amount cannot be negative.')
+      const userBaseKarma = await publicClient.readContract({
+        abi: KarmaAccessControlAbiUint64,
+        address: karmaAccessControlAddress,
+        functionName: 'getBaseKarma',
+        args: [userAddress],
+      })
+
+      if (Number(userCurrentKarmaAmount) + karmaIncrement < userBaseKarma) {
+        throw new Error(
+          'Invalid karma amount. The amount cannot be under user base karma.',
+        )
       }
 
       if (rate === undefined) {
@@ -89,6 +99,7 @@ export function useTransferKarma(
 
       await publicClient.waitForTransactionReceipt({
         hash: data.hash as Address,
+        confirmations: CONFIRMATION_BLOCKS,
       })
 
       state.setSuccess()
@@ -147,9 +158,19 @@ export function useTransferKarma(
             args: [user.address],
           })
 
-          if (Number(userCurrentKarmaAmount) + user.karma_increment < 0) {
+          const userBaseKarma = await publicClient.readContract({
+            abi: KarmaAccessControlAbiUint64,
+            address: karmaAccessControlAddress,
+            functionName: 'getBaseKarma',
+            args: [user.address],
+          })
+
+          if (
+            Number(userCurrentKarmaAmount) + user.karma_increment <
+            userBaseKarma
+          ) {
             throw new Error(
-              'Invalid karma amount. The amount cannot be negative.',
+              'Invalid karma amount. The amount cannot be under user base karma.',
             )
           }
 
@@ -179,6 +200,7 @@ export function useTransferKarma(
 
       await publicClient.waitForTransactionReceipt({
         hash: data.hash as Address,
+        confirmations: CONFIRMATION_BLOCKS,
       })
 
       state.setSuccess()

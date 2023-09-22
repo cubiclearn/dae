@@ -2,8 +2,8 @@ import { useAccount, useBlockNumber, useNetwork } from 'wagmi'
 import snapshot from '@snapshot-labs/snapshot.js'
 import { useEthersSigner } from './useEthersSigner'
 import { ChainSnapshotHub } from '@dae/chains'
-import { useState } from 'react'
 import { Proposal } from '@snapshot-labs/snapshot.js/dist/sign/types'
+import { useHookState } from './useHookState'
 
 type ProposalCreationResult = {
   id: string
@@ -19,10 +19,8 @@ export const useCreateProposal = (snapshotSpaceENS: string | undefined) => {
   const { chain } = useNetwork()
   const { data: blockNumber } = useBlockNumber()
 
-  const [error, setError] = useState<string | null>(null)
-  const [isError, setIsError] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const { isSuccess, isValidating, isLoading, isError, error, ...state } =
+    useHookState()
 
   const spaceNetwork = chain!.id as keyof typeof ChainSnapshotHub
   const hub = ChainSnapshotHub[spaceNetwork]
@@ -38,9 +36,7 @@ export const useCreateProposal = (snapshotSpaceENS: string | undefined) => {
     discussion: string,
   ) => {
     try {
-      setIsSuccess(false)
-      setIsError(false)
-      setIsLoading(true)
+      state.setValidating()
 
       if (!chain) {
         throw new Error("You're not connected to Web3.")
@@ -57,6 +53,8 @@ export const useCreateProposal = (snapshotSpaceENS: string | undefined) => {
       if (Math.floor(Date.now() / 1000) > endTime) {
         throw new Error('The end date cannot be in the past.')
       }
+
+      state.setLoading()
 
       const result: ProposalCreationResult = (await snapshotClient.proposal(
         signer as any,
@@ -75,14 +73,11 @@ export const useCreateProposal = (snapshotSpaceENS: string | undefined) => {
         } as Proposal,
       )) as ProposalCreationResult
 
-      setIsLoading(false)
-      setIsSuccess(true)
+      state.setSuccess()
       return result
-    } catch (error: any) {
-      setIsLoading(false)
-      setIsError(true)
-      setError(error.message)
-      throw error
+    } catch (e) {
+      state.handleError(e)
+      throw e
     }
   }
 
@@ -92,5 +87,6 @@ export const useCreateProposal = (snapshotSpaceENS: string | undefined) => {
     isError,
     isSuccess,
     error,
+    isValidating,
   }
 }

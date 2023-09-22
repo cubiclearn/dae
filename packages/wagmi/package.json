@@ -33,6 +33,7 @@
     "devDependencies": {
         "@dae/abi": "workspace:*",
         "@dae/chains": "workspace:*",
+        "@dae/constants": "workspace:*",
         "@dae/database": "workspace:*",
         "@dae/snapshot": "workspace:*",
         "@dae/types": "workspace:*",

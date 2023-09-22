@@ -26,12 +26,13 @@ import {
   useToast,
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
-import React, { useEffect } from 'react'
+import React, { useCallback } from 'react'
 import { Address } from 'wagmi'
 import * as Yup from 'yup'
 import { useKarmaBalance, useTransferKarma } from '@dae/wagmi'
 import { useCourseData } from '../../CourseProvider'
 import { isAddress } from 'viem'
+import { useLeavePageConfirmation } from '../../hooks'
 
 const ethereumAddressRegex = /^0x([A-Fa-f0-9]{40})$/
 
@@ -44,19 +45,12 @@ const validationSchema = Yup.object().shape({
 
 export const TransferKarmaForm: React.FC<any> = () => {
   const { data } = useCourseData()
-  const {
-    transfer,
-    isLoading,
-    isError,
-    isSuccess,
-    error,
-    isSigning,
-    isValidating,
-  } = useTransferKarma(
-    data ? (data.karma_access_control_address as Address) : undefined,
-  )
+  const { transfer, isLoading, isError, error, isSigning, isValidating } =
+    useTransferKarma(data?.karma_access_control_address)
 
   const toast = useToast()
+
+  useLeavePageConfirmation(isLoading, 'Changes you made may not be saved.')
 
   const {
     values,
@@ -67,14 +61,30 @@ export const TransferKarmaForm: React.FC<any> = () => {
     handleSubmit,
     setFieldValue,
     resetForm,
-  } = useFormik({
+  } = useFormik<{ userAddress: string; karmaIncrement: number }>({
     initialValues: {
       userAddress: '',
       karmaIncrement: 1,
     },
     onSubmit: async (values) => {
       try {
-        await transfer(values.userAddress as Address, values.karmaIncrement)
+        toast.promise(
+          transfer(values.userAddress as Address, values.karmaIncrement),
+          {
+            success: {
+              title: 'Karma transferred with success!',
+            },
+            error: { title: 'Error transferring karma.' },
+            loading: {
+              title: 'Karma transfer in progress...',
+              description:
+                'Processing transaction on the blockchain can take some time (usually around one minute).',
+              onCloseComplete: () => {
+                resetForm()
+              },
+            },
+          },
+        )
         resetForm()
       } catch (_e) {}
     },
@@ -82,30 +92,20 @@ export const TransferKarmaForm: React.FC<any> = () => {
   })
 
   const { data: karmaBalance } = useKarmaBalance(
-    data ? (data.karma_access_control_address as Address) : undefined,
+    data?.karma_access_control_address,
     isAddress(values.userAddress) ? values.userAddress : undefined,
   )
 
-  useEffect(() => {
-    if (isError) {
-      toast({
-        title: 'Error transferring karma.',
-        status: 'error',
-      })
-    }
-    if (isSuccess) {
-      toast({
-        title: 'Karma transferred with success!',
-        status: 'success',
-      })
-    }
-    if (isLoading) {
-      toast({
-        title: 'Transferring karma...',
-        status: 'info',
-      })
-    }
-  }, [isLoading, isError, isSuccess])
+  const handleChangeKarmaIncrementValue = useCallback(
+    (_valueAsString: string, valueAsNumber: number) => {
+      if (Number.isNaN(valueAsNumber)) {
+        setFieldValue('karmaIncrement', 0)
+      } else {
+        setFieldValue('karmaIncrement', valueAsNumber)
+      }
+    },
+    [],
+  )
 
   return (
     <form onSubmit={handleSubmit}>
@@ -134,15 +134,15 @@ export const TransferKarmaForm: React.FC<any> = () => {
             <NumberInput
               allowMouseWheel
               defaultValue={0}
-              min={karmaBalance ? -Number(karmaBalance) : 0}
+              min={Math.min(
+                (karmaBalance?.rate &&
+                  karmaBalance?.baseKarma &&
+                  -Number(karmaBalance.rate - karmaBalance.baseKarma)) ??
+                  1,
+                1,
+              )}
               id="karmaIncrement"
-              onChange={(_valueAsString, valueAsNumber) => {
-                if (isNaN(valueAsNumber)) {
-                  setFieldValue('karmaIncrement', 0) // Set to a default value or any other appropriate value
-                } else {
-                  setFieldValue('karmaIncrement', valueAsNumber)
-                }
-              }}
+              onChange={handleChangeKarmaIncrementValue}
               value={values.karmaIncrement}
               onBlur={handleBlur}
             >
@@ -155,7 +155,7 @@ export const TransferKarmaForm: React.FC<any> = () => {
             <FormErrorMessage>{errors.karmaIncrement}</FormErrorMessage>
           </FormControl>
         </Stack>
-        {values.userAddress !== '' ? (
+        {karmaBalance?.hasAccess ? (
           <Stack>
             <Text fontWeight={'semibold'}>Summary</Text>
             <TableContainer>
@@ -171,7 +171,7 @@ export const TransferKarmaForm: React.FC<any> = () => {
                 <Tbody>
                   <Tr>
                     <Td>{values.userAddress}</Td>
-                    <Td>{Number(karmaBalance) ?? '--'}</Td>
+                    <Td>{Number(karmaBalance.rate) ?? '--'}</Td>
                     <Td
                       color={
                         values.karmaIncrement > 0 ? 'green.500' : 'red.500'
@@ -181,7 +181,7 @@ export const TransferKarmaForm: React.FC<any> = () => {
                         ? `+${Number(values.karmaIncrement)}`
                         : `${Number(values.karmaIncrement)}`}
                     </Td>
-                    <Td>{Number(karmaBalance) + values.karmaIncrement}</Td>
+                    <Td>{Number(karmaBalance.rate) + values.karmaIncrement}</Td>
                   </Tr>
                 </Tbody>
               </Table>
@@ -190,7 +190,6 @@ export const TransferKarmaForm: React.FC<any> = () => {
         ) : (
           <></>
         )}
-
         <Button
           colorScheme="blue"
           type="submit"
@@ -199,7 +198,7 @@ export const TransferKarmaForm: React.FC<any> = () => {
         >
           Transfer karma
         </Button>
-        {isError ? (
+        {isError && (
           <Alert status="error">
             <AlertIcon />
             <Box>
@@ -207,8 +206,6 @@ export const TransferKarmaForm: React.FC<any> = () => {
               <AlertDescription>{error?.message}</AlertDescription>
             </Box>
           </Alert>
-        ) : (
-          <></>
         )}
       </Stack>
     </form>

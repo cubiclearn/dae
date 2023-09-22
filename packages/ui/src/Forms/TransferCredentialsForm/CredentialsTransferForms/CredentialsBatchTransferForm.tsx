@@ -21,6 +21,7 @@ import {
   FormHelperText,
   Link,
   Select,
+  useToast,
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
 import React, { ChangeEvent, useCallback, useRef, useState } from 'react'
@@ -32,10 +33,17 @@ import {
   useCourseCredentials,
 } from '@dae/wagmi'
 import Papa from 'papaparse'
-import { useFormFeedback } from '../../../hooks'
+import { checkFileType } from '../../utils'
+import { useLeavePageConfirmation } from '../../../hooks'
 
 const validationSchema = Yup.object().shape({
-  CSVFile: Yup.mixed().required('CSV file is required'),
+  CSVFile: Yup.mixed()
+    .required('CSV file is required.')
+    .test(
+      'fileType',
+      'Please select a valid .csv file.',
+      (file) => file && checkFileType(file as File, ['text/csv']),
+    ),
 })
 
 type TransferCredentialsFormProps = {
@@ -52,16 +60,12 @@ export const CredentialsBatchTransferForm: React.FC<
     chain?.id,
     'OTHER',
   )
+  const toast = useToast()
 
-  const {
-    multiTransfer,
-    isLoading,
-    isError,
-    isSuccess,
-    error,
-    isSigning,
-    isValidating,
-  } = useTransferCredentials(courseAddress as Address, 'OTHER')
+  const { multiTransfer, isLoading, isError, error, isSigning, isValidating } =
+    useTransferCredentials(courseAddress as Address, 'OTHER')
+
+  useLeavePageConfirmation(isLoading, 'Changes you made may not be saved.')
 
   const [csvData, setCsvData] = useState<TransferCredentialsData[]>([])
 
@@ -73,20 +77,31 @@ export const CredentialsBatchTransferForm: React.FC<
       },
       onSubmit: async () => {
         try {
-          if (data) {
-            await multiTransfer(csvData, values.credentialIPFSCid)
-            if (fileInputRef.current) {
-              fileInputRef.current.value = ''
-            }
-            setFieldValue('credentialIPFSCid', '')
-            setCsvData([])
-          }
+          if (!data) return
+          toast.promise(
+            multiTransfer(csvData, values.credentialIPFSCid).then(() => {
+              if (fileInputRef.current) {
+                fileInputRef.current.value = ''
+              }
+              setFieldValue('credentialIPFSCid', '')
+              setCsvData([])
+            }),
+            {
+              success: {
+                title: 'Credentials transferred with success!',
+              },
+              error: { title: 'Error transferring credentials.' },
+              loading: {
+                title: 'Credentials transfer in progress...',
+                description:
+                  'Processing transaction on the blockchain can take some time (usually around one minute).',
+              },
+            },
+          )
         } catch (_e) {}
       },
       validationSchema: validationSchema,
     })
-
-  useFormFeedback({ isError, isSuccess, isLoading })
 
   const handleCSVFileChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,7 +148,7 @@ export const CredentialsBatchTransferForm: React.FC<
               <Link
                 isExternal
                 fontWeight={'bold'}
-                href="/files/enroll_students_example.csv"
+                href="/files/multi_transfer_credentials_example.csv"
               >
                 here
               </Link>{' '}
@@ -154,7 +169,7 @@ export const CredentialsBatchTransferForm: React.FC<
               value={values.credentialIPFSCid}
             >
               {data ? (
-                data.map((credential) => {
+                data.credentials.map((credential) => {
                   return (
                     <option
                       key={credential.ipfs_cid}
@@ -171,7 +186,7 @@ export const CredentialsBatchTransferForm: React.FC<
             <FormErrorMessage>{errors.credentialIPFSCid}</FormErrorMessage>
           </FormControl>
         </Stack>
-        {csvData.length > 0 ? (
+        {csvData.length > 0 && !errors.CSVFile ? (
           <Stack spacing={2}>
             <Text fontWeight={'semibold'}>Summary</Text>
             <TableContainer>

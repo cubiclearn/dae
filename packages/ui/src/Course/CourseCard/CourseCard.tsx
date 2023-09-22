@@ -32,7 +32,7 @@ export const CourseCard: FC<CourseCardProps> = ({ data: course, ...rest }) => {
       href={`/course/${course.address}/info`}
       style={{ textDecoration: 'none' }}
     >
-      <Card maxW="sm" {...rest}>
+      <Card maxW="sm" {...rest} h={'100%'}>
         <CardBody>
           <Image
             src={course.image_url}
