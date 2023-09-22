@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
   Button,
   Select,
@@ -37,7 +37,7 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
   const toast = useToast()
   const { address: userAddress } = useAccount()
 
-  const { vote, isError, isLoading, isSuccess, error } = useVotePropsal(
+  const { vote, isError, isLoading, error } = useVotePropsal(
     proposal.space.id,
     parseInt(proposal.network) as keyof typeof ChainSnapshotHub,
     proposal.id,
@@ -68,7 +68,15 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
     },
     onSubmit: async (values) => {
       try {
-        await vote(values.vote, values.reason)
+        toast.promise(vote(values.vote, values.reason), {
+          success: {
+            title: 'Proposal voted with success!',
+          },
+          error: { title: 'Error voting proposal.' },
+          loading: {
+            title: 'Voting in progress...',
+          },
+        })
       } catch (_e) {}
     },
     validationSchema: validationSchema,
@@ -77,27 +85,6 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
   const handleRevoteButtonClick = () => {
     setShowRevoteForm(true)
   }
-
-  useEffect(() => {
-    if (isError) {
-      toast({
-        title: 'Error voting proposal.',
-        status: 'error',
-      })
-    }
-    if (isSuccess) {
-      toast({
-        title: 'Succefully voted proposal',
-        status: 'success',
-      })
-    }
-    if (isLoading) {
-      toast({
-        title: 'Voting proposal...',
-        status: 'info',
-      })
-    }
-  }, [isLoading, isError, isSuccess])
 
   if (isLoadingVote || isLoadingVotingPower) {
     return (
@@ -112,7 +99,7 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
     )
   }
 
-  if (!isLoadingVotingPower && votingPower === null) {
+  if (!isLoadingVotingPower && !votingPower) {
     return (
       <Alert status="warning">
         <AlertIcon />
