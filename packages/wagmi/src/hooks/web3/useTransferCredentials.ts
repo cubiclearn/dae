@@ -5,6 +5,7 @@ import { Credential, CredentialType } from '@dae/database'
 import { useWeb3HookState } from '../useWeb3HookState'
 import { ApiResponse } from '@dae/types'
 import { CONFIRMATION_BLOCKS } from '@dae/constants'
+import { mutate } from 'swr'
 
 export type TransferCredentialsData = {
   address: Address
@@ -130,6 +131,16 @@ export function useTransferCredentials(
         const responseJSON = await response.json()
         throw new Error(responseJSON.error)
       }
+
+      mutate(
+        (key) =>
+          Array.isArray(key) &&
+          (key[0] === 'course/teachers' ||
+            key[0] === 'course/students' ||
+            key[0] === 'course/credential/users'),
+        undefined,
+        { revalidate: true },
+      )
 
       state.setSuccess()
     } catch (e: any) {

@@ -1,5 +1,6 @@
 import { Address } from 'viem'
 import { useApiRequest } from './useApiRequest'
+import { mutate } from 'swr'
 
 export const useCreateCredential = () => {
   const { makeRequest, ...requestState } = useApiRequest()
@@ -24,6 +25,12 @@ export const useCreateCredential = () => {
     })
 
     await makeRequest(request)
+
+    mutate(
+      (key) => Array.isArray(key) && key[0] === 'course/credentials',
+      undefined,
+      { revalidate: true },
+    )
   }
 
   return {

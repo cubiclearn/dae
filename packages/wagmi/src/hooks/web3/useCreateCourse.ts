@@ -13,6 +13,7 @@ import {
 } from '@dae/types'
 import { useWeb3HookState } from '../useWeb3HookState'
 import { CONFIRMATION_BLOCKS } from '@dae/constants'
+import { mutate } from 'swr'
 
 interface CreateCredentialHookInterface extends UseWeb3WriteHookInterface {
   create: (
@@ -206,6 +207,11 @@ export function useCreateCourse(
         votingStrategy,
       )
 
+      mutate(
+        (key) => Array.isArray(key) && key[0] === 'user/courses',
+        undefined,
+        { revalidate: true },
+      )
       setStep(4)
       state.setSuccess()
     } catch (e: unknown) {

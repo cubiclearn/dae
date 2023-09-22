@@ -28,13 +28,13 @@ export const useDeleteCredential = (
       method: 'DELETE',
     })
 
-    const urlParamsMutation = new URLSearchParams({
-      courseAddress: courseAddress.toString(),
-      chainId: chainId.toString(),
-    })
-
     await makeRequest(request)
-    await mutate(`/api/v0/course/credentials?${urlParamsMutation}`)
+
+    mutate(
+      (key) => Array.isArray(key) && key[0] === 'course/credentials',
+      undefined,
+      { revalidate: true },
+    )
   }
 
   return {

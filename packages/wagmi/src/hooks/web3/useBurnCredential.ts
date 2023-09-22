@@ -5,6 +5,7 @@ import { useWeb3HookState } from '../useWeb3HookState'
 import type { UseWeb3WriteHookInterface } from '@dae/types'
 import { CredentialType } from '@dae/database'
 import { CONFIRMATION_BLOCKS } from '@dae/constants'
+import { mutate } from 'swr'
 
 interface BurnCredentialHookInterface extends UseWeb3WriteHookInterface {
   burnCredential: (tokenId: number) => Promise<void>
@@ -79,6 +80,15 @@ export function useBurnCredential(
         throw new Error(responseJSON.error)
       }
 
+      mutate(
+        (key) =>
+          Array.isArray(key) &&
+          (key[0] === 'course/students' ||
+            key[0] === 'course/teachers' ||
+            key[0] === 'course/credential/users'),
+        undefined,
+        { revalidate: true },
+      )
       state.setSuccess()
     } catch (e: unknown) {
       state.handleError(e)

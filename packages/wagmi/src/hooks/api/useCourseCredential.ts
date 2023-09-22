@@ -20,7 +20,7 @@ export const useCourseCredential = (
   >(
     shouldFetch
       ? [
-          '/api/v0/course/credential',
+          'course/credential',
           {
             credentialCid: credentialCid,
             courseAddress: courseAddress,
