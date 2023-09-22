@@ -63,8 +63,8 @@ export const CourseCardList: React.FC<CourseCardListProps> = ({ role }) => {
 
   return (
     <SimpleGrid
-      columns={{ sm: 1, md: 2, lg: 3, xl: 5 }}
-      spacing={{ sm: 0, md: 8 }}
+      columns={{ base: 1, sm: 2, lg: 3, xl: 5 }}
+      spacing={{ base: 8 }}
     >
       {data.courses.map((course) => (
         <CourseCard key={course.address} data={course} />
