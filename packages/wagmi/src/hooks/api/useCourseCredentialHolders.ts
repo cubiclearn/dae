@@ -1,7 +1,7 @@
 import useSWR from 'swr'
 import { UserCredentials } from '@dae/database'
 import { Address } from 'viem'
-import { useApi } from './useApi'
+import { ApiRequestUrlAndParams, useApi } from './useApi'
 import { ApiResponse, SWRHook } from '@dae/types'
 
 export const useCourseCredentialHolders = (
@@ -15,17 +15,22 @@ export const useCourseCredentialHolders = (
     courseAddress !== undefined &&
     chainId !== undefined
 
-  const url = () =>
-    `/api/v0/course/credential/users?credentialCid=${credentialCid}&courseAddress=${courseAddress}&chainId=${chainId?.toString()}`
-
   const { data: response, error } = useSWR<
     ApiResponse<{ userCredentials: UserCredentials[] }>
-  >(shouldFetch ? url : null, client.request, {
-    revalidateIfStale: false,
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-    revalidateOnMount: true,
-  })
+  >(
+    shouldFetch
+      ? [
+          'course/credential/users',
+          {
+            credentialCid: credentialCid,
+            courseAddress: courseAddress,
+            chainId: chainId,
+          },
+        ]
+      : null,
+    ([query, variables]: ApiRequestUrlAndParams) =>
+      client.request(query, variables),
+  )
 
   return {
     data: response?.data || undefined,

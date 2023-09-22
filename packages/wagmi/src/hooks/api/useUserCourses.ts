@@ -1,7 +1,7 @@
 import { Address } from 'viem'
 import useSWR from 'swr'
 import { Course } from '@dae/database'
-import { useApi } from './useApi'
+import { ApiRequestUrlAndParams, useApi } from './useApi'
 import { ApiResponse, SWRHook } from '@dae/types'
 
 export const useUserCourses = (
@@ -10,13 +10,21 @@ export const useUserCourses = (
   role: 'EDUCATOR' | 'DISCIPULUS',
 ): SWRHook<{ courses: Course[] }> => {
   const client = useApi()
-  const url = `/api/v0/user/courses?userAddress=${userAddress}&chainId=${chainId}&role=${role}`
-
   const shouldFetch = userAddress !== undefined && chainId !== undefined
 
   const { data: response, error } = useSWR<ApiResponse<{ courses: Course[] }>>(
-    shouldFetch ? url : null,
-    client.request,
+    shouldFetch
+      ? [
+          'user/courses',
+          {
+            userAddress: userAddress,
+            chainId: chainId,
+            role: role,
+          },
+        ]
+      : null,
+    ([query, variables]: ApiRequestUrlAndParams) =>
+      client.request(query, variables),
   )
 
   return {
