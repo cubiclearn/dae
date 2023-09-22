@@ -4,6 +4,8 @@ import { useAccount } from 'wagmi'
 import { ChainSnapshotHub } from '@dae/chains'
 import { ProposalType } from '@snapshot-labs/snapshot.js/dist/sign/types'
 import { useHookState } from './useHookState'
+import { mutate } from 'swr'
+import { PROPOSAL_QUERY } from '../graphql'
 
 export const useVotePropsal = (
   spaceName: string,
@@ -29,6 +31,12 @@ export const useVotePropsal = (
         choice: choice,
         reason: reason,
       })
+
+      mutate(
+        (key) => Array.isArray(key) && key[0] === PROPOSAL_QUERY,
+        undefined,
+        { revalidate: true },
+      )
       state.setSuccess()
     } catch (e) {
       state.handleError(e)
