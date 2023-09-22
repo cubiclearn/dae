@@ -65,12 +65,10 @@ const handlePostRequest = async (
       transport: TransportConfig[chainId]?.transport,
     })
 
-    const transaction = await client.waitForTransactionReceipt({
+    const txRecept = await client.waitForTransactionReceipt({
       hash: txHash,
       confirmations: CONFIRMATION_BLOCKS,
     })
-
-    const txRecept = await client.getTransactionReceipt({ hash: txHash })
 
     const txFactoryLogsDecoded: any = txRecept.logs
       .map((log) => {
@@ -135,7 +133,7 @@ const handlePostRequest = async (
       ])
 
     const timestamp = (
-      await client.getBlock({ blockNumber: transaction.blockNumber! })
+      await client.getBlock({ blockNumber: txRecept.blockNumber! })
     ).timestamp
 
     const metadataResponse = await fetch(baseURI)
@@ -260,7 +258,7 @@ const handlePostRequest = async (
                   },
                 },
               },
-              user_address: sanitizeAddress(transaction.from),
+              user_address: sanitizeAddress(txRecept.from),
               credential_token_id: -1,
               credential: {
                 connect: {
@@ -277,15 +275,6 @@ const handlePostRequest = async (
           }),
         ])
 
-        await prisma.transactions.update({
-          where: {
-            transaction_hash: txHash,
-          },
-          data: {
-            verified: true,
-          },
-        })
-
         return course
       },
       {
@@ -293,6 +282,15 @@ const handlePostRequest = async (
         timeout: 7000, // default: 5000
       },
     )
+
+    await prisma.transactions.update({
+      where: {
+        transaction_hash: txHash,
+      },
+      data: {
+        verified: true,
+      },
+    })
 
     return res
       .status(200)
