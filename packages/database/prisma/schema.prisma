@@ -65,7 +65,7 @@ model UserCredentials {
   @@unique([user_address, course_address, credential_ipfs_cid, course_chain_id])
 }
 
-model TransactionsVerifications {
+model Transactions {
   transaction_hash String  @id
   user_address     String
   chain_id         Int

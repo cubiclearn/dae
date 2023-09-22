@@ -105,7 +105,7 @@ const handlePostRequest = async (
     ) as CredentialIssuedLog[]
 
     if (issuedLogs.length === 0) {
-      await prisma.transactionsVerifications.update({
+      await prisma.transactions.update({
         where: {
           transaction_hash: txHash,
         },
@@ -168,7 +168,7 @@ const handlePostRequest = async (
       data: validCreateData as Prisma.UserCredentialsCreateManyInput[],
     })
 
-    await prisma.transactionsVerifications.update({
+    await prisma.transactions.update({
       where: {
         transaction_hash: txHash,
       },

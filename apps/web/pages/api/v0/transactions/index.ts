@@ -40,7 +40,7 @@ const handlePostRequest = async (
 
     const session = await getSession({ req })
 
-    await prisma.transactionsVerifications.create({
+    await prisma.transactions.create({
       data: {
         user_address: sanitizeAddress(session!.user.address as Address),
         transaction_hash: txHash,
@@ -96,11 +96,9 @@ export default async function handler(
     case HttpMethod.POST:
       return handlePostRequest(req, res)
     default:
-      return res
-        .status(400)
-        .json({
-          status: ApiResponseStatus.error,
-          message: 'This method is not supported',
-        })
+      return res.status(400).json({
+        status: ApiResponseStatus.error,
+        message: 'This method is not supported',
+      })
   }
 }

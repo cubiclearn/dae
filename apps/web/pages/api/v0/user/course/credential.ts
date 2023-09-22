@@ -112,7 +112,7 @@ const handleDeleteRequest = async (
     const burnLogs = transferLogs.filter((log) => log.args.to === zeroAddress)
 
     if (burnLogs.length === 0) {
-      await prisma.transactionsVerifications.update({
+      await prisma.transactions.update({
         where: {
           transaction_hash: txHash,
         },
@@ -137,7 +137,7 @@ const handleDeleteRequest = async (
       },
     })
 
-    await prisma.transactionsVerifications.update({
+    await prisma.transactions.update({
       where: {
         transaction_hash: txHash,
       },

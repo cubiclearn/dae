@@ -4,7 +4,7 @@ import type {
   UserCredentials,
   Credential,
   CredentialType,
-  TransactionsVerifications,
+  Transactions,
 } from '@dae/database'
 import { Address } from 'viem'
 import { sanitizeAddress } from './functions'
@@ -205,8 +205,8 @@ export const getUserCourseCredential = async (
 
 export const getUserUnverifiedTransactions = async (
   userAddress: Address,
-): Promise<TransactionsVerifications[]> => {
-  return prisma.transactionsVerifications.findMany({
+): Promise<Transactions[]> => {
+  return prisma.transactions.findMany({
     where: {
       user_address: sanitizeAddress(userAddress),
       verified: false,

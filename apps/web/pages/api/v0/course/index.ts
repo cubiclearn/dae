@@ -277,7 +277,7 @@ const handlePostRequest = async (
           }),
         ])
 
-        await prisma.transactionsVerifications.update({
+        await prisma.transactions.update({
           where: {
             transaction_hash: txHash,
           },

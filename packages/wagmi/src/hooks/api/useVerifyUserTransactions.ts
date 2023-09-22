@@ -1,9 +1,9 @@
-import { TransactionsVerifications } from '@dae/database'
+import { Transactions } from '@dae/database'
 import { useHookState } from '../useHookState'
 
 type GetTransactionsApiResponse = {
   data: {
-    transactions: TransactionsVerifications[]
+    transactions: Transactions[]
   }
   success: boolean
 }
