@@ -55,10 +55,17 @@ export const CredentialHolders: React.FC<CredentialHoldersProps> = ({
   }
 
   const handleBurnCredential = async () => {
-    try {
-      if (selectedCredential !== null) {
-        setIsModalOpen(false)
-        toast.promise(burnCredential(selectedCredential.credential_token_id), {
+    if (selectedCredential !== null) {
+      setIsModalOpen(false)
+      toast.promise(
+        burnCredential(selectedCredential.credential_token_id)
+          .then(() => {
+            setselectedCredential(null)
+          })
+          .catch(() => {
+            setselectedCredential(null)
+          }),
+        {
           success: {
             title: 'User credential burned with success!',
           },
@@ -68,11 +75,9 @@ export const CredentialHolders: React.FC<CredentialHoldersProps> = ({
             description:
               'Processing transaction on the blockchain can take some time (usually around one minute).',
           },
-        })
-        setselectedCredential(null)
-      }
-    } catch (_e: any) {
-      setselectedCredential(null)
+        },
+      )
+    } else {
       setIsModalOpen(false)
     }
   }

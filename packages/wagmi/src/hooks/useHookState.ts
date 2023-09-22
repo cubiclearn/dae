@@ -1,7 +1,15 @@
 import { useState } from 'react'
 
+type HookState = {
+  error: Error | null
+  isError: boolean
+  isSuccess: boolean
+  isLoading: boolean
+  isValidating: boolean
+}
+
 export function useHookState() {
-  const [state, setState] = useState({
+  const [state, setState] = useState<HookState>({
     error: null,
     isError: false,
     isSuccess: false,
@@ -22,6 +30,7 @@ export function useHookState() {
   const setLoading = () =>
     setState({
       ...state,
+      error: null,
       isError: false,
       isSuccess: false,
       isLoading: true,
@@ -37,6 +46,14 @@ export function useHookState() {
       default:
         parsedError = new Error('An error occurred')
     }
+    setState({
+      ...state,
+      isSuccess: false,
+      isError: true,
+      isLoading: false,
+      error: parsedError,
+      isValidating: false,
+    })
   }
 
   const setSuccess = () =>

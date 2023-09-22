@@ -172,13 +172,13 @@ export const CreateCourseForm = () => {
           {
             success: {
               title: 'Course created with success!',
+              onCloseComplete: () => router.push('/profile/courses/teaching'),
             },
             error: { title: 'Error creating course.' },
             loading: {
               title: 'Course creation in progress...',
               description:
                 'Processing transaction on the blockchain can take some time (usually around one minute).',
-              onCloseComplete: () => router.push('/profile/courses/teaching'),
             },
           },
         )

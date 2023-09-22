@@ -52,6 +52,7 @@ export const CreateProposalForm: React.FC = () => {
     handleChange,
     handleSubmit,
     setFieldValue,
+    resetForm,
   } = useFormik({
     initialValues: {
       title: '',
@@ -70,7 +71,10 @@ export const CreateProposalForm: React.FC = () => {
             values.choices,
             (values.endDate as Date).getTime() / 1000,
             values.discussionLink,
-          ),
+          ).then((result) => {
+            resetForm()
+            return result
+          }),
           {
             success: (result) => ({
               title: 'Credential created with success!',
@@ -220,7 +224,7 @@ export const CreateProposalForm: React.FC = () => {
               <AlertIcon />
               <Box>
                 <AlertTitle>Something went wrong.</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
+                <AlertDescription>{error?.message}</AlertDescription>
               </Box>
             </Alert>
           ) : (

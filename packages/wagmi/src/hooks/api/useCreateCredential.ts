@@ -1,40 +1,69 @@
 import { Address } from 'viem'
-import { useApiRequest } from './useApiRequest'
 import { mutate } from 'swr'
+import { useHookState } from '../useHookState'
 
 export const useCreateCredential = () => {
-  const { makeRequest, ...requestState } = useApiRequest()
+  const { isSuccess, isValidating, isLoading, isError, error, ...state } =
+    useHookState()
 
   const create = async (
-    image: File,
-    name: string,
-    description: string,
-    courseAddress: Address,
-    chainId: number,
+    image: File | undefined,
+    name: string | undefined,
+    description: string | undefined,
+    courseAddress: Address | undefined,
+    chainId: number | undefined,
   ) => {
-    const formData = new FormData()
-    formData.set('file', image)
-    formData.set('name', name)
-    formData.set('description', description)
-    formData.set('courseAddress', courseAddress)
-    formData.set('chainId', chainId.toString())
+    try {
+      state.setValidating()
+      if (
+        image === undefined ||
+        name === undefined ||
+        description === undefined ||
+        courseAddress === undefined ||
+        chainId === undefined
+      ) {
+        throw new Error(
+          'Missing required parameters for creating new credential.',
+        )
+      }
 
-    const request = fetch('/api/v0/course/credential', {
-      method: 'POST',
-      body: formData,
-    })
+      state.setLoading()
 
-    await makeRequest(request)
+      const formData = new FormData()
+      formData.set('file', image)
+      formData.set('name', name)
+      formData.set('description', description)
+      formData.set('courseAddress', courseAddress)
+      formData.set('chainId', chainId.toString())
 
-    mutate(
-      (key) => Array.isArray(key) && key[0] === 'course/credentials',
-      undefined,
-      { revalidate: true },
-    )
+      const response = await fetch('/api/v0/course/credential', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        const responseJSON = await response.json()
+        throw new Error(responseJSON.error)
+      }
+
+      mutate(
+        (key) => Array.isArray(key) && key[0] === 'course/credentials',
+        undefined,
+        { revalidate: true },
+      )
+      state.setSuccess()
+    } catch (e) {
+      state.handleError(e)
+      throw e
+    }
   }
 
   return {
     create,
-    ...requestState,
+    isSuccess,
+    isValidating,
+    isLoading,
+    isError,
+    error,
   }
 }

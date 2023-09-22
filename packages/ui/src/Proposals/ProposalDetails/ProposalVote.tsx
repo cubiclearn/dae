@@ -187,7 +187,7 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
             <AlertIcon />
             <Box>
               <AlertTitle>Something went wrong.</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
+              <AlertDescription>{error?.message}</AlertDescription>
             </Box>
           </Alert>
         ) : (

@@ -157,7 +157,7 @@ export const CreateSnapshotSpaceForm: React.FC = () => {
                 <AlertIcon />
                 <Box>
                   <AlertTitle>Something went wrong.</AlertTitle>
-                  <AlertDescription>{error}</AlertDescription>
+                  <AlertDescription>{error?.message}</AlertDescription>
                 </Box>
               </Alert>
             ) : (

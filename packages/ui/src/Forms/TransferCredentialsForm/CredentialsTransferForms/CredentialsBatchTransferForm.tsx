@@ -78,24 +78,26 @@ export const CredentialsBatchTransferForm: React.FC<
       onSubmit: async () => {
         try {
           if (!data) return
-          toast.promise(multiTransfer(csvData, values.credentialIPFSCid), {
-            success: {
-              title: 'Credentials transferred with success!',
-            },
-            error: { title: 'Error transferring credentials.' },
-            loading: {
-              title: 'Credentials transfer in progress...',
-              description:
-                'Processing transaction on the blockchain can take some time (usually around one minute).',
-              onCloseComplete: () => {
-                if (fileInputRef.current) {
-                  fileInputRef.current.value = ''
-                }
-                setFieldValue('credentialIPFSCid', '')
-                setCsvData([])
+          toast.promise(
+            multiTransfer(csvData, values.credentialIPFSCid).then(() => {
+              if (fileInputRef.current) {
+                fileInputRef.current.value = ''
+              }
+              setFieldValue('credentialIPFSCid', '')
+              setCsvData([])
+            }),
+            {
+              success: {
+                title: 'Credentials transferred with success!',
+              },
+              error: { title: 'Error transferring credentials.' },
+              loading: {
+                title: 'Credentials transfer in progress...',
+                description:
+                  'Processing transaction on the blockchain can take some time (usually around one minute).',
               },
             },
-          })
+          )
         } catch (_e) {}
       },
       validationSchema: validationSchema,

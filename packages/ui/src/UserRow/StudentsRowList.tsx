@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import {
+  Stack,
   Table,
   TableContainer,
   Tbody,
@@ -59,27 +60,29 @@ export const StudentsRowList: React.FC<StudentsRowListProps> = ({
   }
 
   const handleBurnStudentCredential = async () => {
-    try {
-      if (selectedStudentToBurnCredential !== null) {
-        setIsModalOpen(false)
-        toast.promise(
-          burnCredential(selectedStudentToBurnCredential.credential_token_id),
-          {
-            success: {
-              title: 'User credential burned with success!',
-            },
-            error: { title: 'Error burning user credential.' },
-            loading: {
-              title: 'Burning user credential in progress...',
-              description:
-                'Processing transaction on the blockchain can take some time (usually around one minute).',
-            },
+    if (selectedStudentToBurnCredential !== null) {
+      setIsModalOpen(false)
+      toast.promise(
+        burnCredential(selectedStudentToBurnCredential.credential_token_id)
+          .then(() => {
+            setSelectedStudentToBurnCredential(null)
+          })
+          .catch(() => {
+            setSelectedStudentToBurnCredential(null)
+          }),
+        {
+          success: {
+            title: 'User credential burned with success!',
           },
-        )
-        setSelectedStudentToBurnCredential(null)
-      }
-    } catch (_e: any) {
-      setSelectedStudentToBurnCredential(null)
+          error: { title: 'Error burning user credential.' },
+          loading: {
+            title: 'Burning user credential in progress...',
+            description:
+              'Processing transaction on the blockchain can take some time (usually around one minute).',
+          },
+        },
+      )
+    } else {
       setIsModalOpen(false)
     }
   }
@@ -121,7 +124,7 @@ export const StudentsRowList: React.FC<StudentsRowListProps> = ({
   }
 
   return (
-    <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
+    <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
       {isErrorBurningCredential ? (
         <Alert status="error">
           <AlertIcon />
@@ -135,51 +138,53 @@ export const StudentsRowList: React.FC<StudentsRowListProps> = ({
       ) : (
         <></>
       )}
-      <Box pb={2}>
-        <Text fontWeight="semibold" fontSize="xl">
-          Students list
-        </Text>
-      </Box>
-      <TableContainer>
-        <Table variant="simple">
-          <Thead>
-            <Tr>
-              <Th width={'5%'}>{''}</Th>
-              <Th>Address</Th>
-              <Th>E-mail</Th>
-              <Th>Discord</Th>
-              <Th width={'5%'} isNumeric>
-                Karma
-              </Th>
-              <Th width={'5%'}>{''}</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {data.students.map((student) => (
-              <UserRow
-                key={student.user_address}
-                user={student}
-                isDeleting={
-                  (isBurningCredential ||
-                    isValidatingBurningCredential ||
-                    isSigningBurningCredentialTransaction) &&
-                  selectedStudentToBurnCredential?.credential_token_id ===
-                    student.credential_token_id
-                }
-                onDelete={() => handleOpenModal(student)}
-              />
-            ))}
-          </Tbody>
-        </Table>
-      </TableContainer>
-      <ConfirmActionModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onConfirm={handleBurnStudentCredential}
-        title="Confirm Deletion"
-        body="Are you sure you want to remove this student?"
-        confirmButtonText="Delete"
-      />
-    </Box>
+      <Stack spacing={4}>
+        <Box pb={2}>
+          <Text fontWeight="semibold" fontSize="xl">
+            Students list
+          </Text>
+        </Box>
+        <TableContainer>
+          <Table variant="simple">
+            <Thead>
+              <Tr>
+                <Th width={'5%'}>{''}</Th>
+                <Th>Address</Th>
+                <Th>E-mail</Th>
+                <Th>Discord</Th>
+                <Th width={'5%'} isNumeric>
+                  Karma
+                </Th>
+                <Th width={'5%'}>{''}</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {data.students.map((student) => (
+                <UserRow
+                  key={student.user_address}
+                  user={student}
+                  isDeleting={
+                    (isBurningCredential ||
+                      isValidatingBurningCredential ||
+                      isSigningBurningCredentialTransaction) &&
+                    selectedStudentToBurnCredential?.credential_token_id ===
+                      student.credential_token_id
+                  }
+                  onDelete={() => handleOpenModal(student)}
+                />
+              ))}
+            </Tbody>
+          </Table>
+        </TableContainer>
+        <ConfirmActionModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onConfirm={handleBurnStudentCredential}
+          title="Confirm Deletion"
+          body="Are you sure you want to remove this student?"
+          confirmButtonText="Delete"
+        />
+      </Stack>
+    </Stack>
   )
 }

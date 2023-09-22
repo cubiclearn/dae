@@ -76,7 +76,9 @@ export const BaseCredentialSingleTransferForm: React.FC<
               discord: values.userDiscordUsername,
             },
             data.credentials[0].ipfs_cid,
-          ),
+          ).then(() => {
+            resetForm()
+          }),
           {
             success: {
               title: 'Credential transferred with success!',
@@ -86,9 +88,6 @@ export const BaseCredentialSingleTransferForm: React.FC<
               title: 'Credential transfer in progress...',
               description:
                 'Processing transaction on the blockchain can take some time (usually around one minute).',
-              onCloseComplete: () => {
-                resetForm()
-              },
             },
           },
         )

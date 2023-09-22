@@ -1,4 +1,3 @@
-export * from './useApiRequest'
 export * from './useCourse'
 export * from './useCourseCredential'
 export * from './useCourseCredentials'

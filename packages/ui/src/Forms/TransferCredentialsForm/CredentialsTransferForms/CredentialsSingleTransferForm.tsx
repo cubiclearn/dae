@@ -68,7 +68,9 @@ export const CredentialsSingleTransferForm: React.FC<
               address: values.userAddress as Address,
             },
             values.credentialIPFSCid,
-          ),
+          ).then(() => {
+            resetForm()
+          }),
           {
             success: {
               title: 'Credential transferred with success!',
@@ -78,9 +80,6 @@ export const CredentialsSingleTransferForm: React.FC<
               title: 'Credential transfer in progress...',
               description:
                 'Processing transaction on the blockchain can take some time (usually around one minute).',
-              onCloseComplete: () => {
-                resetForm()
-              },
             },
           },
         )
