@@ -23,7 +23,7 @@ import {
   Link,
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { Address, useContractReads } from 'wagmi'
 import * as Yup from 'yup'
 import { TransferData, useTransferKarma } from '@dae/wagmi'
@@ -42,6 +42,7 @@ export const MultiTransferKarmaForm: React.FC<any> = () => {
     useTransferKarma(
       data ? (data.karma_access_control_address as Address) : undefined,
     )
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
   const toast = useToast()
 
   useLeavePageConfirmation(isLoading, 'Changes you made may not be saved.')
@@ -61,21 +62,26 @@ export const MultiTransferKarmaForm: React.FC<any> = () => {
     },
     onSubmit: async () => {
       try {
-        toast.promise(multiTransfer(csvData), {
-          success: {
-            title: 'Karma transferred with success!',
-          },
-          error: { title: 'Error transferring karma.' },
-          loading: {
-            title: 'Karma transfer in progress...',
-            description:
-              'Processing transaction on the blockchain can take some time (usually around one minute).',
-            onCloseComplete: () => {
-              setCsvData([])
-              resetForm()
+        toast.promise(
+          multiTransfer(csvData).then(() => {
+            if (fileInputRef.current) {
+              fileInputRef.current.value = ''
+            }
+            setCsvData([])
+            resetForm()
+          }),
+          {
+            success: {
+              title: 'Karma transferred with success!',
+            },
+            error: { title: 'Error transferring karma.' },
+            loading: {
+              title: 'Karma transfer in progress...',
+              description:
+                'Processing transaction on the blockchain can take some time (usually around one minute).',
             },
           },
-        })
+        )
       } catch (_e) {}
     },
     validationSchema: validationSchema,
@@ -128,6 +134,7 @@ export const MultiTransferKarmaForm: React.FC<any> = () => {
             onBlur={handleBlur}
             type="file"
             py={1}
+            ref={fileInputRef}
           />
           <FormHelperText>
             Click{' '}
