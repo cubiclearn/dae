@@ -69,7 +69,11 @@ export const TransferKarmaForm: React.FC<any> = () => {
     onSubmit: async (values) => {
       try {
         toast.promise(
-          transfer(values.userAddress as Address, values.karmaIncrement),
+          transfer(values.userAddress as Address, values.karmaIncrement).then(
+            () => {
+              resetForm()
+            },
+          ),
           {
             success: {
               title: 'Karma transferred with success!',
@@ -79,13 +83,9 @@ export const TransferKarmaForm: React.FC<any> = () => {
               title: 'Karma transfer in progress...',
               description:
                 'Processing transaction on the blockchain can take some time (usually around one minute).',
-              onCloseComplete: () => {
-                resetForm()
-              },
             },
           },
         )
-        resetForm()
       } catch (_e) {}
     },
     validationSchema: validationSchema,
