@@ -17,7 +17,7 @@ export const useUserCourseCredentials = (
   >(
     shouldFetch
       ? [
-          'course/credentials',
+          'user/course/credentials',
           {
             courseAddress: courseAddress,
             chainId: chainId,

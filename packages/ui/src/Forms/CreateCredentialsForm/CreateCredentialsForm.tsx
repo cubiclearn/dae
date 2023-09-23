@@ -68,7 +68,6 @@ export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
   }
 
   const handleResetImageInputField = () => {
-    console.log('CIAO')
     if (imageInputRef.current) {
       imageInputRef.current.value = ''
     }
