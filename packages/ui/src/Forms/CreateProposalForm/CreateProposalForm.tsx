@@ -77,7 +77,7 @@ export const CreateProposalForm: React.FC = () => {
           }),
           {
             success: (result) => ({
-              title: 'Credential created with success!',
+              title: 'Proposal created with success!',
               onCloseComplete: () =>
                 router.push(
                   `/course/${router.query.address as Address}/proposals/${
@@ -85,9 +85,9 @@ export const CreateProposalForm: React.FC = () => {
                   }`,
                 ),
             }),
-            error: { title: 'Error creating credential.' },
+            error: { title: 'Error creating proposal.' },
             loading: {
-              title: 'Credential creation in progress...',
+              title: 'Creating proposal...',
             },
           },
         )
