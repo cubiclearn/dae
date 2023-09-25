@@ -35,6 +35,7 @@
         "@dae/chains": "workspace:*",
         "@dae/constants": "workspace:*",
         "@dae/database": "workspace:*",
+        "@dae/ipfs": "workspace:*",
         "@dae/snapshot": "workspace:*",
         "@dae/types": "workspace:*",
         "@dae/typescript-config": "workspace:*",

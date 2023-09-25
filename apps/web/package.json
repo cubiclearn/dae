@@ -9,6 +9,7 @@
         "@dae/abi": "workspace:*",
         "@dae/constants": "workspace:*",
         "@dae/database": "workspace:*",
+        "@dae/ipfs": "workspace:*",
         "@dae/ui": "workspace:*",
         "@dae/viem-config": "workspace:*",
         "@emotion/react": "11.11.1",

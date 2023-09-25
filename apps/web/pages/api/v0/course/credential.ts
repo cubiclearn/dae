@@ -1,13 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
-import { IncomingForm, Fields, Files } from 'formidable'
-import { uploadToIPFS } from '../../../../lib/ipfs'
+import { asyncParse } from '../../../../lib/functions'
 import { Credential, Prisma, prisma } from '@dae/database'
 import fs from 'fs'
 import { sanitizeAddress } from '../../../../lib/functions'
 import { Address } from 'viem'
 import { getCourseCredential } from '../../../../lib/api'
 import { ApiResponse, ApiResponseStatus } from '@dae/types'
+import { IpfsConnector } from '../../../../lib/ipfs/client'
 
 // TypeScript enum for request methods
 enum HttpMethod {
@@ -15,27 +15,6 @@ enum HttpMethod {
   POST = 'POST',
   DELETE = 'DELETE',
 }
-
-const asyncParse = (
-  req: NextApiRequest,
-): Promise<{ fields: Fields; files: Files }> =>
-  new Promise((resolve, reject) => {
-    const form = new IncomingForm({
-      multiples: true,
-      maxFileSize: 1 * 1024 * 1024,
-    })
-    form.parse(req, (err, fields, files) => {
-      if (err && err.code === 1009) {
-        return reject(
-          new Error(
-            'Sorry, the file you uploaded exceeds the maximum allowed size of 1MB.',
-          ),
-        )
-      }
-      if (err) return reject(err)
-      resolve({ fields, files })
-    })
-  })
 
 const handleGetRequest = async (
   req: NextApiRequest,
@@ -84,15 +63,15 @@ const handlePostRequest = async (
 ) => {
   try {
     const { fields, files } = await asyncParse(req)
-
-    const { mimetype, filepath, originalFilename } = files.file[0]
     const { name, description, courseAddress, chainId } = fields
 
-    if (!name || !description || !courseAddress || !chainId) {
+    if (!name || !description || !courseAddress || !chainId || !files.file) {
       return res
         .status(400)
         .json({ status: ApiResponseStatus.error, message: 'Bad request.' })
     }
+
+    const { mimetype, filepath, originalFilename } = files.file[0]
 
     const session = await getSession({ req: { headers: req.headers } })
 
@@ -115,40 +94,30 @@ const handlePostRequest = async (
 
     const buffer = fs.readFileSync(filepath)
 
-    // Use the existing IPFS upload API to upload the file to IPFS
-    const ipfsImageData = await uploadToIPFS(buffer, mimetype, originalFilename)
+    const ipfsCredentialImageData = await IpfsConnector.upload(
+      buffer,
+      mimetype ?? '',
+      originalFilename ?? '',
+    )
 
-    if (!ipfsImageData.data?.Hash) {
-      return res.status(500).json({
-        status: ApiResponseStatus.error,
-        message: 'Error uploading metadata to ipfs.',
-      })
-    }
-
-    const imageURL = `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${ipfsImageData.data.Hash}`
-    const ipfsMetadata = await uploadToIPFS(
-      { name: name[0], description: description[0], image: imageURL },
+    const ipfsCredentialMetadata = await IpfsConnector.upload(
+      {
+        name: name[0],
+        description: description[0],
+        image: ipfsCredentialImageData.url,
+      },
       'data/json',
       '',
     )
-
-    if (!ipfsMetadata.data?.Hash) {
-      return res.status(500).json({
-        status: ApiResponseStatus.error,
-        message: 'Error uploading metadata to ipfs.',
-      })
-    }
-
-    const metadataURL = `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${ipfsMetadata.data.Hash}`
 
     //Create the credential using Prisma with the obtained IPFS CID and other data
     const credential = await prisma.credential.create({
       data: {
         name: name[0],
         description: description[0],
-        image_url: imageURL,
-        ipfs_url: metadataURL,
-        ipfs_cid: ipfsMetadata.data.Hash, // Accessing the Hash property directly from ipfsMetadata
+        image_url: ipfsCredentialImageData.url,
+        ipfs_url: ipfsCredentialMetadata.url,
+        ipfs_cid: ipfsCredentialMetadata.hash, // Accessing the Hash property directly from ipfsMetadata
         type: 'OTHER',
         course: {
           connect: {
