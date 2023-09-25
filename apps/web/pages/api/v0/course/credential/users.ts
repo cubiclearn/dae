@@ -35,14 +35,12 @@ const handleGetRequest = async (
     })
   } catch (error) {
     console.error(error)
-    return res
-      .status(500)
-      .json({
-        status: ApiResponseStatus.error,
-        message:
-          error.message ||
-          'An error occurred while processing your request. Please try again later.',
-      })
+    return res.status(500).json({
+      status: ApiResponseStatus.error,
+      message:
+        error.message ||
+        'An error occurred while processing your request. Please try again later.',
+    })
   }
 }
 
@@ -67,7 +65,7 @@ export default async function handler(
   }
 
   // Guard clause for unauthenticated requests
-  const session = await getSession({ req })
+  const session = await getSession({ req: { headers: req.headers } })
   if (!session) {
     return res
       .status(401)

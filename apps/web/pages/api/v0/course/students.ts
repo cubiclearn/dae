@@ -49,25 +49,21 @@ export default async function handler(
 ) {
   // Check if req.method is defined
   if (req.method === undefined) {
-    return res
-      .status(400)
-      .json({
-        status: ApiResponseStatus.fail,
-        message: 'Request method is undefined',
-      })
+    return res.status(400).json({
+      status: ApiResponseStatus.fail,
+      message: 'Request method is undefined',
+    })
   }
 
   // Guard clause for unsupported request methods
   if (!(req.method in HttpMethod)) {
-    return res
-      .status(400)
-      .json({
-        status: ApiResponseStatus.fail,
-        message: 'This method is not supported',
-      })
+    return res.status(400).json({
+      status: ApiResponseStatus.fail,
+      message: 'This method is not supported',
+    })
   }
   // Guard clause for unauthenticated requests
-  const session = await getSession({ req })
+  const session = await getSession({ req: { headers: req.headers } })
   if (!session) {
     return res
       .status(401)
@@ -79,11 +75,9 @@ export default async function handler(
     case HttpMethod.GET:
       return handleGetRequest(req, res)
     default:
-      return res
-        .status(400)
-        .json({
-          status: ApiResponseStatus.fail,
-          message: 'This method is not supported',
-        })
+      return res.status(400).json({
+        status: ApiResponseStatus.fail,
+        message: 'This method is not supported',
+      })
   }
 }

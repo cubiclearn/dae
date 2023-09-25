@@ -3,13 +3,13 @@
     "description": "Decentralized Autonomous Education (DAE) Database",
     "version": "0.0.0",
     "dependencies": {
-        "@prisma/client": "5.0.0"
+        "@prisma/client": "5.3.1"
     },
     "devDependencies": {
         "@dae/typescript-config": "workspace:*",
         "@types/node": "18.11.18",
         "eslint": "8.29.0",
-        "prisma": "5.0.0",
+        "prisma": "5.3.1",
         "tsup": "6.7.0",
         "typescript": "5.0.4"
     },

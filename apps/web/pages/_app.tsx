@@ -1,4 +1,3 @@
-import 'react-toastify/dist/ReactToastify.css'
 import '@rainbow-me/rainbowkit/styles.css'
 
 import React from 'react'
@@ -63,7 +62,7 @@ const MyApp = ({ Component, pageProps }: AppProps<{ session: Session }>) => {
           <RainbowKitProvider
             appInfo={appInfo}
             chains={supportedChains}
-            modalSize='compact'
+            modalSize="compact"
           >
             <ChakraProvider
               toastOptions={{

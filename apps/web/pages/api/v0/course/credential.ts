@@ -94,7 +94,7 @@ const handlePostRequest = async (
         .json({ status: ApiResponseStatus.error, message: 'Bad request.' })
     }
 
-    const session = await getSession({ req })
+    const session = await getSession({ req: { headers: req.headers } })
 
     const userCredentials = await prisma.userCredentials.findMany({
       where: {
@@ -204,7 +204,7 @@ const handleDeleteRequest = async (
         .json({ status: ApiResponseStatus.error, message: 'Bad request.' })
     }
 
-    const session = await getSession({ req })
+    const session = await getSession({ req: { headers: req.headers } })
 
     const userCredentials = await prisma.userCredentials.findMany({
       where: {
@@ -268,7 +268,7 @@ export default async function handler(
   }
 
   // Guard clause for unauthenticated requests
-  const session = await getSession({ req })
+  const session = await getSession({ req: { headers: req.headers } })
   if (!session) {
     return res
       .status(401)
