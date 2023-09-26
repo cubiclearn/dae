@@ -1,18 +1,10 @@
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
-  // directUrl = env("DIRECT_DATABASE_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
-}
-
-model Account {
-  address String @id
-  name    String
-  surname String
 }
 
 model Course {
@@ -24,12 +16,14 @@ model Course {
   website_url                  String            @default("")
   media_channel                String            @default("")
   ipfs_metadata                String            @default("")
+  magister_base_karma          Int
+  discipulus_base_karma        Int
   timestamp                    Int
   chain_id                     Int
   karma_access_control_address String
   snapshot_space_ens           String            @default("")
-  user_credentials             UserCredentials[]
   credentials                  Credential[]
+  user_credentials             UserCredentials[]
 
   @@id([address, chain_id])
 }
@@ -42,7 +36,6 @@ enum CredentialType {
 }
 
 model Credential {
-  id               Int               @id @default(autoincrement())
   name             String
   description      String
   image_url        String
@@ -54,18 +47,28 @@ model Credential {
   course_address   String
   course_chain_id  Int
 
-  @@unique([course_address, ipfs_cid])
+  @@id([course_address, course_chain_id, ipfs_cid])
 }
 
 model UserCredentials {
-  course         Course     @relation(fields: [course_address, chain_id], references: [address, chain_id])
-  course_address String
-  chain_id       Int
-  user_address   String
-  credential     Credential @relation(fields: [credential_id], references: [id])
-  credential_id  Int
-  email          String     @default("")
-  discord_handle String     @default("")
+  user_address        String
+  course              Course     @relation(fields: [course_address, course_chain_id], references: [address, chain_id])
+  course_address      String
+  course_chain_id     Int
+  credential          Credential @relation(fields: [credential_ipfs_cid, course_address, course_chain_id], references: [ipfs_cid, course_address, course_chain_id])
+  credential_ipfs_cid String
+  credential_token_id Int
+  user_email          String     @default("")
+  user_discord_handle String     @default("")
 
-  @@id([course_address, user_address, credential_id])
+  @@id([user_address, course_address, credential_token_id, course_chain_id])
+  @@unique([user_address, course_address, credential_ipfs_cid, course_chain_id])
+}
+
+model Transactions {
+  transaction_hash String  @id
+  user_address     String
+  chain_id         Int
+  verified         Boolean @default(false)
+  action           String
 }

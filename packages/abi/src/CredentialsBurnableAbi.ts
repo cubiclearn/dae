@@ -21,11 +21,6 @@ export const CredentialsBurnableAbi = [
         name: '_bUri',
         type: 'string',
       },
-      {
-        internalType: 'uint256',
-        name: 'maxSupply',
-        type: 'uint256',
-      },
     ],
     stateMutability: 'nonpayable',
     type: 'constructor',
@@ -258,19 +253,6 @@ export const CredentialsBurnableAbi = [
         internalType: 'bytes32',
         name: '',
         type: 'bytes32',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MAX_SUPPLY',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
       },
     ],
     stateMutability: 'view',
@@ -539,6 +521,29 @@ export const CredentialsBurnableAbi = [
   {
     inputs: [
       {
+        internalType: 'address',
+        name: 'to',
+        type: 'address',
+      },
+      {
+        internalType: 'string',
+        name: 'uri',
+        type: 'string',
+      },
+      {
+        internalType: 'enum IERC5484.BurnAuth',
+        name: 'bAuth',
+        type: 'uint8',
+      },
+    ],
+    name: 'mintMagister',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
         internalType: 'address[]',
         name: 'to',
         type: 'address[]',
@@ -567,6 +572,19 @@ export const CredentialsBurnableAbi = [
         internalType: 'string',
         name: '',
         type: 'string',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'nextIndex',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
       },
     ],
     stateMutability: 'view',

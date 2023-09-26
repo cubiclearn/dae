@@ -3,43 +3,44 @@ import snapshot from '@snapshot-labs/snapshot.js'
 import { useAccount } from 'wagmi'
 import { ChainSnapshotHub } from '@dae/chains'
 import { ProposalType } from '@snapshot-labs/snapshot.js/dist/sign/types'
-import { useState } from 'react'
+import { useHookState } from './useHookState'
+import { mutate } from 'swr'
+import { PROPOSAL_QUERY } from '../graphql'
 
 export const useVotePropsal = (
   spaceName: string,
   spaceNetwork: keyof typeof ChainSnapshotHub,
   proposalId: string,
   type: ProposalType,
-  choice: number,
 ) => {
   const { address } = useAccount()
-  const [error, setError] = useState<string | null>(null)
-  const [isError, setIsError] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const { isSuccess, isValidating, isLoading, isError, error, ...state } =
+    useHookState()
 
   const hub = ChainSnapshotHub[spaceNetwork]
   const snapshotClient = new snapshot.Client712(hub)
   const signer = useEthersSigner()
 
-  const vote = async () => {
+  const vote = async (choice: number, reason: string) => {
     try {
-      setIsSuccess(false)
-      setIsError(false)
-      setIsLoading(true)
+      state.setLoading()
       await snapshotClient.vote(signer as any, address as string, {
         space: spaceName,
         proposal: proposalId,
         type: type,
         choice: choice,
+        reason: reason,
       })
-      setIsLoading(false)
-      setIsSuccess(true)
-    } catch (error: any) {
-      setIsLoading(false)
-      setIsError(true)
-      setError(error.error_description)
-      throw error
+
+      mutate(
+        (key) => Array.isArray(key) && key[0] === PROPOSAL_QUERY,
+        undefined,
+        { revalidate: true },
+      )
+      state.setSuccess()
+    } catch (e) {
+      state.handleError(e)
+      throw e
     }
   }
   return {
@@ -48,5 +49,6 @@ export const useVotePropsal = (
     isError,
     isSuccess,
     error,
+    isValidating,
   }
 }

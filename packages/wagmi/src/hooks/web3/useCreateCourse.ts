@@ -1,0 +1,233 @@
+import { useState } from 'react'
+import { Chain, useContractWrite, usePublicClient } from 'wagmi'
+import { Address } from 'viem'
+import { CredentialsFactoryAbi } from '@dae/abi'
+import { useCreateSnapshotSpace } from '@dae/snapshot'
+import type { Course } from '@dae/database'
+import { mainnet, goerli } from 'viem/chains'
+import { FactoryContractAddress } from '@dae/chains'
+import {
+  ApiResponse,
+  UseWeb3WriteHookInterface,
+  VotingStrategy,
+} from '@dae/types'
+import { useWeb3HookState } from '../useWeb3HookState'
+import { CONFIRMATION_BLOCKS } from '@dae/constants'
+import { mutate } from 'swr'
+
+interface CreateCredentialHookInterface extends UseWeb3WriteHookInterface {
+  create: (
+    name: string,
+    description: string,
+    image: File,
+    website: string,
+    mediaChannel: string,
+    magisterBaseKarma: number,
+    discipulusBaseKarma: number,
+    snapshotSpaceENS: string,
+    votingStrategy: 'linear-voting' | 'quadratic-voting',
+  ) => Promise<void>
+  step: number
+}
+
+export function useCreateCourse(
+  chain: Chain | undefined,
+  creatorAddress: Address | undefined,
+): CreateCredentialHookInterface {
+  const {
+    isSuccess,
+    isValidating,
+    isLoading,
+    isSigning,
+    isError,
+    error,
+    ...state
+  } = useWeb3HookState()
+
+  const [step, setStep] = useState<number>(0)
+  const { create: createSnapshotSpace } = useCreateSnapshotSpace()
+
+  const factoryAddress = chain
+    ? (FactoryContractAddress[
+        chain.id as keyof FactoryContractAddress
+      ] as Address)
+    : undefined
+
+  const { writeAsync } = useContractWrite({
+    address: factoryAddress,
+    functionName: 'createCourse',
+    abi: CredentialsFactoryAbi,
+  })
+
+  const publicClient = usePublicClient()
+
+  const ENSChainId =
+    chain && !chain.testnet && chain.id !== 31337 ? mainnet.id : goerli.id
+
+  const ENSPublicClient = usePublicClient({
+    chainId: ENSChainId,
+  })
+
+  const create = async (
+    name: string,
+    description: string,
+    image: File,
+    website: string,
+    mediaChannel: string,
+    magisterBaseKarma: number,
+    discipulusBaseKarma: number,
+    snapshotSpaceENS: string,
+    votingStrategy: VotingStrategy,
+  ) => {
+    try {
+      state.setValidating()
+      setStep(0)
+
+      if (!snapshotSpaceENS.match(/^([a-z0-9-]+\.eth)$/i)) {
+        throw new Error('Invalid ENS address.')
+      }
+
+      const resolverAddress = await ENSPublicClient.getEnsAddress({
+        name: snapshotSpaceENS,
+      })
+
+      if (resolverAddress !== creatorAddress) {
+        throw new Error('You are not the owner of this ENS address.')
+      }
+
+      state.setLoading()
+
+      const formData = new FormData()
+      formData.append('file', image)
+      formData.append('name', name)
+      formData.append('description', description)
+      formData.append('website', website)
+      formData.append('snapshot-ens', snapshotSpaceENS)
+      formData.append('media-channel', mediaChannel)
+
+      const uploadMetadataResponse = await fetch('/api/v0/course/metadata', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!uploadMetadataResponse.ok) {
+        throw new Error('Error uploading course metadata to IPFS')
+      }
+
+      setStep(1)
+
+      const { data: ipfsMetadataResponseData } =
+        (await uploadMetadataResponse.json()) as ApiResponse<{
+          metadata: { Hash: string }
+        }>
+
+      if (!ipfsMetadataResponseData) {
+        throw new Error(
+          'There is a problem uploading your metadata. Try again.',
+        )
+      }
+
+      const metadataBaseURI = `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${ipfsMetadataResponseData.metadata.Hash}`
+
+      const metadataResponse = await fetch(metadataBaseURI)
+
+      if (!metadataResponse.ok) {
+        throw new Error(
+          'There is a problem uploading your metadata. Try again.',
+        )
+      }
+
+      if (writeAsync === undefined) {
+        throw new Error(
+          'The data provided is incorrect. Please ensure that you have entered the correct information.',
+        )
+      }
+
+      state.setSigning()
+
+      const writeResult = await writeAsync({
+        args: [
+          name,
+          'DAEC',
+          metadataBaseURI,
+          BigInt(magisterBaseKarma),
+          BigInt(discipulusBaseKarma),
+        ],
+      })
+
+      await fetch('/api/v0/transactions', {
+        method: 'POST',
+        body: JSON.stringify({
+          txHash: writeResult.hash,
+          chainId: publicClient.chain.id,
+          action: 'CREATE_COURSE',
+        }),
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      })
+
+      state.setLoading()
+      setStep(2)
+
+      const txReceipt = await publicClient.waitForTransactionReceipt({
+        hash: writeResult.hash,
+        confirmations: CONFIRMATION_BLOCKS,
+      })
+
+      const response = await fetch('/api/v0/course', {
+        method: 'POST',
+        body: JSON.stringify({
+          txHash: txReceipt.transactionHash,
+          chainId: publicClient.chain.id,
+        }),
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      })
+
+      if (!response.ok) {
+        const responseJSON = await response.json()
+        throw new Error(responseJSON.error)
+      }
+
+      const responseData = (await response.json()) as {
+        message: string
+        data: { course: Course }
+      }
+
+      setStep(3)
+
+      await createSnapshotSpace(
+        snapshotSpaceENS,
+        responseData.data.course.name,
+        responseData.data.course.symbol,
+        responseData.data.course.description,
+        responseData.data.course.karma_access_control_address,
+        votingStrategy,
+      )
+
+      mutate(
+        (key) => Array.isArray(key) && key[0] === 'user/courses',
+        undefined,
+        { revalidate: true },
+      )
+      setStep(4)
+      state.setSuccess()
+    } catch (e: unknown) {
+      state.handleError(e)
+      throw e
+    }
+  }
+
+  return {
+    create,
+    isLoading,
+    isError,
+    isSuccess,
+    isValidating,
+    error,
+    isSigning,
+    step,
+  }
+}

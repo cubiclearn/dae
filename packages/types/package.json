@@ -4,18 +4,10 @@
     "version": "0.0.1",
     "author": "",
     "exports": {
-        ".": {
-            "import": {
-                "types": "./index.d.ts"
-            },
-            "default": {
-                "types": "./index.d.ts"
-            }
-        },
+        ".": "./index.d.ts",
         "./package.json": "./package.json"
     },
     "license": "MIT",
-    "type": "module",
     "types": "./index.d.ts",
     "typescript": {
         "definition": "./index.d.ts"

@@ -1,13 +1,19 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
-import { CredentialsBurnableAbi, CredentialsFactoryAbi } from '@dae/abi'
-import { prisma } from '@dae/database'
+import {
+  CredentialsBurnableAbi,
+  CredentialsFactoryAbi,
+  KarmaAccessControlAbiUint64,
+} from '@dae/abi'
+import { Course, prisma } from '@dae/database'
 import { Address, createPublicClient } from 'viem'
 import { sanitizeAddress } from '../../../../lib/functions'
 import { getCourse } from '../../../../lib/api'
 import { config as TransportConfig } from '@dae/viem-config'
 import { decodeEventLog } from 'viem'
 import { ChainKey } from '@dae/chains'
+import { ApiResponse, ApiResponseStatus } from '@dae/types'
+import { CONFIRMATION_BLOCKS } from '@dae/constants'
 
 // TypeScript enum for request methods
 enum HttpMethod {
@@ -15,23 +21,42 @@ enum HttpMethod {
   POST = 'POST',
 }
 
-const handleGetRequest = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { chainId, address } = req.query as {
-    chainId: string
-    address: Address
-  }
-
+const handleGetRequest = async (
+  req: NextApiRequest,
+  res: NextApiResponse<ApiResponse<{ course: Course }>>,
+) => {
   try {
+    const { chainId, address } = req.query as {
+      chainId: string
+      address: Address
+    }
+
     const course = await getCourse(address, parseInt(chainId))
-    res.status(200).json({ success: true, data: { course: course } })
-  } catch (e) {
-    res
-      .status(500)
-      .json({ success: false, error: e.message || 'Internal Server Error' })
+
+    if (!course) {
+      return res
+        .status(200)
+        .json({ status: ApiResponseStatus.fail, data: null })
+    }
+
+    return res
+      .status(200)
+      .json({ status: ApiResponseStatus.success, data: { course: course } })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      status: ApiResponseStatus.error,
+      message:
+        error.message ||
+        'An error occurred while processing your request. Please try again later.',
+    })
   }
 }
 
-const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
+const handlePostRequest = async (
+  req: NextApiRequest,
+  res: NextApiResponse<ApiResponse<{ course: Course }>>,
+) => {
   const { txHash, chainId } = req.body
 
   try {
@@ -40,11 +65,10 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
       transport: TransportConfig[chainId]?.transport,
     })
 
-    const transaction = await client.waitForTransactionReceipt({
+    const txRecept = await client.waitForTransactionReceipt({
       hash: txHash,
+      confirmations: CONFIRMATION_BLOCKS,
     })
-
-    const txRecept = await client.getTransactionReceipt({ hash: txHash })
 
     const txFactoryLogsDecoded: any = txRecept.logs
       .map((log) => {
@@ -84,27 +108,41 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     const karmaAccessControlAddress: Address =
       karmaAccessControlCreatedLog.args.karmaAccessControl
 
-    const [symbol, baseURI] = await Promise.all([
-      client.readContract({
-        address: contractAddress,
-        abi: CredentialsBurnableAbi,
-        functionName: 'symbol',
-      }),
-      client.readContract({
-        address: contractAddress,
-        abi: CredentialsBurnableAbi,
-        functionName: 'baseURI',
-      }),
-    ])
+    const [symbol, baseURI, baseMagisterKarma, baseDiscipulusKarma] =
+      await Promise.all([
+        client.readContract({
+          address: contractAddress,
+          abi: CredentialsBurnableAbi,
+          functionName: 'symbol',
+        }),
+        client.readContract({
+          address: contractAddress,
+          abi: CredentialsBurnableAbi,
+          functionName: 'baseURI',
+        }),
+        client.readContract({
+          address: karmaAccessControlAddress,
+          abi: KarmaAccessControlAbiUint64,
+          functionName: 'BASE_MAGISTER_KARMA',
+        }),
+        client.readContract({
+          address: karmaAccessControlAddress,
+          abi: KarmaAccessControlAbiUint64,
+          functionName: 'BASE_DISCIPULUS_KARMA',
+        }),
+      ])
 
     const timestamp = (
-      await client.getBlock({ blockNumber: transaction.blockNumber! })
+      await client.getBlock({ blockNumber: txRecept.blockNumber! })
     ).timestamp
 
     const metadataResponse = await fetch(baseURI)
 
     if (!metadataResponse.ok) {
-      throw new Error('The metadata url is incorrect')
+      return res.status(500).json({
+        status: ApiResponseStatus.error,
+        message: 'Cannot retrieve informations from provided metadata.',
+      })
     }
 
     const jsonMetadata = await metadataResponse.json()
@@ -116,7 +154,10 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
       !jsonMetadata.image ||
       !jsonMetadata['snapshot-ens']
     ) {
-      throw new Error('Wrong metadata structure')
+      return res.status(500).json({
+        status: ApiResponseStatus.error,
+        message: 'Metadata provided is in an uncorrect format.',
+      })
     }
 
     const courseData = await prisma.$transaction(
@@ -126,20 +167,23 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
             address: sanitizeAddress(contractAddress),
             name: jsonMetadata.name,
             description: jsonMetadata.description,
-            media_channel: jsonMetadata.media_channel,
+            media_channel: jsonMetadata['media-channel'],
             image_url: jsonMetadata.image,
             website_url: jsonMetadata.website,
             symbol: symbol,
             ipfs_metadata: baseURI,
             timestamp: Number(timestamp),
             chain_id: Number(chainId),
-            karma_access_control_address:
-              karmaAccessControlAddress.toLowerCase(),
+            karma_access_control_address: sanitizeAddress(
+              karmaAccessControlAddress,
+            ),
             snapshot_space_ens: jsonMetadata['snapshot-ens'],
+            magister_base_karma: Number(baseMagisterKarma),
+            discipulus_base_karma: Number(baseDiscipulusKarma),
           },
         })
 
-        const [adminCredential, magisterCredential, _discipulusCredential] =
+        const [adminCredential, _magisterCredential, _discipulusCredential] =
           await Promise.all([
             prisma.credential.create({
               data: {
@@ -214,34 +258,19 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
                   },
                 },
               },
-              user_address: sanitizeAddress(transaction.from),
+              user_address: sanitizeAddress(txRecept.from),
+              credential_token_id: -1,
               credential: {
                 connect: {
-                  id: adminCredential.id,
-                },
-              },
-              email: '',
-              discord_handle: '',
-            },
-          }),
-          await prisma.userCredentials.create({
-            data: {
-              course: {
-                connect: {
-                  address_chain_id: {
-                    address: sanitizeAddress(course.address as Address),
-                    chain_id: course.chain_id,
+                  course_address_course_chain_id_ipfs_cid: {
+                    course_address: sanitizeAddress(course.address as Address),
+                    ipfs_cid: adminCredential.ipfs_cid,
+                    course_chain_id: parseInt(chainId as string),
                   },
                 },
               },
-              user_address: sanitizeAddress(transaction.from),
-              credential: {
-                connect: {
-                  id: magisterCredential.id,
-                },
-              },
-              email: '',
-              discord_handle: '',
+              user_email: '',
+              user_discord_handle: '',
             },
           }),
         ])
@@ -254,37 +283,55 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
       },
     )
 
-    res.status(200).json({ success: true, data: { course: courseData } })
-  } catch (e) {
-    console.error(e)
-    res
-      .status(500)
-      .json({ success: false, error: e.message || 'Internal Server Error' })
+    await prisma.transactions.update({
+      where: {
+        transaction_hash: txHash,
+      },
+      data: {
+        verified: true,
+      },
+    })
+
+    return res
+      .status(200)
+      .json({ status: ApiResponseStatus.success, data: { course: courseData } })
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({
+      status: ApiResponseStatus.error,
+      message:
+        error.message ||
+        'An error occurred while processing your request. Please try again later.',
+    })
   }
 }
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse<ApiResponse<any>>,
 ) {
   // Check if req.method is defined
   if (req.method === undefined) {
-    return res
-      .status(400)
-      .json({ success: false, error: 'Request method is undefined' })
+    return res.status(400).json({
+      status: ApiResponseStatus.error,
+      message: 'Request method is undefined',
+    })
   }
 
   // Guard clause for unsupported request methods
   if (!(req.method in HttpMethod)) {
-    return res
-      .status(400)
-      .json({ success: false, error: 'This method is not supported' })
+    return res.status(400).json({
+      status: ApiResponseStatus.error,
+      message: 'This method is not supported',
+    })
   }
 
   // Guard clause for unauthenticated requests
   const session = await getSession({ req })
   if (!session) {
-    return res.status(401).json({ success: false, error: 'Unauthenticated' })
+    return res
+      .status(401)
+      .json({ status: ApiResponseStatus.error, message: 'Unauthenticated' })
   }
 
   // Handle the respective request method
@@ -294,8 +341,9 @@ export default async function handler(
     case HttpMethod.POST:
       return handlePostRequest(req, res)
     default:
-      return res
-        .status(400)
-        .json({ success: false, error: 'This method is not supported' })
+      return res.status(400).json({
+        status: ApiResponseStatus.error,
+        message: 'This method is not supported',
+      })
   }
 }
