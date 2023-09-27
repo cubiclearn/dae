@@ -39,7 +39,8 @@ export const CreateSnapshotSpaceForm: React.FC = () => {
     isError: isErrorLoadingENSOwner,
   } = useIsENSOwner(address, courseData?.snapshot_space_ens)
 
-  const { create, isLoading, isError, error } = useCreateSnapshotSpace()
+  const { create, isLoading, isError, error, isValidating } =
+    useCreateSnapshotSpace()
   const toast = useToast()
 
   const { values, errors, touched, handleChange, handleSubmit } = useFormik<{
@@ -138,6 +139,7 @@ export const CreateSnapshotSpaceForm: React.FC = () => {
                 placeholder="Select voting strategy"
                 onChange={handleChange}
                 value={values.votingStrategy}
+                isDisabled={isLoading || isValidating}
               >
                 <option value={'linear-voting'}>Linear Voting</option>
                 <option value={'quadratic-voting'}>Quadratic Voting</option>

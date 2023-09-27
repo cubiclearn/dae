@@ -1,3 +1,3 @@
+export * from './KarmaSingleTransferForm'
 export * from './TransferKarmaForm'
-export * from './TransferKarmaContainer'
-export * from './MultiTransferKarmaForm'
+export * from './KarmaMultiTransferForm'

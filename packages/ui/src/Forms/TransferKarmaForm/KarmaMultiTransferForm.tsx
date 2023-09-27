@@ -36,7 +36,13 @@ const validationSchema = Yup.object().shape({
   CSVFile: Yup.mixed().required('CSV file is required'),
 })
 
-export const MultiTransferKarmaForm: React.FC<any> = () => {
+type KarmaMultiTransferFormProps = {
+  onIsLoading: (_loading: boolean) => void
+}
+
+export const KarmaMultiTransferForm: React.FC<KarmaMultiTransferFormProps> = ({
+  onIsLoading,
+}) => {
   const { data } = useCourseData()
   const { multiTransfer, isLoading, isError, error, isSigning, isValidating } =
     useTransferKarma(
@@ -62,14 +68,19 @@ export const MultiTransferKarmaForm: React.FC<any> = () => {
     },
     onSubmit: async () => {
       try {
+        onIsLoading(true)
         toast.promise(
-          multiTransfer(csvData).then(() => {
-            if (fileInputRef.current) {
-              fileInputRef.current.value = ''
-            }
-            setCsvData([])
-            resetForm()
-          }),
+          multiTransfer(csvData)
+            .then(() => {
+              if (fileInputRef.current) {
+                fileInputRef.current.value = ''
+              }
+              setCsvData([])
+              resetForm()
+            })
+            .finally(() => {
+              onIsLoading(false)
+            }),
           {
             success: {
               title: 'Karma transferred with success!',
@@ -126,7 +137,11 @@ export const MultiTransferKarmaForm: React.FC<any> = () => {
   return (
     <form onSubmit={handleSubmit}>
       <Stack spacing={6}>
-        <FormControl isRequired isInvalid={!!errors.CSVFile && touched.CSVFile}>
+        <FormControl
+          isRequired
+          isInvalid={!!errors.CSVFile && touched.CSVFile}
+          isDisabled={isLoading || isValidating || isSigning}
+        >
           <FormLabel>File (.csv)</FormLabel>
           <Input
             id="CSVFile"

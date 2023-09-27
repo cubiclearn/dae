@@ -48,11 +48,12 @@ const validationSchema = Yup.object().shape({
 type TransferCredentialsFormProps = {
   courseAddress: string
   credentialType: 'MAGISTER' | 'DISCIPULUS'
+  onIsLoading: (_isLoading: boolean) => void
 }
 
 export const BaseCredentialsBatchTransfer: React.FC<
   TransferCredentialsFormProps
-> = ({ courseAddress, credentialType }) => {
+> = ({ courseAddress, credentialType, onIsLoading }) => {
   const { chain } = useNetwork()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const { data } = useCourseCredentials(
@@ -78,14 +79,19 @@ export const BaseCredentialsBatchTransfer: React.FC<
       onSubmit: async () => {
         try {
           if (!data) return
+          onIsLoading(true)
           toast.promise(
-            multiTransfer(csvData, data.credentials[0].ipfs_cid).then(() => {
-              if (fileInputRef.current) {
-                fileInputRef.current.value = ''
-              }
-              setFieldValue('credentialIPFSCid', '')
-              setCsvData([])
-            }),
+            multiTransfer(csvData, data.credentials[0].ipfs_cid)
+              .then(() => {
+                if (fileInputRef.current) {
+                  fileInputRef.current.value = ''
+                }
+                setFieldValue('credentialIPFSCid', '')
+                setCsvData([])
+              })
+              .finally(() => {
+                onIsLoading(false)
+              }),
             {
               success: {
                 title: 'Credentials transferred with success!',
@@ -142,6 +148,7 @@ export const BaseCredentialsBatchTransfer: React.FC<
               type="file"
               ref={fileInputRef}
               py={1}
+              isDisabled={isLoading || isValidating || isSigning}
             />
             <FormHelperText>
               Click{' '}

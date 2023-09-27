@@ -24,6 +24,7 @@ const ethereumAddressRegex = /^0x([A-Fa-f0-9]{40})$/
 type TransferCredentialFormProps = {
   courseAddress: string
   credentialType: 'MAGISTER' | 'DISCIPULUS'
+  onIsLoading: (_isLoading: boolean) => void
 }
 
 const validationSchema = Yup.object().shape({
@@ -36,7 +37,7 @@ const validationSchema = Yup.object().shape({
 
 export const BaseCredentialSingleTransferForm: React.FC<
   TransferCredentialFormProps
-> = ({ courseAddress, credentialType }) => {
+> = ({ courseAddress, credentialType, onIsLoading }) => {
   const { chain } = useNetwork()
   const { data } = useCourseCredentials(
     courseAddress as Address,
@@ -68,6 +69,7 @@ export const BaseCredentialSingleTransferForm: React.FC<
     onSubmit: async (values) => {
       try {
         if (!data) return
+        onIsLoading(true)
         toast.promise(
           transfer(
             {
@@ -76,9 +78,13 @@ export const BaseCredentialSingleTransferForm: React.FC<
               discord: values.userDiscordUsername,
             },
             data.credentials[0].ipfs_cid,
-          ).then(() => {
-            resetForm()
-          }),
+          )
+            .then(() => {
+              resetForm()
+            })
+            .finally(() => {
+              onIsLoading(false)
+            }),
           {
             success: {
               title: 'Credential transferred with success!',
@@ -112,6 +118,7 @@ export const BaseCredentialSingleTransferForm: React.FC<
             type="text"
             placeholder="Ethereum Address"
             onReset={handleReset}
+            isDisabled={isLoading || isValidating || isSigning}
           />
           <FormErrorMessage>{errors.userAddress}</FormErrorMessage>
         </FormControl>
@@ -125,6 +132,7 @@ export const BaseCredentialSingleTransferForm: React.FC<
             type="text"
             placeholder="Email"
             onReset={handleReset}
+            isDisabled={isLoading || isValidating || isSigning}
           />
           <FormErrorMessage>{errors.userEmail}</FormErrorMessage>
         </FormControl>
@@ -142,6 +150,7 @@ export const BaseCredentialSingleTransferForm: React.FC<
             type="text"
             placeholder="Discord username"
             onReset={handleReset}
+            isDisabled={isLoading || isValidating || isSigning}
           />
           <FormErrorMessage>{errors.userDiscordUsername}</FormErrorMessage>
         </FormControl>

@@ -52,7 +52,8 @@ type CreateCredentialsFormProps = {
 export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
   courseAddress,
 }) => {
-  const { create, isLoading, isError, error } = useCreateCredential()
+  const { create, isLoading, isError, error, isValidating } =
+    useCreateCredential()
   const imageInputRef = useRef<HTMLInputElement | null>(null)
   const { chain } = useNetwork()
   const router = useRouter()
@@ -135,6 +136,7 @@ export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
               type="text"
               placeholder="Name"
               onReset={handleReset}
+              isDisabled={isLoading || isValidating}
             />
             <FormErrorMessage>{errors.name}</FormErrorMessage>
           </FormControl>
@@ -151,6 +153,7 @@ export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
               type="text"
               placeholder="Description"
               onReset={handleReset}
+              isDisabled={isLoading || isValidating}
             />
             <FormErrorMessage>{errors.description}</FormErrorMessage>
           </FormControl>
@@ -164,6 +167,7 @@ export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
               onBlur={handleBlur}
               onReset={handleResetImageInputField}
               ref={imageInputRef}
+              isDisabled={isLoading || isValidating}
             />
             <FormErrorMessage>{errors.image}</FormErrorMessage>
           </FormControl>

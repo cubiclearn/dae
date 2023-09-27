@@ -219,6 +219,7 @@ export const CreateCourseForm = () => {
               onBlur={handleBlur}
               type="text"
               placeholder="Name"
+              isDisabled={isLoading || isSigning || isValidating}
             />
             <FormErrorMessage>{errors.name}</FormErrorMessage>
           </FormControl>
@@ -234,6 +235,7 @@ export const CreateCourseForm = () => {
               onBlur={handleBlur}
               type="text"
               placeholder="Description"
+              isDisabled={isLoading || isSigning || isValidating}
             />
             <FormErrorMessage>{errors.description}</FormErrorMessage>
           </FormControl>
@@ -246,6 +248,7 @@ export const CreateCourseForm = () => {
               onChange={handleImageInputFieldChange}
               ref={imageInputRef}
               onBlur={handleBlur}
+              isDisabled={isLoading || isSigning || isValidating}
             />
             <FormErrorMessage>{errors.image}</FormErrorMessage>
           </FormControl>
@@ -261,6 +264,7 @@ export const CreateCourseForm = () => {
               value={values.website}
               onChange={handleChange}
               onBlur={handleBlur}
+              isDisabled={isLoading || isSigning || isValidating}
             />
             <FormErrorMessage>{errors.website}</FormErrorMessage>
           </FormControl>
@@ -275,6 +279,7 @@ export const CreateCourseForm = () => {
               onBlur={handleBlur}
               type="text"
               placeholder="https://your-media-channel.com"
+              isDisabled={isLoading || isSigning || isValidating}
             />
             <FormErrorMessage>{errors.mediaChannel}</FormErrorMessage>
           </FormControl>
@@ -297,6 +302,7 @@ export const CreateCourseForm = () => {
               }}
               value={values.magisterBaseKarma}
               onBlur={handleBlur}
+              isDisabled={isLoading || isSigning || isValidating}
             >
               <NumberInputField />
               <NumberInputStepper>
@@ -327,6 +333,7 @@ export const CreateCourseForm = () => {
               }}
               value={values.discipulusBaseKarma}
               onBlur={handleBlur}
+              isDisabled={isLoading || isSigning || isValidating}
             >
               <NumberInputField />
               <NumberInputStepper>
@@ -351,6 +358,7 @@ export const CreateCourseForm = () => {
               onBlur={handleBlur}
               type="text"
               placeholder="your-ens.eth"
+              isDisabled={isLoading || isSigning || isValidating}
             />
             <FormErrorMessage>
               {errors.snapshotSpaceENS ||
@@ -367,6 +375,7 @@ export const CreateCourseForm = () => {
               placeholder="Select voting strategy"
               onChange={handleChange}
               defaultValue={'linear-voting'}
+              isDisabled={isLoading || isSigning || isValidating}
             >
               <option value={'linear-voting'}>Linear Voting</option>
               <option value={'quadratic-voting'}>Quadratic Voting</option>
