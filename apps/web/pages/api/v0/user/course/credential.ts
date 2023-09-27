@@ -47,7 +47,7 @@ const handleGetRequest = async (
     )
 
     if (!credential) {
-      return res.status(200).json({
+      return res.status(404).json({
         status: ApiResponseStatus.fail,
         data: null,
       })

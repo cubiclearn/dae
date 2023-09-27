@@ -19,7 +19,7 @@ export const UserRow: React.FC<UserRowProps> = ({
   const { data: courseData } = useCourseData()
 
   const { data: karmaBalance } = useKarmaBalance(
-    courseData?.karma_access_control_address,
+    courseData?.karma_access_control_address as Address | undefined,
     user.user_address as Address,
   )
 

@@ -51,7 +51,9 @@ export const KarmaSingleTransferForm: React.FC<KarmaSingleTransferFormProps> =
   ({ onIsLoading }) => {
     const { data } = useCourseData()
     const { transfer, isLoading, isError, error, isSigning, isValidating } =
-      useTransferKarma(data?.karma_access_control_address)
+      useTransferKarma(
+        data?.karma_access_control_address as Address | undefined,
+      )
 
     const toast = useToast()
 
@@ -100,7 +102,7 @@ export const KarmaSingleTransferForm: React.FC<KarmaSingleTransferFormProps> =
     })
 
     const { data: karmaBalance } = useKarmaBalance(
-      data?.karma_access_control_address,
+      data?.karma_access_control_address as Address | undefined,
       isAddress(values.userAddress) ? values.userAddress : undefined,
     )
 

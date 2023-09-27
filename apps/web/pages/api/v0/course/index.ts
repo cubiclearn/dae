@@ -35,7 +35,7 @@ const handleGetRequest = async (
 
     if (!course) {
       return res
-        .status(200)
+        .status(404)
         .json({ status: ApiResponseStatus.fail, data: null })
     }
 
