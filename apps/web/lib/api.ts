@@ -81,6 +81,11 @@ export const getUserCourses = async (
         },
       },
     },
+    orderBy: {
+      course: {
+        timestamp: 'desc',
+      },
+    },
     distinct: ['course_address'],
   })
 }
