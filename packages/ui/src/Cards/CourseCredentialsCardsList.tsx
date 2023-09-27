@@ -1,6 +1,5 @@
 import React from 'react'
-import { CredentialsCard } from './CredentialsCard'
-import { SimpleGrid, Stack } from '@chakra-ui/react'
+import { SimpleGrid } from '@chakra-ui/react'
 import {
   Alert,
   AlertIcon,
@@ -14,14 +13,15 @@ import {
 import { useCourseCredentials } from '@dae/wagmi'
 import { Address, useNetwork } from 'wagmi'
 import NextLink from 'next/link'
+import { Card } from './Card'
 
-interface CourseCardListProps {
+interface CourseCredentialsCardsListProps {
   courseAddress: Address
 }
 
-export const CourseCredentialsList: React.FC<CourseCardListProps> = ({
-  courseAddress,
-}) => {
+export const CourseCredentialsCardsList: React.FC<
+  CourseCredentialsCardsListProps
+> = ({ courseAddress }) => {
   const { chain } = useNetwork()
 
   const { data, error, isLoading } = useCourseCredentials(
@@ -76,24 +76,24 @@ export const CourseCredentialsList: React.FC<CourseCardListProps> = ({
   }
 
   return (
-    <Stack spacing={8}>
-      <Stack spacing={4}>
-        <SimpleGrid
-          columns={{ base: 1, sm: 2, lg: 3, xl: 5 }}
-          spacing={{ base: 8 }}
+    <SimpleGrid
+      columns={{ base: 1, sm: 2, lg: 3, xl: 5 }}
+      spacing={{ base: 8 }}
+    >
+      {data.credentials.map((credential) => (
+        <Link
+          as={NextLink}
+          href={`/course/${credential.course_address}/credentials/${credential.ipfs_cid}/info`}
+          _hover={{ textDecoration: 'none' }}
+          key={credential.ipfs_cid}
         >
-          {data.credentials.map((credential) => (
-            <Link
-              as={NextLink}
-              href={`/course/${credential.course_address}/credentials/${credential.ipfs_cid}/info`}
-              _hover={{ textDecoration: 'none' }}
-              key={credential.ipfs_cid}
-            >
-              <CredentialsCard data={credential} />
-            </Link>
-          ))}
-        </SimpleGrid>
-      </Stack>
-    </Stack>
+          <Card
+            title={credential.name}
+            description={credential.description}
+            image_url={credential.image_url}
+          />
+        </Link>
+      ))}
+    </SimpleGrid>
   )
 }

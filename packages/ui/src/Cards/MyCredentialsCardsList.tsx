@@ -1,5 +1,4 @@
 import React from 'react'
-import { CredentialsCard } from './CredentialsCard'
 import { SimpleGrid } from '@chakra-ui/react'
 import {
   Alert,
@@ -12,12 +11,13 @@ import {
 } from '@chakra-ui/react'
 import { useUserCourseCredentials } from '@dae/wagmi'
 import { Address, useAccount, useNetwork } from 'wagmi'
+import { Card } from './Card'
 
-interface CourseCardListProps {
+interface MyCredentialsCardsListProps {
   courseAddress: Address
 }
 
-export const MyCredentialsList: React.FC<CourseCardListProps> = ({
+export const MyCredentialsCardsList: React.FC<MyCredentialsCardsListProps> = ({
   courseAddress,
 }) => {
   const { chain } = useNetwork()
@@ -69,7 +69,12 @@ export const MyCredentialsList: React.FC<CourseCardListProps> = ({
       spacing={{ base: 8 }}
     >
       {data.credentials.map((credential) => (
-        <CredentialsCard key={credential.ipfs_cid} data={credential} />
+        <Card
+          key={credential.ipfs_cid}
+          title={credential.name}
+          description={credential.description}
+          image_url={credential.image_url}
+        />
       ))}
     </SimpleGrid>
   )

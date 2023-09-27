@@ -56,63 +56,33 @@ export const getCourseTeachers = async (
 export const getUserCourses = async (
   userAddress: Address,
   chainId: number,
-  type: 'EDUCATOR' | 'DISCIPULUS',
-): Promise<Course[]> => {
-  if (type === 'DISCIPULUS') {
-    return prisma.course.findMany({
-      where: {
-        chain_id: chainId,
-        credentials: {
-          some: {
-            type,
-            user_credentials: {
-              some: {
-                user_address: sanitizeAddress(userAddress),
-              },
-            },
-          },
+  types: CredentialType[],
+): Promise<
+  (UserCredentials & {
+    course: { name: string; description: string; image_url: string }
+  })[]
+> => {
+  return prisma.userCredentials.findMany({
+    where: {
+      user_address: sanitizeAddress(userAddress),
+      course_chain_id: chainId,
+      credential: {
+        type: {
+          in: types,
         },
       },
-      orderBy: [
-        {
-          timestamp: 'desc',
-        },
-      ],
-    })
-  } else {
-    return prisma.course.findMany({
-      where: {
-        chain_id: chainId,
-        credentials: {
-          some: {
-            OR: [
-              {
-                type: 'MAGISTER',
-                user_credentials: {
-                  some: {
-                    user_address: sanitizeAddress(userAddress),
-                  },
-                },
-              },
-              {
-                type: 'ADMIN',
-                user_credentials: {
-                  some: {
-                    user_address: sanitizeAddress(userAddress),
-                  },
-                },
-              },
-            ],
-          },
+    },
+    include: {
+      course: {
+        select: {
+          name: true,
+          description: true,
+          image_url: true,
         },
       },
-      orderBy: [
-        {
-          timestamp: 'desc',
-        },
-      ],
-    })
-  }
+    },
+    distinct: ['course_address'],
+  })
 }
 
 export const getCourseCredentials = async (

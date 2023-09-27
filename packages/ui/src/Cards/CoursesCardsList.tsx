@@ -1,5 +1,4 @@
 import React from 'react'
-import { CourseCard } from './CourseCard'
 import { SimpleGrid } from '@chakra-ui/react'
 import {
   Alert,
@@ -9,22 +8,28 @@ import {
   Box,
   Center,
   Spinner,
+  Link,
 } from '@chakra-ui/react'
+import NextLink from 'next/link'
 import { useUserCourses } from '@dae/wagmi'
 import { Address, useAccount, useNetwork } from 'wagmi'
+import { CredentialType } from '@dae/database'
+import { Card } from './Card'
 
-interface CourseCardListProps {
-  role: 'EDUCATOR' | 'DISCIPULUS'
+interface CoursesCardListsProps {
+  roles: CredentialType[]
 }
 
-export const CourseCardList: React.FC<CourseCardListProps> = ({ role }) => {
+export const CoursesCardsList: React.FC<CoursesCardListsProps> = ({
+  roles,
+}) => {
   const { chain } = useNetwork()
   const { address } = useAccount()
 
   const { data, error, isLoading } = useUserCourses(
     address as Address | undefined,
     chain?.id,
-    role,
+    roles,
   )
 
   if (isLoading) {
@@ -49,7 +54,7 @@ export const CourseCardList: React.FC<CourseCardListProps> = ({ role }) => {
     )
   }
 
-  if (!data || data.courses.length === 0) {
+  if (!data || data.credentials.length === 0) {
     return (
       <Alert status="info">
         <AlertIcon />
@@ -66,8 +71,19 @@ export const CourseCardList: React.FC<CourseCardListProps> = ({ role }) => {
       columns={{ base: 1, sm: 2, lg: 3, xl: 5 }}
       spacing={{ base: 8 }}
     >
-      {data.courses.map((course) => (
-        <CourseCard key={course.address} data={course} />
+      {data.credentials.map((credential) => (
+        <Link
+          key={credential.course_address}
+          as={NextLink}
+          href={`/course/${credential.course_address}/info`}
+          style={{ textDecoration: 'none' }}
+        >
+          <Card
+            title={credential.course.name}
+            description={credential.course.description}
+            image_url={credential.course.image_url}
+          />
+        </Link>
       ))}
     </SimpleGrid>
   )
