@@ -22,7 +22,7 @@ import {
 import { useCreateCourse, useIsENSOwner } from '@dae/wagmi'
 import { useFormik } from 'formik'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useAccount, useNetwork } from 'wagmi'
 import * as Yup from 'yup'
 import { ProgressStepper } from '../../Stepper'
@@ -78,20 +78,7 @@ const validationSchema = Yup.object().shape({
 export const CreateCourseForm = () => {
   const { chain } = useNetwork()
   const { address } = useAccount()
-
-  if (!chain || !chain.id || !address) {
-    return (
-      <Alert status="info">
-        <AlertIcon />
-        <Box>
-          <AlertTitle>Something went wrong.</AlertTitle>
-          <AlertDescription>
-            You are not connected to Web3. Please connect your wallet before
-          </AlertDescription>
-        </Box>
-      </Alert>
-    )
-  }
+  const imageInputRef = useRef<HTMLInputElement | null>(null)
 
   const { create, isLoading, isError, error, isSigning, isValidating, step } =
     useCreateCourse(chain, address)
@@ -119,6 +106,20 @@ export const CreateCourseForm = () => {
     },
   ]
 
+  const handleImageInputFieldChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0]
+    setFieldValue('image', file)
+  }
+
+  const handleResetImageInputField = () => {
+    if (imageInputRef.current) {
+      imageInputRef.current.value = ''
+    }
+    setFieldValue('image', null)
+  }
+
   const { activeStep, setActiveStep } = useSteps({
     index: 0,
     count: steps.length,
@@ -132,6 +133,7 @@ export const CreateCourseForm = () => {
     handleChange,
     handleSubmit,
     setFieldValue,
+    resetForm,
   } = useFormik<{
     name: string
     description: string
@@ -168,7 +170,10 @@ export const CreateCourseForm = () => {
             values.discipulusBaseKarma,
             values.snapshotSpaceENS,
             values.votingStrategy,
-          ),
+          ).then(() => {
+            handleResetImageInputField()
+            resetForm()
+          }),
           {
             success: {
               title: 'Course created with success!',
@@ -238,10 +243,8 @@ export const CreateCourseForm = () => {
               py={1}
               id="image"
               type="file"
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                const file = event.target.files?.[0]
-                setFieldValue('image', file)
-              }}
+              onChange={handleImageInputFieldChange}
+              ref={imageInputRef}
               onBlur={handleBlur}
             />
             <FormErrorMessage>{errors.image}</FormErrorMessage>
