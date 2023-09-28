@@ -21,9 +21,9 @@ const handleGetRequest = async (
     }
 
     if (!chainId || !courseAddress) {
-      return res.status(200).json({
-        status: ApiResponseStatus.fail,
-        message: 'This credential does not exists.',
+      return res.status(400).json({
+        status: ApiResponseStatus.error,
+        message: 'Bad request',
       })
     }
 
@@ -50,7 +50,7 @@ export default async function handler(
   // Check if req.method is defined
   if (req.method === undefined) {
     return res.status(400).json({
-      status: ApiResponseStatus.fail,
+      status: ApiResponseStatus.error,
       message: 'Request method is undefined',
     })
   }
@@ -58,7 +58,7 @@ export default async function handler(
   // Guard clause for unsupported request methods
   if (!(req.method in HttpMethod)) {
     return res.status(400).json({
-      status: ApiResponseStatus.fail,
+      status: ApiResponseStatus.error,
       message: 'This method is not supported',
     })
   }
@@ -67,7 +67,7 @@ export default async function handler(
   if (!session) {
     return res
       .status(401)
-      .json({ status: ApiResponseStatus.fail, message: 'Unauthenticated' })
+      .json({ status: ApiResponseStatus.error, message: 'Unauthenticated' })
   }
 
   // Handle the respective request method
@@ -76,7 +76,7 @@ export default async function handler(
       return handleGetRequest(req, res)
     default:
       return res.status(400).json({
-        status: ApiResponseStatus.fail,
+        status: ApiResponseStatus.error,
         message: 'This method is not supported',
       })
   }

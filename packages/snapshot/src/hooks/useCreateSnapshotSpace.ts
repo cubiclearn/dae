@@ -4,66 +4,75 @@ import { useEthersSigner } from './useEthersSigner'
 import { ChainSnapshotHub } from '@dae/chains'
 import { type VotingStrategy } from '@dae/types'
 import { useHookState } from './useHookState'
+import { SpaceConfig } from '../types'
 
-const buildSpaceSettings = (
-  ownerAddress: Address,
-  spaceName: string,
-  spaceSymbol: string,
-  spaceDescription: string,
-  chainId: string,
-  karmaAccessControlAddress: Address,
+const defaultConfig: SpaceConfig = {
+  name: '',
+  skin: 'indexed',
+  about: '',
+  admins: [],
+  moderators: [],
+  avatar: 'https://cdn.stamp.fyi/space/default.eth?s=160',
+  symbol: '',
+  filters: {
+    minScore: 1,
+    onlyMembers: true,
+  },
+  network: '1',
+  strategies: [],
+  validation: {
+    name: 'basic',
+    params: {},
+  },
+}
+
+const buildStrategyConfiguration = (
+  karmaAccessControlAddress: string,
   votingStrategy: VotingStrategy,
 ) => {
-  return JSON.stringify({
-    name: spaceName,
-    skin: 'indexed',
-    about: spaceDescription,
-    admins: [ownerAddress],
-    avatar:
-      'https://pbs.twimg.com/profile_images/1431587138202701826/lpgblc4h_400x400.jpg',
-    symbol: spaceSymbol,
-    filters: {
-      minScore: 1,
-      onlyMembers: true,
-    },
-    network: chainId,
-    strategies: [
-      {
-        name: 'contract-call',
-        params: {
-          symbol: 'Karma',
-          address: karmaAccessControlAddress,
-          decimals: 0,
-          methodABI: {
-            inputs: [
-              {
-                internalType: 'address',
-                name: '_user',
-                type: 'address',
-              },
-            ],
-            name:
-              votingStrategy === 'linear-voting'
-                ? 'ratingOf'
-                : 'quadraticRatingOf',
-            outputs: [
-              {
-                internalType: 'uint64',
-                name: '',
-                type: 'uint64',
-              },
-            ],
-            stateMutability: 'view',
-            type: 'function',
+  return {
+    name: 'contract-call',
+    params: {
+      symbol: 'Karma',
+      address: karmaAccessControlAddress,
+      decimals: 0,
+      methodABI: {
+        inputs: [
+          {
+            internalType: 'address',
+            name: '_user',
+            type: 'address',
           },
-        },
+        ],
+        name:
+          votingStrategy === 'linear-voting' ? 'ratingOf' : 'quadraticRatingOf',
+        outputs: [
+          {
+            internalType: 'uint64',
+            name: '',
+            type: 'uint64',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
       },
-    ],
-    validation: {
-      name: 'basic',
-      params: {},
     },
-  })
+  }
+}
+
+const editSpaceConfig = (
+  defaultConfig: SpaceConfig,
+  edits: Partial<SpaceConfig>,
+): SpaceConfig => {
+  return {
+    ...defaultConfig,
+    ...edits,
+    filters: {
+      ...defaultConfig.filters,
+      ...(edits.filters || {}),
+    },
+    strategies: [...defaultConfig.strategies, ...(edits.strategies || [])],
+  }
 }
 
 export const useCreateSnapshotSpace = () => {
@@ -82,6 +91,7 @@ export const useCreateSnapshotSpace = () => {
     spaceName: string,
     spaceSymbol: string,
     spaceDescription: string,
+    spaceImageUrl: string,
     karmaAccessControlAddress: string,
     votingStrategy: VotingStrategy,
   ) => {
@@ -94,19 +104,26 @@ export const useCreateSnapshotSpace = () => {
       }
       state.setLoading()
 
-      const spaceSettings = buildSpaceSettings(
-        address as Address,
-        spaceName,
-        spaceSymbol,
-        spaceDescription,
-        chain.id.toString(),
-        karmaAccessControlAddress as Address,
+      const strategySettings = buildStrategyConfiguration(
+        karmaAccessControlAddress,
         votingStrategy,
       )
+
+      const spaceSettings: SpaceConfig = editSpaceConfig(defaultConfig, {
+        name: spaceName,
+        avatar: spaceImageUrl,
+        symbol: spaceSymbol,
+        about: spaceDescription,
+        admins: [address as Address],
+        strategies: [strategySettings],
+        network: chain.id.toString(),
+      })
+
       await snapshotClient.space(signer as any, address as string, {
         space: snapshotSpaceENS,
-        settings: spaceSettings,
+        settings: JSON.stringify(spaceSettings),
       })
+
       state.setSuccess()
     } catch (e) {
       state.handleError(e)

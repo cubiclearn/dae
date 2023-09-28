@@ -35,8 +35,8 @@ const handleGetRequest = async (
       parseInt(chainId as string),
     )
 
-    if (credential === null) {
-      return res.status(404).json({
+    if (!credential) {
+      return res.status(200).json({
         status: ApiResponseStatus.fail,
         message: 'This credential does not exists.',
       })

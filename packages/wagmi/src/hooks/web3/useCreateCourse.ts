@@ -206,6 +206,7 @@ export function useCreateCourse(
         responseData.data.course.name,
         responseData.data.course.symbol,
         responseData.data.course.description,
+        responseData.data.course.image_url,
         responseData.data.course.karma_access_control_address,
         votingStrategy,
       )

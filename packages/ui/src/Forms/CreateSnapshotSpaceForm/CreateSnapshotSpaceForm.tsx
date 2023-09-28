@@ -60,6 +60,7 @@ export const CreateSnapshotSpaceForm: React.FC = () => {
             courseData.name,
             courseData.symbol,
             courseData.description,
+            courseData.image_url,
             courseData.karma_access_control_address,
             values.votingStrategy,
           ),
