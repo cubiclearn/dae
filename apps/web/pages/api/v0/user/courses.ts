@@ -21,10 +21,12 @@ const handleGetRequest = async (
   >,
 ) => {
   try {
-    const { chainId, userAddress, roles } = req.query as {
+    const { chainId, userAddress, roles, skip, limit } = req.query as {
       chainId: string
       userAddress: Address
       roles: string
+      skip?: string
+      limit?: string
     }
 
     const parsedRoles = roles.split(',') as CredentialType[]
@@ -37,8 +39,10 @@ const handleGetRequest = async (
 
     const credentials = await getUserCourses(
       userAddress,
-      parseInt(chainId),
+      Number(chainId),
       parsedRoles,
+      Number(skip),
+      Number(limit),
     )
 
     return res.status(200).json({

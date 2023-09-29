@@ -31,6 +31,20 @@ export type SWRHook<T> = {
     isError: boolean
 }
 
+export type SWRInfiniteHook<T> = {
+    data: T | undefined
+    error: Error | undefined
+    isLoading: boolean
+    isValidating: boolean
+    isSuccess: boolean
+    isError: boolean
+    hasMore: boolean
+    size: number
+    setSize: (
+      size: number | ((_size: number) => number),
+    ) => Promise<ApiResponse<T>[] | undefined>
+  }
+
 export type UseWeb3WriteHookInterface = {
     isLoading: boolean
     isSuccess: boolean

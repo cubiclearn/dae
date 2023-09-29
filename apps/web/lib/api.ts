@@ -57,6 +57,8 @@ export const getUserCourses = async (
   userAddress: Address,
   chainId: number,
   types: CredentialType[],
+  skip?: number,
+  limit?: number,
 ): Promise<
   (UserCredentials & {
     course: { name: string; description: string; image_url: string }
@@ -87,6 +89,8 @@ export const getUserCourses = async (
       },
     },
     distinct: ['course_address'],
+    take: limit,
+    skip: skip,
   })
 }
 

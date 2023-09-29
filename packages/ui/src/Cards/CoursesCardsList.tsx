@@ -1,5 +1,4 @@
-import React from 'react'
-import { SimpleGrid } from '@chakra-ui/react'
+import React, { useEffect, useRef } from 'react'
 import {
   Alert,
   AlertIcon,
@@ -7,14 +6,17 @@ import {
   AlertDescription,
   Box,
   Center,
-  Spinner,
   Link,
+  SimpleGrid,
+  Stack,
+  Spinner,
 } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import { useUserCourses } from '@dae/wagmi'
 import { Address, useAccount, useNetwork } from 'wagmi'
 import { CredentialType } from '@dae/database'
 import { Card } from './Card'
+import { useIntersectionObserver } from 'usehooks-ts'
 
 interface CoursesCardListsProps {
   roles: CredentialType[]
@@ -26,11 +28,20 @@ export const CoursesCardsList: React.FC<CoursesCardListsProps> = ({
   const { chain } = useNetwork()
   const { address } = useAccount()
 
-  const { data, error, isLoading } = useUserCourses(
+  const { data, error, isLoading, setSize, size, hasMore } = useUserCourses(
     address as Address | undefined,
     chain?.id,
     roles,
   )
+
+  const ref = useRef<HTMLDivElement | null>(null)
+  const entry = useIntersectionObserver(ref, {})
+
+  useEffect(() => {
+    if (entry?.isIntersecting && hasMore) {
+      setSize(size + 1)
+    }
+  }, [entry])
 
   if (isLoading) {
     return (
@@ -67,24 +78,31 @@ export const CoursesCardsList: React.FC<CoursesCardListsProps> = ({
   }
 
   return (
-    <SimpleGrid
-      columns={{ base: 1, sm: 2, lg: 3, xl: 5 }}
-      spacing={{ base: 8 }}
-    >
-      {data.credentials.map((credential) => (
-        <Link
-          key={credential.course_address}
-          as={NextLink}
-          href={`/course/${credential.course_address}/info`}
-          style={{ textDecoration: 'none' }}
-        >
-          <Card
-            title={credential.course.name}
-            description={credential.course.description}
-            image_url={credential.course.image_url}
-          />
-        </Link>
-      ))}
-    </SimpleGrid>
+    <Stack height={'100%'} spacing={4}>
+      <SimpleGrid
+        columns={{ base: 1, sm: 2, lg: 3, xl: 5 }}
+        spacing={{ base: 8 }}
+      >
+        {data.credentials.map((credential) => (
+          <Link
+            key={credential.course_address}
+            as={NextLink}
+            href={`/course/${credential.course_address}/info`}
+            style={{ textDecoration: 'none' }}
+          >
+            <Card
+              title={credential.course.name}
+              description={credential.course.description}
+              image_url={credential.course.image_url}
+            />
+          </Link>
+        ))}
+      </SimpleGrid>
+      {hasMore && (
+        <Center ref={ref}>
+          <Spinner />
+        </Center>
+      )}
+    </Stack>
   )
 }
