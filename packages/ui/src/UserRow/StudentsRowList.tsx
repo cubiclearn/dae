@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   Stack,
   Table,
@@ -24,6 +24,7 @@ import { useBurnCredential, useCourseStudents } from '@dae/wagmi'
 import { Address, useNetwork } from 'wagmi'
 import { UserCredentials } from '@dae/database'
 import { ConfirmActionModal } from '../ConfirmActionModal'
+import { useIntersectionObserver } from 'usehooks-ts'
 
 interface StudentsRowListProps {
   courseAddress: Address
@@ -34,7 +35,10 @@ export const StudentsRowList: React.FC<StudentsRowListProps> = ({
 }) => {
   const { chain } = useNetwork()
 
-  const { data, error, isLoading } = useCourseStudents(courseAddress, chain?.id)
+  const { data, error, isLoading, setSize, size, hasMore } = useCourseStudents(
+    courseAddress,
+    chain?.id,
+  )
 
   const toast = useToast()
   const {
@@ -48,6 +52,15 @@ export const StudentsRowList: React.FC<StudentsRowListProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedStudentToBurnCredential, setSelectedStudentToBurnCredential] =
     useState<UserCredentials | null>(null)
+
+  const ref = useRef<HTMLDivElement | null>(null)
+  const observer = useIntersectionObserver(ref, {})
+
+  useEffect(() => {
+    if (observer?.isIntersecting && hasMore) {
+      setSize(size + 1)
+    }
+  }, [observer])
 
   const handleOpenModal = (credential: UserCredentials) => {
     setSelectedStudentToBurnCredential(credential)
@@ -175,6 +188,13 @@ export const StudentsRowList: React.FC<StudentsRowListProps> = ({
               ))}
             </Tbody>
           </Table>
+          {hasMore && (
+            <Box p={4}>
+              <Center ref={ref}>
+                <Spinner />
+              </Center>
+            </Box>
+          )}
         </TableContainer>
         <ConfirmActionModal
           isOpen={isModalOpen}

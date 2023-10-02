@@ -35,13 +35,13 @@ export const CoursesCardsList: React.FC<CoursesCardListsProps> = ({
   )
 
   const ref = useRef<HTMLDivElement | null>(null)
-  const entry = useIntersectionObserver(ref, {})
+  const observer = useIntersectionObserver(ref, {})
 
   useEffect(() => {
-    if (entry?.isIntersecting && hasMore) {
+    if (observer?.isIntersecting && hasMore) {
       setSize(size + 1)
     }
-  }, [entry])
+  }, [observer])
 
   if (isLoading) {
     return (

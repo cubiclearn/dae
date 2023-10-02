@@ -15,9 +15,11 @@ const handleGetRequest = async (
   res: NextApiResponse<ApiResponse<{ students: UserCredentials[] }>>,
 ) => {
   try {
-    const { chainId, courseAddress } = req.query as {
+    const { chainId, courseAddress, skip, limit } = req.query as {
       courseAddress: Address
       chainId: string
+      skip?: string
+      limit?: string
     }
 
     if (!chainId || !courseAddress) {
@@ -27,7 +29,12 @@ const handleGetRequest = async (
       })
     }
 
-    const students = await getCourseStudents(courseAddress, parseInt(chainId))
+    const students = await getCourseStudents(
+      courseAddress,
+      Number(chainId),
+      Number(skip),
+      Number(limit),
+    )
 
     return res
       .status(200)

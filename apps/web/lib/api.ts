@@ -26,6 +26,8 @@ export const getCourse = (
 export const getCourseStudents = async (
   courseAddress: Address,
   chainId: number,
+  skip?: number,
+  limit?: number,
 ): Promise<UserCredentials[]> => {
   return prisma.userCredentials.findMany({
     where: {
@@ -35,12 +37,16 @@ export const getCourseStudents = async (
         type: 'DISCIPULUS',
       },
     },
+    take: limit,
+    skip: skip,
   })
 }
 
 export const getCourseTeachers = async (
   courseAddress: Address,
   chainId: number,
+  skip?: number,
+  limit?: number,
 ): Promise<UserCredentials[]> => {
   return prisma.userCredentials.findMany({
     where: {
@@ -50,6 +56,8 @@ export const getCourseTeachers = async (
         type: 'MAGISTER',
       },
     },
+    take: limit,
+    skip: skip,
   })
 }
 

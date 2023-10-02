@@ -68,7 +68,7 @@ export const useUserCourses = (
 
   return {
     data: data,
-    isLoading: isLoading,
+    isLoading: isLoading || (!data && !error),
     isValidating: isValidating,
     isError: Boolean(error),
     error: error,
