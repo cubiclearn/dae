@@ -77,6 +77,7 @@ export function useWeb3HookState() {
       isSigning: false,
       error: parsedError,
     })
+    return parsedError
   }
 
   const setSuccess = () =>

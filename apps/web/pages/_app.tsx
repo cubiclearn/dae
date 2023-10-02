@@ -66,7 +66,9 @@ const MyApp = ({ Component, pageProps }: AppProps<{ session: Session }>) => {
           >
             <ChakraProvider
               toastOptions={{
-                defaultOptions: { position: 'top-right' },
+                defaultOptions: {
+                  position: 'top-right',
+                },
               }}
               theme={theme}
             >

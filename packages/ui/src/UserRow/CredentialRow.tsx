@@ -1,28 +1,24 @@
 import React from 'react'
 import { Avatar, Text, Td, Tr, Button } from '@chakra-ui/react'
-import type { UserCredentials } from '@dae/database'
-import { useCourseData } from '../CourseProvider'
 import { Address } from 'viem'
-import { useKarmaBalance } from '@dae/wagmi'
 
 export type UserRowProps = {
-  user: UserCredentials
+  user_address: Address
+  user_email: string
+  user_discord_handle: string
+  user_karma_balance: number
   onDelete: () => void
   isDeleting: boolean
 }
 
-export const UserRow: React.FC<UserRowProps> = ({
-  user,
+export const CredentialRow: React.FC<UserRowProps> = ({
+  user_address,
+  user_email,
+  user_discord_handle,
+  user_karma_balance,
   onDelete,
   isDeleting,
 }) => {
-  const { data: courseData } = useCourseData()
-
-  const { data: karmaBalance } = useKarmaBalance(
-    courseData?.karma_access_control_address as Address | undefined,
-    user.user_address as Address,
-  )
-
   return (
     <Tr>
       <Td>
@@ -30,20 +26,20 @@ export const UserRow: React.FC<UserRowProps> = ({
       </Td>
       <Td>
         <Text verticalAlign={'center'} fontSize="md">
-          {user.user_address}
+          {user_address}
         </Text>
       </Td>
       <Td>
         <Text verticalAlign={'center'} fontSize="md">
-          {user.user_email}
+          {user_email}
         </Text>
       </Td>
       <Td>
         <Text verticalAlign={'center'} fontSize="md">
-          {user.user_discord_handle}
+          {user_discord_handle}
         </Text>
       </Td>
-      <Td isNumeric>{karmaBalance ? karmaBalance?.rate?.toString() : '--'}</Td>
+      <Td isNumeric>{isNaN(user_karma_balance) ? '--' : user_karma_balance}</Td>
       <Td>
         <Button colorScheme="red" onClick={onDelete} isLoading={isDeleting}>
           X
