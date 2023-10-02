@@ -13,13 +13,10 @@ import {
 } from '@chakra-ui/react'
 import { CredentialRow } from './CredentialRow'
 import { useBurnCredential } from '@dae/wagmi'
-import { Address, useContractReads } from 'wagmi'
+import { Address } from 'wagmi'
 import { CredentialType, UserCredentials } from '@dae/database'
-import { ConfirmActionModal } from '../ConfirmActionModal'
+import { ConfirmActionModal } from '../../ConfirmActionModal'
 import { useIntersectionObserver } from 'usehooks-ts'
-import { KarmaAccessControlAbiUint64 } from '@dae/abi'
-
-const TWO_MINUTES = 1000 * 60 * 5
 
 interface CredentialRowListProps {
   courseAddress: Address
@@ -33,7 +30,6 @@ interface CredentialRowListProps {
 
 export const CredentialRowList: React.FC<CredentialRowListProps> = ({
   courseAddress,
-  karmaAccessControlAddress,
   data,
   fetchNext,
   hasNext,
@@ -43,16 +39,6 @@ export const CredentialRowList: React.FC<CredentialRowListProps> = ({
   const toast = useToast()
   const { burnCredential, isLoading, isSigning, isValidating } =
     useBurnCredential(courseAddress, credentialType)
-
-  const { data: karmaBalances } = useContractReads({
-    contracts: data.map((credential) => ({
-      abi: KarmaAccessControlAbiUint64,
-      address: karmaAccessControlAddress,
-      functionName: 'ratingOf',
-      args: [credential.user_address],
-      cacheTime: TWO_MINUTES,
-    })),
-  })
 
   const ref = useRef<HTMLDivElement | null>(null)
   const observer = useIntersectionObserver(ref, {})
@@ -111,24 +97,14 @@ export const CredentialRowList: React.FC<CredentialRowListProps> = ({
           <Tr>
             <Th width={'5%'}>{''}</Th>
             <Th>Address</Th>
-            <Th>E-mail</Th>
-            <Th>Discord</Th>
-            <Th width={'5%'} isNumeric>
-              Karma
-            </Th>
             <Th width={'5%'}>{''}</Th>
           </Tr>
         </Thead>
         <Tbody>
-          {data.map((credential, index) => (
+          {data.map((credential) => (
             <CredentialRow
               key={credential.user_address}
               user_address={credential.user_address as Address}
-              user_email={credential.user_email}
-              user_discord_handle={credential.user_discord_handle}
-              user_karma_balance={
-                Number(karmaBalances?.[index].result as bigint) ?? undefined
-              }
               isDeleting={
                 (isLoading || isValidating || isSigning) &&
                 selectedTeacherToBurnCredential?.credential_token_id ===

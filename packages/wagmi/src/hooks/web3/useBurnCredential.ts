@@ -116,11 +116,11 @@ export function useBurnCredential(
 
       if (credentialType === 'OTHER') {
         mutate(
-          (key) => Array.isArray(key) && key[0] === 'course/credentials',
+          (key) => Array.isArray(key) && key[0] === 'course/credential/users',
           (cachedData: any) => {
             return {
               data: {
-                teachers: cachedData.data.credentials.filter(
+                userCredentials: cachedData.data.userCredentials.filter(
                   (userCredential: UserCredentials) =>
                     userCredential.credential_token_id !== tokenId,
                 ),

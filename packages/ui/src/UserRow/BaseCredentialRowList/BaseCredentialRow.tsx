@@ -2,7 +2,7 @@ import React from 'react'
 import { Avatar, Text, Td, Tr, Button } from '@chakra-ui/react'
 import { Address } from 'viem'
 
-export type UserRowProps = {
+export type BaseCredentialRowProps = {
   user_address: Address
   user_email: string
   user_discord_handle: string
@@ -11,7 +11,7 @@ export type UserRowProps = {
   isDeleting: boolean
 }
 
-export const CredentialRow: React.FC<UserRowProps> = ({
+export const BaseCredentialRow: React.FC<BaseCredentialRowProps> = ({
   user_address,
   user_email,
   user_discord_handle,

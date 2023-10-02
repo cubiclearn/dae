@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react'
 import { useCourse, useCourseTeachers } from '@dae/wagmi'
 import { Address, useNetwork } from 'wagmi'
-import { CredentialRowList } from './CredentialRowList'
+import { BaseCredentialRowList } from './BaseCredentialRowList'
 
 interface TeachersRowListProps {
   courseAddress: Address
@@ -39,23 +39,37 @@ export const TeachersCredentialsRowList: React.FC<TeachersRowListProps> = ({
 
   if (isLoadingCourseData || isLoadingTeachersData) {
     return (
-      <Center>
-        <Spinner />
-      </Center>
+      <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
+        <Stack pb={2}>
+          <Text fontWeight="semibold" fontSize="xl">
+            Teachers list
+          </Text>
+        </Stack>
+        <Center>
+          <Spinner />
+        </Center>
+      </Stack>
     )
   }
 
   if (isErrorLoadingCourseData || isErrorLoadingTeachersData) {
     return (
-      <Alert status="error">
-        <AlertIcon />
-        <Box>
-          <AlertTitle>Something went wrong.</AlertTitle>
-          <AlertDescription>
-            There is an error fetching your data. Try again later.
-          </AlertDescription>
-        </Box>
-      </Alert>
+      <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
+        <Stack pb={2}>
+          <Text fontWeight="semibold" fontSize="xl">
+            Teachers list
+          </Text>
+        </Stack>
+        <Alert status="error">
+          <AlertIcon />
+          <Box>
+            <AlertTitle>Something went wrong.</AlertTitle>
+            <AlertDescription>
+              There is an error fetching your data. Try again later.
+            </AlertDescription>
+          </Box>
+        </Alert>
+      </Stack>
     )
   }
 
@@ -65,15 +79,22 @@ export const TeachersCredentialsRowList: React.FC<TeachersRowListProps> = ({
     teachersCredentialsData?.teachers.length === 0
   ) {
     return (
-      <Alert status="info">
-        <AlertIcon />
-        <Box>
-          <AlertTitle>Nothing to show.</AlertTitle>
-          <AlertDescription>
-            There are no teachers enrolled in this course
-          </AlertDescription>
-        </Box>
-      </Alert>
+      <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
+        <Stack pb={2}>
+          <Text fontWeight="semibold" fontSize="xl">
+            Teachers list
+          </Text>
+        </Stack>
+        <Alert status="info">
+          <AlertIcon />
+          <Box>
+            <AlertTitle>Nothing to show.</AlertTitle>
+            <AlertDescription>
+              There are no teachers enrolled in this course
+            </AlertDescription>
+          </Box>
+        </Alert>
+      </Stack>
     )
   }
 
@@ -85,7 +106,7 @@ export const TeachersCredentialsRowList: React.FC<TeachersRowListProps> = ({
             Teachers list
           </Text>
         </Box>
-        <CredentialRowList
+        <BaseCredentialRowList
           karmaAccessControlAddress={
             courseData.course.karma_access_control_address as Address
           }
