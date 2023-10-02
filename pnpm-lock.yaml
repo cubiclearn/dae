@@ -270,10 +270,10 @@ importers:
   packages/ipfs:
     dependencies:
       axios:
-        specifier: ^1.5.0
+        specifier: 1.5.0
         version: 1.5.0
       form-data:
-        specifier: ^4.0.0
+        specifier: 4.0.0
         version: 4.0.0
     devDependencies:
       '@dae/typescript-config':
@@ -391,7 +391,7 @@ importers:
         specifier: 2.1.5
         version: 2.1.5(react@18.2.0)
       usehooks-ts:
-        specifier: ^2.9.1
+        specifier: 2.9.1
         version: 2.9.1(react-dom@18.2.0)(react@18.2.0)
       yup:
         specifier: 1.2.0
