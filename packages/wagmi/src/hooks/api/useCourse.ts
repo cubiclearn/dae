@@ -1,7 +1,7 @@
 import { Address } from 'viem'
 import useSWR from 'swr'
 import { Course } from '@dae/database'
-import { ApiRequestUrlAndParams, useApi } from './useApi'
+import { ApiRequestUrlAndParams, useApi } from '@dae/hooks'
 import { ApiResponse } from '@dae/types'
 import { type SWRHook } from '@dae/types'
 

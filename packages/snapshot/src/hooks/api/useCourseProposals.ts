@@ -1,39 +1,34 @@
 import { Address } from 'viem'
-import { CredentialType, UserCredentials } from '@dae/database'
 import { ApiRequestUrlAndParams, useApi } from '@dae/hooks'
 import { ApiResponse, SWRInfiniteHook } from '@dae/types'
 import useSWRInfinite from 'swr/infinite'
+import { PROPOSALS_QUERY } from '../../graphql'
 
 const PAGE_SIZE = 10
 
-type ApiResponseType = {
-  credentials: (UserCredentials & {
-    course: { name: string; description: string; image_url: string }
-  })[]
-}
-
-export const useUserCourses = (
-  userAddress: Address | undefined,
+export const useCourseProposals = (
+  courseAddress: Address | undefined,
   chainId: number | undefined,
-  roles: CredentialType[],
-): SWRInfiniteHook<ApiResponseType> => {
+  status: 'active' | 'closed',
+): SWRInfiniteHook<PROPOSALS_QUERY> => {
   const client = useApi()
-  const shouldFetch = userAddress !== undefined && chainId !== undefined
+
+  const shouldFetch = courseAddress !== undefined && chainId !== undefined
 
   const getKey = (
     pageIndex: number,
-    _previousPageData: ApiResponse<ApiResponseType>,
+    _previousPageData: ApiResponse<PROPOSALS_QUERY>,
   ) => {
     if (!shouldFetch) return null
 
     const skip = pageIndex * PAGE_SIZE
 
     return [
-      'user/courses',
+      'course/space/proposals',
       {
-        userAddress: userAddress,
+        courseAddress: courseAddress,
         chainId: chainId,
-        roles: roles,
+        status: status,
         skip: skip,
         limit: PAGE_SIZE,
       },
@@ -47,24 +42,24 @@ export const useUserCourses = (
     setSize,
     isLoading,
     isValidating,
-  } = useSWRInfinite<ApiResponse<ApiResponseType>>(
+  } = useSWRInfinite<ApiResponse<PROPOSALS_QUERY>>(
     getKey,
     ([query, variables]: ApiRequestUrlAndParams) =>
       client.request(query, variables),
   )
 
   const data = response?.reduce(
-    (acc: ApiResponseType, obj) => {
-      if (obj.data && Array.isArray(obj.data.credentials)) {
-        acc.credentials.push(...obj.data.credentials)
+    (acc: PROPOSALS_QUERY, obj) => {
+      if (obj.data && Array.isArray(obj.data.proposals)) {
+        acc.proposals.push(...obj.data.proposals)
       }
       return acc
     },
-    { credentials: [] },
+    { proposals: [] },
   )
 
   const hasMore =
-    response?.[response.length - 1]?.data?.credentials.length === PAGE_SIZE
+    response?.[response.length - 1]?.data?.proposals.length === PAGE_SIZE
 
   return {
     data: data,

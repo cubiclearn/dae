@@ -1,29 +1,27 @@
 import useSWR from 'swr'
-import { Credential } from '@dae/database'
-import { Address } from 'viem'
 import { ApiRequestUrlAndParams, useApi } from '@dae/hooks'
 import { ApiResponse, SWRHook } from '@dae/types'
+import { USER_VOTES_QUERY } from '../../graphql'
+import { Address } from 'wagmi'
 
-export const useCourseCredential = (
-  credentialCid: string | undefined,
-  courseAddress: Address | undefined,
+export const useCourseProposalUserVote = (
+  proposalId: string | undefined,
   chainId: number | undefined,
-): SWRHook<{ credential: Credential }> => {
+  userAddress: Address | undefined,
+): SWRHook<USER_VOTES_QUERY> => {
   const client = useApi()
   const shouldFetch =
-    credentialCid !== undefined &&
-    courseAddress !== undefined &&
-    chainId !== undefined
+    proposalId !== undefined &&
+    chainId !== undefined &&
+    userAddress !== undefined
 
-  const { data: response, error } = useSWR<
-    ApiResponse<{ credential: Credential }>
-  >(
+  const { data: response, error } = useSWR<ApiResponse<USER_VOTES_QUERY>>(
     shouldFetch
       ? [
-          'course/credential',
+          'course/space/proposal/user/vote',
           {
-            credentialCid: credentialCid,
-            courseAddress: courseAddress,
+            proposalId: proposalId,
+            userAddress: userAddress,
             chainId: chainId,
           },
         ]

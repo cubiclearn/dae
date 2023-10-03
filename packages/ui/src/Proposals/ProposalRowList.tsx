@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import {
   Alert,
   AlertIcon,
@@ -9,20 +9,35 @@ import {
   Spinner,
   Stack,
 } from '@chakra-ui/react'
-import { useSpaceProposals } from '@dae/snapshot'
+import { useCourseProposals } from '@dae/snapshot'
 import { ProposalRow } from './ProposalRow'
-import { useCourseData } from '../CourseProvider'
+import { Address, useNetwork } from 'wagmi'
+import { useIntersectionObserver } from '@dae/hooks'
 
 type ProposalRowListProps = {
-  state: string
+  courseAddress: Address
+  status: 'active' | 'closed'
 }
 
-export const ProposalRowList: React.FC<ProposalRowListProps> = ({ state }) => {
-  const course = useCourseData()
-  const { data, isLoading, error } = useSpaceProposals(
-    course.data?.snapshot_space_ens,
-    state,
+export const ProposalRowList: React.FC<ProposalRowListProps> = ({
+  courseAddress,
+  status,
+}) => {
+  const { chain } = useNetwork()
+  const { data, isLoading, error, setSize, size, hasMore } = useCourseProposals(
+    courseAddress,
+    chain?.id,
+    status,
   )
+
+  const ref = useRef<HTMLDivElement | null>(null)
+  const observer = useIntersectionObserver(ref, {})
+
+  useEffect(() => {
+    if (observer?.isIntersecting && hasMore) {
+      setSize(size + 1)
+    }
+  }, [observer])
 
   if (isLoading) {
     return (
@@ -63,6 +78,13 @@ export const ProposalRowList: React.FC<ProposalRowListProps> = ({ state }) => {
       {data.proposals.map((proposal) => {
         return <ProposalRow key={proposal.id} proposal={proposal} />
       })}
+      {hasMore && (
+        <Box p={4}>
+          <Center ref={ref}>
+            <Spinner />
+          </Center>
+        </Box>
+      )}
     </Stack>
   )
 }

@@ -4,7 +4,7 @@ import { useEthersSigner } from './useEthersSigner'
 import { ChainSnapshotHub } from '@dae/chains'
 import { type VotingStrategy } from '@dae/types'
 import { useHookState } from './useHookState'
-import { SpaceConfig } from '../types'
+import { SpaceConfig } from '../../types'
 
 const defaultConfig: SpaceConfig = {
   name: '',

@@ -1,27 +1,23 @@
-import { Address } from 'viem'
 import useSWR from 'swr'
-import { Credential } from '@dae/database'
-import { ApiResponse, SWRHook } from '@dae/types'
+import { Address } from 'viem'
 import { ApiRequestUrlAndParams, useApi } from '@dae/hooks'
+import { ApiResponse, SWRHook } from '@dae/types'
+import { SPACE_QUERY } from '../../graphql'
 
-export const useUserCourseCredentials = (
-  userAddress: Address | undefined,
+export const useCourseSpace = (
   courseAddress: Address | undefined,
   chainId: number | undefined,
-): SWRHook<{ credentials: Credential[] }> => {
+): SWRHook<SPACE_QUERY> => {
   const client = useApi()
-  const shouldFetch = courseAddress && chainId && userAddress
+  const shouldFetch = courseAddress !== undefined && chainId !== undefined
 
-  const { data: response, error } = useSWR<
-    ApiResponse<{ credentials: Credential[] }>
-  >(
+  const { data: response, error } = useSWR<ApiResponse<SPACE_QUERY>>(
     shouldFetch
       ? [
-          'user/course/credentials',
+          'course/space',
           {
             courseAddress: courseAddress,
             chainId: chainId,
-            userAddress: userAddress,
           },
         ]
       : null,

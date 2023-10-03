@@ -25,6 +25,7 @@
     "devDependencies": {
         "@dae/abi": "workspace:*",
         "@dae/chains": "workspace:*",
+        "@dae/hooks": "workspace:*",
         "@dae/types": "workspace:*",
         "@dae/typescript-config": "workspace:*",
         "@types/node": "20.6.5",

@@ -1,6 +1,6 @@
 import { Address } from 'viem'
 import { UserCredentials } from '@dae/database'
-import { ApiRequestUrlAndParams, useApi } from './useApi'
+import { ApiRequestUrlAndParams, useApi } from '@dae/hooks'
 import { ApiResponse, SWRInfiniteHook } from '@dae/types'
 import useSWRInfinite from 'swr/infinite'
 

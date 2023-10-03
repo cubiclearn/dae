@@ -17,11 +17,15 @@ import {
   Center,
   Spinner,
 } from '@chakra-ui/react'
-import { useUserVote, useUserVotingPower, useVotePropsal } from '@dae/snapshot'
+import {
+  useCourseProposalUserVote,
+  useCourseProposalUserVotingPower,
+  useVotePropsal,
+} from '@dae/snapshot'
 import { ChainSnapshotHub } from '@dae/chains'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
-import { useAccount } from 'wagmi'
+import { Address, useAccount, useNetwork } from 'wagmi'
 import { Proposal } from '@dae/snapshot'
 
 const validationSchema = Yup.object().shape({
@@ -30,10 +34,15 @@ const validationSchema = Yup.object().shape({
 })
 
 type ProposalVoteProps = {
+  courseAddress: Address
   proposal: Proposal
 }
 
-export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
+export const ProposalVote: React.FC<ProposalVoteProps> = ({
+  courseAddress,
+  proposal,
+}) => {
+  const { chain } = useNetwork()
   const toast = useToast()
   const { address: userAddress } = useAccount()
 
@@ -44,14 +53,18 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({ proposal }) => {
     proposal.type,
   )
 
-  const { data: userVote, isLoading: isLoadingVote } = useUserVote(
-    proposal.id,
-    userAddress,
-  )
+  const { data: userVote, isLoading: isLoadingVote } =
+    useCourseProposalUserVote(proposal.id, chain?.id, userAddress)
+
   const [showRevoteForm, setShowRevoteForm] = useState(false)
 
   const { data: votingPower, isLoading: isLoadingVotingPower } =
-    useUserVotingPower(proposal.id, userAddress, proposal.space.id)
+    useCourseProposalUserVotingPower(
+      courseAddress,
+      proposal.id,
+      chain?.id,
+      userAddress,
+    )
 
   const {
     values,

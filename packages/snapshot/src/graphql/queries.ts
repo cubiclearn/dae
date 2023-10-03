@@ -38,11 +38,14 @@ export type SPACE_QUERY = {
 }
 
 export const PROPOSALS_QUERY = gql`
-  query Proposals($spaceId: String!, $state: String){
+  query Proposals($spaceId: String!, $state: String, $start: Int, $skip: Int, $limit: Int){
     proposals (
+      first: $limit,
+      skip: $skip,
       where: {
         space: $spaceId,
         state: $state
+        start_gt: $start
       },
       orderBy: "created",
       orderDirection: desc

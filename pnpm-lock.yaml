@@ -60,6 +60,9 @@ importers:
       '@dae/ipfs':
         specifier: workspace:*
         version: link:../../packages/ipfs
+      '@dae/snapshot':
+        specifier: workspace:*
+        version: link:../../packages/snapshot
       '@dae/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -96,6 +99,9 @@ importers:
       framer-motion:
         specifier: 10.16.4
         version: 10.16.4(react-dom@18.2.0)(react@18.2.0)
+      graphql-request:
+        specifier: 6.1.0
+        version: 6.1.0(graphql@16.7.1)
       install:
         specifier: 0.13.0
         version: 0.13.0
@@ -242,6 +248,9 @@ importers:
         specifier: 2.1.5
         version: 2.1.5(react@18.2.0)
     devDependencies:
+      '@dae/constants':
+        specifier: workspace:*
+        version: link:../constants
       '@dae/typescript-config':
         specifier: workspace:*
         version: link:../../config/typescript
@@ -313,6 +322,9 @@ importers:
       '@dae/chains':
         specifier: workspace:*
         version: link:../chains
+      '@dae/hooks':
+        specifier: workspace:*
+        version: link:../hooks
       '@dae/types':
         specifier: workspace:*
         version: link:../types
@@ -494,6 +506,9 @@ importers:
       '@dae/database':
         specifier: workspace:*
         version: link:../database
+      '@dae/hooks':
+        specifier: workspace:*
+        version: link:../hooks
       '@dae/ipfs':
         specifier: workspace:*
         version: link:../ipfs

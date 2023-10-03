@@ -17,7 +17,8 @@ Before launching the application you have to set up this components:
 - PostgreSQL Database;
 - An EVM RPC Node;
 - An IPFS Node.
-- Obtain a WalletConnect PROJECT_ID (for free on https://walletconnect.com/)
+- Obtain a WalletConnect PROJECT_ID in order to use WalletConnect (for free on https://walletconnect.com/)
+- Snapshot API Key (OPTIONAL to avoid strict rate limiting): follow the guide on https://docs.snapshot.org/tools/api/api-keys
 
 Configuration is made by filling the fields inside the .env.example file and than renaming it as .env
 

@@ -5,7 +5,6 @@ import { ChainSnapshotHub } from '@dae/chains'
 import { ProposalType } from '@snapshot-labs/snapshot.js/dist/sign/types'
 import { useHookState } from './useHookState'
 import { mutate } from 'swr'
-import { PROPOSAL_QUERY } from '../graphql'
 
 export const useVotePropsal = (
   spaceName: string,
@@ -33,7 +32,7 @@ export const useVotePropsal = (
       })
 
       mutate(
-        (key) => Array.isArray(key) && key[0] === PROPOSAL_QUERY,
+        (key) => Array.isArray(key) && key[0] === 'course/space/proposal',
         undefined,
         { revalidate: true },
       )
