@@ -1,4 +1,4 @@
-import { useContractWrite, usePublicClient } from 'wagmi'
+import { useContractWrite, useNetwork, usePublicClient } from 'wagmi'
 import { Address } from 'viem'
 import { CredentialsBurnableAbi } from '@dae/abi'
 import { useWeb3HookState } from '../useWeb3HookState'
@@ -6,6 +6,7 @@ import type { UseWeb3WriteHookInterface } from '@dae/types'
 import { CredentialType, UserCredentials } from '@dae/database'
 import { CONFIRMATION_BLOCKS } from '@dae/constants'
 import { mutate } from 'swr'
+import { useEditSnapshotSpace } from '@dae/snapshot'
 
 interface BurnCredentialHookInterface extends UseWeb3WriteHookInterface {
   burnCredential: (tokenId: number) => Promise<void>
@@ -26,12 +27,15 @@ export function useBurnCredential(
   } = useWeb3HookState()
 
   const publicClient = usePublicClient()
+  const { chain } = useNetwork()
 
   const { writeAsync: burn } = useContractWrite({
     abi: CredentialsBurnableAbi,
     address: courseAddress,
     functionName: 'burn',
   })
+
+  const { removeModerator } = useEditSnapshotSpace(courseAddress, chain?.id)
 
   const burnCredential = async (tokenId: number): Promise<void> => {
     try {
@@ -42,6 +46,13 @@ export function useBurnCredential(
           'The data provided is incorrect. Please ensure that you have entered the correct information.',
         )
       }
+
+      const credentialOwner = await publicClient.readContract({
+        abi: CredentialsBurnableAbi,
+        address: courseAddress,
+        functionName: 'ownerOf',
+        args: [BigInt(tokenId)],
+      })
 
       state.setSigning()
 
@@ -129,6 +140,10 @@ export function useBurnCredential(
           },
           { revalidate: false },
         )
+      }
+
+      if (credentialType === 'MAGISTER') {
+        await removeModerator(credentialOwner)
       }
 
       state.setSuccess()

@@ -1,6 +1,7 @@
 import { gql } from 'graphql-request'
 import { type Strategy } from '@snapshot-labs/snapshot.js/dist/voting/types'
 import { type ProposalType } from '@snapshot-labs/snapshot.js/dist/sign/types'
+import { Address } from 'viem'
 
 export type Space = {
   id: string
@@ -14,12 +15,23 @@ export const SPACE_QUERY = gql`
     ) {
       id
       name
+      skin
       about
-      network
+      admins
+      moderators
+      avatar
       symbol
+      filters {
+        minScore
+        onlyMembers
+      }
+      network
       strategies {
         name
-        network
+        params
+      }
+      validation {
+        name
         params
       }
     }
@@ -30,10 +42,22 @@ export type SPACE_QUERY = {
   space: {
     id: string
     name: string
+    skin: string
     about: string
-    network: string
+    admins: Address[]
+    moderators: Address[]
+    avatar: string
     symbol: string
+    filters: {
+      minScore: number
+      onlyMembers: boolean
+    }
+    network: string
     strategies: Strategy[]
+    validation: {
+      name: string
+      params: {}
+    }
   }
 }
 
