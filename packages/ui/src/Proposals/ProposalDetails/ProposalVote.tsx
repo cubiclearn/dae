@@ -112,7 +112,7 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({
     )
   }
 
-  if (!isLoadingVotingPower && !votingPower) {
+  if (!votingPower || !votingPower.vp) {
     return (
       <Alert status="warning">
         <AlertIcon />

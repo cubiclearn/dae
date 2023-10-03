@@ -199,5 +199,5 @@ export const USER_VOTING_POWER_QUERY = gql`
 `
 
 export type USER_VOTING_POWER_QUERY = {
-  vp: { vp: number }
+  vp: { vp: number } | null
 }

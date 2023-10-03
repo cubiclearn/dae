@@ -43,19 +43,26 @@ const handleGetRequest = async (
         : {},
     })
 
-    const proposal = await client.request<USER_VOTING_POWER_QUERY>(
-      USER_VOTING_POWER_QUERY,
-      {
+    await client
+      .request<USER_VOTING_POWER_QUERY>(USER_VOTING_POWER_QUERY, {
         spaceId: course.snapshot_space_ens,
         proposalId: proposalId,
         userAddress: userAddress,
-      },
-    )
-
-    return res.status(200).json({
-      status: ApiResponseStatus.success,
-      data: proposal,
-    })
+      })
+      .then((data) => {
+        return res.status(200).json({
+          status: ApiResponseStatus.success,
+          data: data,
+        })
+      })
+      .catch((_error) => {
+        return res.status(200).json({
+          status: ApiResponseStatus.success,
+          data: {
+            vp: null,
+          },
+        })
+      })
   } catch (error) {
     console.error(error)
     return res.status(500).json({
