@@ -36,6 +36,12 @@ export const useVotePropsal = (
         undefined,
         { revalidate: true },
       )
+      mutate(
+        (key) =>
+          Array.isArray(key) && key[0] === 'course/space/proposal/user/vote',
+        undefined,
+        { revalidate: true },
+      )
       state.setSuccess()
     } catch (e) {
       state.handleError(e)
