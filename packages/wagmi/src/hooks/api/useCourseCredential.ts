@@ -30,6 +30,11 @@ export const useCourseCredential = (
       : null,
     ([query, variables]: ApiRequestUrlAndParams) =>
       client.request(query, variables),
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    },
   )
 
   return {
