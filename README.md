@@ -65,6 +65,6 @@ pnpm run dev
 │    └── wagmi — "Hooks and functions to interact with blockchain data (both directly and cached on the db)
 ```
 
-## LICENSE
+## License
 
-[MIT](./LICENSE)
+DAE is open-sourced software licensed under the [MIT license](./LICENSE).
