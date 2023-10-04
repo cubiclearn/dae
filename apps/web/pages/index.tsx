@@ -26,7 +26,11 @@ const Home: FC = () => {
             spacing={{ md: 8, base: 4 }}
           >
             <Center padding={'30px'}>
-              <Image src="/dae-home-image.png" borderRadius={'lg'} />
+              <Image
+                src="/dae-home-image.png"
+                borderRadius={'lg'}
+                minWidth={'100%'}
+              />
             </Center>
             <Center padding={'30px'}>
               <Stack spacing={8}>
