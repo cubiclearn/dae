@@ -155,7 +155,7 @@ export const BaseCredentialsBatchTransfer: React.FC<
               <Link
                 isExternal
                 fontWeight={'bold'}
-                href="/files/enroll_students_example.csv"
+                href="/files/multi_transfer_students_example.csv"
               >
                 here
               </Link>{' '}

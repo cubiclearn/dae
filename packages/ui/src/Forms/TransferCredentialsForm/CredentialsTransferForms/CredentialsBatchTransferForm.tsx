@@ -202,16 +202,12 @@ export const CredentialsBatchTransferForm: React.FC<
                 <Thead>
                   <Tr>
                     <Th>Address</Th>
-                    <Th>Email</Th>
-                    <Th>Discord handle</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
                   {csvData.map((row) => (
                     <Tr key={row.address}>
                       <Td>{row.address}</Td>
-                      <Td>{row.email}</Td>
-                      <Td>{row.discord}</Td>
                     </Tr>
                   ))}
                 </Tbody>

@@ -61,18 +61,15 @@ export const Footer = () => {
           </Text>
         </Text>
         <Stack direction={'row'} spacing={6}>
-          <SocialButton
-            label={'Twitter'}
-            href={'https://github.com/cubiclearn'}
-          >
+          <SocialButton label={'Github'} href={'https://github.com/cubiclearn'}>
             <FaGithub />
           </SocialButton>
-          <SocialButton label={'Instagram'} href={'https://t.me/cubiclearn'}>
+          <SocialButton label={'Telegram'} href={'https://t.me/cubiclearn'}>
             <FaTelegram />
           </SocialButton>
           <SocialButton
-            label={'Instagram'}
-            href={'https://discord.gg/3GtYdEFB'}
+            label={'Discord'}
+            href={'https://discord.gg/pnuVMAzjmR'}
           >
             <FaDiscord />
           </SocialButton>
