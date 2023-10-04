@@ -40,7 +40,9 @@ const validationSchema = Yup.object().shape({
   userAddress: Yup.string()
     .matches(ethereumAddressRegex, 'Invalid Ethereum address')
     .required('Ethereum address is required'),
-  karmaIncrement: Yup.number().required('Karma increment value is required'),
+  karmaIncrement: Yup.number()
+    .notOneOf([0], 'Karma increment value cannot be 0')
+    .required('Karma increment value is required'),
 })
 
 type KarmaSingleTransferFormProps = {
