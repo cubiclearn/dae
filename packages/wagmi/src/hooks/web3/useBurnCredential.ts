@@ -1,11 +1,12 @@
-import { useContractWrite, usePublicClient } from 'wagmi'
+import { useContractWrite, useNetwork, usePublicClient } from 'wagmi'
 import { Address } from 'viem'
 import { CredentialsBurnableAbi } from '@dae/abi'
 import { useWeb3HookState } from '../useWeb3HookState'
 import type { UseWeb3WriteHookInterface } from '@dae/types'
-import { CredentialType } from '@dae/database'
+import { CredentialType, UserCredentials } from '@dae/database'
 import { CONFIRMATION_BLOCKS } from '@dae/constants'
 import { mutate } from 'swr'
+import { useEditSnapshotSpace } from '@dae/snapshot'
 
 interface BurnCredentialHookInterface extends UseWeb3WriteHookInterface {
   burnCredential: (tokenId: number) => Promise<void>
@@ -13,7 +14,7 @@ interface BurnCredentialHookInterface extends UseWeb3WriteHookInterface {
 
 export function useBurnCredential(
   courseAddress: Address,
-  _credentialType: CredentialType,
+  credentialType: CredentialType,
 ): BurnCredentialHookInterface {
   const {
     isSuccess,
@@ -26,12 +27,15 @@ export function useBurnCredential(
   } = useWeb3HookState()
 
   const publicClient = usePublicClient()
+  const { chain } = useNetwork()
 
   const { writeAsync: burn } = useContractWrite({
     abi: CredentialsBurnableAbi,
     address: courseAddress,
     functionName: 'burn',
   })
+
+  const { removeModerator } = useEditSnapshotSpace(courseAddress, chain?.id)
 
   const burnCredential = async (tokenId: number): Promise<void> => {
     try {
@@ -42,6 +46,13 @@ export function useBurnCredential(
           'The data provided is incorrect. Please ensure that you have entered the correct information.',
         )
       }
+
+      const credentialOwner = await publicClient.readContract({
+        abi: CredentialsBurnableAbi,
+        address: courseAddress,
+        functionName: 'ownerOf',
+        args: [BigInt(tokenId)],
+      })
 
       state.setSigning()
 
@@ -80,19 +91,65 @@ export function useBurnCredential(
         throw new Error(responseJSON.error)
       }
 
-      mutate(
-        (key) =>
-          Array.isArray(key) &&
-          (key[0] === 'course/students' ||
-            key[0] === 'course/teachers' ||
-            key[0] === 'course/credential/users'),
-        undefined,
-        { revalidate: true },
-      )
+      if (credentialType === 'DISCIPULUS') {
+        mutate(
+          (key) => Array.isArray(key) && key[0] === 'course/students',
+          (cachedData: any) => {
+            return {
+              data: {
+                students: cachedData.data.students.filter(
+                  (studentCredential: UserCredentials) =>
+                    studentCredential.credential_token_id !== tokenId,
+                ),
+              },
+            }
+          },
+          { revalidate: false },
+        )
+      }
+
+      if (credentialType === 'MAGISTER') {
+        mutate(
+          (key) => Array.isArray(key) && key[0] === 'course/teachers',
+          (cachedData: any) => {
+            return {
+              data: {
+                teachers: cachedData.data.teachers.filter(
+                  (teacherCredential: UserCredentials) =>
+                    teacherCredential.credential_token_id !== tokenId,
+                ),
+              },
+            }
+          },
+          { revalidate: false },
+        )
+      }
+
+      if (credentialType === 'OTHER') {
+        mutate(
+          (key) => Array.isArray(key) && key[0] === 'course/credential/users',
+          (cachedData: any) => {
+            return {
+              data: {
+                userCredentials: cachedData.data.userCredentials.filter(
+                  (userCredential: UserCredentials) =>
+                    userCredential.credential_token_id !== tokenId,
+                ),
+              },
+            }
+          },
+          { revalidate: false },
+        )
+      }
+
+      if (credentialType === 'MAGISTER') {
+        await removeModerator(credentialOwner)
+      }
+
       state.setSuccess()
     } catch (e: unknown) {
-      state.handleError(e)
-      throw e
+      const parsedError = state.handleError(e)
+      throw parsedError
     }
   }
 

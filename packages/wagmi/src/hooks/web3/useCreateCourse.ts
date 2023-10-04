@@ -14,6 +14,7 @@ import {
 import { useWeb3HookState } from '../useWeb3HookState'
 import { CONFIRMATION_BLOCKS } from '@dae/constants'
 import { mutate } from 'swr'
+import { IpfsUploadResult } from '@dae/ipfs'
 
 interface CreateCredentialHookInterface extends UseWeb3WriteHookInterface {
   create: (
@@ -116,20 +117,22 @@ export function useCreateCourse(
 
       setStep(1)
 
-      const { data: ipfsMetadataResponseData } =
+      const uploadMetadataResponseJson =
         (await uploadMetadataResponse.json()) as ApiResponse<{
-          metadata: { Hash: string }
+          metadata: IpfsUploadResult
         }>
 
-      if (!ipfsMetadataResponseData) {
+      if (
+        !uploadMetadataResponseJson ||
+        !uploadMetadataResponseJson.data?.metadata.url
+      ) {
         throw new Error(
           'There is a problem uploading your metadata. Try again.',
         )
       }
-
-      const metadataBaseURI = `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${ipfsMetadataResponseData.metadata.Hash}`
-
-      const metadataResponse = await fetch(metadataBaseURI)
+      const metadataResponse = await fetch(
+        uploadMetadataResponseJson.data.metadata.url,
+      )
 
       if (!metadataResponse.ok) {
         throw new Error(
@@ -149,7 +152,7 @@ export function useCreateCourse(
         args: [
           name,
           'DAEC',
-          metadataBaseURI,
+          uploadMetadataResponseJson.data.metadata.url,
           BigInt(magisterBaseKarma),
           BigInt(discipulusBaseKarma),
         ],
@@ -203,6 +206,7 @@ export function useCreateCourse(
         responseData.data.course.name,
         responseData.data.course.symbol,
         responseData.data.course.description,
+        responseData.data.course.image_url,
         responseData.data.course.karma_access_control_address,
         votingStrategy,
       )

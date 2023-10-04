@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
 import { getUserCourses } from '../../../../lib/api'
 import { Address } from 'viem'
-import { Course } from '@dae/database'
+import { CredentialType, UserCredentials } from '@dae/database'
 import { ApiResponse, ApiResponseStatus } from '@dae/types'
 
 // TypeScript enum for request methods
@@ -12,42 +12,43 @@ enum HttpMethod {
 
 const handleGetRequest = async (
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponse<{ courses: Course[] }>>,
+  res: NextApiResponse<
+    ApiResponse<{
+      credentials: (UserCredentials & {
+        course: { name: string; description: string }
+      })[]
+    }>
+  >,
 ) => {
   try {
-    const { chainId, userAddress, role } = req.query as {
+    const { chainId, userAddress, roles, skip, limit } = req.query as {
       chainId: string
       userAddress: Address
-      role: 'EDUCATOR' | 'DISCIPULUS'
+      roles: string
+      skip?: string
+      limit?: string
     }
 
-    if (!chainId || !userAddress || !role) {
+    const parsedRoles = roles.split(',') as CredentialType[]
+
+    if (!chainId || !userAddress || !roles || parsedRoles.length === 0) {
       return res
         .status(400)
         .json({ status: ApiResponseStatus.error, message: 'Bad request.' })
     }
 
-    let courses: Course[]
+    const credentials = await getUserCourses(
+      userAddress,
+      Number(chainId),
+      parsedRoles,
+      Number(skip),
+      Number(limit),
+    )
 
-    if (role === 'DISCIPULUS') {
-      courses = await getUserCourses(
-        userAddress,
-        parseInt(chainId),
-        'DISCIPULUS',
-      )
-      return res
-        .status(200)
-        .json({ status: ApiResponseStatus.success, data: { courses: courses } })
-    } else if (role === 'EDUCATOR') {
-      courses = await getUserCourses(userAddress, parseInt(chainId), 'EDUCATOR')
-      return res
-        .status(200)
-        .json({ status: ApiResponseStatus.success, data: { courses: courses } })
-    } else {
-      return res
-        .status(400)
-        .json({ status: ApiResponseStatus.error, message: 'Bad request.' })
-    }
+    return res.status(200).json({
+      status: ApiResponseStatus.success,
+      data: { credentials: credentials },
+    })
   } catch (error) {
     console.error(error)
     return res.status(500).json({
@@ -79,7 +80,7 @@ export default async function handler(
     })
   }
   // Guard clause for unauthenticated requests
-  const session = await getSession({ req })
+  const session = await getSession({ req: { headers: req.headers } })
   if (!session) {
     return res
       .status(401)

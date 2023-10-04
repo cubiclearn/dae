@@ -26,6 +26,8 @@ export const getCourse = (
 export const getCourseStudents = async (
   courseAddress: Address,
   chainId: number,
+  skip?: number,
+  limit?: number,
 ): Promise<UserCredentials[]> => {
   return prisma.userCredentials.findMany({
     where: {
@@ -35,12 +37,16 @@ export const getCourseStudents = async (
         type: 'DISCIPULUS',
       },
     },
+    take: limit,
+    skip: skip,
   })
 }
 
 export const getCourseTeachers = async (
   courseAddress: Address,
   chainId: number,
+  skip?: number,
+  limit?: number,
 ): Promise<UserCredentials[]> => {
   return prisma.userCredentials.findMany({
     where: {
@@ -50,69 +56,50 @@ export const getCourseTeachers = async (
         type: 'MAGISTER',
       },
     },
+    take: limit,
+    skip: skip,
   })
 }
 
 export const getUserCourses = async (
   userAddress: Address,
   chainId: number,
-  type: 'EDUCATOR' | 'DISCIPULUS',
-): Promise<Course[]> => {
-  if (type === 'DISCIPULUS') {
-    return prisma.course.findMany({
-      where: {
-        chain_id: chainId,
-        credentials: {
-          some: {
-            type,
-            user_credentials: {
-              some: {
-                user_address: sanitizeAddress(userAddress),
-              },
-            },
-          },
+  types: CredentialType[],
+  skip?: number,
+  limit?: number,
+): Promise<
+  (UserCredentials & {
+    course: { name: string; description: string; image_url: string }
+  })[]
+> => {
+  return prisma.userCredentials.findMany({
+    where: {
+      user_address: sanitizeAddress(userAddress),
+      course_chain_id: chainId,
+      credential: {
+        type: {
+          in: types,
         },
       },
-      orderBy: [
-        {
-          timestamp: 'desc',
-        },
-      ],
-    })
-  } else {
-    return prisma.course.findMany({
-      where: {
-        chain_id: chainId,
-        credentials: {
-          some: {
-            OR: [
-              {
-                type: 'MAGISTER',
-                user_credentials: {
-                  some: {
-                    user_address: sanitizeAddress(userAddress),
-                  },
-                },
-              },
-              {
-                type: 'ADMIN',
-                user_credentials: {
-                  some: {
-                    user_address: sanitizeAddress(userAddress),
-                  },
-                },
-              },
-            ],
-          },
+    },
+    include: {
+      course: {
+        select: {
+          name: true,
+          description: true,
+          image_url: true,
         },
       },
-      orderBy: [
-        {
-          timestamp: 'desc',
-        },
-      ],
-    })
-  }
+    },
+    orderBy: {
+      course: {
+        timestamp: 'desc',
+      },
+    },
+    distinct: ['course_address'],
+    take: limit,
+    skip: skip,
+  })
 }
 
 export const getCourseCredentials = async (
@@ -155,10 +142,12 @@ export const getUserCourseCredentials = async (
   })
 }
 
-export const getCourseUsersCredentials = async (
+export const getCourseCredentialOwners = async (
   credentialCid: string,
   courseAddress: Address,
   chainId: number,
+  skip?: number,
+  limit?: number,
 ): Promise<UserCredentials[]> => {
   return prisma.userCredentials.findMany({
     where: {
@@ -166,6 +155,8 @@ export const getCourseUsersCredentials = async (
       course_address: courseAddress,
       course_chain_id: chainId,
     },
+    take: limit,
+    skip: skip,
   })
 }
 

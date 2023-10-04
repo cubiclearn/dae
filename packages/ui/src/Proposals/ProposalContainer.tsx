@@ -1,5 +1,4 @@
-import { useSpace } from '@dae/snapshot'
-import { useCourseData } from '../CourseProvider'
+import { useCourseSpace } from '@dae/snapshot'
 import {
   Center,
   Spinner,
@@ -11,27 +10,27 @@ import {
 } from '@chakra-ui/react'
 import { CreateSnapshotSpaceForm } from '../Forms'
 import React from 'react'
+import { Address, useNetwork } from 'wagmi'
+import { useCourseData } from '../CourseProvider'
 
 type ProposalContainerProps = {
+  courseAddress: Address
   children: React.ReactNode
 }
 
 export const ProposalContainer: React.FC<ProposalContainerProps> = ({
+  courseAddress,
   children,
 }) => {
-  const { data: courseData } = useCourseData()
-
+  const { chain } = useNetwork()
   const {
-    data: snapshotSpaceData,
-    isLoading: isLoadingSnapshotSpaceData,
-    isError: isErrorLoadingSnapshotSpaceDat,
-    error: errorLoadingSnapshotSpaceData,
-  } = useSpace(courseData?.snapshot_space_ens)
+    data: courseData,
+    isLoading: isLoadingCourseData,
+    error: errorLoadingCourseData,
+  } = useCourseData()
+  const { data, isLoading, isError } = useCourseSpace(courseAddress, chain?.id)
 
-  if (
-    isLoadingSnapshotSpaceData ||
-    (!snapshotSpaceData && !isErrorLoadingSnapshotSpaceDat)
-  ) {
+  if (isLoading || isLoadingCourseData) {
     return (
       <Center>
         <Spinner />
@@ -39,7 +38,7 @@ export const ProposalContainer: React.FC<ProposalContainerProps> = ({
     )
   }
 
-  if (errorLoadingSnapshotSpaceData) {
+  if (isError || errorLoadingCourseData) {
     return (
       <Alert status="error">
         <AlertIcon />
@@ -54,10 +53,10 @@ export const ProposalContainer: React.FC<ProposalContainerProps> = ({
   }
 
   if (
-    !snapshotSpaceData?.space ||
-    Number(snapshotSpaceData?.space.network) !== courseData?.chain_id ||
-    snapshotSpaceData?.space.strategies[0].params.address !==
-      courseData?.karma_access_control_address
+    data?.space === null ||
+    data?.space.strategies[0].params.address !==
+      courseData?.karma_access_control_address ||
+    chain?.id.toString() !== data?.space.network
   ) {
     return <CreateSnapshotSpaceForm />
   }

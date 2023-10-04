@@ -11,9 +11,14 @@ type CredentialsTransferFormProps = {
 export const CredentialsTransferForm: React.FC<CredentialsTransferFormProps> =
   ({ courseAddress }) => {
     const [multiEnroll, setMultiEnroll] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
 
     const handleMultiEnrollChange = () => {
       setMultiEnroll(!multiEnroll)
+    }
+
+    const handleIsLoading = (_isLoading: boolean) => {
+      setIsLoading(_isLoading)
     }
 
     return (
@@ -21,12 +26,18 @@ export const CredentialsTransferForm: React.FC<CredentialsTransferFormProps> =
         <Stack spacing={8}>
           <FormControl display="flex" alignItems="center">
             <FormLabel mb="0">Multi transfer?</FormLabel>
-            <Switch onChange={handleMultiEnrollChange} />
+            <Switch onChange={handleMultiEnrollChange} isDisabled={isLoading} />
           </FormControl>
           {multiEnroll ? (
-            <CredentialsBatchTransferForm courseAddress={courseAddress} />
+            <CredentialsBatchTransferForm
+              courseAddress={courseAddress}
+              onIsLoading={handleIsLoading}
+            />
           ) : (
-            <CredentialsSingleTransferForm courseAddress={courseAddress} />
+            <CredentialsSingleTransferForm
+              courseAddress={courseAddress}
+              onIsLoading={handleIsLoading}
+            />
           )}
         </Stack>
       </Box>

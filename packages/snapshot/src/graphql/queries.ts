@@ -1,6 +1,7 @@
 import { gql } from 'graphql-request'
 import { type Strategy } from '@snapshot-labs/snapshot.js/dist/voting/types'
 import { type ProposalType } from '@snapshot-labs/snapshot.js/dist/sign/types'
+import { Address } from 'viem'
 
 export type Space = {
   id: string
@@ -14,12 +15,23 @@ export const SPACE_QUERY = gql`
     ) {
       id
       name
+      skin
       about
-      network
+      admins
+      moderators
+      avatar
       symbol
+      filters {
+        minScore
+        onlyMembers
+      }
+      network
       strategies {
         name
-        network
+        params
+      }
+      validation {
+        name
         params
       }
     }
@@ -30,19 +42,34 @@ export type SPACE_QUERY = {
   space: {
     id: string
     name: string
+    skin: string
     about: string
-    network: string
+    admins: Address[]
+    moderators: Address[]
+    avatar: string
     symbol: string
+    filters: {
+      minScore: number
+      onlyMembers: boolean
+    }
+    network: string
     strategies: Strategy[]
+    validation: {
+      name: string
+      params: {}
+    }
   }
 }
 
 export const PROPOSALS_QUERY = gql`
-  query Proposals($spaceId: String!, $state: String){
+  query Proposals($spaceId: String!, $state: String, $start: Int, $skip: Int, $limit: Int){
     proposals (
+      first: $limit,
+      skip: $skip,
       where: {
         space: $spaceId,
         state: $state
+        start_gt: $start
       },
       orderBy: "created",
       orderDirection: desc
@@ -196,5 +223,5 @@ export const USER_VOTING_POWER_QUERY = gql`
 `
 
 export type USER_VOTING_POWER_QUERY = {
-  vp: { vp: number }
+  vp: { vp: number } | null
 }

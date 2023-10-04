@@ -11,24 +11,26 @@ import {
   Link,
   Button,
 } from '@chakra-ui/react'
-import { useSpaceProposal } from '@dae/snapshot'
+import { useCourseProposal } from '@dae/snapshot'
 import { ProposalVote } from './ProposalVote'
 import { ProposalDescription } from './ProposalDescription'
 import { ProposalStats } from './ProposalStats'
 import { ProposalHeading } from './ProposalHeading'
 import NextLink from 'next/link'
 import { ArrowBackIcon } from '@chakra-ui/icons'
+import { Address, useNetwork } from 'wagmi'
 
 type ProposalOverviewProps = {
   proposalId: string
-  courseAddress: string
+  courseAddress: Address
 }
 
 export const ProposalOverview: React.FC<ProposalOverviewProps> = ({
   proposalId,
   courseAddress,
 }) => {
-  const { data, isLoading, error } = useSpaceProposal(proposalId as string)
+  const { chain } = useNetwork()
+  const { data, isLoading, error } = useCourseProposal(proposalId, chain?.id)
 
   if (isLoading) {
     return (
@@ -69,9 +71,7 @@ export const ProposalOverview: React.FC<ProposalOverviewProps> = ({
       <Box>
         <Link
           as={NextLink}
-          href={`/course/${courseAddress}/proposals/explore?active=${
-            data.proposal.state === 'active' ? true : false
-          }`}
+          href={`/course/${courseAddress}/proposals/explore?status=${data.proposal.state}`}
         >
           <Button leftIcon={<ArrowBackIcon />}>Back</Button>
         </Link>
@@ -116,7 +116,10 @@ export const ProposalOverview: React.FC<ProposalOverviewProps> = ({
             width={'100%'}
             alignItems={'flex-start'}
           >
-            <ProposalVote proposal={data.proposal} />
+            <ProposalVote
+              courseAddress={courseAddress}
+              proposal={data.proposal}
+            />
           </Box>
         ) : (
           <></>

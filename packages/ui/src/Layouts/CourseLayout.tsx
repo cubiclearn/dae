@@ -183,7 +183,7 @@ const CourseNavigationMenu: React.FC = () => {
             },
             {
               title: 'Explore',
-              href: `/course/${courseAddress}/proposals/explore?active=true`,
+              href: `/course/${courseAddress}/proposals/explore?status=active`,
               active:
                 pathname.startsWith('/course/[address]/proposals/explore') ||
                 pathname.startsWith('/course/[address]/proposals/[proposalId]'),
@@ -243,7 +243,7 @@ const CourseNavigationMenu: React.FC = () => {
         links={[
           {
             title: 'Explore',
-            href: `/course/${courseAddress}/proposals/explore?active=true`,
+            href: `/course/${courseAddress}/proposals/explore?status=active`,
             active:
               pathname.startsWith('/course/[address]/proposals/explore') ||
               pathname.startsWith('/course/[address]/proposals/[proposalId]'),

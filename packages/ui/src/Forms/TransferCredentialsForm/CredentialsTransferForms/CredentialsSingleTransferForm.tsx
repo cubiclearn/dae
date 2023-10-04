@@ -23,6 +23,7 @@ import { useLeavePageConfirmation } from '../../../hooks'
 
 type TransferCredentialFormProps = {
   courseAddress: Address
+  onIsLoading: (_isLoading: boolean) => void
 }
 
 const validationSchema = Yup.object().shape({
@@ -34,7 +35,7 @@ const validationSchema = Yup.object().shape({
 
 export const CredentialsSingleTransferForm: React.FC<
   TransferCredentialFormProps
-> = ({ courseAddress }) => {
+> = ({ courseAddress, onIsLoading }) => {
   const { chain } = useNetwork()
   const { data } = useCourseCredentials(courseAddress, chain?.id, 'OTHER')
   const toast = useToast()
@@ -62,15 +63,20 @@ export const CredentialsSingleTransferForm: React.FC<
     onSubmit: async (values) => {
       try {
         if (!data) return
+        onIsLoading(true)
         toast.promise(
           transfer(
             {
               address: values.userAddress as Address,
             },
             values.credentialIPFSCid,
-          ).then(() => {
-            resetForm()
-          }),
+          )
+            .then(() => {
+              resetForm()
+            })
+            .finally(() => {
+              onIsLoading(false)
+            }),
           {
             success: {
               title: 'Credential transferred with success!',
@@ -104,6 +110,7 @@ export const CredentialsSingleTransferForm: React.FC<
             type="text"
             placeholder="Ethereum Address"
             onReset={handleReset}
+            isDisabled={isLoading || isValidating || isSigning}
           />
           <FormErrorMessage>{errors.userAddress}</FormErrorMessage>
         </FormControl>
@@ -118,6 +125,7 @@ export const CredentialsSingleTransferForm: React.FC<
               setFieldValue('credentialIPFSCid', event.target.value)
             }}
             onReset={handleReset}
+            isDisabled={isLoading || isValidating || isSigning}
           >
             {data ? (
               data.credentials.map((credential) => {

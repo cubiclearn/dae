@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import { Layout, SyncButton } from '@dae/ui'
 import { Box, Stack } from '@chakra-ui/react'
-import { CourseCardList } from '@dae/ui'
+import { CoursesCardsList } from '@dae/ui'
 
 export default function Teaching() {
   return (
@@ -17,7 +17,7 @@ export default function Teaching() {
           <Box alignSelf={'flex-end'}>
             <SyncButton />
           </Box>
-          <CourseCardList role="EDUCATOR" />
+          <CoursesCardsList roles={['ADMIN', 'MAGISTER']} />
         </Stack>
       </Layout.Profile>
     </>

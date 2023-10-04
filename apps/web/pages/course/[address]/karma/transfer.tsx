@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { Layout, TransferKarmaContainer } from '@dae/ui'
+import { Layout, TransferKarmaForm } from '@dae/ui'
 
 export default function TransferKarmaPage() {
   return (
@@ -11,7 +11,7 @@ export default function TransferKarmaPage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout.Course heading="Transfer karma">
-        <TransferKarmaContainer />
+        <TransferKarmaForm />
       </Layout.Course>
     </>
   )

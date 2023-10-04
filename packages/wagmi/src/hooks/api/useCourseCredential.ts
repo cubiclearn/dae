@@ -1,7 +1,7 @@
 import useSWR from 'swr'
 import { Credential } from '@dae/database'
 import { Address } from 'viem'
-import { ApiRequestUrlAndParams, useApi } from './useApi'
+import { ApiRequestUrlAndParams, useApi } from '@dae/hooks'
 import { ApiResponse, SWRHook } from '@dae/types'
 
 export const useCourseCredential = (

@@ -70,7 +70,7 @@ export default async function handler(
   }
 
   // Guard clause for unauthenticated requests
-  const session = await getSession({ req })
+  const session = await getSession({ req: { headers: req.headers } })
   if (!session) {
     return res
       .status(401)

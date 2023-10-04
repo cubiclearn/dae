@@ -1,21 +1,16 @@
 import { createContext, FC, useContext, ReactNode, useMemo } from 'react'
 import { Address } from 'viem'
-import { useCourse } from '@dae/wagmi' // Assuming this is a valid import
-import { useNetwork } from 'wagmi' // Assuming this is a valid import
+import { useCourse } from '@dae/wagmi'
+import { useNetwork } from 'wagmi'
 import { useRouter } from 'next/router'
 import { Course } from '@dae/database'
 
 const Context = createContext<{
-  data:
-    | (Omit<Course, 'address' | 'karma_access_control_address'> & {
-        address: Address
-        karma_access_control_address: Address
-      })
-    | null
+  data: Course | undefined
   isLoading: boolean
   error: Error | undefined
 }>({
-  data: null,
+  data: undefined,
   isLoading: false,
   error: undefined,
 })
@@ -30,24 +25,15 @@ export const CourseProvider: FC<{
     chain?.id,
   )
 
-  const courseData = data?.course
-    ? {
-        ...data.course,
-        address: data.course.address as Address,
-        karma_access_control_address: data.course
-          .karma_access_control_address as Address,
-      }
-    : null
-
   return (
     <Context.Provider
       value={useMemo(
         () => ({
-          data: courseData,
+          data: data?.course,
           isLoading,
           error,
         }),
-        [courseData, isLoading, error],
+        [data, isLoading, error],
       )}
     >
       {children}

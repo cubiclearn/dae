@@ -2,7 +2,7 @@ import Head from 'next/head'
 import { Layout, SyncButton } from '@dae/ui'
 import { Box, Stack } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
-import { TeachersRowList } from '@dae/ui'
+import { TeachersCredentialsRowList } from '@dae/ui'
 import { Address } from 'wagmi'
 
 export default function StudentsList() {
@@ -22,7 +22,7 @@ export default function StudentsList() {
           <Box alignSelf={'flex-end'}>
             <SyncButton />
           </Box>
-          <TeachersRowList courseAddress={courseAddress} />
+          <TeachersCredentialsRowList courseAddress={courseAddress} />
         </Stack>
       </Layout.Course>
     </>

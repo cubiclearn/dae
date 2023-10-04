@@ -1,8 +1,13 @@
 import Head from 'next/head'
 import { Layout, ProposalContainer } from '@dae/ui'
 import { CreateProposalForm } from '@dae/ui'
+import { Address } from 'wagmi'
+import { useRouter } from 'next/router'
 
 export default function TransferKarmaPage() {
+  const router = useRouter()
+  const courseAddress = router.query.address as Address
+
   return (
     <>
       <Head>
@@ -12,7 +17,7 @@ export default function TransferKarmaPage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout.Course heading="Create proposal">
-        <ProposalContainer>
+        <ProposalContainer courseAddress={courseAddress}>
           <CreateProposalForm />
         </ProposalContainer>
       </Layout.Course>

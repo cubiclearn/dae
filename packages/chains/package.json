@@ -7,7 +7,7 @@
     "devDependencies": {
         "@dae/typescript-config": "workspace:*",
         "typescript": "5.0.4",
-        "viem": "1.4.1"
+        "viem": "1.12.2"
     },
     "files": [
         "/dist"

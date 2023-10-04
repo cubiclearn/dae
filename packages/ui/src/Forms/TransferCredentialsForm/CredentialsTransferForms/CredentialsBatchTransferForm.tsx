@@ -48,11 +48,12 @@ const validationSchema = Yup.object().shape({
 
 type TransferCredentialsFormProps = {
   courseAddress: string
+  onIsLoading: (_isLoading: boolean) => void
 }
 
 export const CredentialsBatchTransferForm: React.FC<
   TransferCredentialsFormProps
-> = ({ courseAddress }) => {
+> = ({ courseAddress, onIsLoading }) => {
   const { chain } = useNetwork()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const { data } = useCourseCredentials(
@@ -78,14 +79,19 @@ export const CredentialsBatchTransferForm: React.FC<
       onSubmit: async () => {
         try {
           if (!data) return
+          onIsLoading(true)
           toast.promise(
-            multiTransfer(csvData, values.credentialIPFSCid).then(() => {
-              if (fileInputRef.current) {
-                fileInputRef.current.value = ''
-              }
-              setFieldValue('credentialIPFSCid', '')
-              setCsvData([])
-            }),
+            multiTransfer(csvData, values.credentialIPFSCid)
+              .then(() => {
+                if (fileInputRef.current) {
+                  fileInputRef.current.value = ''
+                }
+                setFieldValue('credentialIPFSCid', '')
+                setCsvData([])
+              })
+              .finally(() => {
+                onIsLoading(false)
+              }),
             {
               success: {
                 title: 'Credentials transferred with success!',
@@ -142,6 +148,7 @@ export const CredentialsBatchTransferForm: React.FC<
               type="file"
               ref={fileInputRef}
               py={1}
+              isDisabled={isLoading || isValidating || isSigning}
             />
             <FormHelperText>
               Click{' '}
@@ -167,6 +174,7 @@ export const CredentialsBatchTransferForm: React.FC<
                 setFieldValue('credentialIPFSCid', event.target.value)
               }}
               value={values.credentialIPFSCid}
+              isDisabled={isLoading || isValidating || isSigning}
             >
               {data ? (
                 data.credentials.map((credential) => {
@@ -194,16 +202,12 @@ export const CredentialsBatchTransferForm: React.FC<
                 <Thead>
                   <Tr>
                     <Th>Address</Th>
-                    <Th>Email</Th>
-                    <Th>Discord handle</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
                   {csvData.map((row) => (
                     <Tr key={row.address}>
                       <Td>{row.address}</Td>
-                      <Td>{row.email}</Td>
-                      <Td>{row.discord}</Td>
                     </Tr>
                   ))}
                 </Tbody>

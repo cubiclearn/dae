@@ -16,13 +16,14 @@ import {
   NumberInputStepper,
   Select,
   Stack,
+  Textarea,
   useSteps,
   useToast,
 } from '@chakra-ui/react'
 import { useCreateCourse, useIsENSOwner } from '@dae/wagmi'
 import { useFormik } from 'formik'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useAccount, useNetwork } from 'wagmi'
 import * as Yup from 'yup'
 import { ProgressStepper } from '../../Stepper'
@@ -35,8 +36,12 @@ import { type VotingStrategy } from '@dae/types'
 import { useLeavePageConfirmation } from '../../hooks'
 
 const validationSchema = Yup.object().shape({
-  name: Yup.string().required('Name is required'),
-  description: Yup.string().required('Description is required'),
+  name: Yup.string()
+    .required('Name is required')
+    .max(32, 'Name should not exceed 32 characters.'),
+  description: Yup.string()
+    .required('Description is required')
+    .max(160, 'Description should not exceed 160 characters.'),
   image: Yup.mixed()
     .required('Image is required.')
     .test(
@@ -57,11 +62,11 @@ const validationSchema = Yup.object().shape({
     .required('Website is required'),
   mediaChannel: Yup.string().url('Invalid media channel URL'),
   discipulusBaseKarma: Yup.number()
-    .min(1, 'Students base karma must be greater than or equal to 1')
+    .min(0, 'Students base karma must be greater than or equal to 0')
     .typeError('Students base karma must be a number')
     .required('Students base karma is required'),
   magisterBaseKarma: Yup.number()
-    .min(1, 'Teacher base karma must be greater than or equal to 1')
+    .min(0, 'Teacher base karma must be greater than or equal to 0')
     .typeError('Teacher base karma must be a number')
     .required('Teacher base karma is required'),
   snapshotSpaceENS: Yup.string()
@@ -78,20 +83,7 @@ const validationSchema = Yup.object().shape({
 export const CreateCourseForm = () => {
   const { chain } = useNetwork()
   const { address } = useAccount()
-
-  if (!chain || !chain.id || !address) {
-    return (
-      <Alert status="info">
-        <AlertIcon />
-        <Box>
-          <AlertTitle>Something went wrong.</AlertTitle>
-          <AlertDescription>
-            You are not connected to Web3. Please connect your wallet before
-          </AlertDescription>
-        </Box>
-      </Alert>
-    )
-  }
+  const imageInputRef = useRef<HTMLInputElement | null>(null)
 
   const { create, isLoading, isError, error, isSigning, isValidating, step } =
     useCreateCourse(chain, address)
@@ -119,6 +111,20 @@ export const CreateCourseForm = () => {
     },
   ]
 
+  const handleImageInputFieldChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0]
+    setFieldValue('image', file)
+  }
+
+  const handleResetImageInputField = () => {
+    if (imageInputRef.current) {
+      imageInputRef.current.value = ''
+    }
+    setFieldValue('image', null)
+  }
+
   const { activeStep, setActiveStep } = useSteps({
     index: 0,
     count: steps.length,
@@ -132,6 +138,7 @@ export const CreateCourseForm = () => {
     handleChange,
     handleSubmit,
     setFieldValue,
+    resetForm,
   } = useFormik<{
     name: string
     description: string
@@ -168,7 +175,10 @@ export const CreateCourseForm = () => {
             values.discipulusBaseKarma,
             values.snapshotSpaceENS,
             values.votingStrategy,
-          ),
+          ).then(() => {
+            handleResetImageInputField()
+            resetForm()
+          }),
           {
             success: {
               title: 'Course created with success!',
@@ -214,6 +224,7 @@ export const CreateCourseForm = () => {
               onBlur={handleBlur}
               type="text"
               placeholder="Name"
+              isDisabled={isLoading || isSigning || isValidating}
             />
             <FormErrorMessage>{errors.name}</FormErrorMessage>
           </FormControl>
@@ -222,13 +233,13 @@ export const CreateCourseForm = () => {
             isInvalid={!!errors.description && touched.description}
           >
             <FormLabel>Description</FormLabel>
-            <Input
+            <Textarea
               id="description"
               value={values.description}
               onChange={handleChange}
               onBlur={handleBlur}
-              type="text"
               placeholder="Description"
+              isDisabled={isLoading || isSigning || isValidating}
             />
             <FormErrorMessage>{errors.description}</FormErrorMessage>
           </FormControl>
@@ -238,11 +249,10 @@ export const CreateCourseForm = () => {
               py={1}
               id="image"
               type="file"
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                const file = event.target.files?.[0]
-                setFieldValue('image', file)
-              }}
+              onChange={handleImageInputFieldChange}
+              ref={imageInputRef}
               onBlur={handleBlur}
+              isDisabled={isLoading || isSigning || isValidating}
             />
             <FormErrorMessage>{errors.image}</FormErrorMessage>
           </FormControl>
@@ -258,6 +268,7 @@ export const CreateCourseForm = () => {
               value={values.website}
               onChange={handleChange}
               onBlur={handleBlur}
+              isDisabled={isLoading || isSigning || isValidating}
             />
             <FormErrorMessage>{errors.website}</FormErrorMessage>
           </FormControl>
@@ -272,6 +283,7 @@ export const CreateCourseForm = () => {
               onBlur={handleBlur}
               type="text"
               placeholder="https://your-media-channel.com"
+              isDisabled={isLoading || isSigning || isValidating}
             />
             <FormErrorMessage>{errors.mediaChannel}</FormErrorMessage>
           </FormControl>
@@ -294,6 +306,7 @@ export const CreateCourseForm = () => {
               }}
               value={values.magisterBaseKarma}
               onBlur={handleBlur}
+              isDisabled={isLoading || isSigning || isValidating}
             >
               <NumberInputField />
               <NumberInputStepper>
@@ -324,6 +337,7 @@ export const CreateCourseForm = () => {
               }}
               value={values.discipulusBaseKarma}
               onBlur={handleBlur}
+              isDisabled={isLoading || isSigning || isValidating}
             >
               <NumberInputField />
               <NumberInputStepper>
@@ -348,6 +362,7 @@ export const CreateCourseForm = () => {
               onBlur={handleBlur}
               type="text"
               placeholder="your-ens.eth"
+              isDisabled={isLoading || isSigning || isValidating}
             />
             <FormErrorMessage>
               {errors.snapshotSpaceENS ||
@@ -364,6 +379,7 @@ export const CreateCourseForm = () => {
               placeholder="Select voting strategy"
               onChange={handleChange}
               defaultValue={'linear-voting'}
+              isDisabled={isLoading || isSigning || isValidating}
             >
               <option value={'linear-voting'}>Linear Voting</option>
               <option value={'quadratic-voting'}>Quadratic Voting</option>

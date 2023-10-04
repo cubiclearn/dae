@@ -1,4 +1,4 @@
-import { useContractWrite, usePublicClient } from 'wagmi'
+import { useContractWrite, useNetwork, usePublicClient } from 'wagmi'
 import { Address } from 'viem'
 import { CredentialsBurnableAbi } from '@dae/abi'
 import { Credential, CredentialType } from '@dae/database'
@@ -6,6 +6,7 @@ import { useWeb3HookState } from '../useWeb3HookState'
 import { ApiResponse } from '@dae/types'
 import { CONFIRMATION_BLOCKS } from '@dae/constants'
 import { mutate } from 'swr'
+import { useEditSnapshotSpace } from '@dae/snapshot'
 
 export type TransferCredentialsData = {
   address: Address
@@ -27,7 +28,10 @@ export function useTransferCredentials(
     ...state
   } = useWeb3HookState()
 
+  const { chain } = useNetwork()
   const publicClient = usePublicClient()
+
+  const { addModerator } = useEditSnapshotSpace(courseAddress, chain?.id)
 
   const { writeAsync: mint } = useContractWrite({
     abi: CredentialsBurnableAbi,
@@ -130,6 +134,10 @@ export function useTransferCredentials(
       if (!response.ok) {
         const responseJSON = await response.json()
         throw new Error(responseJSON.error)
+      }
+
+      if (credentialType === 'MAGISTER') {
+        await addModerator(userData.address)
       }
 
       mutate(

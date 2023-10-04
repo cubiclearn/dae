@@ -39,7 +39,7 @@ const validationSchema = Yup.object().shape({
 export const CreateProposalForm: React.FC = () => {
   const { data } = useCourseData()
   const toast = useToast()
-  const { create, isLoading, isError, error } = useCreateProposal(
+  const { create, isLoading, isError, error, isValidating } = useCreateProposal(
     data ? data.snapshot_space_ens : undefined,
   )
   const router = useRouter()
@@ -77,7 +77,7 @@ export const CreateProposalForm: React.FC = () => {
           }),
           {
             success: (result) => ({
-              title: 'Credential created with success!',
+              title: 'Proposal created with success!',
               onCloseComplete: () =>
                 router.push(
                   `/course/${router.query.address as Address}/proposals/${
@@ -85,9 +85,9 @@ export const CreateProposalForm: React.FC = () => {
                   }`,
                 ),
             }),
-            error: { title: 'Error creating credential.' },
+            error: { title: 'Error creating proposal.' },
             loading: {
-              title: 'Credential creation in progress...',
+              title: 'Creating proposal...',
             },
           },
         )
@@ -109,6 +109,7 @@ export const CreateProposalForm: React.FC = () => {
               onBlur={handleBlur}
               type="text"
               placeholder="Title"
+              isDisabled={isLoading || isValidating}
             />
             <FormErrorMessage>{errors.title}</FormErrorMessage>
           </FormControl>
@@ -124,6 +125,7 @@ export const CreateProposalForm: React.FC = () => {
                 setFieldValue('description', content.markdown)
               }}
               placeholder="Description"
+              isDisabled={isLoading || isValidating}
             />
             <FormErrorMessage>{errors.description}</FormErrorMessage>
           </FormControl>
@@ -140,6 +142,7 @@ export const CreateProposalForm: React.FC = () => {
                 const date = new Date(event.target.value)
                 setFieldValue('endDate', date)
               }}
+              isDisabled={isLoading || isValidating}
             />
             <FormErrorMessage>{errors.endDate}</FormErrorMessage>
           </FormControl>
@@ -160,6 +163,7 @@ export const CreateProposalForm: React.FC = () => {
                       setFieldValue('choices', newChoices)
                     }}
                     placeholder={`Choice ${index + 1}`}
+                    isDisabled={isLoading || isValidating}
                   />
                   {index !== 0 && (
                     <InputRightElement width="4.5rem">
@@ -173,6 +177,7 @@ export const CreateProposalForm: React.FC = () => {
                         aria-label="Remove choice"
                         icon={<MinusIcon />}
                         variant="ghost"
+                        isDisabled={isLoading || isValidating}
                       />
                     </InputRightElement>
                   )}
@@ -189,6 +194,7 @@ export const CreateProposalForm: React.FC = () => {
                     }}
                     leftIcon={<AddIcon />}
                     variant="ghost"
+                    isDisabled={isLoading || isValidating}
                   >
                     Add Choice
                   </Button>
@@ -208,6 +214,7 @@ export const CreateProposalForm: React.FC = () => {
               onBlur={handleBlur}
               type="text"
               placeholder="https://www.proposalforum.com"
+              isDisabled={isLoading || isValidating}
             />
             <FormErrorMessage>{errors.description}</FormErrorMessage>
           </FormControl>

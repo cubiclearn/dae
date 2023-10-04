@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
-import { getCourseUsersCredentials } from '../../../../../lib/api'
+import { getCourseCredentialOwners } from '../../../../../lib/api'
 import { Address } from 'viem'
 import { ApiResponse, ApiResponseStatus } from '@dae/types'
 import { UserCredentials } from '@dae/database'
@@ -15,7 +15,14 @@ const handleGetRequest = async (
   res: NextApiResponse<ApiResponse<{ userCredentials: UserCredentials[] }>>,
 ) => {
   try {
-    const { credentialCid, courseAddress, chainId } = req.query
+    const { credentialCid, courseAddress, chainId, skip, limit } =
+      req.query as {
+        credentialCid: string
+        courseAddress: Address
+        chainId: string
+        skip?: string
+        limit?: string
+      }
 
     if (!credentialCid || !courseAddress || !chainId) {
       return res
@@ -23,10 +30,12 @@ const handleGetRequest = async (
         .json({ status: ApiResponseStatus.error, message: 'Bad request.' })
     }
 
-    const usersCredentials = await getCourseUsersCredentials(
+    const usersCredentials = await getCourseCredentialOwners(
       credentialCid as string,
       courseAddress as Address,
-      parseInt(chainId as string),
+      Number(chainId),
+      Number(skip),
+      Number(limit),
     )
 
     return res.status(200).json({
@@ -35,14 +44,12 @@ const handleGetRequest = async (
     })
   } catch (error) {
     console.error(error)
-    return res
-      .status(500)
-      .json({
-        status: ApiResponseStatus.error,
-        message:
-          error.message ||
-          'An error occurred while processing your request. Please try again later.',
-      })
+    return res.status(500).json({
+      status: ApiResponseStatus.error,
+      message:
+        error.message ||
+        'An error occurred while processing your request. Please try again later.',
+    })
   }
 }
 
@@ -67,7 +74,7 @@ export default async function handler(
   }
 
   // Guard clause for unauthenticated requests
-  const session = await getSession({ req })
+  const session = await getSession({ req: { headers: req.headers } })
   if (!session) {
     return res
       .status(401)

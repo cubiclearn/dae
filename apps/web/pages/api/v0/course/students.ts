@@ -15,19 +15,26 @@ const handleGetRequest = async (
   res: NextApiResponse<ApiResponse<{ students: UserCredentials[] }>>,
 ) => {
   try {
-    const { chainId, courseAddress } = req.query as {
+    const { chainId, courseAddress, skip, limit } = req.query as {
       courseAddress: Address
       chainId: string
+      skip?: string
+      limit?: string
     }
 
     if (!chainId || !courseAddress) {
-      return res.status(200).json({
-        status: ApiResponseStatus.fail,
-        message: 'This credential does not exists.',
+      return res.status(400).json({
+        status: ApiResponseStatus.error,
+        message: 'Bad request',
       })
     }
 
-    const students = await getCourseStudents(courseAddress, parseInt(chainId))
+    const students = await getCourseStudents(
+      courseAddress,
+      Number(chainId),
+      Number(skip),
+      Number(limit),
+    )
 
     return res
       .status(200)
@@ -49,29 +56,25 @@ export default async function handler(
 ) {
   // Check if req.method is defined
   if (req.method === undefined) {
-    return res
-      .status(400)
-      .json({
-        status: ApiResponseStatus.fail,
-        message: 'Request method is undefined',
-      })
+    return res.status(400).json({
+      status: ApiResponseStatus.error,
+      message: 'Request method is undefined',
+    })
   }
 
   // Guard clause for unsupported request methods
   if (!(req.method in HttpMethod)) {
-    return res
-      .status(400)
-      .json({
-        status: ApiResponseStatus.fail,
-        message: 'This method is not supported',
-      })
+    return res.status(400).json({
+      status: ApiResponseStatus.error,
+      message: 'This method is not supported',
+    })
   }
   // Guard clause for unauthenticated requests
-  const session = await getSession({ req })
+  const session = await getSession({ req: { headers: req.headers } })
   if (!session) {
     return res
       .status(401)
-      .json({ status: ApiResponseStatus.fail, message: 'Unauthenticated' })
+      .json({ status: ApiResponseStatus.error, message: 'Unauthenticated' })
   }
 
   // Handle the respective request method
@@ -79,11 +82,9 @@ export default async function handler(
     case HttpMethod.GET:
       return handleGetRequest(req, res)
     default:
-      return res
-        .status(400)
-        .json({
-          status: ApiResponseStatus.fail,
-          message: 'This method is not supported',
-        })
+      return res.status(400).json({
+        status: ApiResponseStatus.error,
+        message: 'This method is not supported',
+      })
   }
 }

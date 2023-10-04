@@ -16,6 +16,7 @@ export interface EditorProps {
   onBlur?: (event: FocusEvent) => void
   id?: string
   placeholder?: string
+  isDisabled?: boolean
 }
 
 const TOOLBAR_OPTIONS = [
@@ -63,6 +64,7 @@ export default function Editor(props: EditorProps) {
       id={props.id}
       theme="snow"
       placeholder={props.placeholder}
+      readOnly={props.isDisabled}
       modules={{
         toolbar: {
           container: TOOLBAR_OPTIONS,
