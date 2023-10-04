@@ -10,6 +10,7 @@ import {
   FormLabel,
   Input,
   Stack,
+  Textarea,
   useToast,
 } from '@chakra-ui/react'
 import { useCreateCredential } from '@dae/wagmi'
@@ -26,8 +27,12 @@ import {
 import { useLeavePageConfirmation } from '../../hooks'
 
 const validationSchema = Yup.object().shape({
-  name: Yup.string().required('Name is required'),
-  description: Yup.string().required('Description is required'),
+  name: Yup.string()
+    .required('Name is required')
+    .max(32, 'Name should not exceed 32 characters.'),
+  description: Yup.string()
+    .required('Description is required')
+    .max(160, 'Description should not exceed 160 characters.'),
   image: Yup.mixed()
     .required('Image is required.')
     .test(
@@ -145,12 +150,11 @@ export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
             isInvalid={!!errors.description && touched.description}
           >
             <FormLabel>Description</FormLabel>
-            <Input
+            <Textarea
               id="description"
               value={values.description}
               onChange={handleChange}
               onBlur={handleBlur}
-              type="text"
               placeholder="Description"
               onReset={handleReset}
               isDisabled={isLoading || isValidating}

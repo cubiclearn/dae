@@ -16,6 +16,7 @@ import {
   NumberInputStepper,
   Select,
   Stack,
+  Textarea,
   useSteps,
   useToast,
 } from '@chakra-ui/react'
@@ -35,8 +36,12 @@ import { type VotingStrategy } from '@dae/types'
 import { useLeavePageConfirmation } from '../../hooks'
 
 const validationSchema = Yup.object().shape({
-  name: Yup.string().required('Name is required'),
-  description: Yup.string().required('Description is required'),
+  name: Yup.string()
+    .required('Name is required')
+    .max(32, 'Name should not exceed 32 characters.'),
+  description: Yup.string()
+    .required('Description is required')
+    .max(160, 'Description should not exceed 160 characters.'),
   image: Yup.mixed()
     .required('Image is required.')
     .test(
@@ -57,11 +62,11 @@ const validationSchema = Yup.object().shape({
     .required('Website is required'),
   mediaChannel: Yup.string().url('Invalid media channel URL'),
   discipulusBaseKarma: Yup.number()
-    .min(1, 'Students base karma must be greater than or equal to 1')
+    .min(0, 'Students base karma must be greater than or equal to 0')
     .typeError('Students base karma must be a number')
     .required('Students base karma is required'),
   magisterBaseKarma: Yup.number()
-    .min(1, 'Teacher base karma must be greater than or equal to 1')
+    .min(0, 'Teacher base karma must be greater than or equal to 0')
     .typeError('Teacher base karma must be a number')
     .required('Teacher base karma is required'),
   snapshotSpaceENS: Yup.string()
@@ -228,12 +233,11 @@ export const CreateCourseForm = () => {
             isInvalid={!!errors.description && touched.description}
           >
             <FormLabel>Description</FormLabel>
-            <Input
+            <Textarea
               id="description"
               value={values.description}
               onChange={handleChange}
               onBlur={handleBlur}
-              type="text"
               placeholder="Description"
               isDisabled={isLoading || isSigning || isValidating}
             />
