@@ -43,7 +43,9 @@ export function useTransferKarma(
       state.setValidating()
 
       if (karmaIncrement === 0) {
-        throw new Error('Karma increment value cannot be 0.')
+        throw new Error(
+          'Your entry has a karma increment value of 0 which makes no sense. Please fix it and try again.',
+        )
       }
 
       if (karmaAccessControlAddress === undefined) {
@@ -118,7 +120,9 @@ export function useTransferKarma(
       )
 
       if (isZeroIncrement) {
-        throw new Error('Karma increment value cannot be 0.')
+        throw new Error(
+          'Some of your entries have a karma increment value of 0 which makes no sense. Please fix them or remove them and try again.',
+        )
       }
 
       if (karmaAccessControlAddress === undefined) {
