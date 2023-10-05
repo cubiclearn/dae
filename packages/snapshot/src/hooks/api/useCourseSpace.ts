@@ -1,4 +1,4 @@
-import useSWR from 'swr'
+import useSWRImmutable from 'swr/immutable'
 import { Address } from 'viem'
 import { ApiRequestUrlAndParams, useApi } from '@dae/hooks'
 import { ApiResponse, SWRHook } from '@dae/types'
@@ -11,7 +11,7 @@ export const useCourseSpace = (
   const client = useApi()
   const shouldFetch = courseAddress !== undefined && chainId !== undefined
 
-  const { data: response, error } = useSWR<ApiResponse<SPACE_QUERY>>(
+  const { data: response, error } = useSWRImmutable<ApiResponse<SPACE_QUERY>>(
     shouldFetch
       ? [
           'course/space',

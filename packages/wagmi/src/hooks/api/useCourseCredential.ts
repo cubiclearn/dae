@@ -1,4 +1,4 @@
-import useSWR from 'swr'
+import useSWRImmutable from 'swr/immutable'
 import { Credential } from '@dae/database'
 import { Address } from 'viem'
 import { ApiRequestUrlAndParams, useApi } from '@dae/hooks'
@@ -15,7 +15,7 @@ export const useCourseCredential = (
     courseAddress !== undefined &&
     chainId !== undefined
 
-  const { data: response, error } = useSWR<
+  const { data: response, error } = useSWRImmutable<
     ApiResponse<{ credential: Credential }>
   >(
     shouldFetch
@@ -30,11 +30,6 @@ export const useCourseCredential = (
       : null,
     ([query, variables]: ApiRequestUrlAndParams) =>
       client.request(query, variables),
-    {
-      revalidateIfStale: false,
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-    },
   )
 
   return {
