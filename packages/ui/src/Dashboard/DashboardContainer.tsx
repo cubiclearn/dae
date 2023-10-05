@@ -18,7 +18,7 @@ import {
   PartecipantsSection,
   StatisticsSection,
 } from './Sections'
-import { useIsAdminOrMagister } from '@dae/wagmi'
+import { useIsAdmin, useIsMagister } from '@dae/wagmi'
 
 type DashboardContainerProps = {
   courseAddress: Address
@@ -34,12 +34,17 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
   } = useCourseData()
   const { chain } = useNetwork()
   const {
-    data: isAdminOrMagister,
-    isLoading: isFetchingUserRole,
-    isError: isErrorFetchingUserRole,
-  } = useIsAdminOrMagister(courseAddress)
+    data: isAdmin,
+    isLoading: isLoadingAdminState,
+    isError: isErrorLoadingAdminState,
+  } = useIsAdmin(courseAddress)
+  const {
+    data: isMagister,
+    isLoading: isLoadingMagisterState,
+    isError: isErrorLoadingMagisterState,
+  } = useIsMagister(courseAddress)
 
-  if (isCourseDataLoading || (!courseData && !error) || isFetchingUserRole) {
+  if (isCourseDataLoading || isLoadingAdminState || isLoadingMagisterState) {
     return (
       <Center>
         <Spinner />
@@ -47,7 +52,7 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
     )
   }
 
-  if (error || isErrorFetchingUserRole || !courseData) {
+  if (error || isErrorLoadingAdminState || isErrorLoadingMagisterState) {
     return (
       <Alert status="error">
         <AlertIcon />
@@ -59,7 +64,7 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
     )
   }
 
-  if (isAdminOrMagister) {
+  if (isAdmin || isMagister) {
     return (
       <Stack spacing={8}>
         <Stack spacing={4}>
@@ -68,7 +73,7 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
           </Text>
           <MyKarmaSection
             karmaAccessControlAddress={
-              courseData.karma_access_control_address as Address
+              courseData?.karma_access_control_address as Address
             }
           />
         </Stack>
@@ -113,7 +118,7 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
         </Text>
         <MyKarmaSection
           karmaAccessControlAddress={
-            courseData.karma_access_control_address as Address
+            courseData?.karma_access_control_address as Address
           }
         />
       </Stack>
