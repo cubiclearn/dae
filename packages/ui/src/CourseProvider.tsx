@@ -34,10 +34,6 @@ export const CourseProvider: FC<{
     [data, isLoading, error],
   )
 
-  if (!isLoading && data?.course === undefined) {
-    router.replace('/404')
-  }
-
   return <Context.Provider value={value}>{children}</Context.Provider>
 }
 

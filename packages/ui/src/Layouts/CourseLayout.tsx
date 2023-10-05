@@ -1,9 +1,15 @@
-import { FC } from 'react'
 import React from 'react'
-import { Box, Text, useDisclosure, Stack } from '@chakra-ui/react'
+import {
+  Box,
+  Text,
+  useDisclosure,
+  Stack,
+  Center,
+  Spinner,
+} from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { Address } from 'viem'
-import { CourseProvider } from '../CourseProvider'
+import { CourseProvider, useCourseData } from '../CourseProvider'
 import { Web3SafeContainer } from './Web3SafeContainer'
 import { Sidebar } from './SideBar'
 import { BaseDrawer } from './Drawer'
@@ -30,12 +36,32 @@ const CourseNavigationMenu: React.FC = () => {
   })
 }
 
-type Props = {
-  children?: React.ReactNode
-  heading: string
+const CoursePageContainer: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const { data, isLoading } = useCourseData()
+  const router = useRouter()
+
+  if (isLoading) {
+    return (
+      <Center>
+        <Spinner />
+      </Center>
+    )
+  }
+
+  if (data === undefined) {
+    router.replace('/404')
+    return null
+  }
+
+  return <>{children}</>
 }
 
-export const CourseLayout: FC<Props> = ({ children, heading }) => {
+export const CourseLayout: React.FC<{
+  children?: React.ReactNode
+  heading: string
+}> = ({ children, heading }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { query } = useRouter()
   const { chain } = useNetwork()
@@ -65,23 +91,23 @@ export const CourseLayout: FC<Props> = ({ children, heading }) => {
           overflow={'auto'}
           p={8}
         >
-          <Stack direction="column" mb={8}>
-            <Text
-              as="h2"
-              fontSize={'3xl'}
-              fontWeight={'semibold'}
-              textTransform={'capitalize'}
-            >
-              {heading}
-            </Text>
-            <CourseAddress
-              chainId={chain?.id}
-              courseAddress={query.address as Address}
-            />
-          </Stack>
-          <Web3SafeContainer>
-            <Box>{children}</Box>
-          </Web3SafeContainer>
+          <CoursePageContainer>
+            <Stack direction="column" mb={8}>
+              <Text
+                as="h2"
+                fontSize={'3xl'}
+                fontWeight={'semibold'}
+                textTransform={'capitalize'}
+              >
+                {heading}
+              </Text>
+              <CourseAddress
+                chainId={chain?.id}
+                courseAddress={query.address as Address}
+              />
+            </Stack>
+            <Web3SafeContainer>{children}</Web3SafeContainer>
+          </CoursePageContainer>
         </Box>
       </CourseProvider>
     </Box>
