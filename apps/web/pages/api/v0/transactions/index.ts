@@ -39,13 +39,15 @@ const handlePostRequest = async (
     }
 
     const session = await getSession({ req: { headers: req.headers } })
+    const timestamp = Date.now() / 1000
 
-    await prisma.transactions.create({
+    await prisma.pendingTransactions.create({
       data: {
         user_address: sanitizeAddress(session!.user.address as Address),
         transaction_hash: txHash,
         action: action,
         chain_id: Number(chainId),
+        timestamp: timestamp,
       },
     })
 

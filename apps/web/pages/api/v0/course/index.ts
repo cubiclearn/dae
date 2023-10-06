@@ -283,12 +283,9 @@ const handlePostRequest = async (
       },
     )
 
-    await prisma.transactions.update({
+    await prisma.pendingTransactions.delete({
       where: {
         transaction_hash: txHash,
-      },
-      data: {
-        verified: true,
       },
     })
 

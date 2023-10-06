@@ -112,12 +112,9 @@ const handleDeleteRequest = async (
     const burnLogs = transferLogs.filter((log) => log.args.to === zeroAddress)
 
     if (burnLogs.length === 0) {
-      await prisma.transactions.update({
+      await prisma.pendingTransactions.delete({
         where: {
           transaction_hash: txHash,
-        },
-        data: {
-          verified: true,
         },
       })
       return res.status(400).json({
@@ -137,12 +134,9 @@ const handleDeleteRequest = async (
       },
     })
 
-    await prisma.transactions.update({
+    await prisma.pendingTransactions.delete({
       where: {
         transaction_hash: txHash,
-      },
-      data: {
-        verified: true,
       },
     })
 

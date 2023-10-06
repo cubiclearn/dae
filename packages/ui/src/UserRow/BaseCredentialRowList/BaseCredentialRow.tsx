@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, Td, Tr, Button } from '@chakra-ui/react'
+import { Text, Td, Tr, Button, Spinner } from '@chakra-ui/react'
 import { Address } from 'viem'
 import { Avatar } from '../../Avatar'
 
@@ -40,14 +40,19 @@ export const BaseCredentialRow: React.FC<BaseCredentialRowProps> = ({
           {user_discord_handle}
         </Text>
       </Td>
-      <Td isNumeric>{isNaN(user_karma_balance) ? '--' : user_karma_balance}</Td>
-      {onDelete !== undefined && (
-        <Td>
-          <Button colorScheme="red" onClick={onDelete} isLoading={isDeleting}>
-            X
-          </Button>
-        </Td>
-      )}
+      <Td isNumeric>
+        {isNaN(user_karma_balance) ? <Spinner /> : user_karma_balance}
+      </Td>
+      <Td>
+        <Button
+          colorScheme={onDelete === undefined ? 'gray' : 'red'}
+          isDisabled={onDelete === undefined ? true : false}
+          onClick={onDelete}
+          isLoading={isDeleting}
+        >
+          {onDelete === undefined ? '' : 'X'}
+        </Button>
+      </Td>
     </Tr>
   )
 }

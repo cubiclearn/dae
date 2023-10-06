@@ -105,12 +105,9 @@ const handlePostRequest = async (
     ) as CredentialIssuedLog[]
 
     if (issuedLogs.length === 0) {
-      await prisma.transactions.update({
+      await prisma.pendingTransactions.delete({
         where: {
           transaction_hash: txHash,
-        },
-        data: {
-          verified: true,
         },
       })
       return res.status(400).json({
@@ -122,6 +119,7 @@ const handlePostRequest = async (
     const createData = await Promise.all(
       issuedLogs.map(async (log) => {
         const tokenId = log.args.tokenId
+
         const tokenURI = await client.readContract({
           abi: CredentialsBurnableAbi,
           address: courseAddress,
@@ -156,6 +154,7 @@ const handlePostRequest = async (
           course_chain_id: parseInt(chainId),
           user_email: credentialUserData?.email ?? '',
           user_discord_handle: credentialUserData?.discord ?? '',
+          issuer: sanitizeAddress(log.args.from),
         } as UserCredentials
       }),
     )
@@ -168,12 +167,9 @@ const handlePostRequest = async (
       data: validCreateData as Prisma.UserCredentialsCreateManyInput[],
     })
 
-    await prisma.transactions.update({
+    await prisma.pendingTransactions.delete({
       where: {
         transaction_hash: txHash,
-      },
-      data: {
-        verified: true,
       },
     })
 

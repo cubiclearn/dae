@@ -12,8 +12,8 @@ import {
   Spinner,
 } from '@chakra-ui/react'
 import { BaseCredentialRow } from './BaseCredentialRow'
-import { useBurnCredential, useIsAdmin, useKarmaBalances } from '@dae/wagmi'
-import { Address } from 'wagmi'
+import { useBurnCredential, useKarmaBalances } from '@dae/wagmi'
+import { Address, useAccount } from 'wagmi'
 import { CredentialType, UserCredentials } from '@dae/database'
 import { ConfirmActionModal } from '../../ConfirmActionModal'
 import { useIntersectionObserver } from 'usehooks-ts'
@@ -38,6 +38,7 @@ export const BaseCredentialRowList: React.FC<BaseCredentialRowListProps> = ({
   credentialType,
 }) => {
   const toast = useToast()
+  const { address: userAddress } = useAccount()
   const { burnCredential, isLoading, isSigning, isValidating } =
     useBurnCredential(courseAddress, credentialType)
 
@@ -47,10 +48,6 @@ export const BaseCredentialRowList: React.FC<BaseCredentialRowListProps> = ({
     ),
     karmaAccessControlAddress: karmaAccessControlAddress,
   })
-
-  const { data: isAdmin } = useIsAdmin(
-    credentialType === 'MAGISTER' ? courseAddress : undefined,
-  )
 
   const ref = useRef<HTMLDivElement | null>(null)
   const observer = useIntersectionObserver(ref, {})
@@ -102,8 +99,6 @@ export const BaseCredentialRowList: React.FC<BaseCredentialRowListProps> = ({
     }
   }
 
-  const showDeleteButton = !(credentialType === 'MAGISTER' && !isAdmin)
-
   return (
     <TableContainer>
       <Table variant="simple">
@@ -116,7 +111,7 @@ export const BaseCredentialRowList: React.FC<BaseCredentialRowListProps> = ({
             <Th width={'5%'} isNumeric>
               Karma
             </Th>
-            {showDeleteButton && <Th width={'5%'}>{''}</Th>}
+            <Th>{''}</Th>
           </Tr>
         </Thead>
         <Tbody>
@@ -135,7 +130,9 @@ export const BaseCredentialRowList: React.FC<BaseCredentialRowListProps> = ({
                   credential.credential_token_id
               }
               onDelete={
-                showDeleteButton ? () => handleOpenModal(credential) : undefined
+                credential.issuer === userAddress?.toLowerCase()
+                  ? () => handleOpenModal(credential)
+                  : undefined
               }
             />
           ))}
