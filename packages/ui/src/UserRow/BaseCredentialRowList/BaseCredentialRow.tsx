@@ -1,6 +1,7 @@
 import React from 'react'
-import { Avatar, Text, Td, Tr, Button } from '@chakra-ui/react'
+import { Text, Td, Tr, Button } from '@chakra-ui/react'
 import { Address } from 'viem'
+import { Avatar } from '../../Avatar'
 
 export type BaseCredentialRowProps = {
   user_address: Address
@@ -22,7 +23,7 @@ export const BaseCredentialRow: React.FC<BaseCredentialRowProps> = ({
   return (
     <Tr>
       <Td>
-        <Avatar src="" size={'sm'} />
+        <Avatar address={user_address} />
       </Td>
       <Td>
         <Text verticalAlign={'center'} fontSize="md">
