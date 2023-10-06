@@ -5,6 +5,7 @@ import { ChainSnapshotHub } from '@dae/chains'
 import { type VotingStrategy } from '@dae/types'
 import { useHookState } from './useHookState'
 import { SpaceConfig } from '../../types'
+import { mutate } from 'swr'
 
 const defaultConfig: SpaceConfig = {
   name: '',
@@ -123,6 +124,12 @@ export const useCreateSnapshotSpace = () => {
         space: snapshotSpaceENS,
         settings: JSON.stringify(spaceSettings),
       })
+
+      mutate(
+        (key) => Array.isArray(key) && key[0] === 'course/space',
+        undefined,
+        { revalidate: true },
+      )
 
       state.setSuccess()
     } catch (e) {
