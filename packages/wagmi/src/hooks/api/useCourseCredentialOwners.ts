@@ -3,6 +3,7 @@ import { UserCredentials } from '@dae/database'
 import { ApiRequestUrlAndParams, useApi } from '@dae/hooks'
 import { ApiResponse, SWRInfiniteHook } from '@dae/types'
 import useSWRInfinite from 'swr/infinite'
+import { ONE_MINUTE } from '@dae/constants'
 
 const PAGE_SIZE = 10
 
@@ -51,6 +52,10 @@ export const useCourseCredentialOwners = (
     getKey,
     ([query, variables]: ApiRequestUrlAndParams) =>
       client.request(query, variables),
+    {
+      refreshInterval: ONE_MINUTE * 10,
+      revalidateFirstPage: false,
+    },
   )
 
   const data = response?.reduce(

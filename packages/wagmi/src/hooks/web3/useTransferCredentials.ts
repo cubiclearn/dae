@@ -136,19 +136,30 @@ export function useTransferCredentials(
         throw new Error(responseJSON.error)
       }
 
-      if (credentialType === 'MAGISTER') {
-        await addModerator(userData.address)
+      if (credentialType === 'DISCIPULUS') {
+        mutate(
+          (key) => Array.isArray(key) && key[0] === 'course/students',
+          undefined,
+          { revalidate: true },
+        )
       }
 
-      mutate(
-        (key) =>
-          Array.isArray(key) &&
-          (key[0] === 'course/teachers' ||
-            key[0] === 'course/students' ||
-            key[0] === 'course/credential/users'),
-        undefined,
-        { revalidate: true },
-      )
+      if (credentialType === 'MAGISTER') {
+        await addModerator(userData.address)
+        mutate(
+          (key) => Array.isArray(key) && key[0] === 'course/teachers',
+          undefined,
+          { revalidate: true },
+        )
+      }
+
+      if (credentialType === 'OTHER') {
+        mutate(
+          (key) => Array.isArray(key) && key[0] === 'course/credential/users',
+          undefined,
+          { revalidate: true },
+        )
+      }
 
       state.setSuccess()
     } catch (e: any) {

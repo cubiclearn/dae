@@ -27,12 +27,12 @@ type DashboardContainerProps = {
 export const DashboardContainer: React.FC<DashboardContainerProps> = ({
   courseAddress,
 }) => {
+  const { chain } = useNetwork()
   const {
     data: courseData,
     isLoading: isCourseDataLoading,
     error,
   } = useCourseData()
-  const { chain } = useNetwork()
   const {
     data: isAdmin,
     isLoading: isLoadingAdminState,
@@ -93,7 +93,10 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
           <StatisticsSection
             courseAddress={courseAddress}
             chainId={chain?.id}
-            courseData={courseData}
+            karmaAccessControlAddress={
+              courseData?.karma_access_control_address as Address
+            }
+            discipulusBaseKarma={courseData?.discipulus_base_karma}
           />
         </Stack>
         <Stack spacing={4}>
@@ -103,7 +106,9 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
           <LeaderboardSection
             courseAddress={courseAddress}
             chainId={chain?.id}
-            courseData={courseData}
+            karmaAccessControlAddress={
+              courseData?.karma_access_control_address as Address
+            }
           />
         </Stack>
       </Stack>
@@ -129,7 +134,9 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
         <LeaderboardSection
           courseAddress={courseAddress}
           chainId={chain?.id}
-          courseData={courseData}
+          karmaAccessControlAddress={
+            courseData?.karma_access_control_address as Address
+          }
         />
       </Stack>
     </Stack>

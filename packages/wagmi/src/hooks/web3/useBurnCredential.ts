@@ -96,6 +96,7 @@ export function useBurnCredential(
           (key) => Array.isArray(key) && key[0] === 'course/students',
           (cachedData: any) => {
             return {
+              ...cachedData,
               data: {
                 students: cachedData.data.students.filter(
                   (studentCredential: UserCredentials) =>
@@ -109,10 +110,12 @@ export function useBurnCredential(
       }
 
       if (credentialType === 'MAGISTER') {
+        await removeModerator(credentialOwner)
         mutate(
           (key) => Array.isArray(key) && key[0] === 'course/teachers',
           (cachedData: any) => {
             return {
+              ...cachedData,
               data: {
                 teachers: cachedData.data.teachers.filter(
                   (teacherCredential: UserCredentials) =>
@@ -130,6 +133,7 @@ export function useBurnCredential(
           (key) => Array.isArray(key) && key[0] === 'course/credential/users',
           (cachedData: any) => {
             return {
+              ...cachedData,
               data: {
                 userCredentials: cachedData.data.userCredentials.filter(
                   (userCredential: UserCredentials) =>
@@ -140,10 +144,6 @@ export function useBurnCredential(
           },
           { revalidate: false },
         )
-      }
-
-      if (credentialType === 'MAGISTER') {
-        await removeModerator(credentialOwner)
       }
 
       state.setSuccess()

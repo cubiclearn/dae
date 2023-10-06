@@ -16,20 +16,19 @@ import {
   Tr,
 } from '@chakra-ui/react'
 import React, { useMemo } from 'react'
-import { useCourseStudents, useCourseStudentsKarma } from '@dae/wagmi'
+import { useCourseStudents, useKarmaBalances } from '@dae/wagmi'
 import { Address } from 'viem'
-import { Course } from '@dae/database'
 
 type LeaderboardSectionProps = {
   chainId: number | undefined
   courseAddress: Address | undefined
-  courseData: Course | undefined
+  karmaAccessControlAddress: Address | undefined
 }
 
 export const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({
   chainId,
   courseAddress,
-  courseData,
+  karmaAccessControlAddress,
 }) => {
   const {
     data: studentsData,
@@ -37,57 +36,32 @@ export const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({
     error: errorLoadingStudents,
   } = useCourseStudents(courseAddress, chainId)
 
-  const karmaAccessControlAddress =
-    (courseData?.karma_access_control_address as Address) || undefined
-
-  const studentsAddresses =
-    studentsData?.students.map((student) => student.user_address as Address) ||
-    []
-
   const {
     data: studentsKarmaData,
     error: errorLoadingKarma,
     isLoading: isLoadingKarmaData,
-  } = useCourseStudentsKarma(
-    studentsAddresses,
-    karmaAccessControlAddress,
-    chainId,
-  )
+  } = useKarmaBalances({
+    usersAddresses: studentsData?.students.map(
+      (student) => student.user_address as Address,
+    ),
+    karmaAccessControlAddress: karmaAccessControlAddress,
+  })
 
-  const studentsAddressAndKarmaOrderedDesc = useMemo(
-    () =>
-      studentsKarmaData && courseData
-        ? studentsAddresses
-            .map((studentAddress, index) => {
-              return [studentAddress, studentsKarmaData[index]]
-            })
-            .sort(
-              (studentA, studentB) => Number(studentB[1]) - Number(studentA[1]),
-            )
-        : undefined,
-    [studentsKarmaData, courseData],
-  )
+  const studentsAddressAndKarmaOrderedDesc = useMemo(() => {
+    if (studentsData && studentsKarmaData) {
+      return studentsData.students
+        .map((studentData, index) => {
+          return [
+            studentData.user_address,
+            Number(studentsKarmaData[index].result) ?? 0,
+          ] as [Address, number]
+        })
+        .sort((studentA, studentB) => studentB[1] - studentA[1])
+    }
+    return []
+  }, [studentsData])
 
-  if (studentsData?.students.length === 0) {
-    return (
-      <Alert status="warning">
-        <AlertIcon />
-        <Box>
-          <AlertTitle>Warning</AlertTitle>
-          <AlertDescription>
-            Cannot display leaderboard table without any student enrolled to the
-            course.
-          </AlertDescription>
-        </Box>
-      </Alert>
-    )
-  }
-
-  if (
-    isLoadingStudentsData ||
-    isLoadingKarmaData ||
-    studentsAddressAndKarmaOrderedDesc === undefined
-  ) {
+  if (isLoadingStudentsData || isLoadingKarmaData) {
     return (
       <Center>
         <Spinner />
@@ -103,6 +77,21 @@ export const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({
           <AlertTitle>Something went wrong.</AlertTitle>
           <AlertDescription>
             There is an error fetching your data. Try again later.
+          </AlertDescription>
+        </Box>
+      </Alert>
+    )
+  }
+
+  if (studentsData?.students.length === 0) {
+    return (
+      <Alert status="warning">
+        <AlertIcon />
+        <Box>
+          <AlertTitle>Warning</AlertTitle>
+          <AlertDescription>
+            Cannot display leaderboard table without any student enrolled to the
+            course.
           </AlertDescription>
         </Box>
       </Alert>

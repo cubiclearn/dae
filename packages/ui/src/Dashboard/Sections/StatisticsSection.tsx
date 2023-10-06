@@ -10,9 +10,8 @@ import {
 } from '@chakra-ui/react'
 import React, { useMemo } from 'react'
 import { DashboardBlock } from '../DashboardBlock'
-import { useCourseStudents, useCourseStudentsKarma } from '@dae/wagmi'
+import { useCourseStudents, useKarmaBalances } from '@dae/wagmi'
 import { Address } from 'viem'
-import { Course } from '@dae/database'
 
 const calculateStatistics = (data: number[], initialKarmaValue: number) => {
   const maxValue = Math.max(...data)
@@ -50,13 +49,15 @@ const calculateStatistics = (data: number[], initialKarmaValue: number) => {
 type StatisticsSectionProps = {
   chainId: number | undefined
   courseAddress: Address | undefined
-  courseData: Course | undefined
+  karmaAccessControlAddress: Address | undefined
+  discipulusBaseKarma: number | undefined
 }
 
 export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
   chainId,
   courseAddress,
-  courseData,
+  karmaAccessControlAddress,
+  discipulusBaseKarma,
 }) => {
   const {
     data: studentsData,
@@ -64,32 +65,30 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
     error: errorLoadingStudents,
   } = useCourseStudents(courseAddress, chainId)
 
-  const karmaAccessControlAddress =
-    (courseData?.karma_access_control_address as Address) || undefined
-
-  const studentsAddresses =
-    studentsData?.students.map((student) => student.user_address as Address) ||
-    []
-
   const {
     data: studentsKarmaData,
     error: errorLoadingKarma,
     isLoading: isLoadingKarmaData,
-  } = useCourseStudentsKarma(
-    studentsAddresses,
-    karmaAccessControlAddress,
-    chainId,
-  )
+  } = useKarmaBalances({
+    usersAddresses: studentsData?.students.map(
+      (student) => student.user_address as Address,
+    ),
+    karmaAccessControlAddress: karmaAccessControlAddress,
+  })
 
   const statistics = useMemo(
     () =>
-      studentsKarmaData && courseData
+      studentsKarmaData && discipulusBaseKarma
         ? calculateStatistics(
-            studentsKarmaData,
-            courseData.discipulus_base_karma,
+            studentsKarmaData
+              .filter(
+                (studentKarmaData) => studentKarmaData.status === 'success',
+              )
+              .map((studentKarmaData) => Number(studentKarmaData.result)),
+            discipulusBaseKarma,
           )
         : undefined,
-    [studentsKarmaData, courseData],
+    [studentsKarmaData],
   )
 
   if (studentsData?.students.length === 0) {
