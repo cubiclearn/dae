@@ -12,7 +12,7 @@ import {
   Spinner,
 } from '@chakra-ui/react'
 import { BaseCredentialRow } from './BaseCredentialRow'
-import { useBurnCredential, useKarmaBalances } from '@dae/wagmi'
+import { useBurnCredential, useIsAdmin, useKarmaBalances } from '@dae/wagmi'
 import { Address } from 'wagmi'
 import { CredentialType, UserCredentials } from '@dae/database'
 import { ConfirmActionModal } from '../../ConfirmActionModal'
@@ -47,6 +47,10 @@ export const BaseCredentialRowList: React.FC<BaseCredentialRowListProps> = ({
     ),
     karmaAccessControlAddress: karmaAccessControlAddress,
   })
+
+  const { data: isAdmin } = useIsAdmin(
+    credentialType === 'MAGISTER' ? courseAddress : undefined,
+  )
 
   const ref = useRef<HTMLDivElement | null>(null)
   const observer = useIntersectionObserver(ref, {})
@@ -98,6 +102,8 @@ export const BaseCredentialRowList: React.FC<BaseCredentialRowListProps> = ({
     }
   }
 
+  const showDeleteButton = !(credentialType === 'MAGISTER' && !isAdmin)
+
   return (
     <TableContainer>
       <Table variant="simple">
@@ -110,7 +116,7 @@ export const BaseCredentialRowList: React.FC<BaseCredentialRowListProps> = ({
             <Th width={'5%'} isNumeric>
               Karma
             </Th>
-            <Th width={'5%'}>{''}</Th>
+            {showDeleteButton && <Th width={'5%'}>{''}</Th>}
           </Tr>
         </Thead>
         <Tbody>
@@ -128,7 +134,9 @@ export const BaseCredentialRowList: React.FC<BaseCredentialRowListProps> = ({
                 selectedTeacherToBurnCredential?.credential_token_id ===
                   credential.credential_token_id
               }
-              onDelete={() => handleOpenModal(credential)}
+              onDelete={
+                showDeleteButton ? () => handleOpenModal(credential) : undefined
+              }
             />
           ))}
         </Tbody>

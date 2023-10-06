@@ -8,7 +8,7 @@ export type BaseCredentialRowProps = {
   user_email: string
   user_discord_handle: string
   user_karma_balance: number
-  onDelete: () => void
+  onDelete: (() => void) | undefined
   isDeleting: boolean
 }
 
@@ -41,11 +41,13 @@ export const BaseCredentialRow: React.FC<BaseCredentialRowProps> = ({
         </Text>
       </Td>
       <Td isNumeric>{isNaN(user_karma_balance) ? '--' : user_karma_balance}</Td>
-      <Td>
-        <Button colorScheme="red" onClick={onDelete} isLoading={isDeleting}>
-          X
-        </Button>
-      </Td>
+      {onDelete !== undefined && (
+        <Td>
+          <Button colorScheme="red" onClick={onDelete} isLoading={isDeleting}>
+            X
+          </Button>
+        </Td>
+      )}
     </Tr>
   )
 }
