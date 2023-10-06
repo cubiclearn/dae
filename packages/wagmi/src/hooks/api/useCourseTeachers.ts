@@ -51,7 +51,6 @@ export const useCourseTeachers = (
       client.request(query, variables),
     {
       refreshInterval: ONE_MINUTE * 10,
-      revalidateFirstPage: false,
     },
   )
 

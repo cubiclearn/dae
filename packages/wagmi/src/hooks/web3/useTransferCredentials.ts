@@ -267,6 +267,22 @@ export function useTransferCredentials(
         throw new Error(responseJSON.error)
       }
 
+      if (credentialType === 'DISCIPULUS') {
+        mutate(
+          (key) => Array.isArray(key) && key[0] === 'course/students',
+          undefined,
+          { revalidate: true },
+        )
+      }
+
+      if (credentialType === 'OTHER') {
+        mutate(
+          (key) => Array.isArray(key) && key[0] === 'course/credential/users',
+          undefined,
+          { revalidate: true },
+        )
+      }
+
       state.setSuccess()
     } catch (e: any) {
       state.handleError(e)

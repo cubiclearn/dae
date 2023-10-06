@@ -3,7 +3,7 @@ import { Address } from 'viem'
 import { CredentialsBurnableAbi } from '@dae/abi'
 import { useWeb3HookState } from '../useWeb3HookState'
 import type { UseWeb3WriteHookInterface } from '@dae/types'
-import { CredentialType, UserCredentials } from '@dae/database'
+import { CredentialType } from '@dae/database'
 import { CONFIRMATION_BLOCKS } from '@dae/constants'
 import { mutate } from 'swr'
 import { useEditSnapshotSpace } from '@dae/snapshot'
@@ -94,18 +94,8 @@ export function useBurnCredential(
       if (credentialType === 'DISCIPULUS') {
         mutate(
           (key) => Array.isArray(key) && key[0] === 'course/students',
-          (cachedData: any) => {
-            return {
-              ...cachedData,
-              data: {
-                students: cachedData.data.students.filter(
-                  (studentCredential: UserCredentials) =>
-                    studentCredential.credential_token_id !== tokenId,
-                ),
-              },
-            }
-          },
-          { revalidate: false },
+          undefined,
+          { revalidate: true },
         )
       }
 
@@ -113,36 +103,16 @@ export function useBurnCredential(
         await removeModerator(credentialOwner)
         mutate(
           (key) => Array.isArray(key) && key[0] === 'course/teachers',
-          (cachedData: any) => {
-            return {
-              ...cachedData,
-              data: {
-                teachers: cachedData.data.teachers.filter(
-                  (teacherCredential: UserCredentials) =>
-                    teacherCredential.credential_token_id !== tokenId,
-                ),
-              },
-            }
-          },
-          { revalidate: false },
+          undefined,
+          { revalidate: true },
         )
       }
 
       if (credentialType === 'OTHER') {
         mutate(
           (key) => Array.isArray(key) && key[0] === 'course/credential/users',
-          (cachedData: any) => {
-            return {
-              ...cachedData,
-              data: {
-                userCredentials: cachedData.data.userCredentials.filter(
-                  (userCredential: UserCredentials) =>
-                    userCredential.credential_token_id !== tokenId,
-                ),
-              },
-            }
-          },
-          { revalidate: false },
+          undefined,
+          { revalidate: true },
         )
       }
 
