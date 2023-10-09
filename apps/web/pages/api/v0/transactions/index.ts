@@ -4,6 +4,9 @@ import { Address } from 'viem'
 import { prisma } from '@dae/database'
 import { sanitizeAddress } from '../../../../lib/functions'
 import { ApiResponse, ApiResponseStatus } from '@dae/types'
+// import { createPublicClient } from 'viem'
+// import { ChainKey } from '@dae/chains'
+// import { config as TransportConfig } from '@dae/viem-config'
 
 enum ACTIONS {
   CREATE_COURSE = 'CREATE_COURSE',
@@ -40,6 +43,18 @@ const handlePostRequest = async (
 
     const session = await getSession({ req: { headers: req.headers } })
     const timestamp = Date.now() / 1000
+
+    // TODO: Test this with Vercel free(may take over 10 seconds) to check transaction contents directly from blockchain
+
+    // const client = createPublicClient({
+    //   chain: ChainKey[chainId],
+    //   transport: TransportConfig[chainId]?.transport,
+    // })
+
+    // await client.waitForTransactionReceipt({
+    //   hash: txHash,
+    //   confirmations: 1,
+    // })
 
     await prisma.pendingTransactions.create({
       data: {
@@ -85,7 +100,8 @@ export default async function handler(
       message: 'This method is not supported',
     })
   }
-  // Guard clause for unauthenticated requests
+
+  //Guard clause for unauthenticated requests
   const session = await getSession({ req: { headers: req.headers } })
   if (!session) {
     return res
