@@ -1,9 +1,9 @@
 import { FC } from 'react'
 import { ConnectButton as RainbowConnectButton } from '@rainbow-me/rainbowkit'
-import { useDisconnect } from 'wagmi'
+import { Address, useDisconnect } from 'wagmi'
 import { useRouter } from 'next/router'
+import { Avatar } from '../../Avatar'
 import {
-  Avatar,
   Box,
   Button,
   Flex,
@@ -117,7 +117,7 @@ export const ConnectButton: FC = (_props) => {
                         cursor={'pointer'}
                         minW={0}
                       >
-                        <Avatar size={'sm'} src={account.ensAvatar} />
+                        <Avatar address={account.address as Address} />
                       </MenuButton>
                       <MenuList>
                         <Flex

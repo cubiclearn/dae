@@ -62,9 +62,9 @@ pnpm run dev
 │    ├── snapshot — "Hooks and functions to interact with snapshot.js"
 │    ├── types — "General types definitions"
 │    ├── ui — "UI components"
-│    └── wagmi — "Hooks and functions to interact with blockchain data (both directly and cached on the db)
+│    └── wagmi — "Hooks and functions to interact with blockchain data (both directly and cached on the db)"
 ```
 
 ## License
 
-DAE is open-sourced software licensed under the [MIT license](./LICENSE).
+DAE App is open-sourced software licensed under the [MIT license](./LICENSE).

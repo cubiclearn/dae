@@ -12,14 +12,11 @@ import {
   Spinner,
 } from '@chakra-ui/react'
 import { BaseCredentialRow } from './BaseCredentialRow'
-import { useBurnCredential } from '@dae/wagmi'
-import { Address, useContractReads } from 'wagmi'
+import { useBurnCredential, useKarmaBalances } from '@dae/wagmi'
+import { Address, useAccount } from 'wagmi'
 import { CredentialType, UserCredentials } from '@dae/database'
 import { ConfirmActionModal } from '../../ConfirmActionModal'
 import { useIntersectionObserver } from 'usehooks-ts'
-import { KarmaAccessControlAbiUint64 } from '@dae/abi'
-
-const TWO_MINUTES = 1000 * 60 * 5
 
 interface BaseCredentialRowListProps {
   courseAddress: Address
@@ -41,17 +38,15 @@ export const BaseCredentialRowList: React.FC<BaseCredentialRowListProps> = ({
   credentialType,
 }) => {
   const toast = useToast()
+  const { address: userAddress } = useAccount()
   const { burnCredential, isLoading, isSigning, isValidating } =
     useBurnCredential(courseAddress, credentialType)
 
-  const { data: karmaBalances } = useContractReads({
-    contracts: data.map((credential) => ({
-      abi: KarmaAccessControlAbiUint64,
-      address: karmaAccessControlAddress,
-      functionName: 'ratingOf',
-      args: [credential.user_address],
-      cacheTime: TWO_MINUTES,
-    })),
+  const { data: karmaBalances } = useKarmaBalances({
+    usersAddresses: data.map(
+      (userCredential) => userCredential.user_address as Address,
+    ),
+    karmaAccessControlAddress: karmaAccessControlAddress,
   })
 
   const ref = useRef<HTMLDivElement | null>(null)
@@ -116,7 +111,7 @@ export const BaseCredentialRowList: React.FC<BaseCredentialRowListProps> = ({
             <Th width={'5%'} isNumeric>
               Karma
             </Th>
-            <Th width={'5%'}>{''}</Th>
+            <Th>{''}</Th>
           </Tr>
         </Thead>
         <Tbody>
@@ -134,7 +129,11 @@ export const BaseCredentialRowList: React.FC<BaseCredentialRowListProps> = ({
                 selectedTeacherToBurnCredential?.credential_token_id ===
                   credential.credential_token_id
               }
-              onDelete={() => handleOpenModal(credential)}
+              onDelete={
+                credential.issuer === userAddress?.toLowerCase()
+                  ? () => handleOpenModal(credential)
+                  : undefined
+              }
             />
           ))}
         </Tbody>

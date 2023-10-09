@@ -21,7 +21,7 @@ export const ProposalRow: React.FC<ProposalRowProps> = ({ proposal }) => {
       href={`/course/${courseAddress}/proposals/${proposal.id}`}
       _hover={{ textDecoration: 'none' }}
     >
-      <Box borderRadius={'xl'} padding={8} bg={'white'} boxShadow={'base'}>
+      <Box borderRadius={'xl'} padding={8} bg={'white'} boxShadow={'md'}>
         <ProposalHeading title={title} author={author} end={end} />
       </Box>
     </Link>

@@ -25,20 +25,16 @@ export const CourseProvider: FC<{
     chain?.id,
   )
 
-  return (
-    <Context.Provider
-      value={useMemo(
-        () => ({
-          data: data?.course,
-          isLoading,
-          error,
-        }),
-        [data, isLoading, error],
-      )}
-    >
-      {children}
-    </Context.Provider>
+  const value = useMemo(
+    () => ({
+      data: data?.course,
+      isLoading,
+      error,
+    }),
+    [data, isLoading, error],
   )
+
+  return <Context.Provider value={value}>{children}</Context.Provider>
 }
 
 export const useCourseData = () => {

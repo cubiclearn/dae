@@ -1,13 +1,14 @@
 import React from 'react'
-import { Avatar, Text, Td, Tr, Button } from '@chakra-ui/react'
+import { Text, Td, Tr, Button, Spinner } from '@chakra-ui/react'
 import { Address } from 'viem'
+import { Avatar } from '../../Avatar'
 
 export type BaseCredentialRowProps = {
   user_address: Address
   user_email: string
   user_discord_handle: string
   user_karma_balance: number
-  onDelete: () => void
+  onDelete: (() => void) | undefined
   isDeleting: boolean
 }
 
@@ -22,7 +23,7 @@ export const BaseCredentialRow: React.FC<BaseCredentialRowProps> = ({
   return (
     <Tr>
       <Td>
-        <Avatar src="" size={'sm'} />
+        <Avatar address={user_address} />
       </Td>
       <Td>
         <Text verticalAlign={'center'} fontSize="md">
@@ -39,10 +40,17 @@ export const BaseCredentialRow: React.FC<BaseCredentialRowProps> = ({
           {user_discord_handle}
         </Text>
       </Td>
-      <Td isNumeric>{isNaN(user_karma_balance) ? '--' : user_karma_balance}</Td>
+      <Td isNumeric>
+        {isNaN(user_karma_balance) ? <Spinner /> : user_karma_balance}
+      </Td>
       <Td>
-        <Button colorScheme="red" onClick={onDelete} isLoading={isDeleting}>
-          X
+        <Button
+          colorScheme={onDelete === undefined ? 'gray' : 'red'}
+          isDisabled={onDelete === undefined ? true : false}
+          onClick={onDelete}
+          isLoading={isDeleting}
+        >
+          {onDelete === undefined ? '' : 'X'}
         </Button>
       </Td>
     </Tr>

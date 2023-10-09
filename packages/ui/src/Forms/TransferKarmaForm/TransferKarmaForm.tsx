@@ -16,7 +16,7 @@ export const TransferKarmaForm = () => {
   }
 
   return (
-    <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
+    <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'md'}>
       <Stack spacing={8}>
         <FormControl display="flex" alignItems="center">
           <FormLabel htmlFor="email-alerts" mb="0">

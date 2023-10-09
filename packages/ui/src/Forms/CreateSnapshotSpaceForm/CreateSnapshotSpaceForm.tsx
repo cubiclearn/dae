@@ -50,27 +50,23 @@ export const CreateSnapshotSpaceForm: React.FC = () => {
       votingStrategy: 'linear-voting',
     },
     onSubmit: async (values) => {
-      try {
-        if (!courseData) {
-          throw new Error('End date is unset.')
-        }
-        toast.promise(
-          create(
-            courseData.snapshot_space_ens,
-            courseData.name,
-            courseData.symbol,
-            courseData.description,
-            courseData.image_url,
-            courseData.karma_access_control_address,
-            values.votingStrategy,
-          ),
-          {
-            success: { title: 'Snapshot space has been correctly configured.' },
-            error: { title: 'Error configuring snapshot space.' },
-            loading: { title: 'Snapshot space configuration in progress...' },
-          },
-        )
-      } catch (_e) {}
+      if (!courseData) return
+      toast.promise(
+        create(
+          courseData.snapshot_space_ens,
+          courseData.name,
+          courseData.symbol,
+          courseData.description,
+          courseData.image_url,
+          courseData.karma_access_control_address,
+          values.votingStrategy,
+        ),
+        {
+          success: { title: 'Snapshot space has been correctly configured.' },
+          error: { title: 'Error configuring snapshot space.' },
+          loading: { title: 'Snapshot space configuration in progress...' },
+        },
+      )
     },
     validationSchema: validationSchema,
   })
@@ -114,7 +110,7 @@ export const CreateSnapshotSpaceForm: React.FC = () => {
   }
 
   return (
-    <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
+    <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'md'}>
       <form onSubmit={handleSubmit}>
         <Stack spacing={6}>
           <Box>

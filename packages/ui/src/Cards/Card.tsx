@@ -20,7 +20,7 @@ export const Card: React.FC<CardProps> = ({
   image_url,
 }) => {
   return (
-    <ChackraCard maxW="sm" h={'100%'}>
+    <ChackraCard maxW="sm" h={'100%'} boxShadow={'md'}>
       <CardBody>
         <Image
           width={'100%'}

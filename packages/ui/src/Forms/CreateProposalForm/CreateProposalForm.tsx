@@ -27,9 +27,15 @@ import { Address } from 'viem'
 import Editor, { EditorContentChanged } from '../../Editor/Editor'
 
 const validationSchema = Yup.object().shape({
-  title: Yup.string().required('Name is required'),
-  description: Yup.string().required('Description is required'),
-  discussionLink: Yup.string().url('Invalid URL format'),
+  title: Yup.string()
+    .required('Name is required')
+    .max(256, 'Title should not exceed 256 characters.'),
+  description: Yup.string()
+    .required('Description is required')
+    .max(20000, 'Description should not exceed 20000 characters.'),
+  discussionLink: Yup.string()
+    .url('Invalid URL format')
+    .max(256, 'Discussion link should not exceed 256 characters.'),
   endDate: Yup.date().required('End Date is required'),
   choices: Yup.array()
     .of(Yup.string().required('Choice is required'))
@@ -62,42 +68,36 @@ export const CreateProposalForm: React.FC = () => {
       endDate: undefined,
     },
     onSubmit: async (values) => {
-      try {
-        if (!values.endDate) return
-        toast.promise(
-          create(
-            values.title,
-            values.description,
-            values.choices,
-            (values.endDate as Date).getTime() / 1000,
-            values.discussionLink,
-          ).then((result) => {
-            resetForm()
-            return result
-          }),
-          {
-            success: (result) => ({
-              title: 'Proposal created with success!',
-              onCloseComplete: () =>
-                router.push(
-                  `/course/${router.query.address as Address}/proposals/${
-                    result.id
-                  }`,
-                ),
-            }),
-            error: { title: 'Error creating proposal.' },
-            loading: {
-              title: 'Creating proposal...',
-            },
+      if (!values.endDate) return
+      toast.promise(
+        create(
+          values.title,
+          values.description,
+          values.choices,
+          (values.endDate as Date).getTime() / 1000,
+          values.discussionLink,
+        ).then((result) => {
+          resetForm()
+          router.push(
+            `/course/${router.query.address as Address}/proposals/${result.id}`,
+          )
+        }),
+        {
+          success: {
+            title: 'Proposal created with success!',
           },
-        )
-      } catch (_e) {}
+          error: { title: 'Error creating proposal.' },
+          loading: {
+            title: 'Creating proposal...',
+          },
+        },
+      )
     },
     validationSchema: validationSchema,
   })
 
   return (
-    <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
+    <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'md'}>
       <form onSubmit={handleSubmit}>
         <Stack spacing={4}>
           <FormControl isRequired isInvalid={!!errors.title && touched.title}>

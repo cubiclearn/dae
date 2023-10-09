@@ -34,7 +34,6 @@ import {
 } from '@dae/wagmi'
 import Papa from 'papaparse'
 import { checkFileType } from '../../utils'
-import { useLeavePageConfirmation } from '../../../hooks'
 
 const validationSchema = Yup.object().shape({
   CSVFile: Yup.mixed()
@@ -66,8 +65,6 @@ export const CredentialsBatchTransferForm: React.FC<
   const { multiTransfer, isLoading, isError, error, isSigning, isValidating } =
     useTransferCredentials(courseAddress as Address, 'OTHER')
 
-  useLeavePageConfirmation(isLoading, 'Changes you made may not be saved.')
-
   const [csvData, setCsvData] = useState<TransferCredentialsData[]>([])
 
   const { values, errors, touched, handleBlur, handleSubmit, setFieldValue } =
@@ -77,34 +74,32 @@ export const CredentialsBatchTransferForm: React.FC<
         CSVFile: null,
       },
       onSubmit: async () => {
-        try {
-          if (!data) return
-          onIsLoading(true)
-          toast.promise(
-            multiTransfer(csvData, values.credentialIPFSCid)
-              .then(() => {
-                if (fileInputRef.current) {
-                  fileInputRef.current.value = ''
-                }
-                setFieldValue('credentialIPFSCid', '')
-                setCsvData([])
-              })
-              .finally(() => {
-                onIsLoading(false)
-              }),
-            {
-              success: {
-                title: 'Credentials transferred with success!',
-              },
-              error: { title: 'Error transferring credentials.' },
-              loading: {
-                title: 'Credentials transfer in progress...',
-                description:
-                  'Processing transaction on the blockchain can take some time (usually around one minute).',
-              },
+        if (!data) return
+        onIsLoading(true)
+        toast.promise(
+          multiTransfer(csvData, values.credentialIPFSCid)
+            .then(() => {
+              if (fileInputRef.current) {
+                fileInputRef.current.value = ''
+              }
+              setFieldValue('credentialIPFSCid', '')
+              setCsvData([])
+            })
+            .finally(() => {
+              onIsLoading(false)
+            }),
+          {
+            success: {
+              title: 'Credentials transferred with success!',
             },
-          )
-        } catch (_e) {}
+            error: { title: 'Error transferring credentials.' },
+            loading: {
+              title: 'Credentials transfer in progress...',
+              description:
+                'Processing transaction on the blockchain can take some time (usually around one minute).',
+            },
+          },
+        )
       },
       validationSchema: validationSchema,
     })

@@ -1,9 +1,9 @@
-import { Transactions } from '@dae/database'
+import { PendingTransactions } from '@dae/database'
 import { useHookState } from '../useHookState'
 
 type GetTransactionsApiResponse = {
   data: {
-    transactions: Transactions[]
+    transactions: PendingTransactions[]
   }
   success: boolean
 }
@@ -15,7 +15,7 @@ export const UseVerifyUserTransactions = () => {
   const verify = async () => {
     try {
       state.setLoading()
-      const response = await fetch('/api/v0/user/transactions/unverified', {
+      const response = await fetch('/api/v0/user/transactions/pending', {
         method: 'GET',
       })
 

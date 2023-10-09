@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react'
 import { CredentialRow } from './CredentialRow'
 import { useBurnCredential } from '@dae/wagmi'
-import { Address } from 'wagmi'
+import { Address, useAccount } from 'wagmi'
 import { CredentialType, UserCredentials } from '@dae/database'
 import { ConfirmActionModal } from '../../ConfirmActionModal'
 import { useIntersectionObserver } from 'usehooks-ts'
@@ -37,6 +37,7 @@ export const CredentialRowList: React.FC<CredentialRowListProps> = ({
   credentialType,
 }) => {
   const toast = useToast()
+  const { address: userAddress } = useAccount()
   const { burnCredential, isLoading, isSigning, isValidating } =
     useBurnCredential(courseAddress, credentialType)
 
@@ -110,7 +111,11 @@ export const CredentialRowList: React.FC<CredentialRowListProps> = ({
                 selectedTeacherToBurnCredential?.credential_token_id ===
                   credential.credential_token_id
               }
-              onDelete={() => handleOpenModal(credential)}
+              onDelete={
+                credential.issuer === userAddress?.toLowerCase()
+                  ? () => handleOpenModal(credential)
+                  : undefined
+              }
             />
           ))}
         </Tbody>

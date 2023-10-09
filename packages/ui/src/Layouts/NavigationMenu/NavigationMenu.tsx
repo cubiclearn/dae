@@ -1,132 +1,60 @@
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  Icon,
-  Link,
-  ListItem,
-  UnorderedList,
-} from '@chakra-ui/react'
-import { useRouter } from 'next/router'
 import React from 'react'
-import { IconType } from 'react-icons'
-import NextLink from 'next/link'
+import { Accordion, Skeleton, Stack } from '@chakra-ui/react'
+import { MenuItem, MenuParams } from './types'
+import { NavigationMenuItem } from './NavigationMenuItem'
+import { useRouter } from 'next/router'
 
-type NavigationMenuProps = {
-  getOpenedAccorditionIndex: (pathname: string) => number | undefined
-  children: React.ReactNode
+interface NavigationMenuProps {
+  menuItems: MenuItem[]
+  userPermissions?: string[]
+  params?: MenuParams
+  isLoading?: boolean
 }
 
-export const NavigationMenu: React.FC<NavigationMenuProps> = ({
-  getOpenedAccorditionIndex,
-  children,
+const NavigationMenu: React.FC<NavigationMenuProps> = ({
+  menuItems,
+  userPermissions = [],
+  params = {},
+  isLoading = false,
 }) => {
   const { pathname } = useRouter()
+  const activeIndex = menuItems
+    .filter((menuItem) => menuItem.links.length >= 2)
+    .findIndex(
+      (menuItem) =>
+        menuItem.isActive(pathname) && menuItem.visible(userPermissions),
+    )
+
+  if (isLoading) {
+    return (
+      <Stack spacing={2} mt={2}>
+        {menuItems.map((_, index) => (
+          <Skeleton
+            key={index}
+            height={'56px'}
+            isLoaded={false}
+            rounded={'lg'}
+          />
+        ))}
+      </Stack>
+    )
+  }
+
   return (
-    <Accordion allowToggle defaultIndex={getOpenedAccorditionIndex(pathname)}>
-      {children}
+    <Accordion allowToggle defaultIndex={activeIndex}>
+      {menuItems.map((menuItem: MenuItem) => (
+        <NavigationMenuItem
+          key={menuItem.key}
+          menuItem={menuItem}
+          isActive={menuItem.isActive(pathname)}
+          params={params}
+          userPermissions={userPermissions}
+          pathname={pathname}
+        />
+      ))}
     </Accordion>
   )
 }
 
-type NavigationMenuItemProps = {
-  icon: IconType
-  isActive?: boolean
-  links: { title: string; href: string; active?: boolean }[]
-  title: string
-}
-
-export const NavigationMenuItem: React.FC<NavigationMenuItemProps> = ({
-  icon,
-  isActive,
-  links,
-  title,
-}) => {
-  if (links.length === 1) {
-    return (
-      <Link
-        href={links[0].href}
-        style={{ textDecoration: 'none' }}
-        _focus={{ boxShadow: 'none' }}
-        as={NextLink}
-      >
-        <Box
-          p="4"
-          my="2"
-          borderRadius="lg"
-          role="group"
-          cursor="pointer"
-          width={'100%'}
-          _hover={{ ...(!isActive && { bg: 'blackAlpha.50' }) }}
-          {...(isActive && {
-            bg: 'blue.500',
-            color: 'white',
-          })}
-        >
-          <Icon
-            mr="4"
-            fontSize="16"
-            {...(isActive && {
-              color: 'white',
-            })}
-            as={icon}
-          />
-          {title}
-        </Box>
-      </Link>
-    )
-  }
-  return (
-    <AccordionItem border={'none'}>
-      <AccordionButton
-        display={'flex'}
-        justifyContent={'space-between'}
-        width={'100%'}
-        p="4"
-        my="2"
-        borderRadius="lg"
-        role="group"
-        cursor="pointer"
-        _hover={{ ...(!isActive && { bg: 'blackAlpha.50' }) }}
-        {...(isActive && {
-          bg: 'blue.500',
-          color: 'white',
-        })}
-      >
-        <Box>
-          <Icon
-            mr="4"
-            fontSize="16"
-            {...(isActive && {
-              color: 'white',
-            })}
-            as={icon}
-          />
-          {title}
-        </Box>
-        <AccordionIcon />
-      </AccordionButton>
-      <AccordionPanel p={0} px="2" mx="6" my="1">
-        <UnorderedList spacing={3}>
-          {links.map((link) => {
-            return (
-              <ListItem px={1} key={link.title}>
-                <Link
-                  as={NextLink}
-                  href={link.href}
-                  _hover={{ textDecoration: 'none' }}
-                  fontWeight={link.active ? 'bold' : 'normal'}
-                >
-                  {link.title}
-                </Link>
-              </ListItem>
-            )
-          })}
-        </UnorderedList>
-      </AccordionPanel>
-    </AccordionItem>
-  )
-}
+export const renderNavigationMenu: React.FC<NavigationMenuProps> =
+  NavigationMenu

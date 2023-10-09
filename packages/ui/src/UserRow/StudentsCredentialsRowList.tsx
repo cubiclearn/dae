@@ -35,11 +35,11 @@ export const StudentsCredentialsRowList: React.FC<
     setSize,
     size,
     hasMore,
-  } = useCourseStudents(courseAddress, chain?.id)
+  } = useCourseStudents({ courseAddress: courseAddress, chainId: chain?.id })
 
   if (isLoadingCourseData || isLoadingStudentsCredentialsData) {
     return (
-      <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
+      <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'md'}>
         <Stack pb={2}>
           <Text fontWeight="semibold" fontSize="xl">
             Students list
@@ -54,7 +54,7 @@ export const StudentsCredentialsRowList: React.FC<
 
   if (isErrorLoadingCourseData || isErrorLoadingStudentsCredentialsData) {
     return (
-      <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
+      <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'md'}>
         <Stack pb={2}>
           <Text fontWeight="semibold" fontSize="xl">
             Students list
@@ -79,7 +79,7 @@ export const StudentsCredentialsRowList: React.FC<
     studentsCredentialsData?.students.length === 0
   ) {
     return (
-      <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
+      <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'md'}>
         <Stack pb={2}>
           <Text fontWeight="semibold" fontSize="xl">
             Students list
@@ -99,7 +99,7 @@ export const StudentsCredentialsRowList: React.FC<
   }
 
   return (
-    <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
+    <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'md'}>
       <Stack spacing={4}>
         <Box pb={2}>
           <Text fontWeight="semibold" fontSize="xl">

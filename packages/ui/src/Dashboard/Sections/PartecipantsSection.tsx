@@ -26,13 +26,19 @@ export const PartecipantsSection: React.FC<PartecipantsSectionProps> = ({
     data: studentsData,
     isLoading: isLoadingStudentsData,
     error: errorLoadingStudents,
-  } = useCourseStudents(courseAddress, chainId)
+  } = useCourseStudents(
+    { courseAddress: courseAddress, chainId: chainId },
+    { fetchAll: true },
+  )
 
   const {
     data: teachersData,
     isLoading: isLoadingTeachersData,
     error: errorLoadingTeachers,
-  } = useCourseTeachers(courseAddress, chainId)
+  } = useCourseTeachers(
+    { courseAddress: courseAddress, chainId: chainId },
+    { fetchAll: true },
+  )
 
   if (isLoadingStudentsData || isLoadingTeachersData) {
     return (

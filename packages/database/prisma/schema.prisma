@@ -60,15 +60,16 @@ model UserCredentials {
   credential_token_id Int
   user_email          String     @default("")
   user_discord_handle String     @default("")
+  issuer              String     @default("")
 
   @@id([user_address, course_address, credential_token_id, course_chain_id])
   @@unique([user_address, course_address, credential_ipfs_cid, course_chain_id])
 }
 
-model Transactions {
-  transaction_hash String  @id
+model PendingTransactions {
+  transaction_hash String @id
   user_address     String
   chain_id         Int
-  verified         Boolean @default(false)
   action           String
+  timestamp        Int
 }

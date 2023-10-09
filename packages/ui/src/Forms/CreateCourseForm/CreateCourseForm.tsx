@@ -33,7 +33,6 @@ import {
 } from '@dae/constants'
 import { checkFileType, checkFileSize } from '../utils'
 import { type VotingStrategy } from '@dae/types'
-import { useLeavePageConfirmation } from '../../hooks'
 
 const validationSchema = Yup.object().shape({
   name: Yup.string()
@@ -90,24 +89,26 @@ export const CreateCourseForm = () => {
   const toast = useToast()
   const router = useRouter()
 
-  useLeavePageConfirmation(isLoading, 'Changes you made may not be saved.')
-
   const steps = [
     {
-      title: 'Uploading',
-      description: 'Uploading files',
+      title: 'Uploading Course Files',
+      description:
+        'Course files are currently being uploaded to the IPFS network for storage.',
     },
     {
-      title: 'Sign',
-      description: 'Sign transaction',
+      title: 'Signing Transaction',
+      description:
+        'Sign the transaction to securely create a record on the blockchain.',
     },
     {
-      title: 'Process',
-      description: 'Process transaction',
+      title: 'Processing Transaction',
+      description:
+        'The signed transaction is now being processed on the blockchain for confirmation.',
     },
     {
-      title: 'Snapshot',
-      description: 'Register snapshot space',
+      title: 'Registering Snapshot Space',
+      description:
+        'Sign a message to register a Snapshot space for the course data.',
     },
   ]
 
@@ -162,37 +163,35 @@ export const CreateCourseForm = () => {
       votingStrategy: 'linear-voting',
     },
     onSubmit: async (values) => {
-      try {
-        if (!values.image) return
-        toast.promise(
-          create(
-            values.name,
-            values.description,
-            values.image,
-            values.website,
-            values.mediaChannel,
-            values.magisterBaseKarma,
-            values.discipulusBaseKarma,
-            values.snapshotSpaceENS,
-            values.votingStrategy,
-          ).then(() => {
-            handleResetImageInputField()
-            resetForm()
-          }),
-          {
-            success: {
-              title: 'Course created with success!',
-              onCloseComplete: () => router.push('/profile/courses/teaching'),
-            },
-            error: { title: 'Error creating course.' },
-            loading: {
-              title: 'Course creation in progress...',
-              description:
-                'Processing transaction on the blockchain can take some time (usually around one minute).',
-            },
+      if (!values.image) return
+      toast.promise(
+        create(
+          values.name,
+          values.description,
+          values.image,
+          values.website,
+          values.mediaChannel,
+          values.magisterBaseKarma,
+          values.discipulusBaseKarma,
+          values.snapshotSpaceENS,
+          values.votingStrategy,
+        ).then(() => {
+          handleResetImageInputField()
+          resetForm()
+          router.push('/profile/courses/teaching')
+        }),
+        {
+          success: {
+            title: 'Course created with success!',
           },
-        )
-      } catch (_e) {}
+          error: { title: 'Error creating course.' },
+          loading: {
+            title: 'Course creation in progress...',
+            description:
+              'Processing transaction on the blockchain can take some time (usually around one minute).',
+          },
+        },
+      )
     },
     validationSchema: validationSchema,
   })
@@ -211,7 +210,7 @@ export const CreateCourseForm = () => {
       padding={8}
       borderRadius="xl"
       bg={'white'}
-      boxShadow={'base'}
+      boxShadow={'md'}
     >
       <form onSubmit={handleSubmit}>
         <Stack spacing={4}>

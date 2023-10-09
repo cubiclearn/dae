@@ -11,6 +11,7 @@ import { sepolia, foundry, goerli } from 'wagmi/chains'
 import { publicProvider } from 'wagmi/providers/public'
 import { Session } from 'next-auth'
 import { Layout } from '@dae/ui'
+import { useLeavePageConfirmation } from '@dae/hooks'
 import {
   RainbowKitSiweNextAuthProvider,
   GetSiweMessageOptions,
@@ -53,6 +54,8 @@ const getSiweMessageOptions: GetSiweMessageOptions = () => ({
 })
 
 const MyApp = ({ Component, pageProps }: AppProps<{ session: Session }>) => {
+  useLeavePageConfirmation(true, '')
+
   return (
     <WagmiConfig config={config}>
       <SessionProvider session={pageProps.session} refetchInterval={0}>

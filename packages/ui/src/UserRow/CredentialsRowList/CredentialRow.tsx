@@ -1,10 +1,11 @@
 import React from 'react'
-import { Avatar, Text, Td, Tr, Button } from '@chakra-ui/react'
+import { Text, Td, Tr, Button } from '@chakra-ui/react'
 import { Address } from 'viem'
+import { Avatar } from '../../Avatar'
 
 export type UserRowProps = {
   user_address: Address
-  onDelete: () => void
+  onDelete: (() => void) | undefined
   isDeleting: boolean
 }
 
@@ -16,7 +17,7 @@ export const CredentialRow: React.FC<UserRowProps> = ({
   return (
     <Tr>
       <Td>
-        <Avatar src="" size={'sm'} />
+        <Avatar address={user_address} />
       </Td>
       <Td>
         <Text verticalAlign={'center'} fontSize="md">
@@ -24,8 +25,13 @@ export const CredentialRow: React.FC<UserRowProps> = ({
         </Text>
       </Td>
       <Td>
-        <Button colorScheme="red" onClick={onDelete} isLoading={isDeleting}>
-          X
+        <Button
+          colorScheme={onDelete === undefined ? 'gray' : 'red'}
+          isDisabled={onDelete === undefined ? true : false}
+          onClick={onDelete}
+          isLoading={isDeleting}
+        >
+          {onDelete === undefined ? '-' : 'X'}
         </Button>
       </Td>
     </Tr>

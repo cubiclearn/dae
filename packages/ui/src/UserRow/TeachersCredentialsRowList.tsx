@@ -35,11 +35,11 @@ export const TeachersCredentialsRowList: React.FC<TeachersRowListProps> = ({
     setSize,
     size,
     hasMore,
-  } = useCourseTeachers(courseAddress, chain?.id)
+  } = useCourseTeachers({ courseAddress: courseAddress, chainId: chain?.id })
 
   if (isLoadingCourseData || isLoadingTeachersData) {
     return (
-      <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
+      <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'md'}>
         <Stack pb={2}>
           <Text fontWeight="semibold" fontSize="xl">
             Teachers list
@@ -54,7 +54,7 @@ export const TeachersCredentialsRowList: React.FC<TeachersRowListProps> = ({
 
   if (isErrorLoadingCourseData || isErrorLoadingTeachersData) {
     return (
-      <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
+      <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'md'}>
         <Stack pb={2}>
           <Text fontWeight="semibold" fontSize="xl">
             Teachers list
@@ -79,7 +79,7 @@ export const TeachersCredentialsRowList: React.FC<TeachersRowListProps> = ({
     teachersCredentialsData?.teachers.length === 0
   ) {
     return (
-      <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
+      <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'md'}>
         <Stack pb={2}>
           <Text fontWeight="semibold" fontSize="xl">
             Teachers list
@@ -99,7 +99,7 @@ export const TeachersCredentialsRowList: React.FC<TeachersRowListProps> = ({
   }
 
   return (
-    <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
+    <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'md'}>
       <Stack spacing={4}>
         <Box pb={2}>
           <Text fontWeight="semibold" fontSize="xl">

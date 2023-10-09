@@ -57,7 +57,7 @@ export const CourseInfo: React.FC<any> = () => {
     ChainSnapshotWebsite[data.chain_id as keyof typeof ChainSnapshotWebsite]
 
   return (
-    <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
+    <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'md'}>
       <Stack
         spacing={8}
         borderRadius="xl"

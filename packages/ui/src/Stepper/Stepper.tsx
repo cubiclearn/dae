@@ -3,12 +3,10 @@ import {
   StepIndicator,
   StepStatus,
   StepIcon,
-  StepNumber,
-  Box,
-  StepTitle,
-  StepDescription,
+  Text,
   StepSeparator,
   Stepper,
+  Stack,
 } from '@chakra-ui/react'
 import { FC } from 'react'
 
@@ -22,25 +20,23 @@ export const ProgressStepper: FC<ProgressStepperProps> = ({
   activeStep,
 }) => {
   return (
-    <Stepper index={activeStep} size={'sm'}>
-      {steps.map((step, index) => (
-        <Step key={index}>
-          <StepIndicator>
-            <StepStatus
-              complete={<StepIcon />}
-              incomplete={<StepNumber />}
-              active={<StepNumber />}
-            />
-          </StepIndicator>
-
-          <Box flexShrink='0'>
-            <StepTitle>{step.title}</StepTitle>
-            <StepDescription>{step.description}</StepDescription>
-          </Box>
-
-          <StepSeparator />
-        </Step>
-      ))}
-    </Stepper>
+    <Stack>
+      <Stepper index={activeStep} size={'sm'}>
+        {steps.map((_step, index) => (
+          <Step key={index}>
+            <StepIndicator>
+              <StepStatus complete={<StepIcon />} />
+            </StepIndicator>
+            <StepSeparator />
+          </Step>
+        ))}
+      </Stepper>
+      <Stack spacing={1}>
+        <Text>
+          Step {activeStep + 1}: <b>{steps[activeStep].title}</b>
+        </Text>
+        <Text>{steps[activeStep].description}</Text>
+      </Stack>
+    </Stack>
   )
 }

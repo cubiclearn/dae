@@ -85,7 +85,7 @@ export const CustomCredentialsRowList: React.FC<CustomCredentialsRowListProps> =
 
     if (isLoadingCourseData || isLoadingCredentialOwnersData) {
       return (
-        <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
+        <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'md'}>
           <Stack pb={2}>
             <Text fontWeight="semibold" fontSize="xl">
               Owners list
@@ -100,7 +100,7 @@ export const CustomCredentialsRowList: React.FC<CustomCredentialsRowListProps> =
 
     if (isErrorLoadingCourseData || isErrorLoadingCredentialOwnersData) {
       return (
-        <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
+        <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'md'}>
           <Stack pb={2}>
             <Text fontWeight="semibold" fontSize="xl">
               Owners list
@@ -125,7 +125,7 @@ export const CustomCredentialsRowList: React.FC<CustomCredentialsRowListProps> =
       credentialOwnersData?.userCredentials.length === 0
     ) {
       return (
-        <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
+        <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'md'}>
           <Stack pb={2} direction={'row'} justifyContent={'space-between'}>
             <Text fontWeight="semibold" fontSize="xl">
               Owners list
@@ -162,7 +162,7 @@ export const CustomCredentialsRowList: React.FC<CustomCredentialsRowListProps> =
     }
 
     return (
-      <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
+      <Stack padding={8} borderRadius="xl" bg={'white'} boxShadow={'md'}>
         <Stack pb={2}>
           <Text fontWeight="semibold" fontSize="xl">
             Owners list

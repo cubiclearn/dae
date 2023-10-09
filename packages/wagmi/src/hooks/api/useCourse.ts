@@ -1,5 +1,5 @@
 import { Address } from 'viem'
-import useSWR from 'swr'
+import useSWRImmutable from 'swr/immutable'
 import { Course } from '@dae/database'
 import { ApiRequestUrlAndParams, useApi } from '@dae/hooks'
 import { ApiResponse } from '@dae/types'
@@ -12,12 +12,19 @@ export const useCourse = (
   const client = useApi()
   const shouldFetch = courseAddress !== undefined && chainId !== undefined
 
-  const { data: response, error } = useSWR<ApiResponse<{ course: Course }>>(
+  const { data: response, error } = useSWRImmutable<
+    ApiResponse<{ course: Course }>
+  >(
     shouldFetch
       ? ['course', { address: courseAddress, chainId: chainId }]
       : null,
     ([query, variables]: ApiRequestUrlAndParams) =>
       client.request(query, variables),
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    },
   )
 
   return {

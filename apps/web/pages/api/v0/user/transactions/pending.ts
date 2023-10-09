@@ -3,7 +3,7 @@ import { getSession } from 'next-auth/react'
 import { Address } from 'viem'
 import { getUserUnverifiedTransactions } from '../../../../../lib/api'
 import { ApiResponse, ApiResponseStatus } from '@dae/types'
-import { Transactions } from '@prisma/client'
+import { PendingTransactions } from '@prisma/client'
 
 // TypeScript enum for request methods
 enum HttpMethod {
@@ -12,7 +12,7 @@ enum HttpMethod {
 
 const handleGetRequest = async (
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponse<{ transactions: Transactions[] }>>,
+  res: NextApiResponse<ApiResponse<{ transactions: PendingTransactions[] }>>,
 ) => {
   try {
     const session = await getSession({ req: { headers: req.headers } })
