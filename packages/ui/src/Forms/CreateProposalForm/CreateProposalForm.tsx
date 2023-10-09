@@ -27,9 +27,15 @@ import { Address } from 'viem'
 import Editor, { EditorContentChanged } from '../../Editor/Editor'
 
 const validationSchema = Yup.object().shape({
-  title: Yup.string().required('Name is required'),
-  description: Yup.string().required('Description is required'),
-  discussionLink: Yup.string().url('Invalid URL format'),
+  title: Yup.string()
+    .required('Name is required')
+    .max(256, 'Title should not exceed 256 characters.'),
+  description: Yup.string()
+    .required('Description is required')
+    .max(20000, 'Description should not exceed 20000 characters.'),
+  discussionLink: Yup.string()
+    .url('Invalid URL format')
+    .max(256, 'Discussion link should not exceed 256 characters.'),
   endDate: Yup.date().required('End Date is required'),
   choices: Yup.array()
     .of(Yup.string().required('Choice is required'))
