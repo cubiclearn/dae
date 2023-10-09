@@ -94,20 +94,24 @@ export const CreateCourseForm = () => {
 
   const steps = [
     {
-      title: 'Uploading',
-      description: 'Uploading files',
+      title: 'Uploading Course Files',
+      description:
+        'Course files are currently being uploaded to the IPFS network for storage.',
     },
     {
-      title: 'Sign',
-      description: 'Sign transaction',
+      title: 'Signing Transaction',
+      description:
+        'Sign the transaction to securely create a record on the blockchain.',
     },
     {
-      title: 'Process',
-      description: 'Process transaction',
+      title: 'Processing Transaction',
+      description:
+        'The signed transaction is now being processed on the blockchain for confirmation.',
     },
     {
-      title: 'Snapshot',
-      description: 'Register snapshot space',
+      title: 'Registering Snapshot Space',
+      description:
+        'Sign a message to register a Snapshot space for the course data.',
     },
   ]
 
@@ -162,37 +166,35 @@ export const CreateCourseForm = () => {
       votingStrategy: 'linear-voting',
     },
     onSubmit: async (values) => {
-      try {
-        if (!values.image) return
-        toast.promise(
-          create(
-            values.name,
-            values.description,
-            values.image,
-            values.website,
-            values.mediaChannel,
-            values.magisterBaseKarma,
-            values.discipulusBaseKarma,
-            values.snapshotSpaceENS,
-            values.votingStrategy,
-          ).then(() => {
-            handleResetImageInputField()
-            resetForm()
-          }),
-          {
-            success: {
-              title: 'Course created with success!',
-              onCloseComplete: () => router.push('/profile/courses/teaching'),
-            },
-            error: { title: 'Error creating course.' },
-            loading: {
-              title: 'Course creation in progress...',
-              description:
-                'Processing transaction on the blockchain can take some time (usually around one minute).',
-            },
+      if (!values.image) return
+      toast.promise(
+        create(
+          values.name,
+          values.description,
+          values.image,
+          values.website,
+          values.mediaChannel,
+          values.magisterBaseKarma,
+          values.discipulusBaseKarma,
+          values.snapshotSpaceENS,
+          values.votingStrategy,
+        ).then(() => {
+          handleResetImageInputField()
+          resetForm()
+        }),
+        {
+          success: {
+            title: 'Course created with success!',
+            onCloseComplete: () => router.push('/profile/courses/teaching'),
           },
-        )
-      } catch (_e) {}
+          error: { title: 'Error creating course.' },
+          loading: {
+            title: 'Course creation in progress...',
+            description:
+              'Processing transaction on the blockchain can take some time (usually around one minute).',
+          },
+        },
+      )
     },
     validationSchema: validationSchema,
   })
