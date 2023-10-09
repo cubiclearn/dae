@@ -33,7 +33,6 @@ import {
 } from '@dae/constants'
 import { checkFileType, checkFileSize } from '../utils'
 import { type VotingStrategy } from '@dae/types'
-import { useLeavePageConfirmation } from '../../hooks'
 
 const validationSchema = Yup.object().shape({
   name: Yup.string()
@@ -89,8 +88,6 @@ export const CreateCourseForm = () => {
     useCreateCourse(chain, address)
   const toast = useToast()
   const router = useRouter()
-
-  useLeavePageConfirmation(isLoading, 'Changes you made may not be saved.')
 
   const steps = [
     {
@@ -181,11 +178,11 @@ export const CreateCourseForm = () => {
         ).then(() => {
           handleResetImageInputField()
           resetForm()
+          router.push('/profile/courses/teaching')
         }),
         {
           success: {
             title: 'Course created with success!',
-            onCloseComplete: () => router.push('/profile/courses/teaching'),
           },
           error: { title: 'Error creating course.' },
           loading: {

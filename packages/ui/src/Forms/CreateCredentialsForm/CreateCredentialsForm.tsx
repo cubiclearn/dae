@@ -24,7 +24,6 @@ import {
   MAXIMUM_ALLOWED_UPLOAD_FILE_SIZE,
   SUPPORTED_IMAGE_FILE_TYPES,
 } from '@dae/constants'
-import { useLeavePageConfirmation } from '../../hooks'
 
 const validationSchema = Yup.object().shape({
   name: Yup.string()
@@ -64,8 +63,6 @@ export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
   const router = useRouter()
   const toast = useToast()
 
-  useLeavePageConfirmation(isLoading, 'Changes you made may not be saved.')
-
   const handleImageInputFieldChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -97,32 +94,29 @@ export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
       image: null,
     },
     onSubmit: async (values) => {
-      try {
-        if (!values.image || !chain) return
-        toast.promise(
-          create(
-            values.image,
-            values.name,
-            values.description,
-            courseAddress as Address,
-            chain.id,
-          ).then(() => {
-            resetForm()
-            handleResetImageInputField()
-          }),
-          {
-            success: {
-              title: 'Credential created with success!',
-              onCloseComplete: () =>
-                router.push(`/course/${courseAddress}/credentials/list`),
-            },
-            error: { title: 'Error creating credential.' },
-            loading: {
-              title: 'Credential creation in progress...',
-            },
+      if (!values.image || !chain) return
+      toast.promise(
+        create(
+          values.image,
+          values.name,
+          values.description,
+          courseAddress as Address,
+          chain.id,
+        ).then(() => {
+          resetForm()
+          handleResetImageInputField()
+          router.push(`/course/${courseAddress}/credentials/list`)
+        }),
+        {
+          success: {
+            title: 'Credential created with success!',
           },
-        )
-      } catch (_e) {}
+          error: { title: 'Error creating credential.' },
+          loading: {
+            title: 'Credential creation in progress...',
+          },
+        },
+      )
     },
     validationSchema: validationSchema,
   })

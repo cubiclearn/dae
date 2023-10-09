@@ -30,7 +30,6 @@ import { TransferData, useTransferKarma } from '@dae/wagmi'
 import Papa from 'papaparse'
 import { useCourseData } from '../../CourseProvider'
 import { KarmaAccessControlAbiUint64 } from '@dae/abi'
-import { useLeavePageConfirmation } from '../../hooks'
 
 const validationSchema = Yup.object().shape({
   CSVFile: Yup.mixed().required('CSV file is required'),
@@ -51,8 +50,6 @@ export const KarmaMultiTransferForm: React.FC<KarmaMultiTransferFormProps> = ({
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const toast = useToast()
 
-  useLeavePageConfirmation(isLoading, 'Changes you made may not be saved.')
-
   const [csvData, setCsvData] = useState<TransferData[]>([])
 
   const {
@@ -67,33 +64,31 @@ export const KarmaMultiTransferForm: React.FC<KarmaMultiTransferFormProps> = ({
       CSVFile: null,
     },
     onSubmit: async () => {
-      try {
-        onIsLoading(true)
-        toast.promise(
-          multiTransfer(csvData)
-            .then(() => {
-              if (fileInputRef.current) {
-                fileInputRef.current.value = ''
-              }
-              setCsvData([])
-              resetForm()
-            })
-            .finally(() => {
-              onIsLoading(false)
-            }),
-          {
-            success: {
-              title: 'Karma transferred with success!',
-            },
-            error: { title: 'Error transferring karma.' },
-            loading: {
-              title: 'Karma transfer in progress...',
-              description:
-                'Processing transaction on the blockchain can take some time (usually around one minute).',
-            },
+      onIsLoading(true)
+      toast.promise(
+        multiTransfer(csvData)
+          .then(() => {
+            if (fileInputRef.current) {
+              fileInputRef.current.value = ''
+            }
+            setCsvData([])
+            resetForm()
+          })
+          .finally(() => {
+            onIsLoading(false)
+          }),
+        {
+          success: {
+            title: 'Karma transferred with success!',
           },
-        )
-      } catch (_e) {}
+          error: { title: 'Error transferring karma.' },
+          loading: {
+            title: 'Karma transfer in progress...',
+            description:
+              'Processing transaction on the blockchain can take some time (usually around one minute).',
+          },
+        },
+      )
     },
     validationSchema: validationSchema,
   })

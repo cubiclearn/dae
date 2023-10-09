@@ -32,7 +32,6 @@ import * as Yup from 'yup'
 import { useKarmaBalance, useTransferKarma } from '@dae/wagmi'
 import { useCourseData } from '../../CourseProvider'
 import { isAddress } from 'viem'
-import { useLeavePageConfirmation } from '../../hooks'
 
 const ethereumAddressRegex = /^0x([A-Fa-f0-9]{40})$/
 
@@ -59,8 +58,6 @@ export const KarmaSingleTransferForm: React.FC<KarmaSingleTransferFormProps> =
 
     const toast = useToast()
 
-    useLeavePageConfirmation(isLoading, 'Changes you made may not be saved.')
-
     const {
       values,
       errors,
@@ -76,29 +73,27 @@ export const KarmaSingleTransferForm: React.FC<KarmaSingleTransferFormProps> =
         karmaIncrement: 1,
       },
       onSubmit: async (values) => {
-        try {
-          onIsLoading(true)
-          toast.promise(
-            transfer(values.userAddress as Address, values.karmaIncrement)
-              .then(() => {
-                resetForm()
-              })
-              .finally(() => {
-                onIsLoading(false)
-              }),
-            {
-              success: {
-                title: 'Karma transferred with success!',
-              },
-              error: { title: 'Error transferring karma.' },
-              loading: {
-                title: 'Karma transfer in progress...',
-                description:
-                  'Processing transaction on the blockchain can take some time (usually around one minute).',
-              },
+        onIsLoading(true)
+        toast.promise(
+          transfer(values.userAddress as Address, values.karmaIncrement)
+            .then(() => {
+              resetForm()
+            })
+            .finally(() => {
+              onIsLoading(false)
+            }),
+          {
+            success: {
+              title: 'Karma transferred with success!',
             },
-          )
-        } catch (_e) {}
+            error: { title: 'Error transferring karma.' },
+            loading: {
+              title: 'Karma transfer in progress...',
+              description:
+                'Processing transaction on the blockchain can take some time (usually around one minute).',
+            },
+          },
+        )
       },
       validationSchema: validationSchema,
     })

@@ -17,7 +17,6 @@ import React from 'react'
 import { Address, useNetwork } from 'wagmi'
 import * as Yup from 'yup'
 import { useCourseCredentials, useTransferCredentials } from '@dae/wagmi'
-import { useLeavePageConfirmation } from '../../../hooks'
 
 const ethereumAddressRegex = /^0x([A-Fa-f0-9]{40})$/
 
@@ -49,8 +48,6 @@ export const BaseCredentialSingleTransferForm: React.FC<
   const { transfer, isLoading, isError, error, isSigning, isValidating } =
     useTransferCredentials(courseAddress as Address, credentialType)
 
-  useLeavePageConfirmation(isLoading, 'Changes you made may not be saved.')
-
   const {
     values,
     errors,
@@ -67,37 +64,35 @@ export const BaseCredentialSingleTransferForm: React.FC<
       userDiscordUsername: '',
     },
     onSubmit: async (values) => {
-      try {
-        if (!data) return
-        onIsLoading(true)
-        toast.promise(
-          transfer(
-            {
-              address: values.userAddress as Address,
-              email: values.userEmail,
-              discord: values.userDiscordUsername,
-            },
-            data.credentials[0].ipfs_cid,
-          )
-            .then(() => {
-              resetForm()
-            })
-            .finally(() => {
-              onIsLoading(false)
-            }),
+      if (!data) return
+      onIsLoading(true)
+      toast.promise(
+        transfer(
           {
-            success: {
-              title: 'Credential transferred with success!',
-            },
-            error: { title: 'Error transferring credential.' },
-            loading: {
-              title: 'Credential transfer in progress...',
-              description:
-                'Processing transaction on the blockchain can take some time (usually around one minute).',
-            },
+            address: values.userAddress as Address,
+            email: values.userEmail,
+            discord: values.userDiscordUsername,
           },
+          data.credentials[0].ipfs_cid,
         )
-      } catch (_e) {}
+          .then(() => {
+            resetForm()
+          })
+          .finally(() => {
+            onIsLoading(false)
+          }),
+        {
+          success: {
+            title: 'Credential transferred with success!',
+          },
+          error: { title: 'Error transferring credential.' },
+          loading: {
+            title: 'Credential transfer in progress...',
+            description:
+              'Processing transaction on the blockchain can take some time (usually around one minute).',
+          },
+        },
+      )
     },
     validationSchema: validationSchema,
   })

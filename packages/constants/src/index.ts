@@ -4,3 +4,5 @@ export const CONFIRMATION_BLOCKS = 1
 export const API_BASE_PATH = '/api/v0'
 
 export const ONE_MINUTE = 1 * 1000
+
+export const ETHEREUM_ADDRESS_REGEX = /^0x([A-Fa-f0-9]{40})$/

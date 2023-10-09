@@ -18,8 +18,7 @@ import React, { ChangeEvent } from 'react'
 import { Address, useNetwork } from 'wagmi'
 import * as Yup from 'yup'
 import { useCourseCredentials, useTransferCredentials } from '@dae/wagmi'
-import { ETHEREUM_ADDRESS_REGEX } from '../../../constants'
-import { useLeavePageConfirmation } from '../../../hooks'
+import { ETHEREUM_ADDRESS_REGEX } from '@dae/constants'
 
 type TransferCredentialFormProps = {
   courseAddress: Address
@@ -43,8 +42,6 @@ export const CredentialsSingleTransferForm: React.FC<
   const { transfer, isLoading, isError, error, isSigning, isValidating } =
     useTransferCredentials(courseAddress, 'OTHER')
 
-  useLeavePageConfirmation(isLoading, 'Changes you made may not be saved.')
-
   const {
     values,
     errors,
@@ -61,35 +58,33 @@ export const CredentialsSingleTransferForm: React.FC<
       userAddress: '',
     },
     onSubmit: async (values) => {
-      try {
-        if (!data) return
-        onIsLoading(true)
-        toast.promise(
-          transfer(
-            {
-              address: values.userAddress as Address,
-            },
-            values.credentialIPFSCid,
-          )
-            .then(() => {
-              resetForm()
-            })
-            .finally(() => {
-              onIsLoading(false)
-            }),
+      if (!data) return
+      onIsLoading(true)
+      toast.promise(
+        transfer(
           {
-            success: {
-              title: 'Credential transferred with success!',
-            },
-            error: { title: 'Error transferring credential.' },
-            loading: {
-              title: 'Credential transfer in progress...',
-              description:
-                'Processing transaction on the blockchain can take some time (usually around one minute).',
-            },
+            address: values.userAddress as Address,
           },
+          values.credentialIPFSCid,
         )
-      } catch (_e) {}
+          .then(() => {
+            resetForm()
+          })
+          .finally(() => {
+            onIsLoading(false)
+          }),
+        {
+          success: {
+            title: 'Credential transferred with success!',
+          },
+          error: { title: 'Error transferring credential.' },
+          loading: {
+            title: 'Credential transfer in progress...',
+            description:
+              'Processing transaction on the blockchain can take some time (usually around one minute).',
+          },
+        },
+      )
     },
     validationSchema: validationSchema,
   })

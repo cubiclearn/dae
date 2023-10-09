@@ -62,36 +62,30 @@ export const CreateProposalForm: React.FC = () => {
       endDate: undefined,
     },
     onSubmit: async (values) => {
-      try {
-        if (!values.endDate) return
-        toast.promise(
-          create(
-            values.title,
-            values.description,
-            values.choices,
-            (values.endDate as Date).getTime() / 1000,
-            values.discussionLink,
-          ).then((result) => {
-            resetForm()
-            return result
-          }),
-          {
-            success: (result) => ({
-              title: 'Proposal created with success!',
-              onCloseComplete: () =>
-                router.push(
-                  `/course/${router.query.address as Address}/proposals/${
-                    result.id
-                  }`,
-                ),
-            }),
-            error: { title: 'Error creating proposal.' },
-            loading: {
-              title: 'Creating proposal...',
-            },
+      if (!values.endDate) return
+      toast.promise(
+        create(
+          values.title,
+          values.description,
+          values.choices,
+          (values.endDate as Date).getTime() / 1000,
+          values.discussionLink,
+        ).then((result) => {
+          resetForm()
+          router.push(
+            `/course/${router.query.address as Address}/proposals/${result.id}`,
+          )
+        }),
+        {
+          success: {
+            title: 'Proposal created with success!',
           },
-        )
-      } catch (_e) {}
+          error: { title: 'Error creating proposal.' },
+          loading: {
+            title: 'Creating proposal...',
+          },
+        },
+      )
     },
     validationSchema: validationSchema,
   })
