@@ -52,8 +52,8 @@ const handleGetRequest = async (
       spaceId: course.snapshot_space_ens,
       state: status,
       start: course.timestamp,
-      skip: Number(skip),
-      limit: Number(limit),
+      skip: skip ? Number(skip) : undefined,
+      limit: limit ? Number(limit) : undefined,
     })
 
     return res.status(200).json({

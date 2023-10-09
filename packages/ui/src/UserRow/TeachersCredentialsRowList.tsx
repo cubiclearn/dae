@@ -35,7 +35,7 @@ export const TeachersCredentialsRowList: React.FC<TeachersRowListProps> = ({
     setSize,
     size,
     hasMore,
-  } = useCourseTeachers(courseAddress, chain?.id)
+  } = useCourseTeachers({ courseAddress: courseAddress, chainId: chain?.id })
 
   if (isLoadingCourseData || isLoadingTeachersData) {
     return (

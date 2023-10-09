@@ -11,9 +11,25 @@ type ApiResponseDataType = {
   teachers: UserCredentials[]
 }
 
+type QueryParameters = {
+  courseAddress: Address
+  chainId: number
+  skip: number
+  limit?: number
+}
+
+type HookParams = {
+  courseAddress: Address | undefined
+  chainId: number | undefined
+}
+
+type HookOptions = {
+  fetchAll: boolean
+}
+
 export const useCourseTeachers = (
-  courseAddress: Address | undefined,
-  chainId: number | undefined,
+  { courseAddress, chainId }: HookParams,
+  { fetchAll }: HookOptions = { fetchAll: false },
 ): SWRInfiniteHook<ApiResponseDataType> => {
   const client = useApi()
 
@@ -27,15 +43,17 @@ export const useCourseTeachers = (
 
     const skip = pageIndex * PAGE_SIZE
 
-    return [
-      'course/teachers',
-      {
-        courseAddress: courseAddress,
-        chainId: chainId,
-        skip: skip,
-        limit: PAGE_SIZE,
-      },
-    ]
+    const queryParameters: QueryParameters = {
+      courseAddress: courseAddress,
+      chainId: chainId,
+      skip: skip,
+    }
+
+    if (!fetchAll) {
+      queryParameters.limit = PAGE_SIZE
+    }
+
+    return ['course/teachers', queryParameters]
   }
 
   const {
@@ -64,8 +82,9 @@ export const useCourseTeachers = (
     { teachers: [] },
   )
 
-  const hasMore =
-    response?.[response.length - 1]?.data?.teachers.length === PAGE_SIZE
+  const hasMore = fetchAll
+    ? false
+    : response?.[response.length - 1]?.data?.teachers.length === PAGE_SIZE
 
   return {
     data: data,

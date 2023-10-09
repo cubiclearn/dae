@@ -35,7 +35,7 @@ export const StudentsCredentialsRowList: React.FC<
     setSize,
     size,
     hasMore,
-  } = useCourseStudents(courseAddress, chain?.id)
+  } = useCourseStudents({ courseAddress: courseAddress, chainId: chain?.id })
 
   if (isLoadingCourseData || isLoadingStudentsCredentialsData) {
     return (

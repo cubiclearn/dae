@@ -32,8 +32,8 @@ const handleGetRequest = async (
     const teachers = await getCourseTeachers(
       courseAddress,
       Number(chainId),
-      Number(skip),
-      Number(limit),
+      skip ? Number(skip) : undefined,
+      limit ? Number(limit) : undefined,
     )
 
     return res

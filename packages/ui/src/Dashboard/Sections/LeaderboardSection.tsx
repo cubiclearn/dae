@@ -34,7 +34,10 @@ export const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({
     data: studentsData,
     isLoading: isLoadingStudentsData,
     error: errorLoadingStudents,
-  } = useCourseStudents(courseAddress, chainId)
+  } = useCourseStudents(
+    { courseAddress: courseAddress, chainId: chainId },
+    { fetchAll: true },
+  )
 
   const {
     data: studentsKarmaData,
