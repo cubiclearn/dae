@@ -80,7 +80,7 @@ export const ProposalOverview: React.FC<ProposalOverviewProps> = ({
         padding={8}
         borderRadius="xl"
         bg={'white'}
-        boxShadow={'base'}
+        boxShadow={'md'}
         spacing={8}
       >
         <ProposalHeading

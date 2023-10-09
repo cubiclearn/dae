@@ -211,7 +211,7 @@ export const CreateCourseForm = () => {
       padding={8}
       borderRadius="xl"
       bg={'white'}
-      boxShadow={'base'}
+      boxShadow={'md'}
     >
       <form onSubmit={handleSubmit}>
         <Stack spacing={4}>

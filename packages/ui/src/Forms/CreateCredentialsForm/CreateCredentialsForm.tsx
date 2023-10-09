@@ -128,7 +128,7 @@ export const CreateCredentialsForm: React.FC<CreateCredentialsFormProps> = ({
   })
 
   return (
-    <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'base'}>
+    <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'md'}>
       <form onSubmit={handleSubmit}>
         <Stack spacing={4}>
           <FormControl isRequired isInvalid={!!errors.name && touched.name}>
