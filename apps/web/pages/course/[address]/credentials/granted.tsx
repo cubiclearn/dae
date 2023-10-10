@@ -5,7 +5,7 @@ import { MyCredentialsCardsList } from '@dae/ui'
 import { useRouter } from 'next/router'
 import { Address } from 'viem'
 
-export default function Teaching() {
+function MyCredentials() {
   const router = useRouter()
   const courseAddress = router.query.address as Address
 
@@ -25,3 +25,5 @@ export default function Teaching() {
     </>
   )
 }
+
+export default MyCredentials

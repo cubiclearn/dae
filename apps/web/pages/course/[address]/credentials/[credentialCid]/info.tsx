@@ -3,8 +3,9 @@ import { CredentialInfoContainer, Layout } from '@dae/ui'
 import { Stack } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { Address } from 'viem'
+import withCourseRoleAuth from '../../../../../components/HOC/withCourseRole'
 
-export default function Info() {
+function CredentialInfo() {
   const router = useRouter()
   const credentialCid = router.query.credentialCid as string
   const courseAddress = router.query.address as Address
@@ -28,3 +29,5 @@ export default function Info() {
     </>
   )
 }
+
+export default withCourseRoleAuth(CredentialInfo, 'MAGISTER')

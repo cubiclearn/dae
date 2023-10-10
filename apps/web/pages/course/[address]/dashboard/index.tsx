@@ -4,7 +4,7 @@ import { DashboardContainer } from '@dae/ui'
 import { useRouter } from 'next/router'
 import { Address } from 'viem'
 
-export default function TransferKarmaPage() {
+function Dashboard() {
   const router = useRouter()
   const courseAddress = router.query.address as Address
 
@@ -22,3 +22,5 @@ export default function TransferKarmaPage() {
     </>
   )
 }
+
+export default Dashboard

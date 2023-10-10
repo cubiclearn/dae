@@ -51,7 +51,7 @@ const CoursePageContainer: React.FC<{ children: React.ReactNode }> = ({
   }
 
   if (data === undefined) {
-    router.replace('/404')
+    router.push('/404')
     return null
   }
 

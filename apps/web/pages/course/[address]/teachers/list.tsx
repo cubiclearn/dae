@@ -4,8 +4,9 @@ import { Box, Stack } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { TeachersCredentialsRowList } from '@dae/ui'
 import { Address } from 'wagmi'
+import withCourseRoleAuth from '../../../../components/HOC/withCourseRole'
 
-export default function StudentsList() {
+function TeachersList() {
   const router = useRouter()
   const courseAddress = router.query.address as Address
 
@@ -28,3 +29,5 @@ export default function StudentsList() {
     </>
   )
 }
+
+export default withCourseRoleAuth(TeachersList, 'MAGISTER')
