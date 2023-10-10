@@ -38,7 +38,11 @@ const validationSchema = Yup.object().shape({
     .max(256, 'Discussion link should not exceed 256 characters.'),
   endDate: Yup.date().required('End Date is required'),
   choices: Yup.array()
-    .of(Yup.string().required('Choice is required'))
+    .of(
+      Yup.string()
+        .required('Choice text is required')
+        .max(100, 'Choice length should not exceed 100 characters.'),
+    )
     .min(1, 'At least one choice is required'),
 })
 
@@ -46,7 +50,7 @@ export const CreateProposalForm: React.FC = () => {
   const { data } = useCourseData()
   const toast = useToast()
   const { create, isLoading, isError, error, isValidating } = useCreateProposal(
-    data ? data.snapshot_space_ens : undefined,
+    data?.snapshot_space_ens,
   )
   const router = useRouter()
 
