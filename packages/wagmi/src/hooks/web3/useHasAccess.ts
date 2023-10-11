@@ -4,10 +4,13 @@ import { Address, zeroAddress } from 'viem'
 import { useContractRead, useNetwork } from 'wagmi'
 import { useCourse } from '../api'
 
-export const useHasAccess = (
-  courseAddress: Address | undefined,
-  userAddress: Address | undefined,
-) => {
+export const useHasAccess = ({
+  courseAddress,
+  userAddress,
+}: {
+  courseAddress: Address | undefined
+  userAddress: Address | undefined
+}) => {
   const { chain } = useNetwork()
   const { data: courseData } = useCourse(courseAddress, chain?.id)
 

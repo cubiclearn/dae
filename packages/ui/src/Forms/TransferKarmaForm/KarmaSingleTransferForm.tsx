@@ -15,23 +15,21 @@ import {
   NumberInputField,
   NumberInputStepper,
   Stack,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  Text,
   useToast,
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
 import React, { useCallback } from 'react'
 import { Address } from 'wagmi'
 import * as Yup from 'yup'
-import { useKarmaBalance, useTransferKarma } from '@dae/wagmi'
+import {
+  useBaseKarma,
+  useHasAccess,
+  useKarmaBalance,
+  useTransferKarma,
+} from '@dae/wagmi'
 import { useCourseData } from '../../CourseProvider'
 import { isAddress } from 'viem'
+import { KarmaTransferSummaryTable } from './KarmaTransferSummaryTable/KarmaTransferSummaryTable'
 
 const ethereumAddressRegex = /^0x([A-Fa-f0-9]{40})$/
 
@@ -50,13 +48,10 @@ type KarmaSingleTransferFormProps = {
 
 export const KarmaSingleTransferForm: React.FC<KarmaSingleTransferFormProps> =
   ({ onIsLoading }) => {
-    const { data } = useCourseData()
-    const { transfer, isLoading, isError, error, isSigning, isValidating } =
-      useTransferKarma(
-        data?.karma_access_control_address as Address | undefined,
-      )
-
     const toast = useToast()
+    const { data: courseData } = useCourseData()
+    const { transfer, isLoading, isError, error, isSigning, isValidating } =
+      useTransferKarma(courseData?.karma_access_control_address as Address)
 
     const {
       values,
@@ -98,10 +93,28 @@ export const KarmaSingleTransferForm: React.FC<KarmaSingleTransferFormProps> =
       validationSchema: validationSchema,
     })
 
-    const { data: karmaBalance } = useKarmaBalance(
-      data?.karma_access_control_address as Address | undefined,
-      isAddress(values.userAddress) ? values.userAddress : undefined,
-    )
+    const { data: userHasAccess } = useHasAccess({
+      courseAddress: courseData?.address as Address,
+      userAddress: isAddress(values.userAddress)
+        ? values.userAddress
+        : undefined,
+    })
+
+    const { data: userKarmaBalance } = useKarmaBalance({
+      karmaAccessControlAddress:
+        courseData?.karma_access_control_address as Address,
+      userAddress: isAddress(values.userAddress)
+        ? values.userAddress
+        : undefined,
+    })
+
+    const { data: userBaseKarma } = useBaseKarma({
+      karmaAccessControlAddress:
+        courseData?.karma_access_control_address as Address,
+      userAddress: isAddress(values.userAddress)
+        ? values.userAddress
+        : undefined,
+    })
 
     const handleChangeKarmaIncrementValue = useCallback(
       (_valueAsString: string, valueAsNumber: number) => {
@@ -120,7 +133,9 @@ export const KarmaSingleTransferForm: React.FC<KarmaSingleTransferFormProps> =
           <Stack spacing={4}>
             <FormControl
               isRequired
-              isInvalid={!!errors.userAddress && touched.userAddress}
+              isInvalid={
+                touched.userAddress && (!!errors.userAddress || !userHasAccess)
+              }
               isDisabled={isLoading || isValidating || isSigning}
             >
               <FormLabel>Ethereum Address</FormLabel>
@@ -132,7 +147,11 @@ export const KarmaSingleTransferForm: React.FC<KarmaSingleTransferFormProps> =
                 type="text"
                 placeholder="Etereum Address"
               />
-              <FormErrorMessage>{errors.userAddress}</FormErrorMessage>
+              <FormErrorMessage>
+                {errors.userAddress ||
+                  (!userHasAccess &&
+                    'The provided address does not correspond to an enrolled course participant.')}
+              </FormErrorMessage>
             </FormControl>
             <FormControl
               isRequired
@@ -144,9 +163,9 @@ export const KarmaSingleTransferForm: React.FC<KarmaSingleTransferFormProps> =
                 allowMouseWheel
                 defaultValue={0}
                 min={Math.min(
-                  (karmaBalance?.rate &&
-                    karmaBalance?.baseKarma &&
-                    -Number(karmaBalance.rate - karmaBalance.baseKarma)) ??
+                  (userKarmaBalance &&
+                    userBaseKarma &&
+                    -Number(userKarmaBalance - userBaseKarma)) ??
                     1,
                   1,
                 )}
@@ -164,42 +183,15 @@ export const KarmaSingleTransferForm: React.FC<KarmaSingleTransferFormProps> =
               <FormErrorMessage>{errors.karmaIncrement}</FormErrorMessage>
             </FormControl>
           </Stack>
-          {karmaBalance?.hasAccess ? (
-            <Stack>
-              <Text fontWeight={'semibold'}>Summary</Text>
-              <TableContainer>
-                <Table>
-                  <Thead>
-                    <Tr>
-                      <Th>Address</Th>
-                      <Th>Karma</Th>
-                      <Th>Increment</Th>
-                      <Th>Total</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    <Tr>
-                      <Td>{values.userAddress}</Td>
-                      <Td>{Number(karmaBalance.rate) ?? '--'}</Td>
-                      <Td
-                        color={
-                          values.karmaIncrement > 0 ? 'green.500' : 'red.500'
-                        }
-                      >
-                        {values.karmaIncrement > 0
-                          ? `+${Number(values.karmaIncrement)}`
-                          : `${Number(values.karmaIncrement)}`}
-                      </Td>
-                      <Td>
-                        {Number(karmaBalance.rate) + values.karmaIncrement}
-                      </Td>
-                    </Tr>
-                  </Tbody>
-                </Table>
-              </TableContainer>
-            </Stack>
-          ) : (
-            <></>
+          {userHasAccess && (
+            <KarmaTransferSummaryTable
+              usersKarmaIncrementData={[
+                {
+                  userAddress: values.userAddress as Address,
+                  karmaIncrement: values.karmaIncrement,
+                },
+              ]}
+            />
           )}
           <Button
             colorScheme="blue"

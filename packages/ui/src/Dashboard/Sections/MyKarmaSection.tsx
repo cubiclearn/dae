@@ -25,7 +25,10 @@ export const MyKarmaSection: React.FC<MyKarmaSectionProps> = ({
     data: karmaBalance,
     isLoading,
     error,
-  } = useKarmaBalance(karmaAccessControlAddress, address)
+  } = useKarmaBalance({
+    karmaAccessControlAddress: karmaAccessControlAddress,
+    userAddress: address,
+  })
 
   if (isLoading) {
     return (
@@ -49,7 +52,7 @@ export const MyKarmaSection: React.FC<MyKarmaSectionProps> = ({
 
   return (
     <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 5 }} spacing={4}>
-      <DashboardBlock title="Karma" value={karmaBalance?.rate} isInt={true} />
+      <DashboardBlock title="Karma" value={karmaBalance} isInt={true} />
     </SimpleGrid>
   )
 }

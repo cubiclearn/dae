@@ -1,5 +1,4 @@
 import { CredentialsBurnableAbi } from '@dae/abi'
-import { ONE_MINUTE } from '@dae/constants'
 import { Address, keccak256, toHex, zeroAddress } from 'viem'
 import { useAccount, useContractRead } from 'wagmi'
 
@@ -12,8 +11,8 @@ export const useIsMagister = (courseAddress: Address | undefined) => {
     functionName: 'hasRole',
     args: [keccak256(toHex('MAGISTER_ROLE')), userAddress ?? zeroAddress],
     enabled: userAddress !== undefined && courseAddress !== undefined,
-    cacheTime: ONE_MINUTE * 10,
-    staleTime: ONE_MINUTE * 5,
+    cacheTime: Infinity,
+    staleTime: Infinity,
   })
 
   return {

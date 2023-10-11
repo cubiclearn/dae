@@ -11,25 +11,17 @@ import {
   FormLabel,
   Input,
   FormErrorMessage,
-  TableContainer,
-  Table,
-  Th,
-  Thead,
-  Tr,
-  Tbody,
-  Td,
-  Text,
   FormHelperText,
   Link,
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
 import React, { useRef, useState } from 'react'
-import { Address, useContractReads } from 'wagmi'
+import { Address } from 'wagmi'
 import * as Yup from 'yup'
-import { TransferData, useTransferKarma } from '@dae/wagmi'
+import { TransferData, useKarmaBalances, useTransferKarma } from '@dae/wagmi'
 import Papa from 'papaparse'
 import { useCourseData } from '../../CourseProvider'
-import { KarmaAccessControlAbiUint64 } from '@dae/abi'
+import { KarmaTransferSummaryTable } from './KarmaTransferSummaryTable'
 
 const validationSchema = Yup.object().shape({
   CSVFile: Yup.mixed().required('CSV file is required'),
@@ -93,17 +85,9 @@ export const KarmaMultiTransferForm: React.FC<KarmaMultiTransferFormProps> = ({
     validationSchema: validationSchema,
   })
 
-  const karmaAmountData = useContractReads({
-    contracts: csvData.map((user) => {
-      return {
-        abi: KarmaAccessControlAbiUint64,
-        address: data?.karma_access_control_address as Address | undefined,
-        functionName: 'ratingOf',
-        args: [user.address as Address],
-      }
-    }),
-    enabled: csvData.length > 0,
-    cacheOnBlock: true,
+  const { data: karmaBalances } = useKarmaBalances({
+    karmaAccessControlAddress: data?.karma_access_control_address as Address,
+    usersAddresses: csvData.map((row) => row.address as Address),
   })
 
   const handleCSVFileChange = async (
@@ -160,50 +144,13 @@ export const KarmaMultiTransferForm: React.FC<KarmaMultiTransferFormProps> = ({
           <FormErrorMessage>{errors.CSVFile}</FormErrorMessage>
         </FormControl>
         {csvData.length > 0 && (
-          <Stack spacing={2}>
-            <Text fontWeight={'semibold'}>Summary</Text>
-            <TableContainer>
-              <Table>
-                <Thead>
-                  <Tr>
-                    <Th>Address</Th>
-                    <Th>Karma</Th>
-                    <Th>Increment</Th>
-                    <Th>Total</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {csvData.map((row, index) => (
-                    <Tr key={row.address}>
-                      <Td>{row.address}</Td>
-                      <Td>
-                        {karmaAmountData.data &&
-                        karmaAmountData.data[index].status === 'success'
-                          ? Number(karmaAmountData.data[index].result)
-                          : '--'}
-                      </Td>
-                      <Td
-                        color={
-                          row.karma_increment > 0 ? 'green.500' : 'red.500'
-                        }
-                      >
-                        {row.karma_increment > 0
-                          ? `+${Number(row.karma_increment)}`
-                          : `${Number(row.karma_increment)}`}
-                      </Td>
-                      <Td>
-                        {karmaAmountData.data &&
-                        karmaAmountData.data[index].status === 'success'
-                          ? Number(karmaAmountData.data[index].result) +
-                            row.karma_increment
-                          : '--'}
-                      </Td>
-                    </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            </TableContainer>
-          </Stack>
+          <KarmaTransferSummaryTable
+            usersKarmaIncrementData={csvData.map((row, index) => ({
+              userAddress: row.address as Address,
+              karmaIncrement: row.karma_increment,
+              karmaBalance: Number(karmaBalances?.[index].result as bigint),
+            }))}
+          />
         )}
         <Button
           colorScheme="blue"

@@ -28,7 +28,10 @@ const withCourseRoleAuth = (
       data: hasAccess,
       isLoading: isLoadingHasAccess,
       isError: isErrorLoadingHasAccess,
-    } = useHasAccess(courseAddress, userAddress)
+    } = useHasAccess({
+      courseAddress: courseAddress,
+      userAddress: userAddress,
+    })
 
     if (isLoadingAdminRole || isLoadingMagisterRole || isLoadingHasAccess) {
       return null
