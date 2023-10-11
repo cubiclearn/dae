@@ -1,7 +1,6 @@
 import { createContext, FC, useContext, ReactNode, useMemo } from 'react'
 import { Address } from 'viem'
 import { useCourse } from '@dae/wagmi'
-import { useNetwork } from 'wagmi'
 import { useRouter } from 'next/router'
 import { Course } from '@dae/database'
 
@@ -18,12 +17,10 @@ const Context = createContext<{
 export const CourseProvider: FC<{
   children: ReactNode
 }> = ({ children }) => {
-  const { chain } = useNetwork()
   const router = useRouter()
-  const { data, isLoading, error } = useCourse(
-    router.query.address as Address,
-    chain?.id,
-  )
+  const { data, isLoading, error } = useCourse({
+    courseAddress: router.query.address as Address,
+  })
 
   const value = useMemo(
     () => ({

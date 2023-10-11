@@ -1,7 +1,7 @@
 import { KarmaAccessControlAbiUint64 } from '@dae/abi'
 import { ONE_MINUTE } from '@dae/constants'
 import { Address, zeroAddress } from 'viem'
-import { useContractRead, useNetwork } from 'wagmi'
+import { useContractRead } from 'wagmi'
 import { useCourse } from '../api'
 
 export const useHasAccess = ({
@@ -11,8 +11,7 @@ export const useHasAccess = ({
   courseAddress: Address | undefined
   userAddress: Address | undefined
 }) => {
-  const { chain } = useNetwork()
-  const { data: courseData } = useCourse(courseAddress, chain?.id)
+  const { data: courseData } = useCourse({ courseAddress })
 
   const shouldFetch =
     userAddress !== undefined &&

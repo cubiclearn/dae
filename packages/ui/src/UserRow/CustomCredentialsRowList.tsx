@@ -36,7 +36,7 @@ export const CustomCredentialsRowList: React.FC<CustomCredentialsRowListProps> =
       data: courseData,
       isLoading: isLoadingCourseData,
       isError: isErrorLoadingCourseData,
-    } = useCourse(courseAddress, chain?.id)
+    } = useCourse({ courseAddress })
 
     const {
       data: credentialOwnersData,

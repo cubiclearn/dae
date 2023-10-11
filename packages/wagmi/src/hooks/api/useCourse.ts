@@ -4,19 +4,22 @@ import { Course } from '@dae/database'
 import { ApiRequestUrlAndParams, useApi } from '@dae/hooks'
 import { ApiResponse } from '@dae/types'
 import { type SWRHook } from '@dae/types'
+import { useNetwork } from 'wagmi'
 
-export const useCourse = (
-  courseAddress: Address | undefined,
-  chainId: number | undefined,
-): SWRHook<{ course: Course }> => {
+export const useCourse = ({
+  courseAddress,
+}: {
+  courseAddress: Address | undefined
+}): SWRHook<{ course: Course }> => {
   const client = useApi()
-  const shouldFetch = courseAddress !== undefined && chainId !== undefined
+  const { chain } = useNetwork()
+  const shouldFetch = courseAddress !== undefined && chain?.id !== undefined
 
   const { data: response, error } = useSWRImmutable<
     ApiResponse<{ course: Course }>
   >(
     shouldFetch
-      ? ['course', { address: courseAddress, chainId: chainId }]
+      ? ['course', { address: courseAddress, chainId: chain.id }]
       : null,
     ([query, variables]: ApiRequestUrlAndParams) =>
       client.request(query, variables),

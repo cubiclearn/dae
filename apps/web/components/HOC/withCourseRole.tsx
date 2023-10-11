@@ -1,9 +1,11 @@
 import { useRouter } from 'next/router'
 import { Address } from 'viem'
-import { useHasAccess, useIsAdmin, useIsMagister } from '@dae/wagmi'
+import { useCourse, useHasAccess, useIsAdmin, useIsMagister } from '@dae/wagmi'
 import { FC } from 'react'
 import { CredentialType } from '@prisma/client'
 import { useAccount } from 'wagmi'
+import { BouncingDotsLoader } from '@dae/ui'
+import withCourse from './withCourse'
 
 const withCourseRoleAuth = (
   WrappedComponent: FC,
@@ -13,6 +15,10 @@ const withCourseRoleAuth = (
     const router = useRouter()
     const courseAddress = router.query.address as Address
     const { address: userAddress } = useAccount()
+
+    const { data: courseData, isLoading: isLoadingCourseData } = useCourse({
+      courseAddress,
+    })
 
     const {
       data: isAdmin,
@@ -33,17 +39,23 @@ const withCourseRoleAuth = (
       userAddress: userAddress,
     })
 
-    if (isLoadingAdminRole || isLoadingMagisterRole || isLoadingHasAccess) {
-      return null
-    }
-
     if (
+      (!isLoadingCourseData && !courseData) ||
       isErrorLoadingAdminRole ||
       isErrorLoadingMagisterRole ||
       isErrorLoadingHasAccess
     ) {
       router.push('/404')
       return null
+    }
+
+    if (
+      isLoadingCourseData ||
+      isLoadingAdminRole ||
+      isLoadingMagisterRole ||
+      isLoadingHasAccess
+    ) {
+      return <BouncingDotsLoader />
     }
 
     if (
@@ -58,7 +70,7 @@ const withCourseRoleAuth = (
     return <WrappedComponent {...props} />
   }
 
-  return ProtectedPage
+  return withCourse(ProtectedPage)
 }
 
 export default withCourseRoleAuth
