@@ -54,12 +54,12 @@ export const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({
     if (studentsData && studentsKarmaData) {
       return studentsData.students
         .map((studentData, index) => {
-          return [
-            studentData.user_address,
-            Number(studentsKarmaData[index].result) ?? 0,
-          ] as [Address, number]
+          return {
+            ...studentData,
+            karma: Number(studentsKarmaData[index].result as bigint),
+          }
         })
-        .sort((studentA, studentB) => studentB[1] - studentA[1])
+        .sort((studentA, studentB) => studentB.karma - studentA.karma)
     }
     return []
   }, [studentsData])
@@ -117,6 +117,8 @@ export const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({
           <Tr>
             <Th>Rank</Th>
             <Th>Address</Th>
+            <Th>Email</Th>
+            <Th>Discord</Th>
             <Th isNumeric>Karma</Th>
           </Tr>
         </Thead>
@@ -125,8 +127,10 @@ export const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({
             return (
               <Tr key={index}>
                 <Td fontWeight={'semibold'}>{`#${index + 1}`}</Td>
-                <Td>{student[0]}</Td>
-                <Td isNumeric>{student[1]}</Td>
+                <Td>{student.user_address}</Td>
+                <Td>{student.user_email}</Td>
+                <Td>{student.user_discord_handle}</Td>
+                <Td isNumeric>{student.karma}</Td>
               </Tr>
             )
           })}
