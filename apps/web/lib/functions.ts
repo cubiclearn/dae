@@ -1,3 +1,7 @@
+import {
+  MAXIMUM_ALLOWED_UPLOAD_FILE_SIZE,
+  ONE_MEGABYTE_IN_BYTES,
+} from '@dae/constants'
 import { Fields, Files, IncomingForm } from 'formidable'
 import { NextApiRequest } from 'next/types'
 import { Address } from 'viem'
@@ -12,13 +16,15 @@ export const asyncParse = (
   new Promise((resolve, reject) => {
     const form = new IncomingForm({
       multiples: true,
-      maxFileSize: 1 * 1024 * 1024,
+      maxFileSize: MAXIMUM_ALLOWED_UPLOAD_FILE_SIZE,
     })
     form.parse(req, (err, fields, files) => {
       if (err && err.code === 1009) {
         return reject(
           new Error(
-            'Sorry, the file you uploaded exceeds the maximum allowed size of 1MB.',
+            `Sorry, the file you uploaded exceeds the maximum allowed size of ${
+              MAXIMUM_ALLOWED_UPLOAD_FILE_SIZE / ONE_MEGABYTE_IN_BYTES
+            } MB.`,
           ),
         )
       }
