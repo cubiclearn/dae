@@ -1,8 +1,9 @@
 import { useRouter } from 'next/router'
 import { Address } from 'viem'
-import { useIsAdmin, useIsMagister } from '@dae/wagmi'
+import { useHasAccess, useIsAdmin, useIsMagister } from '@dae/wagmi'
 import { FC } from 'react'
 import { CredentialType } from '@prisma/client'
+import { useAccount } from 'wagmi'
 
 const withCourseRoleAuth = (
   WrappedComponent: FC,
@@ -11,6 +12,7 @@ const withCourseRoleAuth = (
   const ProtectedPage: FC = (props) => {
     const router = useRouter()
     const courseAddress = router.query.address as Address
+    const { address: userAddress } = useAccount()
 
     const {
       data: isAdmin,
@@ -22,19 +24,29 @@ const withCourseRoleAuth = (
       isLoading: isLoadingMagisterRole,
       isError: isErrorLoadingMagisterRole,
     } = useIsMagister(courseAddress)
+    const {
+      data: hasAccess,
+      isLoading: isLoadingHasAccess,
+      isError: isErrorLoadingHasAccess,
+    } = useHasAccess(courseAddress, userAddress)
 
-    if (isLoadingAdminRole || isLoadingMagisterRole) {
+    if (isLoadingAdminRole || isLoadingMagisterRole || isLoadingHasAccess) {
       return null
     }
 
-    if (isErrorLoadingAdminRole || isErrorLoadingMagisterRole) {
+    if (
+      isErrorLoadingAdminRole ||
+      isErrorLoadingMagisterRole ||
+      isErrorLoadingHasAccess
+    ) {
       router.push('/404')
       return null
     }
 
     if (
       !(isAdmin && allowedRole === 'ADMIN') &&
-      !(isMagister && allowedRole === 'MAGISTER')
+      !((isAdmin || isMagister) && allowedRole === 'MAGISTER') &&
+      !((isAdmin || isMagister || hasAccess) && allowedRole === 'DISCIPULUS')
     ) {
       router.push('/')
       return null

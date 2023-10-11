@@ -4,6 +4,7 @@ import { Stack } from '@chakra-ui/react'
 import { MyCredentialsCardsList } from '@dae/ui'
 import { useRouter } from 'next/router'
 import { Address } from 'viem'
+import withCourseRoleAuth from '../../../../components/HOC/withCourseRole'
 
 function MyCredentials() {
   const router = useRouter()
@@ -26,4 +27,4 @@ function MyCredentials() {
   )
 }
 
-export default MyCredentials
+export default withCourseRoleAuth(MyCredentials, 'DISCIPULUS')

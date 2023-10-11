@@ -30,4 +30,4 @@ function TeachersList() {
   )
 }
 
-export default withCourseRoleAuth(TeachersList, 'MAGISTER')
+export default withCourseRoleAuth(TeachersList, 'DISCIPULUS')

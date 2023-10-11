@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import { Layout } from '@dae/ui'
 import { CourseInfo } from '@dae/ui'
+import withCourseRoleAuth from '../../../components/HOC/withCourseRole'
 
 function CourseSummary() {
   return (
@@ -18,4 +19,4 @@ function CourseSummary() {
   )
 }
 
-export default CourseSummary
+export default withCourseRoleAuth(CourseSummary, 'DISCIPULUS')

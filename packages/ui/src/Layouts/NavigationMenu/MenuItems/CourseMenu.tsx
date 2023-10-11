@@ -90,16 +90,13 @@ export const CourseMenuItems: MenuItem[] = [
     title: 'Teachers',
     key: 'teachers',
     icon: FiCompass,
-    visible: (userPermissions) =>
-      userPermissions.includes('admin') || userPermissions.includes('magister'),
+    visible: (_userPermissions) => true,
     isActive: (pathname) => pathname.startsWith('/course/[address]/teachers'),
     links: [
       {
         title: 'List',
         href: (params) => `/course/${params.courseAddress}/teachers/list`,
-        visible: (userPermissions) =>
-          userPermissions.includes('admin') ||
-          userPermissions.includes('magister'),
+        visible: (_userPermissions) => true,
         isActive: (pathname) => pathname === '/course/[address]/teachers/list',
       },
       {
@@ -115,16 +112,13 @@ export const CourseMenuItems: MenuItem[] = [
     title: 'Students',
     key: 'students',
     icon: FiUsers,
-    visible: (userPermissions) =>
-      userPermissions.includes('admin') || userPermissions.includes('magister'),
+    visible: (_userPermissions) => true,
     isActive: (pathname) => pathname.startsWith('/course/[address]/students'),
     links: [
       {
         title: 'List',
         href: (params) => `/course/${params.courseAddress}/students/list`,
-        visible: (userPermissions) =>
-          userPermissions.includes('admin') ||
-          userPermissions.includes('magister'),
+        visible: (_userPermissions) => true,
         isActive: (pathname) => pathname === '/course/[address]/students/list',
       },
       {

@@ -3,6 +3,7 @@ import { Layout } from '@dae/ui'
 import { DashboardContainer } from '@dae/ui'
 import { useRouter } from 'next/router'
 import { Address } from 'viem'
+import withCourseRoleAuth from '../../../../components/HOC/withCourseRole'
 
 function Dashboard() {
   const router = useRouter()
@@ -23,4 +24,4 @@ function Dashboard() {
   )
 }
 
-export default Dashboard
+export default withCourseRoleAuth(Dashboard, 'DISCIPULUS')

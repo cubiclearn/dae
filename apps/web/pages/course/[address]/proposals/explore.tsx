@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 import { Stack, Tabs, TabList, Tab, Link } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import { ProposalRowList } from '@dae/ui'
+import withCourseRoleAuth from '../../../../components/HOC/withCourseRole'
 
 function ExploreProposals() {
   const router = useRouter()
@@ -48,4 +49,4 @@ function ExploreProposals() {
   )
 }
 
-export default ExploreProposals
+export default withCourseRoleAuth(ExploreProposals, 'DISCIPULUS')
