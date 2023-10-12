@@ -200,7 +200,7 @@ export function useTransferCredentials({
       const tokenURI = `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${credentialIPFSCid}`
 
       if (credentialType === 'OTHER') {
-        let accessList
+        let accessList: { address: Address; hasAccess: boolean }[]
         if (chain.contracts?.multicall3?.address) {
           // Do a multicall
           const usersHaveAccessList = await publicClient.multicall({
@@ -214,7 +214,10 @@ export function useTransferCredentials({
             })),
           })
           accessList = usersHaveAccessList.map((hasAccess, index) => {
-            return { address: usersData[index].address, hasAccess: hasAccess }
+            return {
+              address: usersData[index].address as Address,
+              hasAccess: hasAccess.result ?? false,
+            }
           })
         } else {
           // Do multiple single calls
@@ -227,10 +230,15 @@ export function useTransferCredentials({
                 functionName: 'hasAccess',
                 args: [userData.address],
               })
-              return { address: userData.address, hasAccess: hasAccess }
+              return {
+                address: userData.address as Address,
+                hasAccess: hasAccess,
+              }
             }),
           )
         }
+
+        console.log(accessList)
 
         const addressesWithNoAccess = accessList
           .filter((item) => !item.hasAccess)
