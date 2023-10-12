@@ -18,6 +18,7 @@ import {
 import React, { useMemo } from 'react'
 import { useCourseStudents, useKarmaBalances } from '@dae/wagmi'
 import { Address } from 'viem'
+import { useAccount } from 'wagmi'
 
 type LeaderboardSectionProps = {
   chainId: number | undefined
@@ -30,6 +31,7 @@ export const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({
   courseAddress,
   karmaAccessControlAddress,
 }) => {
+  const { address: userAddress } = useAccount()
   const {
     data: studentsData,
     isLoading: isLoadingStudentsData,
@@ -124,13 +126,28 @@ export const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({
         </Thead>
         <Tbody>
           {studentsAddressAndKarmaOrderedDesc.map((student, index) => {
+            const isUserAddress =
+              userAddress?.toLowerCase() === student.user_address
             return (
-              <Tr key={index}>
-                <Td fontWeight={'semibold'}>{`#${index + 1}`}</Td>
-                <Td>{student.user_address}</Td>
-                <Td>{student.user_email}</Td>
-                <Td>{student.user_discord_handle}</Td>
-                <Td isNumeric>{student.karma}</Td>
+              <Tr key={index} bg={isUserAddress ? 'blackAlpha.50' : 'white'}>
+                <Td fontWeight={isUserAddress ? 'semibold' : 'normal'}>{`#${
+                  index + 1
+                }`}</Td>
+                <Td fontWeight={isUserAddress ? 'semibold' : 'normal'}>
+                  {student.user_address}
+                </Td>
+                <Td fontWeight={isUserAddress ? 'semibold' : 'normal'}>
+                  {student.user_email}
+                </Td>
+                <Td fontWeight={isUserAddress ? 'semibold' : 'normal'}>
+                  {student.user_discord_handle}
+                </Td>
+                <Td
+                  fontWeight={isUserAddress ? 'semibold' : 'normal'}
+                  isNumeric
+                >
+                  {student.karma}
+                </Td>
               </Tr>
             )
           })}
