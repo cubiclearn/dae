@@ -91,7 +91,7 @@ export function useBurnCredential({
 
       if (!deleteResponse.ok) {
         const responseJSON = await deleteResponse.json()
-        throw new Error(responseJSON.error)
+        throw new Error(responseJSON.message)
       }
 
       if (credentialType === 'DISCIPULUS') {

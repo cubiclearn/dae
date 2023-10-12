@@ -42,7 +42,7 @@ export const useDeleteCredential = ({
 
     if (!response.ok) {
       const responseJSON = await response.json()
-      throw new Error(responseJSON.error)
+      throw new Error(responseJSON.message)
     }
 
     mutate(

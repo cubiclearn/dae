@@ -187,7 +187,7 @@ export function useCreateCourse({
 
       if (!response.ok) {
         const responseJSON = await response.json()
-        throw new Error(responseJSON.error)
+        throw new Error(responseJSON.message)
       }
 
       const responseData = (await response.json()) as {

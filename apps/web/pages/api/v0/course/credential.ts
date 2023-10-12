@@ -106,8 +106,8 @@ const handlePostRequest = async (
         description: description[0],
         image: ipfsCredentialImageData.url,
       },
-      'data/json',
       '',
+      'data/json',
     )
 
     //Create the credential using Prisma with the obtained IPFS CID and other data

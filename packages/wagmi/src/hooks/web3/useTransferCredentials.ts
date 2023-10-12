@@ -87,7 +87,7 @@ export function useTransferCredentials({
 
       if (!alreadyExistingCredentialResponse.ok) {
         const responseJSON = await alreadyExistingCredentialResponse.json()
-        throw new Error(responseJSON.error)
+        throw new Error(responseJSON.message)
       }
 
       const alreadyExistingCredentialResponseJSON: ApiResponse<{
@@ -152,7 +152,7 @@ export function useTransferCredentials({
 
       if (!response.ok) {
         const responseJSON = await response.json()
-        throw new Error(responseJSON.error)
+        throw new Error(responseJSON.message)
       }
 
       if (credentialType === 'DISCIPULUS') {
@@ -270,7 +270,7 @@ export function useTransferCredentials({
           )
           if (!alreadyExistingCredentialResponse.ok) {
             const responseJSON = await alreadyExistingCredentialResponse.json()
-            throw new Error(responseJSON.error)
+            throw new Error(responseJSON.message)
           }
 
           const alreadyExistingCredentialResponseJSON: ApiResponse<{
@@ -338,7 +338,7 @@ export function useTransferCredentials({
 
       if (!response.ok) {
         const responseJSON = await response.json()
-        throw new Error(responseJSON.error)
+        throw new Error(responseJSON.message)
       }
 
       if (credentialType === 'DISCIPULUS') {
