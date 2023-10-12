@@ -16,7 +16,6 @@ import { useCourseCredential } from '@dae/wagmi'
 import { ArrowBackIcon } from '@chakra-ui/icons'
 import NextLink from 'next/link'
 import { Address } from 'viem'
-import { useNetwork } from 'wagmi'
 import { SyncButton } from '../../SyncButton'
 import { CustomCredentialsRowList } from '../../UserRow'
 
@@ -27,13 +26,11 @@ type CredentialInfoContainerProps = {
 
 export const CredentialInfoContainer: React.FC<CredentialInfoContainerProps> =
   ({ credentialCid, courseAddress }) => {
-    const { chain } = useNetwork()
-
     const {
       data: credentialData,
       isLoading: isLoadingCredentialData,
       error: credentialDataError,
-    } = useCourseCredential(credentialCid, courseAddress, chain?.id)
+    } = useCourseCredential({ courseAddress, credentialCid })
 
     if (isLoadingCredentialData) {
       return (

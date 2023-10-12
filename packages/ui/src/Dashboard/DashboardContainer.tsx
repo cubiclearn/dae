@@ -37,12 +37,12 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
     data: isAdmin,
     isLoading: isLoadingAdminState,
     isError: isErrorLoadingAdminState,
-  } = useIsAdmin(courseAddress)
+  } = useIsAdmin({ courseAddress })
   const {
     data: isMagister,
     isLoading: isLoadingMagisterState,
     isError: isErrorLoadingMagisterState,
-  } = useIsMagister(courseAddress)
+  } = useIsMagister({ courseAddress })
 
   if (isCourseDataLoading || isLoadingAdminState || isLoadingMagisterState) {
     return (

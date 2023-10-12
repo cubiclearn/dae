@@ -11,7 +11,7 @@ import {
   Link,
 } from '@chakra-ui/react'
 import { useCourseCredentials } from '@dae/wagmi'
-import { Address, useNetwork } from 'wagmi'
+import { Address } from 'wagmi'
 import NextLink from 'next/link'
 import { Card } from './Card'
 
@@ -22,13 +22,10 @@ interface CourseCredentialsCardsListProps {
 export const CourseCredentialsCardsList: React.FC<
   CourseCredentialsCardsListProps
 > = ({ courseAddress }) => {
-  const { chain } = useNetwork()
-
-  const { data, error, isLoading } = useCourseCredentials(
+  const { data, error, isLoading } = useCourseCredentials({
     courseAddress,
-    chain?.id,
-    'OTHER',
-  )
+    credentialType: 'OTHER',
+  })
 
   if (isLoading) {
     return (

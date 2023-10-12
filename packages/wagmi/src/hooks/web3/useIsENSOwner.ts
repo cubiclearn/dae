@@ -5,10 +5,13 @@ import { useEnsAddress, useNetwork } from 'wagmi'
 const THREE_MINUTES = 1000 * 60 * 3
 const ENS_REGEX = /^([a-z0-9-]+\.eth)$/i
 
-export const useIsENSOwner = (
-  userAddress: Address | undefined,
-  ENSName: string | undefined,
-) => {
+export const useIsENSOwner = ({
+  userAddress,
+  ENSName,
+}: {
+  userAddress: Address | undefined
+  ENSName: string | undefined
+}) => {
   const { chain } = useNetwork()
   const shouldFetch =
     chain && !!userAddress && !!ENSName && !!ENSName.match(ENS_REGEX)

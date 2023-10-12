@@ -9,9 +9,9 @@ export type TransferData = {
   karma_increment: number
 }
 
-export function useTransferKarma(
-  karmaAccessControlAddress: Address | undefined,
-) {
+export function useTransferKarma({
+  karmaAccessControlAddress,
+}: { karmaAccessControlAddress: Address | undefined }) {
   const {
     isSuccess,
     isValidating,

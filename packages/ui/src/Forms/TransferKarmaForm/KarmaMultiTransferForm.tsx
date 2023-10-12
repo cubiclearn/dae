@@ -36,9 +36,9 @@ export const KarmaMultiTransferForm: React.FC<KarmaMultiTransferFormProps> = ({
 }) => {
   const { data } = useCourseData()
   const { multiTransfer, isLoading, isError, error, isSigning, isValidating } =
-    useTransferKarma(
-      data ? (data.karma_access_control_address as Address) : undefined,
-    )
+    useTransferKarma({
+      karmaAccessControlAddress: data?.karma_access_control_address as Address,
+    })
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const toast = useToast()
 

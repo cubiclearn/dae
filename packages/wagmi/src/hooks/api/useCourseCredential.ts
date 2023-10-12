@@ -3,17 +3,21 @@ import { Credential } from '@dae/database'
 import { Address } from 'viem'
 import { ApiRequestUrlAndParams, useApi } from '@dae/hooks'
 import { ApiResponse, SWRHook } from '@dae/types'
+import { useNetwork } from 'wagmi'
 
-export const useCourseCredential = (
-  credentialCid: string | undefined,
-  courseAddress: Address | undefined,
-  chainId: number | undefined,
-): SWRHook<{ credential: Credential }> => {
+export const useCourseCredential = ({
+  courseAddress,
+  credentialCid,
+}: {
+  courseAddress: Address | undefined
+  credentialCid: string | undefined
+}): SWRHook<{ credential: Credential }> => {
   const client = useApi()
+  const { chain } = useNetwork()
   const shouldFetch =
     credentialCid !== undefined &&
     courseAddress !== undefined &&
-    chainId !== undefined
+    chain?.id !== undefined
 
   const { data: response, error } = useSWRImmutable<
     ApiResponse<{ credential: Credential }>
@@ -24,7 +28,7 @@ export const useCourseCredential = (
           {
             credentialCid: credentialCid,
             courseAddress: courseAddress,
-            chainId: chainId,
+            chainId: chain.id,
           },
         ]
       : null,

@@ -24,7 +24,7 @@ import { useCreateCourse, useIsENSOwner } from '@dae/wagmi'
 import { useFormik } from 'formik'
 import { useRouter } from 'next/router'
 import { useEffect, useRef } from 'react'
-import { useAccount, useNetwork } from 'wagmi'
+import { useAccount } from 'wagmi'
 import * as Yup from 'yup'
 import { ProgressStepper } from '../../Stepper'
 import {
@@ -80,12 +80,11 @@ const validationSchema = Yup.object().shape({
 })
 
 export const CreateCourseForm = () => {
-  const { chain } = useNetwork()
-  const { address } = useAccount()
+  const { address: userAddress } = useAccount()
   const imageInputRef = useRef<HTMLInputElement | null>(null)
 
   const { create, isLoading, isError, error, isSigning, isValidating, step } =
-    useCreateCourse(chain, address)
+    useCreateCourse({ adminAddress: userAddress })
   const toast = useToast()
   const router = useRouter()
 
@@ -112,24 +111,16 @@ export const CreateCourseForm = () => {
     },
   ]
 
-  const handleImageInputFieldChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const file = event.target.files?.[0]
-    setFieldValue('image', file)
-  }
-
-  const handleResetImageInputField = () => {
-    if (imageInputRef.current) {
-      imageInputRef.current.value = ''
-    }
-    setFieldValue('image', null)
-  }
-
   const { activeStep, setActiveStep } = useSteps({
     index: 0,
     count: steps.length,
   })
+
+  useEffect(() => {
+    if (isLoading && step) {
+      setActiveStep(step)
+    }
+  }, [step])
 
   const {
     values,
@@ -196,13 +187,46 @@ export const CreateCourseForm = () => {
     validationSchema: validationSchema,
   })
 
-  const { data: isENSOwner } = useIsENSOwner(address, values.snapshotSpaceENS)
+  const { data: isENSOwner } = useIsENSOwner({
+    userAddress,
+    ENSName: values.snapshotSpaceENS,
+  })
 
-  useEffect(() => {
-    if (isLoading && step) {
-      setActiveStep(step)
+  const handleImageInputFieldChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0]
+    setFieldValue('image', file)
+  }
+
+  const handleResetImageInputField = () => {
+    if (imageInputRef.current) {
+      imageInputRef.current.value = ''
     }
-  }, [step])
+    setFieldValue('image', null)
+  }
+
+  const handleChangeMagisterKarma = (
+    _valueAsString: string,
+    valueAsNumber: number,
+  ) => {
+    if (isNaN(valueAsNumber)) {
+      setFieldValue('magisterBaseKarma', 0)
+    } else {
+      setFieldValue('magisterBaseKarma', valueAsNumber)
+    }
+  }
+
+  const handleChangeDiscipulusKarma = (
+    _valueAsString: string,
+    valueAsNumber: number,
+  ) => {
+    if (isNaN(valueAsNumber)) {
+      setFieldValue('discipulusBaseKarma', 0)
+    } else {
+      setFieldValue('discipulusBaseKarma', valueAsNumber)
+    }
+  }
 
   return (
     <Stack
@@ -296,13 +320,7 @@ export const CreateCourseForm = () => {
               defaultValue={0}
               min={0}
               id="magisterBaseKarma"
-              onChange={(_valueAsString, valueAsNumber) => {
-                if (isNaN(valueAsNumber)) {
-                  setFieldValue('magisterBaseKarma', 0) // Set to a default value or any other appropriate value
-                } else {
-                  setFieldValue('magisterBaseKarma', valueAsNumber)
-                }
-              }}
+              onChange={handleChangeMagisterKarma}
               value={values.magisterBaseKarma}
               onBlur={handleBlur}
               isDisabled={isLoading || isSigning || isValidating}
@@ -327,13 +345,7 @@ export const CreateCourseForm = () => {
               defaultValue={0}
               min={0}
               id="discipulusBaseKarma"
-              onChange={(_valueAsString, valueAsNumber) => {
-                if (isNaN(valueAsNumber)) {
-                  setFieldValue('discipulusBaseKarma', 0) // Set to a default value or any other appropriate value
-                } else {
-                  setFieldValue('discipulusBaseKarma', valueAsNumber)
-                }
-              }}
+              onChange={handleChangeDiscipulusKarma}
               value={values.discipulusBaseKarma}
               onBlur={handleBlur}
               isDisabled={isLoading || isSigning || isValidating}

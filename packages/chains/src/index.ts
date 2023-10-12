@@ -1,4 +1,6 @@
-import { mainnet, sepolia, foundry } from 'viem/chains'
+import { mainnet, sepolia, foundry, goerli } from 'viem/chains'
+
+export const DefaultChain = sepolia
 
 export const ChainId = {
   ETHEREUM: 1,
@@ -17,7 +19,14 @@ export const ChainKey = {
 
 export type ChainKey = typeof ChainKey[keyof typeof ChainKey]
 
-export const DefaultChain = sepolia
+export const ChainToSnapshotChain = {
+  [ChainId.ETHEREUM]: mainnet,
+  [ChainId.SEPOLIA]: goerli,
+  [ChainId.FOUNDRY]: goerli,
+} as const
+
+export type ChainToSnapshotChain =
+  typeof ChainToSnapshotChain[keyof typeof ChainToSnapshotChain]
 
 export const ChainSnapshotHub = {
   [ChainId.ETHEREUM]: 'https://hub.snapshot.org',

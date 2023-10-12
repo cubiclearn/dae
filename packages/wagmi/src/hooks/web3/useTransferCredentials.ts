@@ -14,10 +14,10 @@ export type TransferCredentialsData = {
   discord?: string
 }
 
-export function useTransferCredentials(
-  courseAddress: Address,
-  credentialType: CredentialType,
-) {
+export function useTransferCredentials({
+  courseAddress,
+  credentialType,
+}: { courseAddress: Address; credentialType: CredentialType }) {
   const {
     isSuccess,
     isValidating,

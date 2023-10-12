@@ -7,3 +7,4 @@ export const ONE_MINUTE = 1 * 1000
 export const ONE_MEGABYTE_IN_BYTES = 1024 * 1024
 
 export const ETHEREUM_ADDRESS_REGEX = /^0x([A-Fa-f0-9]{40})$/
+export const ETHEREUM_ENS_REGEX = /^([a-z0-9-]+\.eth)$/i

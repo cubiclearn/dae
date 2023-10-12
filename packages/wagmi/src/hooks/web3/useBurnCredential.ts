@@ -12,10 +12,13 @@ interface BurnCredentialHookInterface extends UseWeb3WriteHookInterface {
   burnCredential: (tokenId: number) => Promise<void>
 }
 
-export function useBurnCredential(
-  courseAddress: Address,
-  credentialType: CredentialType,
-): BurnCredentialHookInterface {
+export function useBurnCredential({
+  courseAddress,
+  credentialType,
+}: {
+  courseAddress: Address
+  credentialType: CredentialType
+}): BurnCredentialHookInterface {
   const {
     isSuccess,
     isValidating,

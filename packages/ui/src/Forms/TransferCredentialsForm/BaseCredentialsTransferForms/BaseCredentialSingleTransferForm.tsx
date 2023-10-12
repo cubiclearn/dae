@@ -14,14 +14,14 @@ import {
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
 import React from 'react'
-import { Address, useNetwork } from 'wagmi'
+import { Address } from 'wagmi'
 import * as Yup from 'yup'
 import { useCourseCredentials, useTransferCredentials } from '@dae/wagmi'
 
 const ethereumAddressRegex = /^0x([A-Fa-f0-9]{40})$/
 
 type TransferCredentialFormProps = {
-  courseAddress: string
+  courseAddress: Address
   credentialType: 'MAGISTER' | 'DISCIPULUS'
   onIsLoading: (_isLoading: boolean) => void
 }
@@ -37,16 +37,14 @@ const validationSchema = Yup.object().shape({
 export const BaseCredentialSingleTransferForm: React.FC<
   TransferCredentialFormProps
 > = ({ courseAddress, credentialType, onIsLoading }) => {
-  const { chain } = useNetwork()
-  const { data } = useCourseCredentials(
-    courseAddress as Address,
-    chain?.id,
-    credentialType,
-  )
   const toast = useToast()
+  const { data: courseCredentialsData } = useCourseCredentials({
+    courseAddress,
+    credentialType,
+  })
 
   const { transfer, isLoading, isError, error, isSigning, isValidating } =
-    useTransferCredentials(courseAddress as Address, credentialType)
+    useTransferCredentials({ courseAddress, credentialType })
 
   const {
     values,
@@ -64,7 +62,7 @@ export const BaseCredentialSingleTransferForm: React.FC<
       userDiscordUsername: '',
     },
     onSubmit: async (values) => {
-      if (!data) return
+      if (!courseCredentialsData) return
       onIsLoading(true)
       toast.promise(
         transfer(
@@ -73,7 +71,7 @@ export const BaseCredentialSingleTransferForm: React.FC<
             email: values.userEmail,
             discord: values.userDiscordUsername,
           },
-          data.credentials[0].ipfs_cid,
+          courseCredentialsData.credentials[0].ipfs_cid,
         )
           .then(() => {
             resetForm()

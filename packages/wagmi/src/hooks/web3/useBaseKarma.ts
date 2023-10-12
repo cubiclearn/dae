@@ -1,6 +1,7 @@
 import { Address } from 'viem'
 import { useContractRead } from 'wagmi'
 import { KarmaAccessControlAbiUint64 } from '@dae/abi'
+import { ONE_MINUTE } from '@dae/constants'
 
 export const useBaseKarma = ({
   karmaAccessControlAddress,
@@ -15,8 +16,8 @@ export const useBaseKarma = ({
     args: userAddress ? [userAddress] : undefined,
     functionName: 'hasAccess',
     enabled: Boolean(karmaAccessControlAddress && userAddress),
-    cacheTime: Infinity,
-    staleTime: Infinity,
+    cacheTime: ONE_MINUTE * 10,
+    staleTime: ONE_MINUTE * 5,
   })
 
   const { data, isLoading, isError, error, isSuccess } = useContractRead({
@@ -25,8 +26,8 @@ export const useBaseKarma = ({
     args: userAddress ? [userAddress] : undefined,
     functionName: 'getBaseKarma',
     enabled: Boolean(karmaAccessControlAddress && userAddress && hasAccess),
-    cacheTime: Infinity,
-    staleTime: Infinity,
+    cacheTime: ONE_MINUTE * 10,
+    staleTime: ONE_MINUTE * 5,
   })
 
   return {

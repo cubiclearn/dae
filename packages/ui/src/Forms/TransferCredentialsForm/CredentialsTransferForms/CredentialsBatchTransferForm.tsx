@@ -25,7 +25,7 @@ import {
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
 import React, { ChangeEvent, useCallback, useRef, useState } from 'react'
-import { Address, useNetwork } from 'wagmi'
+import { Address } from 'wagmi'
 import * as Yup from 'yup'
 import {
   useTransferCredentials,
@@ -46,24 +46,22 @@ const validationSchema = Yup.object().shape({
 })
 
 type TransferCredentialsFormProps = {
-  courseAddress: string
+  courseAddress: Address
   onIsLoading: (_isLoading: boolean) => void
 }
 
 export const CredentialsBatchTransferForm: React.FC<
   TransferCredentialsFormProps
 > = ({ courseAddress, onIsLoading }) => {
-  const { chain } = useNetwork()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
-  const { data } = useCourseCredentials(
-    courseAddress as Address,
-    chain?.id,
-    'OTHER',
-  )
+  const { data } = useCourseCredentials({
+    courseAddress,
+    credentialType: 'OTHER',
+  })
   const toast = useToast()
 
   const { multiTransfer, isLoading, isError, error, isSigning, isValidating } =
-    useTransferCredentials(courseAddress as Address, 'OTHER')
+    useTransferCredentials({ courseAddress, credentialType: 'OTHER' })
 
   const [csvData, setCsvData] = useState<TransferCredentialsData[]>([])
 

@@ -16,10 +16,12 @@ import { CourseMenuItems } from './NavigationMenu'
 const CourseNavigationMenu: React.FC = () => {
   const { query } = useRouter()
   const courseAddress = query.address as Address
-  const { data: isAdmin, isLoading: isLoadingAdminState } =
-    useIsAdmin(courseAddress)
-  const { data: isMagister, isLoading: isLoadingMagisterState } =
-    useIsMagister(courseAddress)
+  const { data: isAdmin, isLoading: isLoadingAdminState } = useIsAdmin({
+    courseAddress,
+  })
+  const { data: isMagister, isLoading: isLoadingMagisterState } = useIsMagister(
+    { courseAddress },
+  )
 
   return renderNavigationMenu({
     menuItems: CourseMenuItems,

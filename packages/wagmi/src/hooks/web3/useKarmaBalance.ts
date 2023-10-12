@@ -16,8 +16,8 @@ export const useKarmaBalance = ({
     args: userAddress ? [userAddress] : undefined,
     functionName: 'hasAccess',
     enabled: Boolean(karmaAccessControlAddress && userAddress),
-    cacheTime: Infinity,
-    staleTime: Infinity,
+    cacheTime: ONE_MINUTE * 10,
+    staleTime: ONE_MINUTE * 5,
   })
 
   const { data, isLoading, isError, error, isSuccess } = useContractRead({

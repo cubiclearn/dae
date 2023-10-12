@@ -1,40 +1,22 @@
 import { useState } from 'react'
-import { Chain, useContractWrite, usePublicClient } from 'wagmi'
+import { useContractWrite, useNetwork, usePublicClient } from 'wagmi'
 import { Address } from 'viem'
 import { CredentialsFactoryAbi } from '@dae/abi'
 import { useCreateSnapshotSpace } from '@dae/snapshot'
 import type { Course } from '@dae/database'
-import { mainnet, goerli } from 'viem/chains'
-import { FactoryContractAddress } from '@dae/chains'
-import {
-  ApiResponse,
-  UseWeb3WriteHookInterface,
-  VotingStrategy,
-} from '@dae/types'
+import { ApiResponse, VotingStrategy } from '@dae/types'
 import { useWeb3HookState } from '../useWeb3HookState'
-import { CONFIRMATION_BLOCKS } from '@dae/constants'
+import { CONFIRMATION_BLOCKS, ETHEREUM_ENS_REGEX } from '@dae/constants'
 import { mutate } from 'swr'
 import { IpfsUploadResult } from '@dae/ipfs'
+import { useSnapshotPublicClient } from './useSnapshotPublicClient'
+import { useChainCredentialsFactoryAddress } from './useChainCredentialsFactoryAddress'
 
-interface CreateCredentialHookInterface extends UseWeb3WriteHookInterface {
-  create: (
-    name: string,
-    description: string,
-    image: File,
-    website: string,
-    mediaChannel: string,
-    magisterBaseKarma: number,
-    discipulusBaseKarma: number,
-    snapshotSpaceENS: string,
-    votingStrategy: 'linear-voting' | 'quadratic-voting',
-  ) => Promise<void>
-  step: number
-}
-
-export function useCreateCourse(
-  chain: Chain | undefined,
-  creatorAddress: Address | undefined,
-): CreateCredentialHookInterface {
+export function useCreateCourse({
+  adminAddress,
+}: {
+  adminAddress: Address | undefined
+}) {
   const {
     isSuccess,
     isValidating,
@@ -45,28 +27,23 @@ export function useCreateCourse(
     ...state
   } = useWeb3HookState()
 
+  const { chain } = useNetwork()
   const [step, setStep] = useState<number>(0)
   const { create: createSnapshotSpace } = useCreateSnapshotSpace()
+  const publicClient = usePublicClient()
 
-  const factoryAddress = chain
-    ? (FactoryContractAddress[
-        chain.id as keyof FactoryContractAddress
-      ] as Address)
-    : undefined
+  const credentialFactoryAddress = useChainCredentialsFactoryAddress({
+    chainId: chain?.id,
+  })
 
   const { writeAsync } = useContractWrite({
-    address: factoryAddress,
+    address: credentialFactoryAddress,
     functionName: 'createCourse',
     abi: CredentialsFactoryAbi,
   })
 
-  const publicClient = usePublicClient()
-
-  const ENSChainId =
-    chain && !chain.testnet && chain.id !== 31337 ? mainnet.id : goerli.id
-
-  const ENSPublicClient = usePublicClient({
-    chainId: ENSChainId,
+  const snapshotPublicClient = useSnapshotPublicClient({
+    courseChainId: chain?.id,
   })
 
   const create = async (
@@ -84,15 +61,34 @@ export function useCreateCourse(
       state.setValidating()
       setStep(0)
 
-      if (!snapshotSpaceENS.match(/^([a-z0-9-]+\.eth)$/i)) {
+      if (!chain?.id || !snapshotPublicClient || !credentialFactoryAddress) {
+        return
+      }
+
+      console.log('Media', mediaChannel)
+
+      if (
+        !name ||
+        !description ||
+        !image ||
+        !website ||
+        !magisterBaseKarma ||
+        !discipulusBaseKarma ||
+        !snapshotSpaceENS ||
+        !votingStrategy
+      ) {
+        throw new Error('Missing required parameters for creating new course.')
+      }
+
+      if (!snapshotSpaceENS.match(ETHEREUM_ENS_REGEX)) {
         throw new Error('Invalid ENS address.')
       }
 
-      const resolverAddress = await ENSPublicClient.getEnsAddress({
+      const resolverAddress = await snapshotPublicClient.getEnsAddress({
         name: snapshotSpaceENS,
       })
 
-      if (resolverAddress !== creatorAddress) {
+      if (resolverAddress !== adminAddress) {
         throw new Error('You are not the owner of this ENS address.')
       }
 
@@ -162,7 +158,7 @@ export function useCreateCourse(
         method: 'POST',
         body: JSON.stringify({
           txHash: writeResult.hash,
-          chainId: publicClient.chain.id,
+          chainId: chain.id,
           action: 'CREATE_COURSE',
         }),
         headers: {
@@ -182,7 +178,7 @@ export function useCreateCourse(
         method: 'POST',
         body: JSON.stringify({
           txHash: txReceipt.transactionHash,
-          chainId: publicClient.chain.id,
+          chainId: chain.id,
         }),
         headers: {
           'Content-type': 'application/json; charset=UTF-8',

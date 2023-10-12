@@ -1,8 +1,11 @@
 import { CredentialsBurnableAbi } from '@dae/abi'
+import { ONE_MINUTE } from '@dae/constants'
 import { Address, toHex, zeroAddress } from 'viem'
 import { useAccount, useContractRead } from 'wagmi'
 
-export const useIsAdmin = (courseAddress: Address | undefined) => {
+export const useIsAdmin = ({
+  courseAddress,
+}: { courseAddress: Address | undefined }) => {
   const { address: userAddress } = useAccount()
 
   const { data, isLoading, isError, isSuccess } = useContractRead({
@@ -11,8 +14,8 @@ export const useIsAdmin = (courseAddress: Address | undefined) => {
     functionName: 'hasRole',
     args: [toHex(0, { size: 32 }), userAddress ?? zeroAddress],
     enabled: userAddress !== undefined && courseAddress !== undefined,
-    cacheTime: Infinity,
-    staleTime: Infinity,
+    cacheTime: ONE_MINUTE * 10,
+    staleTime: ONE_MINUTE * 5,
   })
 
   return {

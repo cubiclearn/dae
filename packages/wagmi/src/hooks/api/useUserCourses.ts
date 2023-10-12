@@ -3,6 +3,7 @@ import { CredentialType, UserCredentials } from '@dae/database'
 import { ApiRequestUrlAndParams, useApi } from '@dae/hooks'
 import { ApiResponse, SWRInfiniteHook } from '@dae/types'
 import useSWRInfinite from 'swr/infinite'
+import { useNetwork } from 'wagmi'
 
 const PAGE_SIZE = 10
 
@@ -12,13 +13,16 @@ type ApiResponseType = {
   })[]
 }
 
-export const useUserCourses = (
-  userAddress: Address | undefined,
-  chainId: number | undefined,
-  roles: CredentialType[],
-): SWRInfiniteHook<ApiResponseType> => {
+export const useUserCourses = ({
+  userAddress,
+  roles,
+}: {
+  userAddress: Address | undefined
+  roles: CredentialType[]
+}): SWRInfiniteHook<ApiResponseType> => {
   const client = useApi()
-  const shouldFetch = userAddress !== undefined && chainId !== undefined
+  const { chain } = useNetwork()
+  const shouldFetch = userAddress !== undefined && chain?.id !== undefined
 
   const getKey = (
     pageIndex: number,
@@ -32,7 +36,7 @@ export const useUserCourses = (
       'user/courses',
       {
         userAddress: userAddress,
-        chainId: chainId,
+        chainId: chain.id,
         roles: roles,
         skip: skip,
         limit: PAGE_SIZE,

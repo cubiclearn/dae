@@ -24,12 +24,12 @@ const withCourseRoleAuth = (
       data: isAdmin,
       isLoading: isLoadingAdminRole,
       isError: isErrorLoadingAdminRole,
-    } = useIsAdmin(courseAddress)
+    } = useIsAdmin({ courseAddress })
     const {
       data: isMagister,
       isLoading: isLoadingMagisterRole,
       isError: isErrorLoadingMagisterRole,
-    } = useIsMagister(courseAddress)
+    } = useIsMagister({ courseAddress })
     const {
       data: hasAccess,
       isLoading: isLoadingHasAccess,

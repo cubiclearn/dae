@@ -15,7 +15,7 @@ import {
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
 import React, { ChangeEvent } from 'react'
-import { Address, useNetwork } from 'wagmi'
+import { Address } from 'wagmi'
 import * as Yup from 'yup'
 import { useCourseCredentials, useTransferCredentials } from '@dae/wagmi'
 import { ETHEREUM_ADDRESS_REGEX } from '@dae/constants'
@@ -35,12 +35,14 @@ const validationSchema = Yup.object().shape({
 export const CredentialsSingleTransferForm: React.FC<
   TransferCredentialFormProps
 > = ({ courseAddress, onIsLoading }) => {
-  const { chain } = useNetwork()
-  const { data } = useCourseCredentials(courseAddress, chain?.id, 'OTHER')
+  const { data } = useCourseCredentials({
+    courseAddress,
+    credentialType: 'OTHER',
+  })
   const toast = useToast()
 
   const { transfer, isLoading, isError, error, isSigning, isValidating } =
-    useTransferCredentials(courseAddress, 'OTHER')
+    useTransferCredentials({ courseAddress, credentialType: 'OTHER' })
 
   const {
     values,

@@ -39,7 +39,7 @@ export const CredentialRowList: React.FC<CredentialRowListProps> = ({
   const toast = useToast()
   const { address: userAddress } = useAccount()
   const { burnCredential, isLoading, isSigning, isValidating } =
-    useBurnCredential(courseAddress, credentialType)
+    useBurnCredential({ courseAddress, credentialType })
 
   const ref = useRef<HTMLDivElement | null>(null)
   const observer = useIntersectionObserver(ref, {})

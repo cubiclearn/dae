@@ -32,12 +32,12 @@ const validationSchema = Yup.object().shape({
 
 export const CreateSnapshotSpaceForm: React.FC = () => {
   const { data: courseData } = useCourseData()
-  const { address } = useAccount()
+  const { address: userAddress } = useAccount()
   const {
     data: isENSOwner,
     isLoading: isLoadingENSOwner,
     isError: isErrorLoadingENSOwner,
-  } = useIsENSOwner(address, courseData?.snapshot_space_ens)
+  } = useIsENSOwner({ userAddress, ENSName: courseData?.snapshot_space_ens })
 
   const { create, isLoading, isError, error, isValidating } =
     useCreateSnapshotSpace()

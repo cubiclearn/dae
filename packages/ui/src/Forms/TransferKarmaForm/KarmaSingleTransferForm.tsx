@@ -51,7 +51,10 @@ export const KarmaSingleTransferForm: React.FC<KarmaSingleTransferFormProps> =
     const toast = useToast()
     const { data: courseData } = useCourseData()
     const { transfer, isLoading, isError, error, isSigning, isValidating } =
-      useTransferKarma(courseData?.karma_access_control_address as Address)
+      useTransferKarma({
+        karmaAccessControlAddress:
+          courseData?.karma_access_control_address as Address,
+      })
 
     const {
       values,
