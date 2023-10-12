@@ -33,6 +33,7 @@ import {
 import Papa from 'papaparse'
 import { checkFileType } from '../../utils'
 import { useToast } from '@chakra-ui/react'
+import { CSV_TRANSFER_CREDENTIALS_ENTRIES_LIMIT } from '@dae/constants'
 
 const validationSchema = Yup.object().shape({
   CSVFile: Yup.mixed()
@@ -118,7 +119,9 @@ export const BaseCredentialsBatchTransfer: React.FC<
         dynamicTyping: true,
         complete: (results) => {
           setFieldValue('CSVFile', file)
-          setCsvData(results.data)
+          setCsvData(
+            results.data.slice(0, CSV_TRANSFER_CREDENTIALS_ENTRIES_LIMIT),
+          )
         },
       })
     },
@@ -144,7 +147,7 @@ export const BaseCredentialsBatchTransfer: React.FC<
               isDisabled={isLoading || isValidating || isSigning}
             />
             <FormHelperText>
-              Click{' '}
+              Maximum {CSV_TRANSFER_CREDENTIALS_ENTRIES_LIMIT} entries. Click{' '}
               <Link
                 isExternal
                 fontWeight={'bold'}
@@ -164,14 +167,16 @@ export const BaseCredentialsBatchTransfer: React.FC<
               <Table>
                 <Thead>
                   <Tr>
+                    <Th>#</Th>
                     <Th>Address</Th>
                     <Th>Email</Th>
                     <Th>Discord handle</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {csvData.map((row) => (
+                  {csvData.map((row, index) => (
                     <Tr key={row.address}>
+                      <Td>{index + 1}.</Td>
                       <Td>{row.address}</Td>
                       <Td>{row.email}</Td>
                       <Td>{row.discord}</Td>

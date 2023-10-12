@@ -34,6 +34,7 @@ import {
 } from '@dae/wagmi'
 import Papa from 'papaparse'
 import { checkFileType } from '../../utils'
+import { CSV_TRANSFER_CREDENTIALS_ENTRIES_LIMIT } from '@dae/constants'
 
 const validationSchema = Yup.object().shape({
   CSVFile: Yup.mixed()
@@ -118,7 +119,9 @@ export const CredentialsBatchTransferForm: React.FC<
         dynamicTyping: true,
         complete: (results) => {
           setFieldValue('CSVFile', file)
-          setCsvData(results.data)
+          setCsvData(
+            results.data.slice(0, CSV_TRANSFER_CREDENTIALS_ENTRIES_LIMIT),
+          )
         },
       })
     },
@@ -144,7 +147,7 @@ export const CredentialsBatchTransferForm: React.FC<
               isDisabled={isLoading || isValidating || isSigning}
             />
             <FormHelperText>
-              Click{' '}
+              Maximum {CSV_TRANSFER_CREDENTIALS_ENTRIES_LIMIT} entries. Click{' '}
               <Link
                 isExternal
                 fontWeight={'bold'}
@@ -169,20 +172,13 @@ export const CredentialsBatchTransferForm: React.FC<
               value={values.credentialIPFSCid}
               isDisabled={isLoading || isValidating || isSigning}
             >
-              {data ? (
-                data.credentials.map((credential) => {
-                  return (
-                    <option
-                      key={credential.ipfs_cid}
-                      value={credential.ipfs_cid}
-                    >
-                      {credential.name}
-                    </option>
-                  )
-                })
-              ) : (
-                <></>
-              )}
+              {data?.credentials.map((credential) => {
+                return (
+                  <option key={credential.ipfs_cid} value={credential.ipfs_cid}>
+                    {credential.name}
+                  </option>
+                )
+              })}
             </Select>
             <FormErrorMessage>{errors.credentialIPFSCid}</FormErrorMessage>
           </FormControl>
@@ -194,12 +190,14 @@ export const CredentialsBatchTransferForm: React.FC<
               <Table>
                 <Thead>
                   <Tr>
+                    <Th>#</Th>
                     <Th>Address</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {csvData.map((row) => (
+                  {csvData.map((row, index) => (
                     <Tr key={row.address}>
+                      <Td>{index + 1}.</Td>
                       <Td>{row.address}</Td>
                     </Tr>
                   ))}

@@ -124,17 +124,13 @@ export const CredentialsSingleTransferForm: React.FC<
             onReset={handleReset}
             isDisabled={isLoading || isValidating || isSigning}
           >
-            {data ? (
-              data.credentials.map((credential) => {
-                return (
-                  <option key={credential.ipfs_cid} value={credential.ipfs_cid}>
-                    {credential.name}
-                  </option>
-                )
-              })
-            ) : (
-              <></>
-            )}
+            {data?.credentials.map((credential) => {
+              return (
+                <option key={credential.ipfs_cid} value={credential.ipfs_cid}>
+                  {credential.name}
+                </option>
+              )
+            })}
           </Select>
           <FormErrorMessage>{errors.credentialIPFSCid}</FormErrorMessage>
         </FormControl>
