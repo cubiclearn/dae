@@ -9,9 +9,9 @@ export type TransferData = {
   karma_increment: number
 }
 
-export function useTransferKarma(
-  karmaAccessControlAddress: Address | undefined,
-) {
+export function useTransferKarma({
+  karmaAccessControlAddress,
+}: { karmaAccessControlAddress: Address | undefined }) {
   const {
     isSuccess,
     isValidating,
@@ -115,11 +115,11 @@ export function useTransferKarma(
     try {
       state.setValidating()
 
-      const isZeroIncrement = transferData.some(
+      const hasZeroKarmaIncrementEntry = transferData.some(
         (item) => item.karma_increment === 0,
       )
 
-      if (isZeroIncrement) {
+      if (hasZeroKarmaIncrementEntry) {
         throw new Error(
           'Some of your entries have a karma increment value of 0 which makes no sense. Please fix them or remove them and try again.',
         )
@@ -129,7 +129,7 @@ export function useTransferKarma(
         throw new Error('Karma Access Control Address is invalid')
       }
 
-      const accessResult = await Promise.all(
+      const addressesAccessData = await Promise.all(
         transferData.map(async (user) => {
           const hasAccess = await publicClient.readContract({
             abi: KarmaAccessControlAbiUint64,
@@ -141,7 +141,7 @@ export function useTransferKarma(
         }),
       )
 
-      const addressesWithNoAccess = accessResult
+      const addressesWithNoAccess = addressesAccessData
         .filter((item) => !item.hasAccess)
         .map((item) => item.address)
 
@@ -174,7 +174,7 @@ export function useTransferKarma(
             userBaseKarma
           ) {
             throw new Error(
-              'Invalid karma amount. The amount cannot be under user base karma.',
+              `Invalid karma amount. The amount cannot be under user base karma for address ${user.address}.`,
             )
           }
 

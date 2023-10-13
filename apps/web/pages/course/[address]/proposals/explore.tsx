@@ -5,8 +5,9 @@ import { useRouter } from 'next/router'
 import { Stack, Tabs, TabList, Tab, Link } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import { ProposalRowList } from '@dae/ui'
+import withCourseRoleAuth from '../../../../components/HOC/withCourseRole'
 
-export default function TransferKarmaPage() {
+function ExploreProposals() {
   const router = useRouter()
   const status = router.query.status as 'active' | 'closed'
   const courseAddress = router.query.address as Address
@@ -47,3 +48,5 @@ export default function TransferKarmaPage() {
     </>
   )
 }
+
+export default withCourseRoleAuth(ExploreProposals, 'DISCIPULUS')

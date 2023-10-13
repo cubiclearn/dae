@@ -15,7 +15,7 @@ import {
   useCourseCredentialOwners,
   useDeleteCredential,
 } from '@dae/wagmi'
-import { Address, useNetwork } from 'wagmi'
+import { Address } from 'wagmi'
 import { CredentialRowList } from './CredentialsRowList'
 import { ConfirmActionModal } from '../ConfirmActionModal'
 import { useRouter } from 'next/router'
@@ -27,7 +27,6 @@ interface CustomCredentialsRowListProps {
 
 export const CustomCredentialsRowList: React.FC<CustomCredentialsRowListProps> =
   ({ courseAddress, credentialCid }) => {
-    const { chain } = useNetwork()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const toast = useToast()
     const router = useRouter()
@@ -36,7 +35,7 @@ export const CustomCredentialsRowList: React.FC<CustomCredentialsRowListProps> =
       data: courseData,
       isLoading: isLoadingCourseData,
       isError: isErrorLoadingCourseData,
-    } = useCourse(courseAddress, chain?.id)
+    } = useCourse({ courseAddress })
 
     const {
       data: credentialOwnersData,
@@ -45,10 +44,10 @@ export const CustomCredentialsRowList: React.FC<CustomCredentialsRowListProps> =
       setSize,
       size,
       hasMore,
-    } = useCourseCredentialOwners(credentialCid, courseAddress, chain?.id)
+    } = useCourseCredentialOwners({ courseAddress, credentialCid })
 
     const { deleteCredential, isLoading: isDeletingCredential } =
-      useDeleteCredential(credentialCid, courseAddress, chain?.id)
+      useDeleteCredential({ courseAddress, credentialCid })
 
     const handleOpenModal = () => {
       setIsModalOpen(true)

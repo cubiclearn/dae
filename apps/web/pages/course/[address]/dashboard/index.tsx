@@ -3,8 +3,9 @@ import { Layout } from '@dae/ui'
 import { DashboardContainer } from '@dae/ui'
 import { useRouter } from 'next/router'
 import { Address } from 'viem'
+import withCourseRoleAuth from '../../../../components/HOC/withCourseRole'
 
-export default function TransferKarmaPage() {
+function Dashboard() {
   const router = useRouter()
   const courseAddress = router.query.address as Address
 
@@ -22,3 +23,5 @@ export default function TransferKarmaPage() {
     </>
   )
 }
+
+export default withCourseRoleAuth(Dashboard, 'DISCIPULUS')

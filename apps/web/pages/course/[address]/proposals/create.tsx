@@ -3,8 +3,9 @@ import { Layout, ProposalContainer } from '@dae/ui'
 import { CreateProposalForm } from '@dae/ui'
 import { Address } from 'wagmi'
 import { useRouter } from 'next/router'
+import withCourseRoleAuth from '../../../../components/HOC/withCourseRole'
 
-export default function TransferKarmaPage() {
+function CreateProposal() {
   const router = useRouter()
   const courseAddress = router.query.address as Address
 
@@ -24,3 +25,5 @@ export default function TransferKarmaPage() {
     </>
   )
 }
+
+export default withCourseRoleAuth(CreateProposal, 'MAGISTER')

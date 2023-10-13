@@ -13,6 +13,7 @@
         "@dae/snapshot": "workspace:*",
         "@dae/ui": "workspace:*",
         "@dae/viem-config": "workspace:*",
+        "@dae/wagmi": "workspace:*",
         "@emotion/react": "11.11.1",
         "@emotion/styled": "11.11.0",
         "@next-auth/prisma-adapter": "1.0.7",

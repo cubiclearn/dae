@@ -26,7 +26,7 @@ export const StudentsCredentialsRowList: React.FC<
     data: courseData,
     isLoading: isLoadingCourseData,
     isError: isErrorLoadingCourseData,
-  } = useCourse(courseAddress, chain?.id)
+  } = useCourse({ courseAddress })
 
   const {
     data: studentsCredentialsData,

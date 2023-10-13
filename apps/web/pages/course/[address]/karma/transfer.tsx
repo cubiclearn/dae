@@ -1,7 +1,8 @@
 import Head from 'next/head'
 import { Layout, TransferKarmaForm } from '@dae/ui'
+import withCourseRoleAuth from '../../../../components/HOC/withCourseRole'
 
-export default function TransferKarmaPage() {
+function TransferKarma() {
   return (
     <>
       <Head>
@@ -16,3 +17,5 @@ export default function TransferKarmaPage() {
     </>
   )
 }
+
+export default withCourseRoleAuth(TransferKarma, 'MAGISTER')

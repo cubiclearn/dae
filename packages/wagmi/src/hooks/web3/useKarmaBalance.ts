@@ -1,49 +1,37 @@
 import { Address } from 'viem'
-import { useContractReads } from 'wagmi'
+import { useContractRead } from 'wagmi'
 import { KarmaAccessControlAbiUint64 } from '@dae/abi'
-import { UseWeb3ReadHookInterface } from '@dae/types'
+import { ONE_MINUTE } from '@dae/constants'
 
-export const useKarmaBalance = (
-  karmaAccessControlAddress: Address | undefined,
-  userAddress: Address | undefined,
-): UseWeb3ReadHookInterface<
-  | {
-      hasAccess: boolean | undefined
-      rate: number | undefined
-      baseKarma: number | undefined
-    }
-  | undefined
-> => {
-  const karmaAccessControlContract = {
+export const useKarmaBalance = ({
+  karmaAccessControlAddress,
+  userAddress,
+}: {
+  karmaAccessControlAddress: Address | undefined
+  userAddress: Address | undefined
+}) => {
+  const { data: hasAccess } = useContractRead({
     address: karmaAccessControlAddress,
     abi: KarmaAccessControlAbiUint64,
     args: userAddress ? [userAddress] : undefined,
-  }
-
-  const { data, isLoading, isError, error, isSuccess } = useContractReads({
-    contracts: [
-      {
-        ...karmaAccessControlContract,
-        functionName: 'hasAccess',
-      },
-      {
-        ...karmaAccessControlContract,
-        functionName: 'ratingOf',
-      },
-      {
-        ...karmaAccessControlContract,
-        functionName: 'getBaseKarma',
-      },
-    ],
+    functionName: 'hasAccess',
     enabled: Boolean(karmaAccessControlAddress && userAddress),
+    cacheTime: ONE_MINUTE * 10,
+    staleTime: ONE_MINUTE * 5,
+  })
+
+  const { data, isLoading, isError, error, isSuccess } = useContractRead({
+    address: karmaAccessControlAddress,
+    abi: KarmaAccessControlAbiUint64,
+    args: userAddress ? [userAddress] : undefined,
+    functionName: 'ratingOf',
+    enabled: Boolean(karmaAccessControlAddress && userAddress && hasAccess),
+    cacheTime: ONE_MINUTE * 5,
+    staleTime: ONE_MINUTE * 2,
   })
 
   return {
-    data: data && {
-      hasAccess: Boolean(data[0].result),
-      rate: Number(data[1].result),
-      baseKarma: Number(data[2].result),
-    },
+    data: hasAccess ? Number(data as bigint) : undefined,
     isError,
     isLoading,
     isSuccess,

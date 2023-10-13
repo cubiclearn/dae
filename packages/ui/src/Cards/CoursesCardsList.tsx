@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import { useUserCourses } from '@dae/wagmi'
-import { Address, useAccount, useNetwork } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { CredentialType } from '@dae/database'
 import { Card } from './Card'
 import { useIntersectionObserver } from 'usehooks-ts'
@@ -25,14 +25,12 @@ interface CoursesCardListsProps {
 export const CoursesCardsList: React.FC<CoursesCardListsProps> = ({
   roles,
 }) => {
-  const { chain } = useNetwork()
-  const { address } = useAccount()
+  const { address: userAddress } = useAccount()
 
-  const { data, error, isLoading, setSize, size, hasMore } = useUserCourses(
-    address as Address | undefined,
-    chain?.id,
+  const { data, error, isLoading, setSize, size, hasMore } = useUserCourses({
+    userAddress,
     roles,
-  )
+  })
 
   const ref = useRef<HTMLDivElement | null>(null)
   const observer = useIntersectionObserver(ref, {})

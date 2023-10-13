@@ -30,7 +30,7 @@ import { Proposal } from '@dae/snapshot'
 
 const validationSchema = Yup.object().shape({
   vote: Yup.string().required('Vote is required'),
-  reason: Yup.string(),
+  reason: Yup.string().max(140, 'Reason should not exceed 140 characters.'),
 })
 
 type ProposalVoteProps = {
@@ -80,17 +80,15 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({
       reason: '',
     },
     onSubmit: async (values) => {
-      try {
-        toast.promise(vote(values.vote, values.reason), {
-          success: {
-            title: 'Proposal voted with success!',
-          },
-          error: { title: 'Error voting proposal.' },
-          loading: {
-            title: 'Voting in progress...',
-          },
-        })
-      } catch (_e) {}
+      toast.promise(vote(values.vote, values.reason), {
+        success: {
+          title: 'Proposal voted with success!',
+        },
+        error: { title: 'Error voting proposal.' },
+        loading: {
+          title: 'Voting in progress...',
+        },
+      })
     },
     validationSchema: validationSchema,
   })
@@ -138,9 +136,12 @@ export const ProposalVote: React.FC<ProposalVoteProps> = ({
           <AlertIcon />
           <Box>
             <AlertTitle>You have already voted!</AlertTitle>
-            <AlertDescription>{`Your vote: ${
-              proposal.choices[userVote.votes[0].choice - 1]
-            }`}</AlertDescription>
+            <AlertDescription>
+              <Text>You have successfully voted for the option:</Text>
+              <Text>{`${userVote.votes[0].choice}. ${
+                proposal.choices[userVote.votes[0].choice - 1]
+              }`}</Text>
+            </AlertDescription>
           </Box>
         </Alert>
         <Button colorScheme="blue" onClick={handleRevoteButtonClick}>

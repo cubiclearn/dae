@@ -4,10 +4,14 @@ import { asyncParse } from '../../../../lib/functions'
 import { Credential, Prisma, prisma } from '@dae/database'
 import fs from 'fs'
 import { sanitizeAddress } from '../../../../lib/functions'
-import { Address } from 'viem'
+import { Address, createPublicClient, keccak256, toHex } from 'viem'
 import { getCourseCredential } from '../../../../lib/api'
 import { ApiResponse, ApiResponseStatus } from '@dae/types'
 import { IpfsConnector } from '../../../../lib/ipfs/client'
+import { ChainKey } from '@dae/chains'
+import { config as TransportConfig } from '@dae/viem-config'
+import { CredentialsBurnableAbi } from '@dae/abi'
+import formidable from 'formidable'
 
 // TypeScript enum for request methods
 enum HttpMethod {
@@ -63,67 +67,83 @@ const handlePostRequest = async (
 ) => {
   try {
     const { fields, files } = await asyncParse(req)
-    const { name, description, courseAddress, chainId } = fields
 
-    if (!name || !description || !courseAddress || !chainId || !files.file) {
+    const [name] = fields.name as string[]
+    const [description] = fields.description as string[]
+    const [courseAddress] = fields.courseAddress as Address[]
+    const [chainId] = fields.chainId as string[]
+    const [imageFile] = files.file as formidable.File[]
+
+    if (!name || !description || !courseAddress || !chainId || !imageFile) {
       return res
         .status(400)
         .json({ status: ApiResponseStatus.error, message: 'Bad request.' })
     }
 
-    const { mimetype, filepath, originalFilename } = files.file[0]
+    const { mimetype, filepath, originalFilename } = imageFile
+
+    const client = createPublicClient({
+      chain: ChainKey[chainId],
+      transport: TransportConfig[chainId]?.transport,
+    })
 
     const session = await getSession({ req: { headers: req.headers } })
 
-    const userCredentials = await prisma.userCredentials.findMany({
-      where: {
-        user_address: sanitizeAddress(session!.user.address as Address),
-        course_address: sanitizeAddress(courseAddress[0] as Address),
-        course_chain_id: parseInt(chainId[0] as string),
-        credential: {
-          OR: [{ type: 'ADMIN' }, { type: 'MAGISTER' }],
-        },
-      },
-    })
+    const [isAdmin, isMagister] = await Promise.all([
+      client.readContract({
+        address: courseAddress,
+        abi: CredentialsBurnableAbi,
+        functionName: 'hasRole',
+        args: [toHex(0, { size: 32 }), session!.user.address as Address],
+      }),
+      client.readContract({
+        address: courseAddress,
+        abi: CredentialsBurnableAbi,
+        functionName: 'hasRole',
+        args: [
+          keccak256(toHex('MAGISTER_ROLE')),
+          session!.user.address as Address,
+        ],
+      }),
+    ])
 
-    if (userCredentials.length === 0) {
+    if (!isAdmin || !isMagister) {
       return res
         .status(401)
         .json({ status: ApiResponseStatus.error, message: 'Unauthorized' })
     }
 
-    const buffer = fs.readFileSync(filepath)
+    const credentialImageBuffer = fs.readFileSync(filepath)
 
     const ipfsCredentialImageData = await IpfsConnector.upload(
-      buffer,
+      credentialImageBuffer,
       mimetype ?? '',
       originalFilename ?? '',
     )
 
     const ipfsCredentialMetadata = await IpfsConnector.upload(
       {
-        name: name[0],
-        description: description[0],
+        name: name,
+        description: description,
         image: ipfsCredentialImageData.url,
       },
-      'data/json',
       '',
+      'data/json',
     )
 
-    //Create the credential using Prisma with the obtained IPFS CID and other data
     const credential = await prisma.credential.create({
       data: {
-        name: name[0],
-        description: description[0],
+        name: name,
+        description: description,
         image_url: ipfsCredentialImageData.url,
         ipfs_url: ipfsCredentialMetadata.url,
-        ipfs_cid: ipfsCredentialMetadata.hash, // Accessing the Hash property directly from ipfsMetadata
+        ipfs_cid: ipfsCredentialMetadata.hash,
         type: 'OTHER',
         course: {
           connect: {
             address_chain_id: {
-              address: sanitizeAddress(courseAddress[0] as Address),
-              chain_id: parseInt(chainId[0] as string),
+              address: sanitizeAddress(courseAddress),
+              chain_id: Number(chainId),
             },
           },
         },
@@ -165,7 +185,11 @@ const handleDeleteRequest = async (
   res: NextApiResponse<ApiResponse<null>>,
 ) => {
   try {
-    const { credentialCid, courseAddress, chainId } = req.query
+    const { credentialCid, courseAddress, chainId } = req.query as {
+      credentialCid: string
+      courseAddress: Address
+      chainId: string
+    }
 
     if (!credentialCid || !courseAddress || !chainId) {
       return res
@@ -173,20 +197,32 @@ const handleDeleteRequest = async (
         .json({ status: ApiResponseStatus.error, message: 'Bad request.' })
     }
 
-    const session = await getSession({ req: { headers: req.headers } })
-
-    const userCredentials = await prisma.userCredentials.findMany({
-      where: {
-        user_address: sanitizeAddress(session!.user.address as Address),
-        course_address: sanitizeAddress(courseAddress as Address),
-        course_chain_id: parseInt(chainId as string),
-        credential: {
-          OR: [{ type: 'ADMIN' }, { type: 'MAGISTER' }],
-        },
-      },
+    const client = createPublicClient({
+      chain: ChainKey[Number(chainId)],
+      transport: TransportConfig[Number(chainId)]?.transport,
     })
 
-    if (userCredentials.length === 0) {
+    const session = await getSession({ req: { headers: req.headers } })
+
+    const [isAdmin, isMagister] = await Promise.all([
+      client.readContract({
+        address: courseAddress,
+        abi: CredentialsBurnableAbi,
+        functionName: 'hasRole',
+        args: [toHex(0, { size: 32 }), session!.user.address as Address],
+      }),
+      client.readContract({
+        address: courseAddress,
+        abi: CredentialsBurnableAbi,
+        functionName: 'hasRole',
+        args: [
+          keccak256(toHex('MAGISTER_ROLE')),
+          session!.user.address as Address,
+        ],
+      }),
+    ])
+
+    if (!isAdmin || !isMagister) {
       return res
         .status(401)
         .json({ status: ApiResponseStatus.error, message: 'Unauthorized' })
@@ -195,9 +231,9 @@ const handleDeleteRequest = async (
     await prisma.credential.delete({
       where: {
         course_address_course_chain_id_ipfs_cid: {
-          course_address: courseAddress as Address,
-          ipfs_cid: credentialCid as string,
-          course_chain_id: parseInt(chainId as string),
+          course_address: courseAddress,
+          ipfs_cid: credentialCid,
+          course_chain_id: Number(chainId),
         },
       },
     })

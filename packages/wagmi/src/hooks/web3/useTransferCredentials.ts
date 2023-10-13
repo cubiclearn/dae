@@ -1,12 +1,13 @@
 import { useContractWrite, useNetwork, usePublicClient } from 'wagmi'
 import { Address } from 'viem'
-import { CredentialsBurnableAbi } from '@dae/abi'
+import { CredentialsBurnableAbi, KarmaAccessControlAbiUint64 } from '@dae/abi'
 import { Credential, CredentialType } from '@dae/database'
 import { useWeb3HookState } from '../useWeb3HookState'
 import { ApiResponse } from '@dae/types'
 import { CONFIRMATION_BLOCKS } from '@dae/constants'
 import { mutate } from 'swr'
 import { useEditSnapshotSpace } from '@dae/snapshot'
+import { useCourse } from '../api'
 
 export type TransferCredentialsData = {
   address: Address
@@ -14,10 +15,10 @@ export type TransferCredentialsData = {
   discord?: string
 }
 
-export function useTransferCredentials(
-  courseAddress: Address,
-  credentialType: CredentialType,
-) {
+export function useTransferCredentials({
+  courseAddress,
+  credentialType,
+}: { courseAddress: Address; credentialType: CredentialType }) {
   const {
     isSuccess,
     isValidating,
@@ -29,6 +30,7 @@ export function useTransferCredentials(
   } = useWeb3HookState()
 
   const { chain } = useNetwork()
+  const { data: courseData } = useCourse({ courseAddress })
   const publicClient = usePublicClient()
 
   const { addModerator } = useEditSnapshotSpace(courseAddress, chain?.id)
@@ -49,14 +51,24 @@ export function useTransferCredentials(
     userData: TransferCredentialsData,
     credentialIPFSCid: string,
   ): Promise<void> => {
-    state.setValidating()
+    if (!courseData?.course || !chain?.id) {
+      return
+    }
 
     try {
-      const tokenURI = `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${credentialIPFSCid}`
-      if (mint === undefined) {
-        throw new Error(
-          'The data provided is incorrect. Please ensure that you have entered the correct information.',
-        )
+      state.setValidating()
+      if (credentialType === 'OTHER') {
+        const hasAccess = await publicClient.readContract({
+          address: courseData.course.karma_access_control_address as Address,
+          abi: KarmaAccessControlAbiUint64,
+          functionName: 'hasAccess',
+          args: [userData.address],
+        })
+        if (!hasAccess) {
+          throw new Error(
+            'The provided address does not correspond to an enrolled course participant. Credential issuance is restricted to users who possess either a MAGISTER or DISCIPULUS credential.',
+          )
+        }
       }
 
       const checkExistingCredentialSearchParams = new URLSearchParams({
@@ -75,7 +87,7 @@ export function useTransferCredentials(
 
       if (!alreadyExistingCredentialResponse.ok) {
         const responseJSON = await alreadyExistingCredentialResponse.json()
-        throw new Error(responseJSON.error)
+        throw new Error(responseJSON.message)
       }
 
       const alreadyExistingCredentialResponseJSON: ApiResponse<{
@@ -89,6 +101,13 @@ export function useTransferCredentials(
       }
 
       state.setSigning()
+
+      const tokenURI = `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${credentialIPFSCid}`
+      if (mint === undefined) {
+        throw new Error(
+          'The data provided is incorrect. Please ensure that you have entered the correct information.',
+        )
+      }
 
       const writeResult = await mint({
         args: [userData.address, tokenURI, 2],
@@ -133,7 +152,7 @@ export function useTransferCredentials(
 
       if (!response.ok) {
         const responseJSON = await response.json()
-        throw new Error(responseJSON.error)
+        throw new Error(responseJSON.message)
       }
 
       if (credentialType === 'DISCIPULUS') {
@@ -172,13 +191,68 @@ export function useTransferCredentials(
     usersData: TransferCredentialsData[],
     credentialIPFSCid: string,
   ): Promise<void> => {
-    state.setValidating()
+    if (!courseData?.course || !chain?.id) {
+      return
+    }
 
     try {
+      state.setValidating()
       const tokenURI = `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${credentialIPFSCid}`
 
-      const checkExistingCredentialPromises = usersData.map(
-        async (userData) => {
+      if (credentialType === 'OTHER') {
+        let accessList: { address: Address; hasAccess: boolean }[]
+        if (chain.contracts?.multicall3?.address) {
+          // Do a multicall
+          const usersHaveAccessList = await publicClient.multicall({
+            multicallAddress: chain.contracts.multicall3.address,
+            contracts: usersData.map((userData) => ({
+              address: courseData.course
+                .karma_access_control_address as Address,
+              abi: KarmaAccessControlAbiUint64,
+              functionName: 'hasAccess',
+              args: [userData.address],
+            })),
+          })
+          accessList = usersHaveAccessList.map((hasAccess, index) => {
+            return {
+              address: usersData[index].address as Address,
+              hasAccess: hasAccess.result ?? false,
+            }
+          })
+        } else {
+          // Do multiple single calls
+          accessList = await Promise.all(
+            usersData.map(async (userData) => {
+              const hasAccess = await publicClient.readContract({
+                address: courseData.course
+                  .karma_access_control_address as Address,
+                abi: KarmaAccessControlAbiUint64,
+                functionName: 'hasAccess',
+                args: [userData.address],
+              })
+              return {
+                address: userData.address as Address,
+                hasAccess: hasAccess,
+              }
+            }),
+          )
+        }
+
+        const addressesWithNoAccess = accessList
+          .filter((item) => !item.hasAccess)
+          .map((item) => item.address)
+
+        if (addressesWithNoAccess.length > 0) {
+          throw new Error(
+            `This provided addresses: ${addressesWithNoAccess.join(
+              ', ',
+            )} do not correspond to an enrolled course participant. Credential issuance is restricted to users who possess either a MAGISTER or DISCIPULUS credential.`,
+          )
+        }
+      }
+
+      await Promise.all(
+        usersData.map(async (userData) => {
           const checkExistingCredentialSearchParams = new URLSearchParams({
             chainId: publicClient.chain.id.toString(),
             courseAddress: courseAddress,
@@ -194,7 +268,7 @@ export function useTransferCredentials(
           )
           if (!alreadyExistingCredentialResponse.ok) {
             const responseJSON = await alreadyExistingCredentialResponse.json()
-            throw new Error(responseJSON.error)
+            throw new Error(responseJSON.message)
           }
 
           const alreadyExistingCredentialResponseJSON: ApiResponse<{
@@ -208,10 +282,8 @@ export function useTransferCredentials(
           }
 
           return null
-        },
+        }),
       )
-
-      await Promise.all(checkExistingCredentialPromises)
 
       if (multiMint === undefined) {
         throw new Error(
@@ -264,7 +336,7 @@ export function useTransferCredentials(
 
       if (!response.ok) {
         const responseJSON = await response.json()
-        throw new Error(responseJSON.error)
+        throw new Error(responseJSON.message)
       }
 
       if (credentialType === 'DISCIPULUS') {

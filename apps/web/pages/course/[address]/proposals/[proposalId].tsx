@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import { ProposalOverview } from '@dae/ui'
 import { Address } from 'wagmi'
 
-export default function TransferKarmaPage() {
+function ProposalInfo() {
   const router = useRouter()
   const proposalId = router.query.proposalId as string
   const courseAddress = router.query.address as Address
@@ -28,3 +28,5 @@ export default function TransferKarmaPage() {
     </>
   )
 }
+
+export default ProposalInfo

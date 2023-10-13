@@ -23,7 +23,7 @@ import {
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
 import React, { useCallback, useRef, useState } from 'react'
-import { Address, useNetwork } from 'wagmi'
+import { Address } from 'wagmi'
 import * as Yup from 'yup'
 import {
   useTransferCredentials,
@@ -33,6 +33,7 @@ import {
 import Papa from 'papaparse'
 import { checkFileType } from '../../utils'
 import { useToast } from '@chakra-ui/react'
+import { CSV_TRANSFER_CREDENTIALS_ENTRIES_LIMIT } from '@dae/constants'
 
 const validationSchema = Yup.object().shape({
   CSVFile: Yup.mixed()
@@ -45,7 +46,7 @@ const validationSchema = Yup.object().shape({
 })
 
 type TransferCredentialsFormProps = {
-  courseAddress: string
+  courseAddress: Address
   credentialType: 'MAGISTER' | 'DISCIPULUS'
   onIsLoading: (_isLoading: boolean) => void
 }
@@ -53,17 +54,15 @@ type TransferCredentialsFormProps = {
 export const BaseCredentialsBatchTransfer: React.FC<
   TransferCredentialsFormProps
 > = ({ courseAddress, credentialType, onIsLoading }) => {
-  const { chain } = useNetwork()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
-  const { data } = useCourseCredentials(
-    courseAddress as Address,
-    chain?.id,
+  const { data } = useCourseCredentials({
+    courseAddress,
     credentialType,
-  )
+  })
   const toast = useToast()
 
   const { multiTransfer, isLoading, isError, error, isSigning, isValidating } =
-    useTransferCredentials(courseAddress as Address, credentialType)
+    useTransferCredentials({ courseAddress, credentialType })
 
   const [csvData, setCsvData] = useState<TransferCredentialsData[]>([])
 
@@ -120,7 +119,9 @@ export const BaseCredentialsBatchTransfer: React.FC<
         dynamicTyping: true,
         complete: (results) => {
           setFieldValue('CSVFile', file)
-          setCsvData(results.data)
+          setCsvData(
+            results.data.slice(0, CSV_TRANSFER_CREDENTIALS_ENTRIES_LIMIT),
+          )
         },
       })
     },
@@ -146,7 +147,7 @@ export const BaseCredentialsBatchTransfer: React.FC<
               isDisabled={isLoading || isValidating || isSigning}
             />
             <FormHelperText>
-              Click{' '}
+              Maximum {CSV_TRANSFER_CREDENTIALS_ENTRIES_LIMIT} entries. Click{' '}
               <Link
                 isExternal
                 fontWeight={'bold'}
@@ -166,14 +167,16 @@ export const BaseCredentialsBatchTransfer: React.FC<
               <Table>
                 <Thead>
                   <Tr>
+                    <Th>#</Th>
                     <Th>Address</Th>
                     <Th>Email</Th>
                     <Th>Discord handle</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {csvData.map((row) => (
+                  {csvData.map((row, index) => (
                     <Tr key={row.address}>
+                      <Td>{index + 1}.</Td>
                       <Td>{row.address}</Td>
                       <Td>{row.email}</Td>
                       <Td>{row.discord}</Td>

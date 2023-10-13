@@ -18,6 +18,7 @@ import {
 import React, { useMemo } from 'react'
 import { useCourseStudents, useKarmaBalances } from '@dae/wagmi'
 import { Address } from 'viem'
+import { useAccount } from 'wagmi'
 
 type LeaderboardSectionProps = {
   chainId: number | undefined
@@ -30,6 +31,7 @@ export const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({
   courseAddress,
   karmaAccessControlAddress,
 }) => {
+  const { address: userAddress } = useAccount()
   const {
     data: studentsData,
     isLoading: isLoadingStudentsData,
@@ -54,12 +56,12 @@ export const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({
     if (studentsData && studentsKarmaData) {
       return studentsData.students
         .map((studentData, index) => {
-          return [
-            studentData.user_address,
-            Number(studentsKarmaData[index].result) ?? 0,
-          ] as [Address, number]
+          return {
+            ...studentData,
+            karma: Number(studentsKarmaData[index].result as bigint),
+          }
         })
-        .sort((studentA, studentB) => studentB[1] - studentA[1])
+        .sort((studentA, studentB) => studentB.karma - studentA.karma)
     }
     return []
   }, [studentsData])
@@ -117,16 +119,35 @@ export const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({
           <Tr>
             <Th>Rank</Th>
             <Th>Address</Th>
+            <Th>Email</Th>
+            <Th>Discord</Th>
             <Th isNumeric>Karma</Th>
           </Tr>
         </Thead>
         <Tbody>
           {studentsAddressAndKarmaOrderedDesc.map((student, index) => {
+            const isUserAddress =
+              userAddress?.toLowerCase() === student.user_address
             return (
-              <Tr key={index}>
-                <Td fontWeight={'semibold'}>{`#${index + 1}`}</Td>
-                <Td>{student[0]}</Td>
-                <Td isNumeric>{student[1]}</Td>
+              <Tr key={index} bg={isUserAddress ? 'blackAlpha.50' : 'white'}>
+                <Td fontWeight={isUserAddress ? 'semibold' : 'normal'}>{`#${
+                  index + 1
+                }`}</Td>
+                <Td fontWeight={isUserAddress ? 'semibold' : 'normal'}>
+                  {student.user_address}
+                </Td>
+                <Td fontWeight={isUserAddress ? 'semibold' : 'normal'}>
+                  {student.user_email}
+                </Td>
+                <Td fontWeight={isUserAddress ? 'semibold' : 'normal'}>
+                  {student.user_discord_handle}
+                </Td>
+                <Td
+                  fontWeight={isUserAddress ? 'semibold' : 'normal'}
+                  isNumeric
+                >
+                  {student.karma}
+                </Td>
               </Tr>
             )
           })}

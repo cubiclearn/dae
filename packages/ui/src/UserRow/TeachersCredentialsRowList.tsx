@@ -26,7 +26,7 @@ export const TeachersCredentialsRowList: React.FC<TeachersRowListProps> = ({
     data: courseData,
     isLoading: isLoadingCourseData,
     isError: isErrorLoadingCourseData,
-  } = useCourse(courseAddress, chain?.id)
+  } = useCourse({ courseAddress })
 
   const {
     data: teachersCredentialsData,

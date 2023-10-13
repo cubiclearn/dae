@@ -3,7 +3,9 @@ import { ONE_MINUTE } from '@dae/constants'
 import { Address, toHex, zeroAddress } from 'viem'
 import { useAccount, useContractRead } from 'wagmi'
 
-export const useIsAdmin = (courseAddress: Address | undefined) => {
+export const useIsAdmin = ({
+  courseAddress,
+}: { courseAddress: Address | undefined }) => {
   const { address: userAddress } = useAccount()
 
   const { data, isLoading, isError, isSuccess } = useContractRead({

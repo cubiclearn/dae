@@ -3,8 +3,9 @@ import { Layout, TransferCredentialsFormContainer } from '@dae/ui'
 import { Stack } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { Address } from 'viem'
+import withCourseRoleAuth from '../../../../components/HOC/withCourseRole'
 
-export default function Teaching() {
+function TransferCredential() {
   const router = useRouter()
   const courseAddress = router.query.address as Address
 
@@ -27,3 +28,5 @@ export default function Teaching() {
     </>
   )
 }
+
+export default withCourseRoleAuth(TransferCredential, 'MAGISTER')

@@ -12,7 +12,7 @@ import {
   Spinner,
 } from '@chakra-ui/react'
 import { BaseCredentialRow } from './BaseCredentialRow'
-import { useBurnCredential, useKarmaBalances } from '@dae/wagmi'
+import { useBurnCredential } from '@dae/wagmi'
 import { Address, useAccount } from 'wagmi'
 import { CredentialType, UserCredentials } from '@dae/database'
 import { ConfirmActionModal } from '../../ConfirmActionModal'
@@ -40,14 +40,7 @@ export const BaseCredentialRowList: React.FC<BaseCredentialRowListProps> = ({
   const toast = useToast()
   const { address: userAddress } = useAccount()
   const { burnCredential, isLoading, isSigning, isValidating } =
-    useBurnCredential(courseAddress, credentialType)
-
-  const { data: karmaBalances } = useKarmaBalances({
-    usersAddresses: data.map(
-      (userCredential) => userCredential.user_address as Address,
-    ),
-    karmaAccessControlAddress: karmaAccessControlAddress,
-  })
+    useBurnCredential({ courseAddress, credentialType })
 
   const ref = useRef<HTMLDivElement | null>(null)
   const observer = useIntersectionObserver(ref, {})
@@ -115,15 +108,13 @@ export const BaseCredentialRowList: React.FC<BaseCredentialRowListProps> = ({
           </Tr>
         </Thead>
         <Tbody>
-          {data.map((credential, index) => (
+          {data.map((credential) => (
             <BaseCredentialRow
               key={credential.user_address}
               user_address={credential.user_address as Address}
               user_email={credential.user_email}
               user_discord_handle={credential.user_discord_handle}
-              user_karma_balance={
-                Number(karmaBalances?.[index].result as bigint) ?? undefined
-              }
+              karma_access_control_address={karmaAccessControlAddress}
               isDeleting={
                 (isLoading || isValidating || isSigning) &&
                 selectedTeacherToBurnCredential?.credential_token_id ===

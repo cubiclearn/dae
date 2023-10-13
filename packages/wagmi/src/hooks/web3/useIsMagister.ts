@@ -3,7 +3,9 @@ import { ONE_MINUTE } from '@dae/constants'
 import { Address, keccak256, toHex, zeroAddress } from 'viem'
 import { useAccount, useContractRead } from 'wagmi'
 
-export const useIsMagister = (courseAddress: Address | undefined) => {
+export const useIsMagister = ({
+  courseAddress,
+}: { courseAddress: Address | undefined }) => {
   const { address: userAddress } = useAccount()
 
   const { data, isLoading, isError, isSuccess } = useContractRead({

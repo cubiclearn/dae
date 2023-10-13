@@ -3,15 +3,13 @@ import { useContractReads } from 'wagmi'
 import { KarmaAccessControlAbiUint64 } from '@dae/abi'
 import { ONE_MINUTE } from '@dae/constants'
 
-type useKarmaBalancesProps = {
-  karmaAccessControlAddress: Address | undefined
-  usersAddresses: Address[] | undefined
-}
-
 export const useKarmaBalances = ({
   karmaAccessControlAddress,
   usersAddresses = [],
-}: useKarmaBalancesProps) => {
+}: {
+  karmaAccessControlAddress: Address | undefined
+  usersAddresses: Address[] | undefined
+}) => {
   const shouldFetch =
     karmaAccessControlAddress !== undefined && usersAddresses.length > 0
 

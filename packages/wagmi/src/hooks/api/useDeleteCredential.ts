@@ -1,12 +1,16 @@
 import { useSWRConfig } from 'swr'
 import { Address } from 'viem'
 import { useHookState } from '../useHookState'
+import { useNetwork } from 'wagmi'
 
-export const useDeleteCredential = (
-  credentialCid: string | undefined,
-  courseAddress: Address | undefined,
-  chainId: number | undefined,
-) => {
+export const useDeleteCredential = ({
+  courseAddress,
+  credentialCid,
+}: {
+  courseAddress: Address | undefined
+  credentialCid: string | undefined
+}) => {
+  const { chain } = useNetwork()
   const { isSuccess, isValidating, isLoading, isError, error, ...state } =
     useHookState()
 
@@ -17,7 +21,7 @@ export const useDeleteCredential = (
     if (
       credentialCid === undefined ||
       courseAddress === undefined ||
-      chainId === undefined
+      chain?.id === undefined
     ) {
       throw new Error('Missing required parameters for deleting credential.')
     }
@@ -27,7 +31,7 @@ export const useDeleteCredential = (
     const urlParamsDeletion = new URLSearchParams({
       credentialCid: credentialCid,
       courseAddress: courseAddress.toString(),
-      chainId: chainId.toString(),
+      chainId: chain.id.toString(),
     })
     const response = await fetch(
       `/api/v0/course/credential?${urlParamsDeletion}`,
@@ -38,7 +42,7 @@ export const useDeleteCredential = (
 
     if (!response.ok) {
       const responseJSON = await response.json()
-      throw new Error(responseJSON.error)
+      throw new Error(responseJSON.message)
     }
 
     mutate(

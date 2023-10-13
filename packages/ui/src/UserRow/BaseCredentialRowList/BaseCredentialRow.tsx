@@ -2,12 +2,13 @@ import React from 'react'
 import { Text, Td, Tr, Button, Spinner } from '@chakra-ui/react'
 import { Address } from 'viem'
 import { Avatar } from '../../Avatar'
+import { useKarmaBalance } from '@dae/wagmi'
 
 export type BaseCredentialRowProps = {
   user_address: Address
   user_email: string
   user_discord_handle: string
-  user_karma_balance: number
+  karma_access_control_address: Address
   onDelete: (() => void) | undefined
   isDeleting: boolean
 }
@@ -16,10 +17,15 @@ export const BaseCredentialRow: React.FC<BaseCredentialRowProps> = ({
   user_address,
   user_email,
   user_discord_handle,
-  user_karma_balance,
+  karma_access_control_address,
   onDelete,
   isDeleting,
 }) => {
+  const { data: karmaData, isLoading: isLoadingKarma } = useKarmaBalance({
+    karmaAccessControlAddress: karma_access_control_address,
+    userAddress: user_address,
+  })
+
   return (
     <Tr>
       <Td>
@@ -40,9 +46,7 @@ export const BaseCredentialRow: React.FC<BaseCredentialRowProps> = ({
           {user_discord_handle}
         </Text>
       </Td>
-      <Td isNumeric>
-        {isNaN(user_karma_balance) ? <Spinner /> : user_karma_balance}
-      </Td>
+      <Td isNumeric>{isLoadingKarma ? <Spinner /> : karmaData}</Td>
       <Td>
         <Button
           colorScheme={onDelete === undefined ? 'gray' : 'red'}

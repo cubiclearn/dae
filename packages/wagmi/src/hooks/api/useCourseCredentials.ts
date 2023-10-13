@@ -3,15 +3,18 @@ import useSWR from 'swr'
 import { Credential, CredentialType } from '@dae/database'
 import { ApiResponse, SWRHook } from '@dae/types'
 import { ApiRequestUrlAndParams, useApi } from '@dae/hooks'
+import { useNetwork } from 'wagmi'
 
-export const useCourseCredentials = (
-  courseAddress: Address | undefined,
-  chainId: number | undefined,
-  credentialType?: CredentialType | undefined,
-): SWRHook<{ credentials: Credential[] }> => {
+export const useCourseCredentials = ({
+  courseAddress,
+  credentialType,
+}: {
+  courseAddress: Address | undefined
+  credentialType?: CredentialType | undefined
+}): SWRHook<{ credentials: Credential[] }> => {
   const client = useApi()
-
-  const shouldFetch = courseAddress && chainId
+  const { chain } = useNetwork()
+  const shouldFetch = courseAddress && chain?.id
 
   const { data: response, error } = useSWR<
     ApiResponse<{ credentials: Credential[] }>
@@ -21,7 +24,7 @@ export const useCourseCredentials = (
           'course/credentials',
           {
             address: courseAddress,
-            chainId: chainId,
+            chainId: chain.id,
             type: credentialType,
           },
         ]

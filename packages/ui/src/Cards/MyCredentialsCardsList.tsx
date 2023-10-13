@@ -10,7 +10,7 @@ import {
   Spinner,
 } from '@chakra-ui/react'
 import { useUserCourseCredentials } from '@dae/wagmi'
-import { Address, useAccount, useNetwork } from 'wagmi'
+import { Address, useAccount } from 'wagmi'
 import { Card } from './Card'
 
 interface MyCredentialsCardsListProps {
@@ -20,14 +20,12 @@ interface MyCredentialsCardsListProps {
 export const MyCredentialsCardsList: React.FC<MyCredentialsCardsListProps> = ({
   courseAddress,
 }) => {
-  const { chain } = useNetwork()
-  const { address } = useAccount()
+  const { address: userAddress } = useAccount()
 
-  const { data, error, isLoading } = useUserCourseCredentials(
-    address,
+  const { data, error, isLoading } = useUserCourseCredentials({
+    userAddress,
     courseAddress,
-    chain?.id,
-  )
+  })
 
   if (isLoading) {
     return (
