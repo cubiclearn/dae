@@ -5,6 +5,8 @@ import fs from 'fs'
 import { ApiResponse, ApiResponseStatus } from '@dae/types'
 import { IpfsUploadResult } from '@dae/ipfs'
 import { IpfsConnector } from '../../../../lib/ipfs/client'
+import { Address } from 'viem'
+import formidable from 'formidable'
 
 // TypeScript enum for request methods
 enum HttpMethod {
@@ -17,13 +19,12 @@ const handlePostRequest = async (
 ) => {
   try {
     const { fields, files } = await asyncParse(req)
-    const {
-      name,
-      description,
-      website,
-      'snapshot-ens': snapshotEns,
-      'media-channel': mediaChannel,
-    } = fields
+    const [name] = fields.name as string[]
+    const [description] = fields.description as string[]
+    const [website] = fields.website as Address[]
+    const [snapshotEns] = fields['snapshot-ens'] as string[]
+    const [mediaChannel] = fields['media-channel'] as string[]
+    const [imageFile] = files.file as formidable.File[]
 
     if (
       !name ||
@@ -31,18 +32,18 @@ const handlePostRequest = async (
       !website ||
       !snapshotEns ||
       !mediaChannel ||
-      !files.file
+      !imageFile
     ) {
       return res
         .status(400)
         .json({ status: ApiResponseStatus.error, message: 'Bad request.' })
     }
 
-    const { mimetype, filepath, originalFilename } = files.file[0]
-    const buffer = fs.readFileSync(filepath)
+    const { mimetype, filepath, originalFilename } = imageFile
+    const courseImageBuffer = fs.readFileSync(filepath)
 
     const ipfsCourseImageData = await IpfsConnector.upload(
-      buffer,
+      courseImageBuffer,
       mimetype ?? '',
       originalFilename ?? '',
     )
@@ -50,14 +51,14 @@ const handlePostRequest = async (
     const ipfsCourseMetadata = await IpfsConnector.upload(
       {
         image: ipfsCourseImageData.url,
-        name: name[0],
-        description: description[0],
-        website: website[0],
-        'snapshot-ens': snapshotEns[0],
-        'media-channel': mediaChannel[0],
+        name: name,
+        description: description,
+        website: website,
+        'snapshot-ens': snapshotEns,
+        'media-channel': mediaChannel,
       },
-      'data/json',
       '',
+      'data/json',
     )
 
     res.status(200).json({

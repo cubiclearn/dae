@@ -238,8 +238,6 @@ export function useTransferCredentials({
           )
         }
 
-        console.log(accessList)
-
         const addressesWithNoAccess = accessList
           .filter((item) => !item.hasAccess)
           .map((item) => item.address)

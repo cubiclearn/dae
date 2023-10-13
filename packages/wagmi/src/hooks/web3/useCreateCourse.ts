@@ -65,8 +65,6 @@ export function useCreateCourse({
         return
       }
 
-      console.log('Media', mediaChannel)
-
       if (
         !name ||
         !description ||

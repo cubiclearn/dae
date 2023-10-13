@@ -6,7 +6,11 @@ import {
   KarmaAccessControlAbiUint64,
 } from '@dae/abi'
 import { Course, prisma } from '@dae/database'
-import { Address, createPublicClient } from 'viem'
+import {
+  Address,
+  WaitForTransactionReceiptReturnType,
+  createPublicClient,
+} from 'viem'
 import { sanitizeAddress } from '../../../../lib/functions'
 import { getCourse } from '../../../../lib/api'
 import { config as TransportConfig } from '@dae/viem-config'
@@ -65,58 +69,32 @@ const handlePostRequest = async (
       transport: TransportConfig[chainId]?.transport,
     })
 
-    const txRecept = await client.waitForTransactionReceipt({
+    const txReceipt = (await client.waitForTransactionReceipt({
       hash: txHash,
       confirmations: CONFIRMATION_BLOCKS,
+    })) as WaitForTransactionReceiptReturnType
+
+    const courseContractAddress = txReceipt.logs[0].address
+
+    const karmaAccessControlCreatedLog = txReceipt.logs[2]
+    const karmaAccessControlCreatedLogDecoded = decodeEventLog({
+      abi: CredentialsFactoryAbi,
+      data: karmaAccessControlCreatedLog.data,
+      topics: karmaAccessControlCreatedLog.topics,
+      eventName: 'KarmaAccessControlCreated',
     })
-
-    const txFactoryLogsDecoded: any = txRecept.logs
-      .map((log) => {
-        try {
-          return {
-            address: log.address,
-            ...decodeEventLog({
-              abi: CredentialsFactoryAbi,
-              data: log.data,
-              topics: log.topics,
-            }),
-          }
-        } catch (_e) {}
-      })
-      .filter((decodedLog) => decodedLog !== undefined)
-
-    const txCredentialLogsDecoded: any = txRecept.logs
-      .map((log) => {
-        try {
-          return {
-            address: log.address,
-            ...decodeEventLog({
-              abi: CredentialsBurnableAbi,
-              data: log.data,
-              topics: log.topics,
-            }),
-          }
-        } catch (_e) {}
-      })
-      .filter((decodedLog) => decodedLog !== undefined)
-
-    const karmaAccessControlCreatedLog = txFactoryLogsDecoded.filter(
-      (log: any) => log.eventName === 'KarmaAccessControlCreated',
-    )[0]
-
-    const contractAddress: Address = txCredentialLogsDecoded[0].address
-    const karmaAccessControlAddress: Address =
-      karmaAccessControlCreatedLog.args.karmaAccessControl
+    const karmaAccessControlAddress =
+      karmaAccessControlCreatedLogDecoded.args.karmaAccessControl
 
     const [symbol, baseURI, baseMagisterKarma, baseDiscipulusKarma] =
       await Promise.all([
         client.readContract({
-          address: contractAddress,
+          address: courseContractAddress,
           abi: CredentialsBurnableAbi,
           functionName: 'symbol',
         }),
         client.readContract({
-          address: contractAddress,
+          address: courseContractAddress,
           abi: CredentialsBurnableAbi,
           functionName: 'baseURI',
         }),
@@ -133,7 +111,7 @@ const handlePostRequest = async (
       ])
 
     const timestamp = (
-      await client.getBlock({ blockNumber: txRecept.blockNumber! })
+      await client.getBlock({ blockNumber: txReceipt.blockNumber })
     ).timestamp
 
     const metadataResponse = await fetch(baseURI)
@@ -164,7 +142,7 @@ const handlePostRequest = async (
       async (prisma) => {
         const course = await prisma.course.create({
           data: {
-            address: sanitizeAddress(contractAddress),
+            address: sanitizeAddress(courseContractAddress),
             name: jsonMetadata.name,
             description: jsonMetadata.description,
             media_channel: jsonMetadata['media-channel'],
@@ -258,7 +236,7 @@ const handlePostRequest = async (
                   },
                 },
               },
-              user_address: sanitizeAddress(txRecept.from),
+              user_address: sanitizeAddress(txReceipt.from),
               credential_token_id: -1,
               credential: {
                 connect: {

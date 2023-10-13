@@ -1,14 +1,18 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
 import { getUserCourseCredentials } from '../../../../../lib/api'
-import { Address } from 'viem'
+import {
+  Address,
+  WaitForTransactionReceiptReturnType,
+  encodeEventTopics,
+} from 'viem'
 import { createPublicClient } from 'viem'
-import { ChainKey } from '@dae/chains'
+import { ChainId, ChainKey } from '@dae/chains'
 import { config as TransportConfig } from '@dae/viem-config'
 import { CredentialsBurnableAbi } from '@dae/abi'
 import { decodeEventLog } from 'viem'
-import { ApiResponse, ApiResponseStatus, CredentialIssuedLog } from '@dae/types'
-import { Prisma, UserCredentials, prisma } from '@dae/database'
+import { ApiResponse, ApiResponseStatus } from '@dae/types'
+import { UserCredentials, prisma } from '@dae/database'
 import { sanitizeAddress } from '../../../../../lib/functions'
 import { Credential } from '@dae/database'
 import { CONFIRMATION_BLOCKS } from '@dae/constants'
@@ -85,63 +89,86 @@ const handlePostRequest = async (
       transport: TransportConfig[chainId].transport,
     })
 
-    const txRecept = await client.waitForTransactionReceipt({
+    const txRecept = (await client.waitForTransactionReceipt({
       hash: txHash,
       confirmations: CONFIRMATION_BLOCKS,
-    })
+    })) as WaitForTransactionReceiptReturnType
 
     const courseAddress = txRecept.to as Address
 
-    const txLogsDecoded = txRecept.logs.map((log) => {
-      return decodeEventLog({
+    const credentialIssuedEventHash = encodeEventTopics({
+      abi: CredentialsBurnableAbi,
+      eventName: 'Issued',
+    })[0]
+
+    const credentialsIssuedLogs = txRecept.logs.filter(
+      (log) => log.topics[0] === credentialIssuedEventHash,
+    )
+
+    const credentialsIssuedLogsDecoded = credentialsIssuedLogs.map((log) =>
+      decodeEventLog({
         abi: CredentialsBurnableAbi,
         data: log.data,
         topics: log.topics,
-      })
-    })
+        eventName: 'Issued',
+      }),
+    )
 
-    const issuedLogs = txLogsDecoded.filter(
-      (log: any) => log.eventName === 'Issued',
-    ) as CredentialIssuedLog[]
+    const multicallAddress =
+      ChainKey[Number(chainId) as ChainId].contracts?.multicall3?.address
 
-    if (issuedLogs.length === 0) {
-      await prisma.pendingTransactions.delete({
-        where: {
-          transaction_hash: txHash,
-        },
-      })
-      return res.status(400).json({
-        status: ApiResponseStatus.error,
-        message: 'This transaction seams not to contain burn logs.',
-      })
-    }
-
-    const createData = await Promise.all(
-      issuedLogs.map(async (log) => {
-        const tokenId = log.args.tokenId
-
-        const tokenURI = await client.readContract({
+    let tokenURIs: string[]
+    if (multicallAddress) {
+      const multicallTokenURIResponses = await client.multicall({
+        multicallAddress,
+        contracts: credentialsIssuedLogsDecoded.map((log) => ({
           abi: CredentialsBurnableAbi,
           address: courseAddress,
           functionName: 'tokenURI',
-          args: [tokenId],
-        })
-        const splittedURI = tokenURI.split('/')
-        const ipfsCID = splittedURI[splittedURI.length - 1]
-        const credential = await prisma.credential.findUnique({
-          where: {
-            course_address_course_chain_id_ipfs_cid: {
-              course_address: sanitizeAddress(courseAddress),
-              ipfs_cid: ipfsCID,
-              course_chain_id: parseInt(chainId as string),
-            },
-          },
-        })
+          args: [log.args.tokenId],
+        })),
+      })
 
-        if (!credential) {
-          return null
-        }
+      // ONLY BEFORE TOKEN_URI FIX
+      const tempFixTokenURIResponse = multicallTokenURIResponses.map(
+        (tokenURI) => {
+          return {
+            result: tokenURI.result
+              ? tokenURI.result.split('/').slice(-1)[0]
+              : undefined,
+          }
+        },
+      )
+      ///////////
 
+      tokenURIs = tempFixTokenURIResponse.map((response) => {
+        return response.result ? response.result : ''
+      })
+    } else {
+      const tokenURIResponse = await Promise.all(
+        credentialsIssuedLogsDecoded.map((log) => {
+          return client.readContract({
+            abi: CredentialsBurnableAbi,
+            address: courseAddress,
+            functionName: 'tokenURI',
+            args: [log.args.tokenId],
+          })
+        }),
+      )
+
+      // ONLY BEFORE TOKEN_URI FIX
+      const tempFixTokenURIResponse = tokenURIResponse.map((tokenURI) => {
+        return tokenURI.split('/').slice(-1)[0]
+      })
+      ///////////
+
+      tokenURIs = tempFixTokenURIResponse.map((response) => {
+        return response ? response : ''
+      })
+    }
+
+    const createCredentialsData = credentialsIssuedLogsDecoded.map(
+      (log, index) => {
         const credentialUserData = usersData?.filter(
           (usersData) => usersData.address === log.args.to,
         )[0]
@@ -149,22 +176,18 @@ const handlePostRequest = async (
         return {
           course_address: sanitizeAddress(courseAddress),
           user_address: sanitizeAddress(log.args.to),
-          credential_token_id: Number(tokenId),
-          credential_ipfs_cid: credential.ipfs_cid,
-          course_chain_id: parseInt(chainId),
+          credential_token_id: Number(log.args.tokenId),
+          credential_ipfs_cid: tokenURIs[index],
+          course_chain_id: Number(chainId),
           user_email: credentialUserData?.email ?? '',
           user_discord_handle: credentialUserData?.discord ?? '',
           issuer: sanitizeAddress(log.args.from),
         } as UserCredentials
-      }),
+      },
     )
 
-    const validCreateData = createData.filter(
-      (data) => data !== null,
-    ) as UserCredentials[]
-
     await prisma.userCredentials.createMany({
-      data: validCreateData as Prisma.UserCredentialsCreateManyInput[],
+      data: createCredentialsData,
     })
 
     await prisma.pendingTransactions.delete({
@@ -175,7 +198,7 @@ const handlePostRequest = async (
 
     res.status(200).json({
       status: ApiResponseStatus.success,
-      data: { credentials: validCreateData },
+      data: { credentials: createCredentialsData }, /// valid credentials
     })
   } catch (error: any) {
     return res.status(500).json({
