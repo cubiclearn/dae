@@ -78,9 +78,11 @@
         },
         "db:migrate:reset": {},
         "deploy": {
+            "env": [
+                "DATABASE_URL"
+            ],
             "dependsOn": [
-                "build",
-                "db:migrate:deploy"
+                "build"
             ],
             "cache": false
         }
