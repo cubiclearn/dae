@@ -9,6 +9,15 @@
             ],
             "dependsOn": [
                 "^build",
+                "generate"
+            ]
+        },
+        "deploy": {
+            "outputs": [
+                "dist/**/*"
+            ],
+            "dependsOn": [
+                "^build",
                 "generate",
                 "db:migrate:deploy"
             ]

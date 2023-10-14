@@ -30,6 +30,17 @@
                 ".vercel/**/*"
             ]
         },
+        "deploy": {
+            "dependsOn": [
+                "^build"
+            ],
+            "outputs": [
+                "dist/**/*",
+                ".next/**/*",
+                "!.next/cache/**",
+                ".vercel/**/*"
+            ]
+        },
         "check": {
             "dependsOn": [
                 "^build"
