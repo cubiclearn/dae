@@ -9,39 +9,12 @@
             ],
             "dependsOn": [
                 "^build",
-                "generate"
-            ],
-            "env": [
-                "DATABASE_URL"
+                "generate",
+                "db:migrate:deploy"
             ]
-        },
-        "init": {
-            "outputs": [
-                "prisma/**/*"
-            ],
-            "cache": false
-        },
-        "pull": {
-            "outputs": [
-                "prisma/**/*"
-            ],
-            "dependsOn": [
-                "init"
-            ],
-            "cache": false,
-            "env": [
-                "DATABASE_URL"
-            ]
-        },
-        "db:push": {
-            "dependsOn": [
-                "generate"
-            ],
-            "cache": false
         },
         "db:format": {},
         "generate": {
-            "dependsOn": [],
             "cache": false
         },
         "check": {
@@ -56,35 +29,11 @@
                 "generate"
             ]
         },
-        "db:migrate:diff": {
-            "dependsOn": [
-                "generate"
-            ]
-        },
-        "db:migrate:diff:solve": {
-            "dependsOn": [
-                "generate"
-            ]
-        },
-        "db:migrate:resolve": {
-            "dependsOn": [
-                "generate"
-            ]
-        },
         "db:migrate:deploy": {
             "dependsOn": [
                 "generate"
             ]
         },
-        "db:migrate:reset": {},
-        "deploy": {
-            "env": [
-                "DATABASE_URL"
-            ],
-            "dependsOn": [
-                "build"
-            ],
-            "cache": false
-        }
+        "db:migrate:reset": {}
     }
 }
