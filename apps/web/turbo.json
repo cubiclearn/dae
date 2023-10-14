@@ -1,0 +1,37 @@
+{
+    "extends": [
+        "//"
+    ],
+    "pipeline": {
+        "build": {
+            "outputs": [
+                ".next/**/*",
+                "!.next/cache/**",
+                ".vercel/**/*",
+                "dist/**/*"
+            ],
+            "dependsOn": [
+                "^build"
+            ]
+        },
+        "start": {
+            "outputs": [
+                ".next/**/*",
+                "!.next/cache/**",
+                ".vercel/**/*",
+                "dist/**/*"
+            ],
+            "dependsOn": [
+                "^build"
+            ],
+            "persistent": true
+        },
+        "dev": {
+            "dependsOn": [
+                "^build"
+            ],
+            "cache": false,
+            "persistent": true
+        }
+    }
+}
