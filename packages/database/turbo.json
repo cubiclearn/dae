@@ -17,8 +17,7 @@
                 "dist/**/*"
             ],
             "dependsOn": [
-                "^build",
-                "generate",
+                "build",
                 "db:migrate:deploy"
             ]
         },

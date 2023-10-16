@@ -5,7 +5,6 @@ import fs from 'fs'
 import { ApiResponse, ApiResponseStatus } from '@dae/types'
 import { IpfsUploadResult } from '@dae/ipfs'
 import { IpfsConnector } from '../../../../lib/ipfs/client'
-import { Address } from 'viem'
 import formidable from 'formidable'
 
 // TypeScript enum for request methods
@@ -21,7 +20,7 @@ const handlePostRequest = async (
     const { fields, files } = await asyncParse(req)
     const [name] = fields.name as string[]
     const [description] = fields.description as string[]
-    const [website] = fields.website as Address[]
+    const [website] = fields.website as string[]
     const [snapshotEns] = fields['snapshot-ens'] as string[]
     const [mediaChannel] = fields['media-channel'] as string[]
     const [imageFile] = files.file as formidable.File[]
