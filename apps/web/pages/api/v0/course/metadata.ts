@@ -25,14 +25,7 @@ const handlePostRequest = async (
     const [mediaChannel] = fields['media-channel'] as string[]
     const [imageFile] = files.file as formidable.File[]
 
-    if (
-      !name ||
-      !description ||
-      !website ||
-      !snapshotEns ||
-      !mediaChannel ||
-      !imageFile
-    ) {
+    if (!name || !description || !website || !snapshotEns || !imageFile) {
       return res
         .status(400)
         .json({ status: ApiResponseStatus.error, message: 'Bad request.' })
