@@ -42,8 +42,9 @@ export const useCreateCredential = () => {
       })
 
       if (!response.ok) {
-        const responseJSON = await response.json()
-        throw new Error(responseJSON.message)
+        throw new Error(
+          'There is a problem creating credential. This may be due to high latency of the ipfs node. Please try again in a few minutes.',
+        )
       }
 
       mutate(

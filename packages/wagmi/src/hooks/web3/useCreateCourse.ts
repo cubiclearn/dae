@@ -106,7 +106,9 @@ export function useCreateCourse({
       })
 
       if (!uploadMetadataResponse.ok) {
-        throw new Error('Error uploading course metadata to IPFS')
+        throw new Error(
+          'There is a problem uploading course metadata. This may be due to high latency of the ipfs node. Please try again in a few minutes.',
+        )
       }
 
       setStep(1)
@@ -121,16 +123,7 @@ export function useCreateCourse({
         !uploadMetadataResponseJson.data?.metadata.url
       ) {
         throw new Error(
-          'There is a problem uploading your metadata. Try again.',
-        )
-      }
-      const metadataResponse = await fetch(
-        uploadMetadataResponseJson.data.metadata.url,
-      )
-
-      if (!metadataResponse.ok) {
-        throw new Error(
-          'There is a problem uploading your metadata. Try again.',
+          'There is a problem uploading your uploaded course metadata. Please try again in a few minutes.',
         )
       }
 
