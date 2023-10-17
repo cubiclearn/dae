@@ -36,6 +36,11 @@ export const CredentialsFactoryAbi = [
         type: 'string',
       },
       {
+        internalType: 'string',
+        name: '_contractURI',
+        type: 'string',
+      },
+      {
         internalType: 'uint64',
         name: '_baseMagisterKarma',
         type: 'uint64',

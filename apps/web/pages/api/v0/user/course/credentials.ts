@@ -129,21 +129,17 @@ const handlePostRequest = async (
         })),
       })
 
-      // ONLY BEFORE TOKEN_URI FIX
-      const tempFixTokenURIResponse = multicallTokenURIResponses.map(
-        (tokenURI) => {
+      tokenURIs = multicallTokenURIResponses
+        .map((tokenURI) => {
           return {
             result: tokenURI.result
               ? tokenURI.result.split('/').slice(-1)[0]
               : undefined,
           }
-        },
-      )
-      ///////////
-
-      tokenURIs = tempFixTokenURIResponse.map((response) => {
-        return response.result ? response.result : ''
-      })
+        })
+        .map((response) => {
+          return response.result ? response.result : ''
+        })
     } else {
       const tokenURIResponse = await Promise.all(
         credentialsIssuedLogsDecoded.map((log) => {
@@ -156,15 +152,13 @@ const handlePostRequest = async (
         }),
       )
 
-      // ONLY BEFORE TOKEN_URI FIX
-      const tempFixTokenURIResponse = tokenURIResponse.map((tokenURI) => {
-        return tokenURI.split('/').slice(-1)[0]
-      })
-      ///////////
-
-      tokenURIs = tempFixTokenURIResponse.map((response) => {
-        return response ? response : ''
-      })
+      tokenURIs = tokenURIResponse
+        .map((tokenURI) => {
+          return tokenURI.split('/').slice(-1)[0]
+        })
+        .map((response) => {
+          return response ? response : ''
+        })
     }
 
     const createCredentialsData = credentialsIssuedLogsDecoded.map(
