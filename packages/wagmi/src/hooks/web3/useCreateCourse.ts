@@ -106,9 +106,13 @@ export function useCreateCourse({
       })
 
       if (!uploadMetadataResponse.ok) {
-        throw new Error(
-          'There is a problem uploading course metadata. This may be due to high latency of the ipfs node. Please try again in a few minutes.',
-        )
+        if (uploadMetadataResponse.status === 504) {
+          throw new Error(
+            'There is a problem uploading course metadata. This may be due to high latency of the ipfs node. Please try again in a few minutes.',
+          )
+        }
+        const responseErrorJson = await uploadMetadataResponse.json()
+        throw new Error(responseErrorJson.message)
       }
 
       setStep(1)
