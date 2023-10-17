@@ -143,7 +143,8 @@ export function useCreateCourse({
         args: [
           name,
           'DAEC',
-          uploadMetadataResponseJson.data.metadata.url,
+          `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/`,
+          uploadMetadataResponseJson.data.metadata.hash,
           BigInt(magisterBaseKarma),
           BigInt(discipulusBaseKarma),
         ],

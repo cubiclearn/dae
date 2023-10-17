@@ -125,7 +125,7 @@ const handleDeleteRequest = async (
       data: { userCredential: deletedCredential },
     })
   } catch (error: any) {
-    console.log(error)
+    console.error(error)
     return res.status(500).json({
       status: ApiResponseStatus.error,
       message:

@@ -102,7 +102,6 @@ export function useTransferCredentials({
 
       state.setSigning()
 
-      const tokenURI = `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${credentialIPFSCid}`
       if (mint === undefined) {
         throw new Error(
           'The data provided is incorrect. Please ensure that you have entered the correct information.',
@@ -110,7 +109,7 @@ export function useTransferCredentials({
       }
 
       const writeResult = await mint({
-        args: [userData.address, tokenURI, 2],
+        args: [userData.address, credentialIPFSCid, 2],
       })
 
       await fetch('/api/v0/transactions', {
@@ -197,7 +196,6 @@ export function useTransferCredentials({
 
     try {
       state.setValidating()
-      const tokenURI = `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/${credentialIPFSCid}`
 
       if (credentialType === 'OTHER') {
         let accessList: { address: Address; hasAccess: boolean }[]
@@ -298,7 +296,7 @@ export function useTransferCredentials({
       const writeResult = await multiMint({
         args: [
           addressToMint,
-          Array(addressToMint.length).fill(tokenURI),
+          Array(addressToMint.length).fill(credentialIPFSCid),
           Array(addressToMint.length).fill(2),
         ],
       })

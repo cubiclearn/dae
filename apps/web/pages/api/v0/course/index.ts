@@ -47,7 +47,7 @@ const handleGetRequest = async (
       .status(200)
       .json({ status: ApiResponseStatus.success, data: { course: course } })
   } catch (error) {
-    console.log(error)
+    console.error(error)
     return res.status(500).json({
       status: ApiResponseStatus.error,
       message:
@@ -86,35 +86,47 @@ const handlePostRequest = async (
     const karmaAccessControlAddress =
       karmaAccessControlCreatedLogDecoded.args.karmaAccessControl
 
-    const [symbol, baseURI, baseMagisterKarma, baseDiscipulusKarma] =
-      await Promise.all([
-        client.readContract({
-          address: courseContractAddress,
-          abi: CredentialsBurnableAbi,
-          functionName: 'symbol',
-        }),
-        client.readContract({
-          address: courseContractAddress,
-          abi: CredentialsBurnableAbi,
-          functionName: 'baseURI',
-        }),
-        client.readContract({
-          address: karmaAccessControlAddress,
-          abi: KarmaAccessControlAbiUint64,
-          functionName: 'BASE_MAGISTER_KARMA',
-        }),
-        client.readContract({
-          address: karmaAccessControlAddress,
-          abi: KarmaAccessControlAbiUint64,
-          functionName: 'BASE_DISCIPULUS_KARMA',
-        }),
-      ])
+    const [
+      symbol,
+      baseURI,
+      contractURI,
+      baseMagisterKarma,
+      baseDiscipulusKarma,
+    ] = await Promise.all([
+      client.readContract({
+        address: courseContractAddress,
+        abi: CredentialsBurnableAbi,
+        functionName: 'symbol',
+      }),
+      client.readContract({
+        address: courseContractAddress,
+        abi: CredentialsBurnableAbi,
+        functionName: 'baseURI',
+      }),
+      client.readContract({
+        address: courseContractAddress,
+        abi: CredentialsBurnableAbi,
+        functionName: 'contractURI',
+      }),
+      client.readContract({
+        address: karmaAccessControlAddress,
+        abi: KarmaAccessControlAbiUint64,
+        functionName: 'BASE_MAGISTER_KARMA',
+      }),
+      client.readContract({
+        address: karmaAccessControlAddress,
+        abi: KarmaAccessControlAbiUint64,
+        functionName: 'BASE_DISCIPULUS_KARMA',
+      }),
+    ])
 
     const timestamp = (
       await client.getBlock({ blockNumber: txReceipt.blockNumber })
     ).timestamp
 
-    const metadataResponse = await fetch(baseURI)
+    const metadataURL = baseURI + contractURI
+
+    const metadataResponse = await fetch(metadataURL)
 
     if (!metadataResponse.ok) {
       return res.status(500).json({
@@ -149,7 +161,7 @@ const handlePostRequest = async (
             image_url: jsonMetadata.image,
             website_url: jsonMetadata.website,
             symbol: symbol,
-            ipfs_metadata: baseURI,
+            ipfs_metadata: metadataURL,
             timestamp: Number(timestamp),
             chain_id: Number(chainId),
             karma_access_control_address: sanitizeAddress(

@@ -21,6 +21,11 @@ export const CredentialsBurnableAbi = [
         name: '_bUri',
         type: 'string',
       },
+      {
+        internalType: 'string',
+        name: '_contractURI',
+        type: 'string',
+      },
     ],
     stateMutability: 'nonpayable',
     type: 'constructor',
@@ -338,6 +343,19 @@ export const CredentialsBurnableAbi = [
       },
     ],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+    ],
+    name: 'burnMagister',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
