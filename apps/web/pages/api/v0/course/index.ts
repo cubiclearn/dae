@@ -47,7 +47,7 @@ const handleGetRequest = async (
       .status(200)
       .json({ status: ApiResponseStatus.success, data: { course: course } })
   } catch (error) {
-    console.log(error)
+    console.error(error)
     return res.status(500).json({
       status: ApiResponseStatus.error,
       message:
