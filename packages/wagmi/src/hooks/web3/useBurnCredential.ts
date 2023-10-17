@@ -35,7 +35,7 @@ export function useBurnCredential({
   const { writeAsync: burn } = useContractWrite({
     abi: CredentialsBurnableAbi,
     address: courseAddress,
-    functionName: 'burn',
+    functionName: credentialType === 'MAGISTER' ? 'burnMagister' : 'burn',
   })
 
   const { removeModerator } = useEditSnapshotSpace(courseAddress, chain?.id)
