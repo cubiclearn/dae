@@ -3,7 +3,7 @@ import snapshot from '@snapshot-labs/snapshot.js'
 import { useEthersSigner } from './useEthersSigner'
 import { ChainSnapshotHub } from '@dae/chains'
 import { Proposal } from '@snapshot-labs/snapshot.js/dist/sign/types'
-import { useHookState } from './useHookState'
+import { useSnapshotHookState } from './useSnapshotHookState'
 
 type ProposalCreationResult = {
   id: string
@@ -20,7 +20,7 @@ export const useCreateProposal = (snapshotSpaceENS: string | undefined) => {
   const { data: blockNumber } = useBlockNumber()
 
   const { isSuccess, isValidating, isLoading, isError, error, ...state } =
-    useHookState()
+    useSnapshotHookState()
 
   const spaceNetwork = chain!.id as keyof typeof ChainSnapshotHub
   const hub = ChainSnapshotHub[spaceNetwork]

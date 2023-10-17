@@ -3,7 +3,7 @@ import snapshot from '@snapshot-labs/snapshot.js'
 import { useEthersSigner } from './useEthersSigner'
 import { ChainSnapshotHub } from '@dae/chains'
 import { type VotingStrategy } from '@dae/types'
-import { useHookState } from './useHookState'
+import { useSnapshotHookState } from './useSnapshotHookState'
 import { SpaceConfig } from '../../types'
 import { mutate } from 'swr'
 
@@ -80,7 +80,7 @@ export const useCreateSnapshotSpace = () => {
   const { address } = useAccount()
   const { chain } = useNetwork()
   const { isSuccess, isValidating, isLoading, isError, error, ...state } =
-    useHookState()
+    useSnapshotHookState()
 
   const spaceNetwork = chain!.id as keyof typeof ChainSnapshotHub
   const hub = ChainSnapshotHub[spaceNetwork]

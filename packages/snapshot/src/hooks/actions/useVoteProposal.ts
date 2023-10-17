@@ -3,7 +3,7 @@ import snapshot from '@snapshot-labs/snapshot.js'
 import { useAccount } from 'wagmi'
 import { ChainSnapshotHub } from '@dae/chains'
 import { ProposalType } from '@snapshot-labs/snapshot.js/dist/sign/types'
-import { useHookState } from './useHookState'
+import { useSnapshotHookState } from './useSnapshotHookState'
 import { mutate } from 'swr'
 
 export const useVotePropsal = (
@@ -14,7 +14,7 @@ export const useVotePropsal = (
 ) => {
   const { address } = useAccount()
   const { isSuccess, isValidating, isLoading, isError, error, ...state } =
-    useHookState()
+    useSnapshotHookState()
 
   const hub = ChainSnapshotHub[spaceNetwork]
   const snapshotClient = new snapshot.Client712(hub)

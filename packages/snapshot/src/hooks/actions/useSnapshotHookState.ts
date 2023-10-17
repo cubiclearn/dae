@@ -8,7 +8,7 @@ type HookState = {
   isValidating: boolean
 }
 
-export function useHookState() {
+export function useSnapshotHookState() {
   const [state, setState] = useState<HookState>({
     error: null,
     isError: false,
@@ -39,13 +39,22 @@ export function useHookState() {
 
   const handleError = (error: unknown) => {
     let parsedError: Error
-    switch (true) {
-      case error instanceof Error:
-        parsedError = error as Error
-        break
-      default:
-        parsedError = new Error('An error occurred')
+
+    if (
+      error &&
+      typeof error === 'object' &&
+      'error' in error &&
+      'error_description' in error
+    ) {
+      parsedError = new Error(
+        `Snapshot service returned an error: ${
+          error.error_description as string
+        }.`,
+      )
+    } else {
+      parsedError = new Error('An error occurred.')
     }
+
     setState({
       ...state,
       isSuccess: false,
