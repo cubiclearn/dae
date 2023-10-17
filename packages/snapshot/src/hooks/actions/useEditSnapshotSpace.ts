@@ -2,7 +2,7 @@ import { Address, useAccount } from 'wagmi'
 import snapshot from '@snapshot-labs/snapshot.js'
 import { useEthersSigner } from './useEthersSigner'
 import { ChainSnapshotHub } from '@dae/chains'
-import { useHookState } from './useHookState'
+import { useSnapshotHookState } from './useSnapshotHookState'
 import { useCourseSpace } from '../api'
 import { mutate } from 'swr'
 
@@ -11,7 +11,7 @@ export const useEditSnapshotSpace = (
   chainId: number | undefined,
 ) => {
   const { isSuccess, isValidating, isLoading, isError, error, ...state } =
-    useHookState()
+    useSnapshotHookState()
   const { address } = useAccount()
   const spaceNetwork = chainId as keyof typeof ChainSnapshotHub
   const hub = ChainSnapshotHub[spaceNetwork]
