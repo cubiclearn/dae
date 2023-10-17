@@ -3,7 +3,6 @@ import {
   chakra,
   Container,
   Stack,
-  Text,
   useColorModeValue,
   VisuallyHidden,
 } from '@chakra-ui/react'
@@ -51,15 +50,9 @@ export const Footer = () => {
         py={4}
         direction={{ base: 'column', md: 'row' }}
         spacing={4}
-        justify={{ base: 'center', md: 'space-between' }}
+        justify={{ base: 'center', md: 'flex-end' }}
         align={{ base: 'center', md: 'center' }}
       >
-        <Text fontWeight={'bold'} fontSize={'md'}>
-          Version:{' '}
-          <Text fontWeight={'normal'} as="span">
-            {''}
-          </Text>
-        </Text>
         <Stack direction={'row'} spacing={6}>
           <SocialButton label={'Github'} href={'https://github.com/cubiclearn'}>
             <FaGithub />
