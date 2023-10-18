@@ -23,7 +23,11 @@ function ExploreProposals() {
       <Layout.Course heading="Explore proposals">
         <ProposalContainer courseAddress={courseAddress}>
           <Stack spacing={8}>
-            <Tabs index={status === 'active' ? 0 : 1}>
+            <Tabs
+              index={status === 'active' ? 0 : 1}
+              variant="soft-rounded"
+              colorScheme={status === 'active' ? 'green' : 'blackAlpha'}
+            >
               <TabList>
                 <Link
                   as={NextLink}
