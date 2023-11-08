@@ -35,14 +35,14 @@ const handlePostRequest = async (
     console.log(originalFilename)
     const courseImageBuffer = fs.readFileSync(filepath)
 
-    const ipfsCourseImageData = await IpfsConnector.upload(
-      courseImageBuffer,
-      originalFilename ?? '',
-      mimetype ?? '',
-    )
+    const ipfsCourseImageData = await IpfsConnector.upload({
+      fileContent: courseImageBuffer,
+      fileName: originalFilename ?? '',
+      mimeType: mimetype ?? '',
+    })
 
-    const ipfsCourseMetadata = await IpfsConnector.upload(
-      {
+    const ipfsCourseMetadata = await IpfsConnector.upload({
+      fileContent: {
         image: ipfsCourseImageData.url,
         name: name,
         description: description,
@@ -50,9 +50,9 @@ const handlePostRequest = async (
         'snapshot-ens': snapshotEns,
         'media-channel': mediaChannel,
       },
-      '',
-      'data/json',
-    )
+      fileName: '',
+      mimeType: 'data/json',
+    })
 
     res.status(200).json({
       status: ApiResponseStatus.success,

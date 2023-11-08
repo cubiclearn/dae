@@ -15,11 +15,15 @@ export class InfuraIpfsConnector implements IpfsConnector {
     this.ipfsGateway = ipfsGateway
   }
 
-  public async upload(
-    fileContent: Buffer | Record<string, any>,
-    fileName: string,
-    mimeType: string,
-  ): Promise<IpfsUploadResult> {
+  public async upload({
+    fileContent,
+    fileName,
+    mimeType,
+  }: {
+    fileContent: Buffer | Record<string, any>
+    fileName: string
+    mimeType: string
+  }): Promise<IpfsUploadResult> {
     const formData = new FormData()
 
     if (fileContent instanceof Buffer) {

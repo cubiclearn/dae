@@ -115,21 +115,21 @@ const handlePostRequest = async (
 
     const credentialImageBuffer = fs.readFileSync(filepath)
 
-    const ipfsCredentialImageData = await IpfsConnector.upload(
-      credentialImageBuffer,
-      originalFilename ?? '',
-      mimetype ?? '',
-    )
+    const ipfsCredentialImageData = await IpfsConnector.upload({
+      fileContent: credentialImageBuffer,
+      fileName: originalFilename ?? '',
+      mimeType: mimetype ?? '',
+    })
 
-    const ipfsCredentialMetadata = await IpfsConnector.upload(
-      {
+    const ipfsCredentialMetadata = await IpfsConnector.upload({
+      fileContent: {
         name: name,
         description: description,
         image: ipfsCredentialImageData.url,
       },
-      '',
-      'data/json',
-    )
+      fileName: '',
+      mimeType: 'data/json',
+    })
 
     const credential = await prisma.credential.create({
       data: {
