@@ -7,9 +7,10 @@
     "devDependencies": {
         "@dae/chains": "workspace:*",
         "@dae/typescript-config": "workspace:*",
+        "@types/node": "20.9.0",
         "tsup": "6.7.0",
-        "typescript": "5.0.4",
-        "viem": "1.12.2"
+        "typescript": "5.2.2",
+        "viem": "1.18.9"
     },
     "files": [
         "/dist"
