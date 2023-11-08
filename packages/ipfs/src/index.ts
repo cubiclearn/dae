@@ -9,9 +9,13 @@ export type IpfsUploadResult = {
 }
 
 export interface IpfsConnector {
-  upload(
-    fileContent: Buffer | Record<string, any>,
-    mimeType?: string,
-    fileName?: string,
-  ): Promise<IpfsUploadResult>
+  upload({
+    fileContent,
+    mimeType,
+    fileName,
+  }: {
+    fileContent: Buffer | Record<string, any>
+    mimeType?: string
+    fileName?: string
+  }): Promise<IpfsUploadResult>
 }
