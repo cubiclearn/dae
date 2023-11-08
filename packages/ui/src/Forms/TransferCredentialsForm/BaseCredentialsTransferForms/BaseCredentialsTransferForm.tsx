@@ -39,7 +39,7 @@ export const BaseCredentialsTransferForm: React.FC<
     <Box padding={8} borderRadius="xl" bg={'white'} boxShadow={'md'}>
       <Stack spacing={8}>
         <FormControl display="flex" alignItems="center">
-          <FormLabel mb="0">Multi transfer?</FormLabel>
+          <FormLabel mb="0">Multi enroll?</FormLabel>
           <Switch isDisabled={isLoading} onChange={handleMultiEnrollChange} />
         </FormControl>
         {multiEnroll ? (
