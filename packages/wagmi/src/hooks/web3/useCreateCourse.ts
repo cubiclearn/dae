@@ -131,6 +131,16 @@ export function useCreateCourse({
         )
       }
 
+      const metadataResponse = await fetch(
+        uploadMetadataResponseJson.data.metadata.url,
+      )
+
+      if (!metadataResponse.ok) {
+        throw new Error(
+          'There is a problem uploading your uploaded course metadata. Please try again in a few minutes.',
+        )
+      }
+
       if (writeAsync === undefined) {
         throw new Error(
           'The data provided is incorrect. Please ensure that you have entered the correct information.',
