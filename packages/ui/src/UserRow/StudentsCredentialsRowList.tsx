@@ -90,7 +90,7 @@ export const StudentsCredentialsRowList: React.FC<
           <Box>
             <AlertTitle>Nothing to show.</AlertTitle>
             <AlertDescription>
-              There are no teachers enrolled in this course
+              There are no students enrolled in this course.
             </AlertDescription>
           </Box>
         </Alert>
