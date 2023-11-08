@@ -8,8 +8,8 @@
         "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
     },
     "dependencies": {
-        "swr": "2.1.5",
-        "viem": "1.12.2"
+        "swr": "2.2.4",
+        "viem": "1.18.9"
     },
     "sideEffects": false,
     "type": "module",
@@ -35,19 +35,19 @@
         "@dae/chains": "workspace:*",
         "@dae/constants": "workspace:*",
         "@dae/database": "workspace:*",
-        "@dae/ipfs": "workspace:*",
         "@dae/hooks": "workspace:*",
+        "@dae/ipfs": "workspace:*",
         "@dae/snapshot": "workspace:*",
         "@dae/types": "workspace:*",
         "@dae/typescript-config": "workspace:*",
-        "@types/node": "20.6.5",
-        "@types/react": "18.2.22",
-        "@types/react-dom": "18.2.7",
+        "@types/node": "20.9.0",
+        "@types/react": "18.2.37",
+        "@types/react-dom": "18.2.15",
         "next": "13.5.2",
         "react": "18.2.0",
         "react-dom": "18.2.0",
-        "typescript": "5.0.4",
-        "wagmi": "1.4.2"
+        "typescript": "5.2.2",
+        "wagmi": "1.4.5"
     },
     "files": [
         "src"

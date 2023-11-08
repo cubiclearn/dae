@@ -6,8 +6,9 @@
     "bugs": "https://github.com/cubiclearn/dae/issues",
     "devDependencies": {
         "@dae/typescript-config": "workspace:*",
-        "typescript": "5.0.4",
-        "viem": "1.12.2"
+        "@types/node": "20.9.0",
+        "typescript": "5.2.2",
+        "viem": "1.18.9"
     },
     "files": [
         "/dist"
