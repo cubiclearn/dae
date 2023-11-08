@@ -117,8 +117,8 @@ const handlePostRequest = async (
 
     const ipfsCredentialImageData = await IpfsConnector.upload(
       credentialImageBuffer,
-      mimetype ?? '',
       originalFilename ?? '',
+      mimetype ?? '',
     )
 
     const ipfsCredentialMetadata = await IpfsConnector.upload(

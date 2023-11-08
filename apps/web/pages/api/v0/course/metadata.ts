@@ -32,12 +32,13 @@ const handlePostRequest = async (
     }
 
     const { mimetype, filepath, originalFilename } = imageFile
+    console.log(originalFilename)
     const courseImageBuffer = fs.readFileSync(filepath)
 
     const ipfsCourseImageData = await IpfsConnector.upload(
       courseImageBuffer,
-      mimetype ?? '',
       originalFilename ?? '',
+      mimetype ?? '',
     )
 
     const ipfsCourseMetadata = await IpfsConnector.upload(
