@@ -22,6 +22,8 @@ Before launching the application you have to set up this components:
 
 Configuration is made by filling the fields inside the .env.example file and than renaming it as .env
 
+Verify that the files within [resources/ipfs](./resources/ipfs/) are reachable from the IPFS node. If you start the application and the base credentials data are not displayed (either image or textual data), upload the files to IPFS.
+
 ### Run the application:
 
 #### Installation
