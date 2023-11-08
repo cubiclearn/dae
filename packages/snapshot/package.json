@@ -12,7 +12,7 @@
         "ethers": "5.7.2",
         "graphql": "16.8.1",
         "graphql-request": "6.1.0",
-        "swr": "2.2.4",
+        "swr": "2.1.5",
         "viem": "1.18.9"
     },
     "sideEffects": false,

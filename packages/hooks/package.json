@@ -3,7 +3,7 @@
     "description": "Decentralized Autonomous Education (DAE) Hooks",
     "version": "0.0.0",
     "dependencies": {
-        "swr": "2.2.4"
+        "swr": "2.1.5"
     },
     "devDependencies": {
         "@dae/constants": "workspace:*",
