@@ -8,7 +8,7 @@
         "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
     },
     "dependencies": {
-        "@snapshot-labs/snapshot.js": "0.5.3",
+        "@snapshot-labs/snapshot.js": "0.9.6",
         "ethers": "5.7.2",
         "graphql": "16.7.1",
         "graphql-request": "6.1.0",

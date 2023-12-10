@@ -6,7 +6,7 @@ export const useSnapshotGraphQL = () => {
   if (!chain) return
 
   const endpoint = chain.testnet
-    ? 'https://testnet.snapshot.org/graphql'
+    ? 'https://testnet.hub.snapshot.org/graphql'
     : 'https://hub.snapshot.org/graphql'
 
   const fetch = async <T>(query: string, variables: any) => {

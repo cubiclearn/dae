@@ -21,8 +21,8 @@ export const DefaultChain = sepolia
 
 export const ChainSnapshotHub = {
   [ChainId.ETHEREUM]: 'https://hub.snapshot.org',
-  [ChainId.SEPOLIA]: 'https://testnet.snapshot.org',
-  [ChainId.FOUNDRY]: 'https://testnet.snapshot.org',
+  [ChainId.SEPOLIA]: 'https://testnet.hub.snapshot.org',
+  [ChainId.FOUNDRY]: 'https://testnet.hub.snapshot.org',
 } as const
 
 export type ChainSnapshotHub =
