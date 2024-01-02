@@ -4,7 +4,7 @@
 <img src="./apps/web/public/dae-home-image.png" alt="dae logo" width="300" height="auto">
 </p>
 
-DAE is an innovative learning model that leverages the principles and applications of Web3.  
+DAE is an innovative learning model that leverages the principles and applications of Web3.
 An instance of the DAE model, called a class, is made of a group of teachers (at least one), a group of learners (at least two), and a topic to teach and learn.
 The purpose of the model is to maximize the transfer of knowledge about the topic from the teacher to the learners in a homogeneous way, i.e. without many disparities.
 
