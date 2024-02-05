@@ -1,4 +1,5 @@
 export * from './connectors/infura'
+export * from './connectors/pinata'
 
 export type IpfsUploadResult = {
   hash: string
@@ -8,13 +9,13 @@ export type IpfsUploadResult = {
   timestamp?: number
 }
 
-export interface IpfsConnector {
+export interface IpfsConnector<T> {
   upload({
     fileContent,
     mimeType,
     fileName,
   }: {
-    fileContent: Buffer | Record<string, any>
+    fileContent: T
     mimeType?: string
     fileName?: string
   }): Promise<IpfsUploadResult>

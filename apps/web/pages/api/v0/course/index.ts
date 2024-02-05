@@ -167,10 +167,8 @@ const handlePostRequest = async (
               data: {
                 name: 'Admin',
                 description: 'The course Admin credential',
-                image_url:
-                  'https://dae-demo.infura-ipfs.io/ipfs/QmXibYJSXskaqS7WyXLGwy16vGASqhN75yNUp2UfMRiLkF',
-                ipfs_url:
-                  'https://dae-demo.infura-ipfs.io/ipfs/QmWNqAC88Sbti885sSbax9RK1Sfbo3akVeue5SMEhXWbjN',
+                image_url: `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/QmXibYJSXskaqS7WyXLGwy16vGASqhN75yNUp2UfMRiLkF`,
+                ipfs_url: `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/QmWNqAC88Sbti885sSbax9RK1Sfbo3akVeue5SMEhXWbjN`,
                 ipfs_cid: 'QmWNqAC88Sbti885sSbax9RK1Sfbo3akVeue5SMEhXWbjN',
                 type: 'ADMIN',
                 course: {
@@ -187,10 +185,8 @@ const handlePostRequest = async (
               data: {
                 name: 'Magister',
                 description: 'The course Magister credential',
-                image_url:
-                  'https://dae-demo.infura-ipfs.io/ipfs/QmTFVE4FoPJm2vazgVtKajbw2XSNtM2wTDrkUinxMcLbBg',
-                ipfs_url:
-                  'https://dae-demo.infura-ipfs.io/ipfs/QmXRAu1zZ7igsNWo8egMDH3g77vFQgZHfcE2k6hoJp4JwT',
+                image_url: `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/QmTFVE4FoPJm2vazgVtKajbw2XSNtM2wTDrkUinxMcLbBg`,
+                ipfs_url: `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/QmXRAu1zZ7igsNWo8egMDH3g77vFQgZHfcE2k6hoJp4JwT`,
                 ipfs_cid: 'QmXRAu1zZ7igsNWo8egMDH3g77vFQgZHfcE2k6hoJp4JwT',
                 type: 'MAGISTER',
                 course: {
@@ -207,10 +203,8 @@ const handlePostRequest = async (
               data: {
                 name: 'Discipulus',
                 description: 'The course Discipulus credential',
-                image_url:
-                  'https://dae-demo.infura-ipfs.io/ipfs/QmUEC1WiGo9Vr3WER68u3T6mSwLexyDXj5G6WUgpVECmBY',
-                ipfs_url:
-                  'https://dae-demo.infura-ipfs.io/ipfs/QmPfKCv7ZAz8294ShRTcHft5LSM9YaDJ4NTjZisCkhFxW8',
+                image_url: `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/QmUEC1WiGo9Vr3WER68u3T6mSwLexyDXj5G6WUgpVECmBY`,
+                ipfs_url: `${process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL}/QmPfKCv7ZAz8294ShRTcHft5LSM9YaDJ4NTjZisCkhFxW8`,
                 ipfs_cid: 'QmPfKCv7ZAz8294ShRTcHft5LSM9YaDJ4NTjZisCkhFxW8',
                 type: 'DISCIPULUS',
                 course: {
