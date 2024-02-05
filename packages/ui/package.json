@@ -34,7 +34,7 @@
         "@dae/wagmi": "workspace:*",
         "@emotion/react": "11.11.1",
         "@emotion/styled": "11.11.0",
-        "@snapshot-labs/snapshot.js": "0.9.6",
+        "@snapshot-labs/snapshot.js": "0.10.1",
         "@types/papaparse": "5.3.11",
         "@types/react": "18.2.37",
         "@types/react-dom": "18.2.15",
