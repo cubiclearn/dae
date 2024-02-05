@@ -32,7 +32,6 @@ const handlePostRequest = async (
     }
 
     const { mimetype, filepath, originalFilename } = imageFile
-    console.log(originalFilename)
     const courseImageBuffer = fs.readFileSync(filepath)
 
     const ipfsCourseImageData = await IpfsConnector.upload({
@@ -51,7 +50,7 @@ const handlePostRequest = async (
         'media-channel': mediaChannel,
       },
       fileName: '',
-      mimeType: 'data/json',
+      mimeType: 'application/json',
     })
 
     res.status(200).json({

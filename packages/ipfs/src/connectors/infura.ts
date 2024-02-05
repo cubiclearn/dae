@@ -2,7 +2,9 @@ import axios from 'axios'
 import FormData from 'form-data'
 import { IpfsConnector, IpfsUploadResult } from '../'
 
-export class InfuraIpfsConnector implements IpfsConnector {
+export class InfuraIpfsConnector
+  implements IpfsConnector<Buffer | Record<string, any>>
+{
   private apiKey: string
   private apiSecret: string
   private authToken: string
