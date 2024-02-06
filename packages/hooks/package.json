@@ -1,35 +1,28 @@
 {
-    "name": "@dae/hooks",
-    "description": "Decentralized Autonomous Education (DAE) Hooks",
-    "version": "0.0.0",
-    "dependencies": {
-        "swr": "2.1.5"
-    },
-    "devDependencies": {
-        "@dae/constants": "workspace:*",
-        "@dae/typescript-config": "workspace:*",
-        "@types/react": "18.2.37",
-        "@types/react-dom": "18.2.15",
-        "eslint": "8.29.0",
-        "react": "18.2.0",
-        "react-dom": "18.2.0",
-        "typescript": "5.2.2",
-        "viem": "1.18.9"
-    },
-    "peerDependencies": {
-        "react": "18.2.0",
-        "react-dom": "18.2.0"
-    },
-    "license": "MIT",
-    "main": "./dist/index.js",
-    "private": true,
-    "scripts": {
-        "build": "tsc",
-        "check": "tsc --pretty --noEmit",
-        "clean": "rm -rf .turbo dist node_modules",
-        "dev": "tsc -w",
-        "lint": "TIMING=1 eslint src --fix"
-    },
-    "source": "./src/index.ts",
-    "types": "./dist/index.d.ts"
+  "name": "@dae/hooks",
+  "description": "Decentralized Autonomous Education (DAE) Hooks",
+  "version": "0.0.1",
+  "dependencies": {
+    "@dae/constants": "workspace:*"
+  },
+  "devDependencies": {
+    "@dae/typescript-config": "workspace:*",
+    "@types/react": "18.2.37",
+    "eslint": "8.29.0",
+    "typescript": "5.2.2"
+  },
+  "peerDependencies": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "files": [
+    "src"
+  ],
+  "license": "MIT",
+  "main": "src/index.ts",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf .turbo dist node_modules",
+    "lint": "tsc --pretty --noEmit"
+  }
 }

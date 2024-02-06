@@ -5,7 +5,7 @@ import { foundry, sepolia } from 'viem/chains'
 export { sepolia, foundry }
 
 const infuraApiKey =
-  process.env['INFURA_API_KEY'] || process.env['NEXT_PUBLIC_INFURA_API_KEY']
+  process.env.INFURA_API_KEY || process.env.NEXT_PUBLIC_INFURA_API_KEY
 
 export const config: Record<number, PublicClientConfig> = {
   //   [ChainId.ETHEREUM]: {

@@ -1,37 +1,37 @@
 {
-    "name": "@dae/database",
-    "description": "Decentralized Autonomous Education (DAE) Database",
-    "version": "0.0.0",
-    "dependencies": {
-        "@prisma/client": "5.5.2"
-    },
-    "devDependencies": {
-        "@dae/typescript-config": "workspace:*",
-        "@types/node": "20.9.0",
-        "eslint": "8.29.0",
-        "prisma": "5.5.2",
-        "tsup": "6.7.0",
-        "typescript": "5.2.2"
-    },
-    "files": [
-        "dist"
-    ],
-    "license": "MIT",
-    "main": "./dist/index.js",
-    "module": "./dist/index.mjs",
-    "scripts": {
-        "build": "tsup",
-        "clean": "rm -rf .turbo dist node_modules",
-        "dev": "tsup --watch",
-        "format": "prisma format",
-        "generate": "prisma generate",
-        "lint": "eslint \"src/**/*.ts\"",
-        "db:format": "prisma format",
-        "db:studio": "prisma studio",
-        "db:migrate:dev": "prisma migrate dev",
-        "db:migrate:deploy": "prisma migrate deploy",
-        "db:migrate:reset": "prisma migrate reset --force"
-    },
-    "source": "./src/index.ts",
-    "types": "./dist/index.d.ts"
+  "name": "@dae/database",
+  "description": "Decentralized Autonomous Education (DAE) Database",
+  "version": "0.0.1",
+  "dependencies": {
+    "@prisma/client": "5.5.2"
+  },
+  "devDependencies": {
+    "@dae/typescript-config": "workspace:*",
+    "@types/node": "20.9.0",
+    "eslint": "8.29.0",
+    "prisma": "5.5.2",
+    "tsup": "6.7.0",
+    "typescript": "5.2.2"
+  },
+  "files": [
+    "dist"
+  ],
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf .turbo dist node_modules",
+    "db:format": "prisma format",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate:reset": "prisma migrate reset --force",
+    "db:studio": "prisma studio",
+    "dev": "tsup --watch",
+    "format": "prisma format",
+    "generate": "prisma generate",
+    "lint": "eslint \"src/**/*.ts\""
+  },
+  "source": "./src/index.ts",
+  "types": "./dist/index.d.ts"
 }

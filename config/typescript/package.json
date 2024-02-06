@@ -1,7 +1,7 @@
 {
-    "name": "@dae/typescript-config",
-    "version": "0.0.1",
-    "description": "Typescript configuration for the Decentralized Autonomous Education (DAE) project",
-    "author": "",
-    "license": "MIT"
+  "name": "@dae/typescript-config",
+  "description": "Typescript configuration for the Decentralized Autonomous Education (DAE) project",
+  "version": "0.0.1",
+  "author": "",
+  "license": "MIT"
 }

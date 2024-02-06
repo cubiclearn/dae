@@ -1,31 +1,21 @@
 {
-    "name": "@dae/constants",
-    "description": "Decentralized Autonomous Education (DAE) constants.",
-    "version": "0.0.0",
-    "devDependencies": {
-        "@dae/typescript-config": "workspace:*",
-        "eslint": "8.29.0",
-        "typescript": "5.2.2"
-    },
-    "files": [
-        "dist"
-    ],
-    "license": "MIT",
-    "main": "dist/index.js",
-    "private": true,
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/cubiclearn/dae.git",
-        "directory": "packages/constants"
-    },
-    "scripts": {
-        "build": "tsc",
-        "check": "tsc --pretty --noEmit",
-        "clean": "rm -rf .turbo dist node_modules",
-        "dev": "tsc -w",
-        "lint": "TIMING=1 eslint src --fix"
-    },
-    "sideEffects": false,
-    "source": "src/index.ts",
-    "types": "dist/index.d.ts"
+  "name": "@dae/constants",
+  "description": "Decentralized Autonomous Education (DAE) constants.",
+  "version": "0.0.1",
+  "devDependencies": {
+    "@dae/typescript-config": "workspace:*",
+    "eslint": "8.29.0",
+    "typescript": "5.2.2"
+  },
+  "files": [
+    "src"
+  ],
+  "license": "MIT",
+  "main": "src/index.ts",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf .turbo dist node_modules",
+    "lint": "tsc --pretty --noEmit"
+  },
+  "sideEffects": false
 }
