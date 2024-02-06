@@ -8,10 +8,10 @@
   },
   "devDependencies": {
     "@dae/typescript-config": "workspace:*",
-    "typescript": "5.2.2"
+    "typescript": "~5.2.2"
   },
   "peerDependencies": {
-    "viem": "1.18.9"
+    "viem": "^1.18.9"
   },
   "files": [
     "src"

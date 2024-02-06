@@ -22,29 +22,26 @@ importers:
         version: 1.10.12
     devDependencies:
       husky:
-        specifier: 8.0.3
+        specifier: ~8.0.3
         version: 8.0.3
       lint-staged:
-        specifier: 13.2.2
+        specifier: ~13.2.2
         version: 13.2.2
       rome:
-        specifier: 12.1.3
+        specifier: ~12.1.3
         version: 12.1.3
       syncpack:
-        specifier: 11.2.1
+        specifier: ~11.2.1
         version: 11.2.1
 
   apps/web:
     dependencies:
       '@chakra-ui/anatomy':
-        specifier: ^2.2.1
+        specifier: 2.2.1
         version: 2.2.1
       '@chakra-ui/icons':
         specifier: 2.1.1
         version: 2.1.1(@chakra-ui/system@2.6.1)(react@18.2.0)
-      '@chakra-ui/next-js':
-        specifier: 2.1.5
-        version: 2.1.5(@chakra-ui/react@2.8.1)(@emotion/react@11.11.1)(next@13.5.2)(react@18.2.0)
       '@chakra-ui/react':
         specifier: 2.8.1
         version: 2.8.1(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.37)(framer-motion@10.16.4)(react-dom@18.2.0)(react@18.2.0)
@@ -103,7 +100,7 @@ importers:
         specifier: 5.7.2
         version: 5.7.2
       formidable:
-        specifier: ^3.5.1
+        specifier: 3.5.1
         version: 3.5.1
       framer-motion:
         specifier: 10.16.4
@@ -111,18 +108,12 @@ importers:
       graphql-request:
         specifier: 6.1.0
         version: 6.1.0(graphql@16.8.1)
-      install:
-        specifier: 0.13.0
-        version: 0.13.0
       next:
         specifier: 13.5.2
         version: 13.5.2(react-dom@18.2.0)(react@18.2.0)
       next-auth:
         specifier: 4.24.4
         version: 4.24.4(next@13.5.2)(react-dom@18.2.0)(react@18.2.0)
-      npm:
-        specifier: 9.6.6
-        version: 9.6.6
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -132,9 +123,6 @@ importers:
       siwe:
         specifier: 2.1.4
         version: 2.1.4(ethers@5.7.2)
-      swr:
-        specifier: 2.1.5
-        version: 2.1.5(react@18.2.0)
       viem:
         specifier: 1.18.9
         version: 1.18.9(typescript@5.2.2)
@@ -146,22 +134,19 @@ importers:
         specifier: workspace:*
         version: link:../../config/typescript
       '@prisma/nextjs-monorepo-workaround-plugin':
-        specifier: 5.5.2
+        specifier: ~5.5.2
         version: 5.5.2
       '@types/formidable':
-        specifier: ^3.4.5
+        specifier: ~3.4.5
         version: 3.4.5
       '@types/node':
-        specifier: 20.9.0
+        specifier: ~20.9.0
         version: 20.9.0
       '@types/react':
-        specifier: 18.2.37
+        specifier: ~18.2.37
         version: 18.2.37
-      '@types/react-dom':
-        specifier: 18.2.15
-        version: 18.2.15
       typescript:
-        specifier: 5.2.2
+        specifier: ~5.2.2
         version: 5.2.2
 
   config/typescript: {}
@@ -172,14 +157,14 @@ importers:
         specifier: workspace:*
         version: link:../../packages/chains
       viem:
-        specifier: 1.18.9
+        specifier: ^1.18.9
         version: 1.18.9(typescript@5.2.2)
     devDependencies:
       '@dae/typescript-config':
         specifier: workspace:*
         version: link:../typescript
       typescript:
-        specifier: 5.2.2
+        specifier: ~5.2.2
         version: 5.2.2
 
   packages/abi:
@@ -188,23 +173,23 @@ importers:
         specifier: workspace:*
         version: link:../../config/typescript
       eslint:
-        specifier: 8.29.0
+        specifier: ~8.29.0
         version: 8.29.0
       typescript:
-        specifier: 5.2.2
+        specifier: ~5.2.2
         version: 5.2.2
 
   packages/chains:
     dependencies:
       viem:
-        specifier: 1.18.9
+        specifier: ^1.18.9
         version: 1.18.9(typescript@5.2.2)
     devDependencies:
       '@dae/typescript-config':
         specifier: workspace:*
         version: link:../../config/typescript
       typescript:
-        specifier: 5.2.2
+        specifier: ~5.2.2
         version: 5.2.2
 
   packages/constants:
@@ -213,10 +198,10 @@ importers:
         specifier: workspace:*
         version: link:../../config/typescript
       eslint:
-        specifier: 8.29.0
+        specifier: ~8.29.0
         version: 8.29.0
       typescript:
-        specifier: 5.2.2
+        specifier: ~5.2.2
         version: 5.2.2
 
   packages/database:
@@ -229,19 +214,19 @@ importers:
         specifier: workspace:*
         version: link:../../config/typescript
       '@types/node':
-        specifier: 20.9.0
+        specifier: ~20.9.0
         version: 20.9.0
       eslint:
-        specifier: 8.29.0
+        specifier: ~8.29.0
         version: 8.29.0
       prisma:
-        specifier: 5.5.2
+        specifier: ~5.5.2
         version: 5.5.2
       tsup:
-        specifier: 6.7.0
+        specifier: ~6.7.0
         version: 6.7.0(typescript@5.2.2)
       typescript:
-        specifier: 5.2.2
+        specifier: ~5.2.2
         version: 5.2.2
 
   packages/hooks:
@@ -250,23 +235,23 @@ importers:
         specifier: workspace:*
         version: link:../constants
       react:
-        specifier: 18.2.0
+        specifier: ^18.2.0
         version: 18.2.0
       react-dom:
-        specifier: 18.2.0
+        specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
     devDependencies:
       '@dae/typescript-config':
         specifier: workspace:*
         version: link:../../config/typescript
       '@types/react':
-        specifier: 18.2.37
+        specifier: ~18.2.37
         version: 18.2.37
       eslint:
-        specifier: 8.29.0
+        specifier: ~8.29.0
         version: 8.29.0
       typescript:
-        specifier: 5.2.2
+        specifier: ~5.2.2
         version: 5.2.2
 
   packages/ipfs:
@@ -282,10 +267,10 @@ importers:
         specifier: workspace:*
         version: link:../../config/typescript
       '@types/node':
-        specifier: 20.9.0
+        specifier: ~20.9.0
         version: 20.9.0
       typescript:
-        specifier: 5.2.2
+        specifier: ~5.2.2
         version: 5.2.2
 
   packages/snapshot:
@@ -306,19 +291,19 @@ importers:
         specifier: 6.1.0
         version: 6.1.0(graphql@16.8.1)
       react:
-        specifier: 18.2.0
+        specifier: ^18.2.0
         version: 18.2.0
       react-dom:
-        specifier: 18.2.0
+        specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       swr:
         specifier: 2.1.5
         version: 2.1.5(react@18.2.0)
       viem:
-        specifier: 1.18.9
+        specifier: ^1.18.9
         version: 1.18.9(typescript@5.2.2)
       wagmi:
-        specifier: 1.4.5
+        specifier: ^1.4.5
         version: 1.4.5(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)(typescript@5.2.2)(viem@1.18.9)
     devDependencies:
       '@dae/types':
@@ -328,10 +313,10 @@ importers:
         specifier: workspace:*
         version: link:../../config/typescript
       '@types/react':
-        specifier: 18.2.37
+        specifier: ~18.2.37
         version: 18.2.37
       typescript:
-        specifier: 5.2.2
+        specifier: ~5.2.2
         version: 5.2.2
 
   packages/types: {}
@@ -387,10 +372,10 @@ importers:
         specifier: 5.4.1
         version: 5.4.1
       react:
-        specifier: 18.2.0
+        specifier: ^18.2.0
         version: 18.2.0
       react-dom:
-        specifier: 18.2.0
+        specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       react-icons:
         specifier: 4.11.0
@@ -423,10 +408,10 @@ importers:
         specifier: 2.9.1
         version: 2.9.1(react-dom@18.2.0)(react@18.2.0)
       viem:
-        specifier: 1.18.9
+        specifier: ^1.18.9
         version: 1.18.9(typescript@5.2.2)
       wagmi:
-        specifier: 1.4.5
+        specifier: ^1.4.5
         version: 1.4.5(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)(typescript@5.2.2)(viem@1.18.9)
       yup:
         specifier: 1.2.0
@@ -439,16 +424,16 @@ importers:
         specifier: workspace:*
         version: link:../../config/typescript
       '@types/papaparse':
-        specifier: 5.3.11
+        specifier: ~5.3.11
         version: 5.3.11
       '@types/react':
-        specifier: 18.2.37
+        specifier: ~18.2.37
         version: 18.2.37
       eslint:
-        specifier: 8.29.0
+        specifier: ~8.29.0
         version: 8.29.0
       typescript:
-        specifier: 5.2.2
+        specifier: ~5.2.2
         version: 5.2.2
 
   packages/wagmi:
@@ -475,19 +460,19 @@ importers:
         specifier: workspace:*
         version: link:../snapshot
       react:
-        specifier: 18.2.0
+        specifier: ^18.2.0
         version: 18.2.0
       react-dom:
-        specifier: 18.2.0
+        specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       swr:
         specifier: 2.1.5
         version: 2.1.5(react@18.2.0)
       viem:
-        specifier: 1.18.9
+        specifier: ^1.18.9
         version: 1.18.9(typescript@5.2.2)
       wagmi:
-        specifier: 1.4.5
+        specifier: ^1.4.5
         version: 1.4.5(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)(typescript@5.2.2)(viem@1.18.9)
     devDependencies:
       '@dae/types':
@@ -497,10 +482,10 @@ importers:
         specifier: workspace:*
         version: link:../../config/typescript
       '@types/react':
-        specifier: 18.2.37
+        specifier: ~18.2.37
         version: 18.2.37
       typescript:
-        specifier: 5.2.2
+        specifier: ~5.2.2
         version: 5.2.2
 
 packages:
@@ -954,21 +939,6 @@ packages:
       react-remove-scroll: 2.5.7(@types/react@18.2.37)(react@18.2.0)
     transitivePeerDependencies:
       - '@types/react'
-    dev: false
-
-  /@chakra-ui/next-js@2.1.5(@chakra-ui/react@2.8.1)(@emotion/react@11.11.1)(next@13.5.2)(react@18.2.0):
-    resolution: {integrity: sha512-bBd8zeXlAuVwDsjGN0/5ZZJknSbFeiZgJiGdbJo91v2lxKkOwo26b4ggc1ck1t+JR+daU6SrGBjlbQqSuWzyaA==}
-    peerDependencies:
-      '@chakra-ui/react': '>=2.4.0'
-      '@emotion/react': '>=11'
-      next: '>=13'
-      react: '>=18'
-    dependencies:
-      '@chakra-ui/react': 2.8.1(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.37)(framer-motion@10.16.4)(react-dom@18.2.0)(react@18.2.0)
-      '@emotion/cache': 11.11.0
-      '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
-      next: 13.5.2(react-dom@18.2.0)(react@18.2.0)
-      react: 18.2.0
     dev: false
 
   /@chakra-ui/number-input@2.1.1(@chakra-ui/system@2.6.1)(react@18.2.0):
@@ -3167,12 +3137,6 @@ packages:
     dependencies:
       parchment: 1.1.4
     dev: false
-
-  /@types/react-dom@18.2.15:
-    resolution: {integrity: sha512-HWMdW+7r7MR5+PZqJF6YFNSCtjz1T0dsvo/f1BV6HkV+6erD/nA7wd9NM00KVG83zf2nJ7uATPO9ttdIPvi3gg==}
-    dependencies:
-      '@types/react': 18.2.37
-    dev: true
 
   /@types/react@18.2.37:
     resolution: {integrity: sha512-RGAYMi2bhRgEXT3f4B92WTohopH6bIXw05FuGlmJEnv/omEn190+QYEIYxIAuIBdKgboYYdVved2p1AxZVQnaw==}
@@ -5401,11 +5365,6 @@ packages:
     resolution: {integrity: sha512-7NXolsK4CAS5+xvdj5OMMbI962hU/wvwoxk+LWR9Ek9bVtyuuYScDN6eS0rUm6TxApFpw7CX1o4uJzcd4AyD3Q==}
     dev: false
 
-  /install@0.13.0:
-    resolution: {integrity: sha512-zDml/jzr2PKU9I8J/xyZBQn8rPCAY//UOYNmR01XwNwyfhEWObo2SWfSl1+0tm1u6PhxLwDnfsT/6jB7OUxqFA==}
-    engines: {node: '>= 0.10'}
-    dev: false
-
   /invariant@2.2.4:
     resolution: {integrity: sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==}
     dependencies:
@@ -6308,79 +6267,6 @@ packages:
     dependencies:
       path-key: 4.0.0
     dev: true
-
-  /npm@9.6.6:
-    resolution: {integrity: sha512-GIe+nCIw8EJIv52IXDVETSGnx7p9Ttg4VsaXNIeT4eaKZpIZ635rKC/uzQ6nnc4ibCUmESoK3PrXG0/puoqNcg==}
-    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
-    hasBin: true
-    dev: false
-    bundledDependencies:
-      - '@isaacs/string-locale-compare'
-      - '@npmcli/arborist'
-      - '@npmcli/config'
-      - '@npmcli/map-workspaces'
-      - '@npmcli/package-json'
-      - '@npmcli/run-script'
-      - abbrev
-      - archy
-      - cacache
-      - chalk
-      - ci-info
-      - cli-columns
-      - cli-table3
-      - columnify
-      - fastest-levenshtein
-      - fs-minipass
-      - glob
-      - graceful-fs
-      - hosted-git-info
-      - ini
-      - init-package-json
-      - is-cidr
-      - json-parse-even-better-errors
-      - libnpmaccess
-      - libnpmdiff
-      - libnpmexec
-      - libnpmfund
-      - libnpmhook
-      - libnpmorg
-      - libnpmpack
-      - libnpmpublish
-      - libnpmsearch
-      - libnpmteam
-      - libnpmversion
-      - make-fetch-happen
-      - minimatch
-      - minipass
-      - minipass-pipeline
-      - ms
-      - node-gyp
-      - nopt
-      - npm-audit-report
-      - npm-install-checks
-      - npm-package-arg
-      - npm-pick-manifest
-      - npm-profile
-      - npm-registry-fetch
-      - npm-user-validate
-      - npmlog
-      - p-map
-      - pacote
-      - parse-conflict-json
-      - proc-log
-      - qrcode-terminal
-      - read
-      - read-package-json
-      - read-package-json-fast
-      - semver
-      - ssri
-      - tar
-      - text-table
-      - tiny-relative-date
-      - treeverse
-      - validate-npm-package-name
-      - which
-      - write-file-atomic
 
   /oauth@0.9.15:
     resolution: {integrity: sha512-a5ERWK1kh38ExDEfoO6qUHJb32rd7aYmPHuyCu3Fta/cnICvYmgd2uhuKXvPD+PXB+gCEYYEaQdIRAjCOwAKNA==}

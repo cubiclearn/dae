@@ -11,17 +11,19 @@
     "@dae/hooks": "workspace:*",
     "@dae/ipfs": "workspace:*",
     "@dae/snapshot": "workspace:*",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "swr": "2.1.5",
-    "viem": "1.18.9",
-    "wagmi": "1.4.5"
+    "swr": "2.1.5"
   },
   "devDependencies": {
     "@dae/types": "workspace:*",
     "@dae/typescript-config": "workspace:*",
-    "@types/react": "18.2.37",
-    "typescript": "5.2.2"
+    "@types/react": "~18.2.37",
+    "typescript": "~5.2.2"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "viem": "^1.18.9",
+    "wagmi": "^1.4.5"
   },
   "files": [
     "src"
