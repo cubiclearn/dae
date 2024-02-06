@@ -7,11 +7,11 @@
   },
   "devDependencies": {
     "@dae/typescript-config": "workspace:*",
-    "@types/node": "20.9.0",
-    "eslint": "8.29.0",
-    "prisma": "5.5.2",
-    "tsup": "6.7.0",
-    "typescript": "5.2.2"
+    "@types/node": "~20.9.0",
+    "eslint": "~8.29.0",
+    "prisma": "~5.5.2",
+    "tsup": "~6.7.0",
+    "typescript": "~5.2.2"
   },
   "files": [
     "dist"
