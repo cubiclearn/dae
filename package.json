@@ -1,42 +1,42 @@
 {
-    "name": "dae",
-    "dependencies": {
-        "dotenv-cli": "latest",
-        "eslint": "8.29.0",
-        "prettier": "2.8.8",
-        "turbo": "1.10.12"
-    },
-    "devDependencies": {
-        "husky": "8.0.3",
-        "lint-staged": "13.2.2",
-        "rome": "12.1.3",
-        "syncpack": "11.2.1"
-    },
-    "packageManager": "pnpm@8.6.5",
-    "private": true,
-    "scripts": {
-        "build": "dotenv -- turbo run build",
-        "build-config": "dotenv -- turbo run build --filter={./config/*}",
-        "build-packages": "dotenv -- turbo run build --filter={./packages/*}...",
-        "check": "dotenv -- turbo run check",
-        "lint": "rome check .",
-        "lint:fix": "rome check . --apply",
-        "clean": "turbo run clean && rm -rf node_modules",
-        "db:push": "dotenv -- turbo run db:push",
-        "db:format": "dotenv -- turbo run db:format",
-        "db:studio": "dotenv -- turbo run db:studio",
-        "db:migrate:dev": "dotenv -- turbo run db:migrate:dev",
-        "db:migrate:deploy": "dotenv -- turbo run db:migrate:deploy",
-        "db:migrate:reset": "dotenv -- turbo run db:migrate:reset",
-        "dev": "dotenv -- turbo run dev --no-cache --parallel --continue",
-        "format": "rome format .",
-        "format:fix": "rome format . --write",
-        "prepare": "husky install",
-        "deploy": "dotenv -- turbo run deploy",
-        "start": "dotenv -- turbo run start"
-    },
-    "engines": {
-        "node": ">=18.x",
-        "pnpm": ">=7.x"
-    }
+  "name": "dae",
+  "dependencies": {
+    "dotenv-cli": "latest",
+    "eslint": "8.29.0",
+    "prettier": "2.8.8",
+    "turbo": "1.10.12"
+  },
+  "devDependencies": {
+    "husky": "8.0.3",
+    "lint-staged": "13.2.2",
+    "rome": "12.1.3",
+    "syncpack": "11.2.1"
+  },
+  "engines": {
+    "node": ">=18.x",
+    "pnpm": ">=7.x"
+  },
+  "packageManager": "pnpm@8.6.5",
+  "private": true,
+  "scripts": {
+    "build": "dotenv -- turbo run build",
+    "build-config": "dotenv -- turbo run build --filter={./config/*}",
+    "build-packages": "dotenv -- turbo run build --filter={./packages/*}...",
+    "check": "dotenv -- turbo run check",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "db:format": "dotenv -- turbo run db:format",
+    "db:migrate:deploy": "dotenv -- turbo run db:migrate:deploy",
+    "db:migrate:dev": "dotenv -- turbo run db:migrate:dev",
+    "db:migrate:reset": "dotenv -- turbo run db:migrate:reset",
+    "db:push": "dotenv -- turbo run db:push",
+    "db:studio": "dotenv -- turbo run db:studio",
+    "deploy": "dotenv -- turbo run deploy",
+    "dev": "dotenv -- turbo run dev --no-cache --parallel --continue",
+    "format": "rome format .",
+    "format:fix": "rome format . --write",
+    "lint": "rome check .",
+    "lint:fix": "rome check . --apply",
+    "prepare": "husky install",
+    "start": "dotenv -- turbo run start"
+  }
 }

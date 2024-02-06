@@ -1,73 +1,37 @@
 {
-    "name": "@dae/wagmi",
-    "version": "0.0.1",
-    "description": "Wagmi hooks for the DAE (Decentralized Autonomous Education) Project.",
-    "scripts": {
-        "build": "true",
-        "check": "tsc --pretty --noEmit",
-        "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
-    },
-    "dependencies": {
-        "swr": "2.1.5",
-        "viem": "1.18.9"
-    },
-    "sideEffects": false,
-    "type": "module",
-    "exports": {
-        ".": "./src/index.ts",
-        "./*": [
-            "./src/*.ts",
-            "./src/*.tsx",
-            "./src/*/index.ts",
-            "./src/*/index.tsx"
-        ]
-    },
-    "typesVersions": {
-        "*": {
-            "*": [
-                "src/*",
-                "src/*/index"
-            ]
-        }
-    },
-    "devDependencies": {
-        "@dae/abi": "workspace:*",
-        "@dae/chains": "workspace:*",
-        "@dae/constants": "workspace:*",
-        "@dae/database": "workspace:*",
-        "@dae/hooks": "workspace:*",
-        "@dae/ipfs": "workspace:*",
-        "@dae/snapshot": "workspace:*",
-        "@dae/types": "workspace:*",
-        "@dae/typescript-config": "workspace:*",
-        "@types/node": "20.9.0",
-        "@types/react": "18.2.37",
-        "@types/react-dom": "18.2.15",
-        "next": "13.5.2",
-        "react": "18.2.0",
-        "react-dom": "18.2.0",
-        "typescript": "5.2.2",
-        "wagmi": "1.4.5"
-    },
-    "files": [
-        "src"
-    ],
-    "peerDependencies": {
-        "react": "18.2.0",
-        "react-dom": "18.2.0",
-        "wagmi": "1.4.2"
-    },
-    "peerDependenciesMeta": {
-        "react": {
-            "optional": true
-        },
-        "react-dom": {
-            "optional": true
-        },
-        "wagmi": {
-            "optional": true
-        }
-    },
-    "author": "",
-    "license": "MIT"
+  "name": "@dae/wagmi",
+  "description": "Wagmi hooks for the DAE (Decentralized Autonomous Education) Project.",
+  "version": "0.0.1",
+  "author": "",
+  "dependencies": {
+    "@dae/abi": "workspace:*",
+    "@dae/chains": "workspace:*",
+    "@dae/constants": "workspace:*",
+    "@dae/database": "workspace:*",
+    "@dae/hooks": "workspace:*",
+    "@dae/ipfs": "workspace:*",
+    "@dae/snapshot": "workspace:*",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "swr": "2.1.5",
+    "viem": "1.18.9",
+    "wagmi": "1.4.5"
+  },
+  "devDependencies": {
+    "@dae/types": "workspace:*",
+    "@dae/typescript-config": "workspace:*",
+    "@types/react": "18.2.37",
+    "typescript": "5.2.2"
+  },
+  "files": [
+    "src"
+  ],
+  "license": "MIT",
+  "main": "src/index.ts",
+  "scripts": {
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
+    "lint": "tsc --pretty --noEmit"
+  },
+  "sideEffects": false,
+  "type": "module"
 }

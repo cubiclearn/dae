@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import FormData from 'form-data'
 import { IpfsConnector, IpfsUploadResult } from '../'
 import { Readable } from 'stream'
@@ -24,10 +24,9 @@ export class PinataIpfsConnector
     mimeType: string
   }): Promise<IpfsUploadResult> {
     const formData = new FormData()
-    let response = null
+    let response: AxiosResponse | undefined = undefined
 
     if (fileContent instanceof Buffer) {
-      console.log(fileName)
       const stream = Readable.from(fileContent)
       formData.append('file', stream, {
         filepath: fileName,
@@ -60,7 +59,7 @@ export class PinataIpfsConnector
       throw new Error('File type not supported.')
     }
 
-    if (response.status !== 200) {
+    if (response?.status !== 200) {
       throw Error('Error uploading files to IPFS.')
     }
 

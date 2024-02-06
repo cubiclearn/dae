@@ -1,28 +1,27 @@
 {
-    "name": "@dae/viem-config",
-    "description": "Viem config for the DAE (Decentralized Autonomous Education) project",
-    "version": "0.0.0",
-    "author": "",
-    "bugs": "https://github.com/cubiclearn/dae/issues",
-    "devDependencies": {
-        "@dae/chains": "workspace:*",
-        "@dae/typescript-config": "workspace:*",
-        "@types/node": "20.9.0",
-        "tsup": "6.7.0",
-        "typescript": "5.2.2",
-        "viem": "1.18.9"
-    },
-    "files": [
-        "/dist"
-    ],
-    "homepage": "https://github.com/cubiclearn/dae#readme",
-    "license": "MIT",
-    "main": "dist/index.js",
-    "repository": "cubiclearn/dae.git",
-    "scripts": {
-        "build": "tsup src/index.ts --format cjs --dts --external viem",
-        "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
-    },
-    "sideEffects": false,
-    "types": "dist/index.d.ts"
+  "name": "@dae/viem-config",
+  "description": "Viem config for the DAE (Decentralized Autonomous Education) project",
+  "version": "0.0.1",
+  "author": "",
+  "dependencies": {
+    "@dae/chains": "workspace:*"
+  },
+  "devDependencies": {
+    "@dae/typescript-config": "workspace:*",
+    "typescript": "5.2.2"
+  },
+  "peerDependencies": {
+    "viem": "1.18.9"
+  },
+  "files": [
+    "src"
+  ],
+  "homepage": "https://github.com/cubiclearn/dae#readme",
+  "license": "MIT",
+  "main": "src/index.ts",
+  "scripts": {
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
+    "lint": "tsc --noEmit"
+  },
+  "sideEffects": false
 }

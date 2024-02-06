@@ -1,18 +1,18 @@
 {
-    "name": "@dae/types",
-    "description": "Types definitions for Decentralized Autonomous Education (DAE) project",
-    "version": "0.0.1",
-    "author": "",
-    "exports": {
-        ".": {
-            "import": "./index.d.ts"
-        },
-        "./package.json": "./package.json"
+  "name": "@dae/types",
+  "description": "Types definitions for Decentralized Autonomous Education (DAE) project",
+  "version": "0.0.1",
+  "author": "",
+  "exports": {
+    ".": {
+      "import": "./index.d.ts"
     },
-    "license": "MIT",
-    "types": "./index.d.ts",
-    "typescript": {
-        "definition": "./index.d.ts"
-    },
-    "typings": "./index.d.ts"
+    "./package.json": "./package.json"
+  },
+  "license": "MIT",
+  "types": "./index.d.ts",
+  "typescript": {
+    "definition": "./index.d.ts"
+  },
+  "typings": "./index.d.ts"
 }
