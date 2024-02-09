@@ -25,6 +25,10 @@ export class PinataIpfsConnector
   }): Promise<IpfsUploadResult> {
     const formData = new FormData()
     let response: AxiosResponse | undefined = undefined
+    const pinataMetadata = JSON.stringify({
+      keyvalues: { environment: process.env.NEXT_PUBLIC_DAE_ENVIRONMENT },
+      name: fileName,
+    })
 
     if (fileContent instanceof Buffer) {
       const stream = Readable.from(fileContent)
@@ -32,6 +36,7 @@ export class PinataIpfsConnector
         filepath: fileName,
         contentType: mimeType,
       })
+      formData.append('pinataMetadata', pinataMetadata)
       response = await axios.post(
         'https://api.pinata.cloud/pinning/pinFileToIPFS',
         formData,
@@ -46,7 +51,10 @@ export class PinataIpfsConnector
     } else if (typeof fileContent === 'object') {
       response = await axios.post(
         'https://api.pinata.cloud/pinning/pinJSONToIPFS',
-        fileContent,
+        JSON.stringify({
+          pinataContent: fileContent,
+          pinataMetadata: pinataMetadata,
+        }),
         {
           headers: {
             accept: 'application/json',
