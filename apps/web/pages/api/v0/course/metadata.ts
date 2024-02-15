@@ -31,12 +31,12 @@ const handlePostRequest = async (
         .json({ status: ApiResponseStatus.error, message: 'Bad request.' })
     }
 
-    const { mimetype, filepath, originalFilename } = imageFile
+    const { mimetype, filepath } = imageFile
     const courseImageBuffer = fs.readFileSync(filepath)
-
+    const nameFormatted = name.replace(' ', '_')
     const ipfsCourseImageData = await IpfsConnector.upload({
       fileContent: courseImageBuffer,
-      fileName: originalFilename ?? '',
+      fileName: `ci_${nameFormatted}`,
       mimeType: mimetype ?? '',
     })
 
@@ -49,7 +49,7 @@ const handlePostRequest = async (
         'snapshot-ens': snapshotEns,
         'media-channel': mediaChannel,
       },
-      fileName: '',
+      fileName: `cd_${nameFormatted}`,
       mimeType: 'application/json',
     })
 

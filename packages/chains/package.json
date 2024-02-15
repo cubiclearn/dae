@@ -1,29 +1,23 @@
 {
-    "name": "@dae/chains",
-    "description": "Supported chains for DAE (Decentralized Autonomous Education) project.",
-    "version": "0.0.1",
-    "author": "",
-    "bugs": "https://github.com/cubiclearn/dae/issues",
-    "devDependencies": {
-        "@dae/typescript-config": "workspace:*",
-        "@types/node": "20.9.0",
-        "typescript": "5.2.2",
-        "viem": "1.18.9"
-    },
-    "files": [
-        "/dist"
-    ],
-    "homepage": "https://github.com/cubiclearn/dae#readme",
-    "license": "MIT",
-    "main": "dist/index.js",
-    "repository": "cubiclearn/dae.git",
-    "scripts": {
-        "build": "tsc",
-        "check": "tsc --pretty --noEmit",
-        "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
-        "dev": "tsc -w"
-    },
-    "sideEffects": false,
-    "source": "src/index.ts",
-    "types": "dist/index.d.ts"
+  "name": "@dae/chains",
+  "description": "Supported chains for DAE (Decentralized Autonomous Education) project.",
+  "version": "0.0.1",
+  "author": "",
+  "devDependencies": {
+    "@dae/typescript-config": "workspace:*",
+    "typescript": "~5.2.2"
+  },
+  "peerDependencies": {
+    "viem": "^1.18.9"
+  },
+  "files": [
+    "/dist"
+  ],
+  "license": "MIT",
+  "main": "src/index.ts",
+  "scripts": {
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
+    "lint": "tsc --pretty --noEmit"
+  },
+  "sideEffects": false
 }
